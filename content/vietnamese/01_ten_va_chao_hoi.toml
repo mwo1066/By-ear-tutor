@@ -1,0 +1,57 @@
+title = "Tên và chào hỏi"
+
+[[items]]
+type = "concept"
+name = "tôi"
+category = "function_word"
+language = "vi"
+description = "Đại từ ngôi thứ nhất, trung lập và luôn đúng ngữ pháp. Thanh ngang — giọng đều, không lên không xuống. Lưu ý: 'tôi' hơi trang trọng và xa cách; trong nói chuyện thân mật, người Việt thường xưng hô theo vai vế gia đình thay vì 'tôi'. Dùng 'tôi' khi mới học, khi trang trọng, hoặc khi chưa biết xưng hô thế nào cho đúng."
+
+[[items]]
+type = "concept"
+name = "tên"
+category = "noun"
+language = "vi"
+description = "Danh từ: tên gọi của một người. Thanh ngang. Ghép thẳng với đại từ đã biết: 'tên tôi' — tên của mình. Dùng khi giới thiệu và làm quen."
+
+[[items]]
+type = "concept"
+name = "là"
+category = "verb"
+language = "vi"
+description = "Động từ nối để nói A là B, ví dụ khi giới thiệu tên. Thanh huyền — giọng xuống nhẹ. Chỉ đứng trước danh từ: 'Tôi là Nam.'"
+
+[[items]]
+type = "procedure"
+name = "tôi tên là + [tên riêng]"
+category = "construction"
+language = "vi"
+description = "Khung câu giới thiệu tên: 'tôi tên là' cộng tên riêng của mình. 'Tôi tên là Nam.' Ghép từ ba từ đã biết: tôi, tên, là — câu hoàn chỉnh đầu tiên."
+
+[[items]]
+type = "concept"
+name = "bạn"
+category = "function_word"
+language = "vi"
+description = "Đại từ ngôi thứ hai trung lập — nghĩa gốc là 'người bạn'. Thanh nặng — giọng thấp, ngắn, ngắt gọn. An toàn khi chưa biết tuổi người đối diện, hay dùng giữa người trẻ cùng lứa. 'Bạn' và 'tôi' là cặp trung lập để bắt đầu."
+
+[[items]]
+type = "concept"
+name = "gì"
+category = "function_word"
+language = "vi"
+description = "Từ để hỏi, nghĩa là 'cái gì'. Thanh huyền. Đứng ở CUỐI câu hỏi, không đảo lên đầu câu: '... gì?'"
+
+[[items]]
+type = "procedure"
+name = "bạn tên là gì?"
+category = "construction"
+language = "vi"
+description = "Câu hỏi tên: 'Bạn tên là gì?' Từ hỏi 'gì' nằm cuối câu. Trả lời bằng khung đã biết: 'Tôi tên là Nam.' Toàn bộ từ trong câu đều đã học."
+
+[[items]]
+type = "concept"
+name = "chào"
+category = "function_word"
+language = "vi"
+description = "Lời chào — dùng cả khi gặp nhau và khi tạm biệt. Thanh huyền — giọng xuống. Nói 'chào' một mình hơi cộc; tự nhiên hơn khi ghép với đại từ: 'Chào bạn!' Dạng lịch sự, trang trọng hơn: 'Xin chào.'"
