@@ -24,7 +24,16 @@ CONTENT_DIR = ROOT / "content" / "vietnamese"
 STATE_PATH = ROOT / "state.json"
 ENV_PATH = ROOT / ".env"
 
-MODEL = "nvidia/nemotron-3-ultra-550b-a55b:free"
+# Tried in order — if the first is saturated/rate-limited, fall back to the
+# next rather than crash. Found live: Nvidia's free capacity for the 550B
+# model can hit "ResourceExhausted" (HTTP 502 wrapped in a 200 body), which
+# is a real capacity ceiling, not a burst limit that clears in seconds.
+MODEL_FALLBACKS = [
+    "nvidia/nemotron-3-ultra-550b-a55b:free",
+    "nvidia/nemotron-3-super-120b-a12b:free",
+    "google/gemma-4-31b-it:free",
+]
+RETRYABLE_CODES = {429, 502, 503}
 
 TOOLS = [
     {
@@ -81,10 +90,10 @@ def load_api_key() -> str:
     raise RuntimeError("OPENROUTER_API_KEY not found in .env")
 
 
-def call_llm(api_key: str, messages: list[dict], tools: list[dict] | None = None, retries: int = 3) -> dict:
-    """Calls the free-tier model with backoff on rate limits (429) — the free
-    tier genuinely gets hit during normal use, confirmed live during testing."""
-    body = {"model": MODEL, "messages": messages}
+def _try_model(api_key: str, model: str, messages: list[dict], tools: list[dict] | None, retries: int) -> dict | None:
+    """Returns the parsed response, or None if this model is exhausted after
+    all retries (caller should move on to the next fallback model)."""
+    body = {"model": model, "messages": messages}
     if tools:
         body["tools"] = tools
     req = urllib.request.Request(
@@ -93,37 +102,47 @@ def call_llm(api_key: str, messages: list[dict], tools: list[dict] | None = None
         headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
         method="POST",
     )
-    last_error = None
     for attempt in range(retries):
         try:
             with urllib.request.urlopen(req, timeout=120) as resp:
                 parsed = json.loads(resp.read().decode("utf-8"))
             if "error" in parsed:
                 # OpenRouter sometimes returns HTTP 200 with an {"error": ...}
-                # body (e.g. rate limiting on some routes) instead of a real
-                # HTTP error status — caught this live during testing.
+                # body (rate limits, or an upstream provider's own capacity
+                # ceiling wrapped as code 502) instead of a real HTTP error
+                # status — both caught live during testing.
                 code = parsed["error"].get("code")
-                if code == 429 and attempt < retries - 1:
+                if code in RETRYABLE_CODES and attempt < retries - 1:
                     wait = 5 * (attempt + 1)
-                    print(f"  (limite de debit atteinte, nouvelle tentative dans {wait}s...)")
+                    print(f"  ({model}: {parsed['error'].get('message', code)} — nouvel essai dans {wait}s...)")
                     time.sleep(wait)
-                    last_error = parsed["error"]
                     continue
+                if code in RETRYABLE_CODES:
+                    return None  # exhausted retries on a transient error — try the next model
                 raise RuntimeError(f"OpenRouter error: {parsed['error']}")
             return parsed
         except urllib.error.HTTPError as e:
-            body_text = e.read().decode("utf-8", errors="replace")
-            if e.code == 429 and attempt < retries - 1:
+            if e.code in RETRYABLE_CODES and attempt < retries - 1:
                 wait = 5 * (attempt + 1)
-                print(f"  (limite de debit atteinte, nouvelle tentative dans {wait}s...)")
+                print(f"  ({model}: HTTP {e.code} — nouvel essai dans {wait}s...)")
                 time.sleep(wait)
-                last_error = (e.code, body_text)
                 continue
+            if e.code in RETRYABLE_CODES:
+                return None
+            body_text = e.read().decode("utf-8", errors="replace")
             raise RuntimeError(f"OpenRouter error {e.code}: {body_text}") from e
-        except Exception as e:
-            last_error = e
-            raise
-    raise RuntimeError(f"Echec apres {retries} tentatives: {last_error}")
+    return None
+
+
+def call_llm(api_key: str, messages: list[dict], tools: list[dict] | None = None, retries: int = 3) -> dict:
+    """Tries each model in MODEL_FALLBACKS in order; only raises if every
+    model in the list is unavailable."""
+    for model in MODEL_FALLBACKS:
+        result = _try_model(api_key, model, messages, tools, retries)
+        if result is not None:
+            return result
+        print(f"  ({model} indisponible, on passe au modele de secours suivant)")
+    raise RuntimeError(f"Tous les modeles de secours sont indisponibles: {MODEL_FALLBACKS}")
 
 
 def run_session():
