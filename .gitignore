@@ -5,3 +5,4 @@ voices/*.wav
 voices/*.onnx
 voices/*.onnx.json
 voices/test_text*.txt
+*.wav
