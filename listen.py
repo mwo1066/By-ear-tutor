@@ -48,7 +48,13 @@ def transcribe(audio: np.ndarray) -> tuple[str, str]:
         return "", "en"
     audio_float = audio.astype(np.float32) / 32768.0
     model = _get_model()
-    segments, info = model.transcribe(audio_float, beam_size=5)
+    # vad_filter trims silence before/around speech -- without it, silence-
+    # padded push-to-talk recordings can make Whisper hallucinate repeated
+    # phrases (seen live: "I don't know why, I don't know why...").
+    segments, info = model.transcribe(
+        audio_float, beam_size=5, vad_filter=True,
+        vad_parameters={"min_silence_duration_ms": 500},
+    )
     text = " ".join(seg.text.strip() for seg in segments)
     return text.strip(), info.language
 
