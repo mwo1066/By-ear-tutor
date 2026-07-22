@@ -22,6 +22,15 @@ _VN_CHARS = re.compile(
     "[à-ỹĐđ]"  # broad Latin Extended-A/B + combining tone marks
 )
 
+# Common Vietnamese words that happen to have NO diacritics at all (bare
+# ASCII spelling) -- found live: "anh"/"em"/"ngon" from our own roster were
+# misrouted to the English voice because the diacritic check alone missed
+# them. Deliberately NOT adding ambiguous words that are also real English
+# words (e.g. "ban") -- that would misroute genuine English sentences.
+# Extend only with words confirmed in our own roster (see content.py).
+_VN_BARE_WORDS = {"anh", "em", "ngon"}
+_WORD_RE = re.compile(r"[a-zà-ỹđ]+", re.IGNORECASE)
+
 _SENTENCE_SPLIT = re.compile(r"(?<=[.!?])\s+")
 
 
@@ -31,12 +40,15 @@ def _load_env() -> dict:
 
 
 def _is_vietnamese(text: str) -> bool:
-    """Heuristic: Vietnamese-specific diacritics present, or common short
-    Vietnamese function words with no diacritics (tôi, la, la, gi...) that
-    would otherwise misclassify as English."""
+    """Heuristic: Vietnamese-specific diacritics present, OR the whole text
+    is just one of our known bare-ASCII Vietnamese words with nothing else
+    around it (word-boundary match, so "em" doesn't fire inside "system" —
+    and deliberately only for short standalone utterances, not embedded in
+    a longer English sentence, to avoid misrouting real English text)."""
     if _VN_CHARS.search(text):
         return True
-    return False
+    words = _WORD_RE.findall(text.lower())
+    return bool(words) and all(w in _VN_BARE_WORDS for w in words)
 
 
 def split_by_voice(text: str) -> list[tuple[str, str]]:
