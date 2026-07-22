@@ -19,6 +19,7 @@ sys.stdin.reconfigure(encoding="utf-8")
 from content import load_persona_system_prompt, load_roster, format_items_for_prompt
 from srs import ProgressStore, update_after_practice
 from voice import speak
+from listen import listen_and_transcribe
 
 ROOT = Path(__file__).parent
 CONTENT_DIR = ROOT / "content" / "vietnamese"
@@ -173,9 +174,17 @@ def run_session():
             print(f"(auto) toi: {user_input}")
             first = False
         else:
-            user_input = input("toi: ").strip()
-            if user_input == "/fin":
+            typed = input("[Entree = parler] ou tape /fin: ").strip()
+            if typed == "/fin":
                 break
+            if typed:
+                user_input = typed  # fallback: typing still works
+            else:
+                user_input = listen_and_transcribe()
+                if not user_input:
+                    print("  (rien entendu, on reessaie)")
+                    continue
+                print(f"toi (transcrit): {user_input}")
 
         messages.append({"role": "user", "content": user_input})
         result = call_llm(api_key, messages, tools=TOOLS)
