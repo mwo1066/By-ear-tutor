@@ -18,6 +18,7 @@ sys.stdin.reconfigure(encoding="utf-8")
 
 from content import load_persona_system_prompt, load_roster, format_items_for_prompt
 from srs import ProgressStore, update_after_practice
+from voice import speak
 
 ROOT = Path(__file__).parent
 CONTENT_DIR = ROOT / "content" / "vietnamese"
@@ -168,7 +169,7 @@ def run_session():
     first = True
     while True:
         if first:
-            user_input = "[lang:fr] Salut, je suis pret."
+            user_input = "[lang:en] Hi, I'm ready."
             print(f"(auto) toi: {user_input}")
             first = False
         else:
@@ -183,6 +184,7 @@ def run_session():
 
         if msg.get("content"):
             print(f"tuteur: {msg['content']}\n")
+            speak(msg["content"])
         for call in msg.get("tool_calls") or []:
             fn = call["function"]
             print(f"  [tool_call] {fn['name']}({fn['arguments']})")
