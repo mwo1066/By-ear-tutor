@@ -6,6 +6,7 @@ assessment pass that updates spaced-repetition state.
 """
 import json
 import os
+import re
 import sys
 import time
 import urllib.error
@@ -16,10 +17,13 @@ from pathlib import Path
 sys.stdout.reconfigure(encoding="utf-8")
 sys.stdin.reconfigure(encoding="utf-8")
 
-from content import load_persona_system_prompt, load_roster, format_items_for_prompt
+from content import (
+    Item, load_persona_system_prompt, load_roster, load_personal_items,
+    add_personal_items,
+)
 from srs import ProgressStore, update_after_practice
 from voice import speak
-from listen import listen_and_transcribe
+from listen import listen_and_transcribe, preload_model
 
 ROOT = Path(__file__).parent
 CONTENT_DIR = ROOT / "content" / "vietnamese"
@@ -37,7 +41,31 @@ MODEL_FALLBACKS = [
 ]
 RETRYABLE_CODES = {429, 502, 503}
 
+# How many items a theme request generates -- they're prepended to the item
+# queue and surface via next_item at whatever pace the session naturally
+# takes; nothing here decides how many happen "today," since there's no
+# fixed-length today anymore.
+N_THEME_GENERATE = 4
+
+# Reservoir size: how many candidates select_today prepares up front. Only
+# ever revealed one at a time via next_item, so this just needs to be large
+# enough that a long session never runs dry -- not a target to hit.
+QUEUE_SIZE = 30
+
 TOOLS = [
+    {
+        "type": "function",
+        "function": {
+            "name": "next_item",
+            "description": (
+                "Get the next practice item -- including the very first one, right after any "
+                "opening/greeting. Items are revealed one at a time, never as an upfront list, "
+                "since a session can end at any point and there's no way to know how many will "
+                "be covered. Call this whenever ready to move on from the current item."
+            ),
+            "parameters": {"type": "object", "properties": {}},
+        },
+    },
     {
         "type": "function",
         "function": {
@@ -50,6 +78,56 @@ TOOLS = [
                     "topic": {"type": "string", "description": "short theme, e.g. food, greetings"},
                 },
                 "required": ["mode"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "deprioritize_item",
+            "description": (
+                "The learner explicitly asked to stop working on a specific word/phrase, or on "
+                "a whole theme -- not just a single missed attempt. Doesn't delete anything, "
+                "just stops it from resurfacing as often."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "name": {"type": "string", "description": "exact item name to stop practicing"},
+                    "topic": {"type": "string", "description": "a whole theme to stop practicing, matching a theme requested earlier"},
+                },
+            },
+        },
+    },
+]
+
+THEME_GENERATION_TOOL = [
+    {
+        "type": "function",
+        "function": {
+            "name": "add_vocabulary_items",
+            "description": "Propose new Vietnamese items for the requested theme.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "name": {"type": "string", "description": "the Vietnamese word or phrase"},
+                                "item_type": {"type": "string", "enum": ["concept", "procedure"]},
+                                "category": {"type": "string"},
+                                "description": {
+                                    "type": "string",
+                                    "description": "Vietnamese-language notes: meaning, tone, usage -- same style/language as existing roster items",
+                                },
+                            },
+                            "required": ["name", "item_type", "category", "description"],
+                        },
+                    }
+                },
+                "required": ["items"],
             },
         },
     }
@@ -73,6 +151,15 @@ ASSESSMENT_TOOL = [
                                 "retrievals": {"type": "integer", "description": "successful recalls, not exposures"},
                                 "errors": {"type": "integer"},
                                 "user_initiated": {"type": "boolean"},
+                                "item_type": {
+                                    "type": "string", "enum": ["concept", "procedure"],
+                                    "description": "only for a spontaneous item not already tracked -- omit for known roster/personal items",
+                                },
+                                "category": {"type": "string", "description": "only for a spontaneous new item"},
+                                "description": {
+                                    "type": "string",
+                                    "description": "Vietnamese-language notes (meaning, tone, usage) -- only for a spontaneous new item, so it can be tracked going forward",
+                                },
                             },
                             "required": ["name", "retrievals", "errors"],
                         },
@@ -147,26 +234,195 @@ def call_llm(api_key: str, messages: list[dict], tools: list[dict] | None = None
     raise RuntimeError(f"Tous les modeles de secours sont indisponibles: {MODEL_FALLBACKS}")
 
 
-def run_session():
-    api_key = load_api_key()
-    persona_prompt = load_persona_system_prompt(CONTENT_DIR)
-    roster = load_roster(CONTENT_DIR)
-    store = ProgressStore(STATE_PATH)
+_SENTENCE_BOUNDARY = re.compile(r"([.!?])(\s|$)")
 
-    today = date.today()
-    todays_names = store.select_today([i.name for i in roster], today)
-    todays_items = [i for i in roster if i.name in todays_names]
 
-    print(f"--- Items du jour ({len(todays_items)}) ---")
-    for i in todays_items:
-        print(f"  - {i.name}")
-    print()
+_STREAM_ERRORS = (urllib.error.URLError, TimeoutError, OSError, json.JSONDecodeError, RuntimeError)
 
-    system_prompt = persona_prompt + "\n\n" + format_items_for_prompt(todays_items)
-    messages = [{"role": "system", "content": system_prompt}]
 
-    print("Tape /fin pour terminer la session et sauvegarder ta progression.\n")
+def stream_llm_reply(api_key: str, models: list[str], messages: list[dict], tools: list[dict] | None = None, rounds: int = 2):
+    """Streams a reply, trying each model in `models` in order. Yields
+    ("content", text_delta) chunks as they arrive, then a final
+    ("tool_calls", [...]) once the stream ends -- lets the caller start
+    speaking the first sentence long before the whole reply has been
+    generated, instead of waiting on the entire response.
 
+    No wait between models -- a fresh model doesn't need to "wait out" the
+    previous one's problem, so on a failure it moves to the next model
+    immediately. Only if EVERY model fails in one pass does it wait before
+    trying the whole list again, up to `rounds` times. A mid-stream failure
+    after content has already been spoken ends the turn gracefully instead
+    of retrying (which would just repeat what was already said)."""
+    for round_num in range(rounds):
+        for model in models:
+            got_any = False
+            tool_calls_acc: dict[int, dict] = {}
+            try:
+                body = {"model": model, "messages": messages, "stream": True}
+                if tools:
+                    body["tools"] = tools
+                req = urllib.request.Request(
+                    "https://openrouter.ai/api/v1/chat/completions",
+                    data=json.dumps(body).encode("utf-8"),
+                    headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+                    method="POST",
+                )
+                with urllib.request.urlopen(req, timeout=120) as resp:
+                    for raw_line in resp:
+                        line = raw_line.decode("utf-8", errors="replace").strip()
+                        if not line.startswith("data:"):
+                            continue
+                        payload = line[len("data:"):].strip()
+                        if payload == "[DONE]":
+                            break
+                        chunk = json.loads(payload)
+                        if "error" in chunk:
+                            raise RuntimeError(str(chunk["error"]))
+                        if not chunk.get("choices"):
+                            continue  # some providers send metadata-only chunks with an empty choices list
+                        choice = chunk["choices"][0]
+                        delta = choice["delta"]
+                        if delta.get("content"):
+                            got_any = True
+                            yield ("content", delta["content"])
+                        for tc in delta.get("tool_calls") or []:
+                            got_any = True
+                            idx = tc["index"]
+                            slot = tool_calls_acc.setdefault(
+                                idx, {"id": tc.get("id"), "type": "function", "function": {"name": "", "arguments": ""}}
+                            )
+                            if tc.get("id"):
+                                slot["id"] = tc["id"]
+                            fn = tc.get("function") or {}
+                            if fn.get("name"):
+                                slot["function"]["name"] += fn["name"]
+                            if fn.get("arguments"):
+                                slot["function"]["arguments"] += fn["arguments"]
+                                yield ("tool_call_partial", idx, slot["function"]["arguments"])
+                        if choice.get("finish_reason"):
+                            print(f"  [diag] modele={model} finish_reason={choice['finish_reason']}")
+                            if choice["finish_reason"] == "length":
+                                print("  [diag] !! reponse TRONQUEE faute de place (max_tokens atteint) -- pas un choix du modele")
+                yield ("tool_calls", [tool_calls_acc[i] for i in sorted(tool_calls_acc)])
+                return
+            except _STREAM_ERRORS as e:
+                if got_any:
+                    print(f"  (flux interrompu apres un debut de reponse ({e}) -- fin du tour sans reessayer)")
+                    yield ("tool_calls", [tool_calls_acc[i] for i in sorted(tool_calls_acc)])
+                    return
+                print(f"  ({model}: {e} -- on essaie le modele suivant immediatement)")
+        if round_num < rounds - 1:
+            wait = 5 * (round_num + 1)
+            print(f"  (tous les modeles ont echoue -- nouvel essai complet dans {wait}s...)")
+            time.sleep(wait)
+    raise RuntimeError(f"Tous les modeles de secours sont indisponibles apres {rounds} passages: {models}")
+
+
+def _extract_complete_json_objects(text: str) -> list[str]:
+    """Scans (possibly incomplete, still-streaming) JSON text and returns the
+    substrings of every complete top-level object one level below the root --
+    e.g. every finished {...} inside a root {"items": [...]} array, even
+    while later items are still being generated."""
+    objects = []
+    depth = 0
+    start = None
+    in_string = False
+    escape = False
+    for i, ch in enumerate(text):
+        if in_string:
+            if escape:
+                escape = False
+            elif ch == "\\":
+                escape = True
+            elif ch == '"':
+                in_string = False
+            continue
+        if ch == '"':
+            in_string = True
+        elif ch == "{":
+            if depth == 1 and start is None:
+                start = i
+            depth += 1
+        elif ch == "}":
+            depth -= 1
+            if depth == 1 and start is not None:
+                objects.append(text[start:i + 1])
+                start = None
+    return objects
+
+
+def generate_theme_items(api_key: str, topic: str, known_items: list[Item], count: int) -> list[Item]:
+    """One-off LLM call producing a batch of new Vietnamese items for a
+    learner-requested theme, in the same shape/style as the curated roster."""
+    known_names = ", ".join(i.name for i in known_items) or "(aucun)"
+    example = known_items[0] if known_items else None
+    example_line = (
+        f'Exemple de style pour "description" (meme langue, meme niveau de detail): '
+        f'"{example.description}"' if example else ""
+    )
+    prompt_messages = [
+        {
+            "role": "system",
+            "content": (
+                "You are proposing new Vietnamese beginner vocabulary/procedure items for a "
+                "requested theme, in the exact style of an existing hand-authored roster: "
+                "item_type is 'concept' for single words/phrases, 'procedure' for sentence "
+                "patterns; description is written IN VIETNAMESE, names the item's tone, and "
+                "explains meaning/usage the way a teacher's private notes would -- never in "
+                "English or French. Only use words the learner plausibly already knows as "
+                "building blocks for any 'procedure' item. Call add_vocabulary_items."
+            ),
+        },
+        {
+            "role": "user",
+            "content": (
+                f"Theme demande par l'apprenant : {topic}\n"
+                f"Items deja connus (ne pas dupliquer) : {known_names}\n"
+                f"{example_line}\n"
+                f"Propose exactement {count} nouveaux items pour ce theme."
+            ),
+        },
+    ]
+    items: list[Item] = []
+    n_extracted = 0
+    for kind, *payload in stream_llm_reply(api_key, MODEL_FALLBACKS, prompt_messages, tools=THEME_GENERATION_TOOL):
+        if kind != "tool_call_partial":
+            continue
+        _idx, args_so_far = payload
+        complete = _extract_complete_json_objects(args_so_far)
+        for raw_obj in complete[n_extracted:]:
+            try:
+                entry = json.loads(raw_obj)
+            except json.JSONDecodeError:
+                continue
+            items.append(Item(
+                name=entry["name"], item_type=entry["item_type"], category=entry["category"],
+                language="vi", description=entry["description"], source="personnel", topic=topic,
+            ))
+            print(f"    -> item {len(items)}/{count} pret: {entry['name']}")
+        n_extracted = len(complete)
+    return items
+
+
+def _vocab_words(items: list[Item]) -> frozenset[str]:
+    """Every individual word appearing in the current roster's item names --
+    used by voice.py to recognize genuine Vietnamese vocabulary regardless
+    of what language the tutor's own voice happens to be using, since we
+    author every Vietnamese word ourselves (see voice._is_vietnamese_word)."""
+    words: set[str] = set()
+    for i in items:
+        for w in i.name.split():
+            w = w.strip("+[]").lower()
+            if w:
+                words.add(w)
+    return frozenset(words)
+
+
+def _conversation_loop(api_key, messages, store, roster, queue_items, todays_items, themes_generated_this_session):
+    """The live back-and-forth until /fin. Pulled out of run_session so a
+    fatal error here (e.g. the free model staying saturated through every
+    retry) can still be caught by the caller and the session saved, instead
+    of losing all progress to an unhandled crash mid-loop."""
     first = True
     while True:
         if first:
@@ -180,36 +436,144 @@ def run_session():
             if typed:
                 user_input = typed  # fallback: typing still works
             else:
+                t0 = time.monotonic()
                 user_input = listen_and_transcribe()
+                print(f"  [chrono] ecoute+transcription: {time.monotonic() - t0:.1f}s")
                 if not user_input:
                     print("  (rien entendu, on reessaie)")
                     continue
                 print(f"toi (transcrit): {user_input}")
 
         messages.append({"role": "user", "content": user_input})
-        result = call_llm(api_key, messages, tools=TOOLS)
-        msg = result["choices"][0]["message"]
+        known_vn_words = _vocab_words(roster)
+        t0 = time.monotonic()
+        first_chunk_at = None
+        buffer = ""
+        full_text = ""
+        tool_calls_final: list[dict] = []
+        for kind, *payload in stream_llm_reply(api_key, MODEL_FALLBACKS, messages, tools=TOOLS):
+            if kind == "content":
+                text = payload[0]
+                if first_chunk_at is None:
+                    first_chunk_at = time.monotonic()
+                    print(f"  [chrono] premier morceau recu: {first_chunk_at - t0:.1f}s")
+                buffer += text
+                full_text += text
+                while (m := _SENTENCE_BOUNDARY.search(buffer)):
+                    sentence = buffer[:m.end()].strip()
+                    buffer = buffer[m.end():]
+                    if sentence:
+                        print(f"tuteur: {sentence}")
+                        speak(sentence, known_vn_words)
+            elif kind == "tool_calls":
+                tool_calls_final = payload[0]
+            # "tool_call_partial" ignored here -- only used by theme generation
+            # to show item-by-item progress; the small tools used mid-conversation
+            # (next_item, set_session_focus, deprioritize_item) have trivial
+            # arguments not worth streaming progress for.
+        if buffer.strip():
+            print(f"tuteur: {buffer.strip()}")
+            speak(buffer.strip(), known_vn_words)
+        print(f"  [chrono] total (reponse + voix): {time.monotonic() - t0:.1f}s")
+
+        msg = {"role": "assistant", "content": full_text or None}
+        if tool_calls_final:
+            msg["tool_calls"] = tool_calls_final
         messages.append(msg)
 
-        if msg.get("content"):
-            print(f"tuteur: {msg['content']}\n")
-            speak(msg["content"])
         for call in msg.get("tool_calls") or []:
             fn = call["function"]
             print(f"  [tool_call] {fn['name']}({fn['arguments']})")
+            args = json.loads(fn["arguments"])
+            tool_result = "ok"
+
+            if fn["name"] == "next_item":
+                if queue_items:
+                    next_i = queue_items.pop(0)
+                    todays_items.append(next_i)
+                    tool_result = f"[{next_i.item_type}/{next_i.category}] {next_i.name} — {next_i.description}"
+                    print(f"  -> {next_i.name}")
+                else:
+                    tool_result = "(reservoir vide -- termine la session naturellement, ou improvise une petite conversation libre)"
+            elif fn["name"] == "set_session_focus" and args.get("topic"):
+                topic = args["topic"].strip()
+                if topic.lower() not in themes_generated_this_session:
+                    themes_generated_this_session.add(topic.lower())
+                    print(f"  (generation des items pour '{topic}' en cours -- peut prendre du temps sur le modele gratuit...)")
+                    t_theme = time.monotonic()
+                    new_items = generate_theme_items(api_key, topic, roster, N_THEME_GENERATE)
+                    print(f"  [chrono] generation theme: {time.monotonic() - t_theme:.1f}s")
+                    if new_items:
+                        add_personal_items(CONTENT_DIR, new_items)
+                        roster.extend(new_items)
+                        queue_items[:0] = new_items  # next up via next_item, no fixed "today" split anymore
+                        print(f"  (theme '{topic}': {len(new_items)} items generes, ajoutes en tete de la file)")
+            elif fn["name"] == "deprioritize_item":
+                if args.get("name"):
+                    store.deprioritize(args["name"])
+                    print(f"  (deprioritise: {args['name']})")
+                if args.get("topic"):
+                    topic_lower = args["topic"].strip().lower()
+                    matched = [i.name for i in roster if (i.topic or "").lower() == topic_lower]
+                    for name in matched:
+                        store.deprioritize(name)
+                    print(f"  (deprioritise: theme '{args['topic']}' -- {len(matched)} item(s))")
+
             messages.append({
                 "role": "tool",
                 "tool_call_id": call["id"],
-                "content": "ok",
+                "content": tool_result,
             })
 
-    print("\n--- Fin de session : evaluation en cours ---")
-    run_assessment(api_key, messages, todays_items, store, today)
-    store.save()
-    print(f"Progression sauvegardee dans {STATE_PATH}")
+
+def run_session():
+    input("Appuie sur Entree pour demarrer la session (verifie que le terminal est propre)...")
+    api_key = load_api_key()
+    persona_prompt = load_persona_system_prompt(CONTENT_DIR)
+    print("  (preparation du modele de reconnaissance vocale...)")
+    preload_model()
+    # personal items first: select_today walks new_items in list order, and
+    # freshly requested content should resurface before the remaining
+    # never-touched curated roster, not queue behind all 30 of it.
+    roster = load_personal_items(CONTENT_DIR) + load_roster(CONTENT_DIR)
+    store = ProgressStore(STATE_PATH)
+
+    today = date.today()
+    by_name = {i.name: i for i in roster}
+    queue_names = store.select_today([i.name for i in roster], today, limit=QUEUE_SIZE)
+    queue_items = [by_name[n] for n in queue_names]
+    todays_items: list[Item] = []  # grows as next_item is actually called -- never pre-decided
+    themes_generated_this_session: set[str] = set()
+
+    print(f"--- Reservoir prepare ({len(queue_items)} candidats, revele un a la fois) ---")
+
+    # Skip-intro instruction removed -- found live: it got over-applied, the
+    # model dropped ALL spoken content (not just the opening speech) and
+    # went straight to a silent next_item call, breaking the "never call a
+    # tool silently" rule. Keeping the intro every run is more reliable for
+    # now even if slightly repetitive during testing.
+
+    messages = [{"role": "system", "content": persona_prompt}]
+
+    print("Tape /fin pour terminer la session et sauvegarder ta progression.\n")
+
+    try:
+        _conversation_loop(api_key, messages, store, roster, queue_items, todays_items, themes_generated_this_session)
+    finally:
+        # Runs even on a fatal crash (e.g. the free model staying saturated
+        # through every retry) -- found live: without this, a mid-session
+        # outage lost the whole session, since saving only ever happened
+        # after a clean /fin.
+        print("\n--- Fin de session : evaluation en cours ---")
+        try:
+            run_assessment(api_key, messages, todays_items, store, today, roster)
+        except Exception as e:
+            print(f"  (evaluation impossible ({e}) -- la progression brute est quand meme sauvegardee)")
+        store.save()
+        print(f"Progression sauvegardee dans {STATE_PATH}")
 
 
-def run_assessment(api_key, messages, todays_items, store, today):
+def run_assessment(api_key, messages, todays_items, store, today, known_items):
     transcript = "\n".join(
         f"{m['role']}: {m.get('content', '')}" for m in messages if m["role"] in ("user", "assistant") and m.get("content")
     )
@@ -222,6 +586,10 @@ def run_assessment(api_key, messages, todays_items, store, today):
                 "and the list of items that were supposed to be practiced. For each item that was "
                 "actually touched in the conversation, report how many times the learner SUCCESSFULLY "
                 "retrieved/used it correctly (not just heard it) and how many errors they made. "
+                "If the learner asked about or practiced a genuinely new word/phrase that is NOT in "
+                "the planned list, report it too, and additionally fill in item_type, category, and a "
+                "Vietnamese-language description (meaning, tone, usage) so it can be tracked going "
+                "forward -- omit those three fields for items already in the planned list. "
                 "Call report_practice_results with your findings. Omit items never actually touched."
             ),
         },
@@ -234,7 +602,15 @@ def run_assessment(api_key, messages, todays_items, store, today):
         print("  (aucune evaluation retournee)")
         return
     args = json.loads(tool_calls[0]["function"]["arguments"])
+    known_names = {i.name for i in known_items}
+    new_personal_items = []
     for entry in args.get("items", []):
+        if entry["name"] not in known_names and entry.get("description"):
+            new_personal_items.append(Item(
+                name=entry["name"], item_type=entry.get("item_type", "concept"),
+                category=entry.get("category", "vocabulary"), language="vi",
+                description=entry["description"], source="personnel",
+            ))
         existing = store.get(entry["name"])
         if existing is None:
             from srs import ItemState
@@ -248,6 +624,9 @@ def run_assessment(api_key, messages, todays_items, store, today):
         store.set(updated)
         print(f"  {entry['name']}: retrievals={entry.get('retrievals')} errors={entry.get('errors')} "
               f"-> demi-vie={updated.half_life_days:.2f}j")
+    if new_personal_items:
+        add_personal_items(CONTENT_DIR, new_personal_items)
+        print(f"  ({len(new_personal_items)} nouveau(x) mot(s) spontane(s) ajoute(s) au suivi personnel)")
 
 
 if __name__ == "__main__":

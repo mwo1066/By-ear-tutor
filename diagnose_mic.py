@@ -9,11 +9,10 @@ import numpy as np
 
 sys.stdout.reconfigure(encoding="utf-8")
 
-from listen import record_until_enter, transcribe, SAMPLE_RATE
+from listen import record_until_silence, transcribe, SAMPLE_RATE
 
-print("Parle des que tu vois le message d'enregistrement, dis une phrase complete.")
-input("Appuie sur Entree pour DEMARRER l'enregistrement...")
-audio = record_until_enter()
+print("Parle des que tu vois le message d'ecoute, dis une phrase complete -- ca s'arrete tout seul.")
+audio = record_until_silence()
 
 print(f"\n--- Diagnostic ---")
 print(f"Duree: {len(audio) / SAMPLE_RATE:.2f}s ({len(audio)} echantillons)")
