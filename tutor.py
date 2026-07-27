@@ -43,12 +43,18 @@ API_BASE_URL = "https://api.groq.com/openai/v1/chat/completions"
 API_KEY_ENV_VAR = "GROQ_API_KEY"
 MODEL_FALLBACKS = [
     "openai/gpt-oss-120b",  # flagship, built for tool-calling/reasoning
-    # Same family as the flagship, so it reads this persona the same way.
-    # Tested head to head on a real failing turn: llama-3.1-8b-instant replied
-    # entirely in Vietnamese with a "Minh:" stage direction and dropped the
-    # teaching cycle, and llama-3.3-70b-versatile fired an unrelated tool call
-    # with no speech at all. Neither is an acceptable stand-in mid-lesson.
-    "openai/gpt-oss-20b",
+    # Every candidate here is bad; this one is the least bad, and it is a
+    # stopgap for rate limits (each model has its own token bucket), not a
+    # quality choice. Measured on real failing turns:
+    #   gpt-oss-20b            -- leaks harmony tokens into tool names
+    #                             ("next_item<|channel|>commentary" -> HTTP 400),
+    #                             which kills the turn outright
+    #   llama-3.3-70b-versatile -- fires an unrelated tool with no speech
+    #   llama-3.1-8b-instant    -- replies entirely in Vietnamese with a "Minh:"
+    #                             stage direction and drops the teaching cycle
+    # The last one at least degrades instead of crashing, so the lesson limps
+    # on rather than dying mid-sentence.
+    "llama-3.1-8b-instant",
 ]
 RETRYABLE_CODES = {429, 502, 503}
 
