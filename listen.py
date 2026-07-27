@@ -6,13 +6,11 @@ memai's own client: waits for speech to start, keeps recording through it,
 and stops automatically after a stretch of trailing silence -- no key to
 press to end your turn.
 """
-import difflib
 import io
 import json
 import time
 import urllib.error
 import urllib.request
-import unicodedata
 import uuid
 import wave
 from pathlib import Path
@@ -272,59 +270,16 @@ def _run_transcribe_groq(wav_bytes: bytes, language: str | None, prompt: str | N
 USE_GROQ_STT = True
 
 
-def _strip_accents(text: str) -> str:
-    """Vietnamese text reduced to its bare letters.
-
-    Tone marks are exactly what a beginner gets wrong and what recognition
-    drops first, so comparisons have to happen without them.
-    """
-    lowered = unicodedata.normalize("NFD", text.lower()).replace("đ", "d")
-    return "".join(c for c in lowered if unicodedata.category(c) != "Mn")
-
-
-# Above this similarity, a transcription is treated as the known word it
-# resembles. Chosen by measurement, not feel: at 0.75, 13 of 14 mispronounced
-# or misheard forms snapped to the right word ("Toi"->tôi, "cam on"->cảm ơn,
-# "laa"->là) and 0 of 7 genuinely unrelated inputs snapped to anything
-# ("subscribe", "bonjour", "Ghiền Mì Gõ" all peaked at 0.50).
-SNAP_THRESHOLD = 0.75
-
-
-def snap_to_known_vocabulary(text: str, known: list[str]) -> str:
-    """Pulls a near-miss Vietnamese utterance onto the word it was aiming at.
-
-    A beginner mispronounces and the recognizer mangles what is left, so an
-    attempt at a word the learner genuinely knows arrives spelled wrong. This
-    repairs that, and ONLY that: something far from everything in the course
-    is left exactly as it came, so the tutor still sees an unrelated answer as
-    unrelated and can correct it.
-
-    Deliberately done here, on the text, rather than by biasing the recognizer
-    with a vocabulary prompt. Measured: that prompt makes Whisper invent
-    Vietnamese out of pure noise (four seconds of silence came back as
-    "ừ ừ ừ ừ ừ"), because inside the decoder the hint cannot tell repairing
-    from fabricating. Out here, nothing can be conjured that was not said.
-    """
-    if not text.strip() or not known:
-        return text
-    stripped_known = [(k, _strip_accents(k)) for k in known]
-    target = _strip_accents(text)
-    best, score = max(
-        ((k, difflib.SequenceMatcher(None, target, s).ratio()) for k, s in stripped_known),
-        key=lambda pair: pair[1],
-    )
-    if score >= SNAP_THRESHOLD and best.lower() != text.strip().lower():
-        print(f"  [diag] rapproche du vocabulaire connu: {text.strip()!r} -> {best!r} ({score:.2f})")
-        return best
-    return text
-
-
-def transcribe(audio: np.ndarray, vocab_hint: list[str] | None = None) -> tuple[str, str]:
+def transcribe(audio: np.ndarray) -> tuple[str, str]:
     """Returns (text, language_code), language_code always in ALLOWED_LANGUAGES.
 
-    vocab_hint is the known Vietnamese vocabulary, used AFTER transcription by
-    snap_to_known_vocabulary -- never as a decoder prompt; see that function
-    for the measurements behind the distinction.
+    Deliberately reports what was actually said, with no correction pass of
+    any kind. A vocabulary hint used to be fed to the decoder to pull mangled
+    attempts onto known words; measurement killed it (four seconds of pure
+    noise came back as "ừ ừ ừ ừ ừ", and it turned a correct "tôi" into "tốt").
+    Snapping the text afterwards was tried too and rejected on purpose: it
+    repairs mispronunciation, which is the very thing the tutor needs to see.
+    Judging how far off an attempt is belongs to the tutor, not here.
     """
     if audio.size == 0:
         return "", "en"
@@ -339,7 +294,7 @@ def transcribe(audio: np.ndarray, vocab_hint: list[str] | None = None) -> tuple[
             text, _ = _run_transcribe_groq(wav_bytes, language="vi", prompt=None)
             print(f"  [diag] 2eme passe groq stt (langue forcee vi): {time.monotonic() - t1:.1f}s")
             lang = "vi"
-        return snap_to_known_vocabulary(text, vocab_hint), lang
+        return text, lang
 
     audio_float = audio.astype(np.float32) / 32768.0
     text, lang = _run_transcribe(audio_float, language=None, initial_prompt=None)
@@ -354,7 +309,7 @@ def transcribe(audio: np.ndarray, vocab_hint: list[str] | None = None) -> tuple[
         text, _ = _run_transcribe(audio_float, language="vi", initial_prompt=None)
         print(f"  [diag] 2eme passe whisper (langue forcee vi): {time.monotonic() - t1:.1f}s")
         lang = "vi"
-    return snap_to_known_vocabulary(text, vocab_hint), lang
+    return text, lang
 
 
 # Found live: forgetting the second Enter press to STOP recording leaves
@@ -363,11 +318,11 @@ def transcribe(audio: np.ndarray, vocab_hint: list[str] | None = None) -> tuple[
 USE_PUSH_TO_TALK = False
 
 
-def listen_and_transcribe(vocab_hint: list[str] | None = None) -> str:
+def listen_and_transcribe() -> str:
     """Full turn: listen (push-to-talk or hands-free per USE_PUSH_TO_TALK),
     transcribe, return a [lang:xx]-tagged string."""
     audio = record_until_enter() if USE_PUSH_TO_TALK else record_until_silence()
-    text, lang = transcribe(audio, vocab_hint)
+    text, lang = transcribe(audio)
     if not text:
         return ""
     return f"[lang:{lang}] {text}"

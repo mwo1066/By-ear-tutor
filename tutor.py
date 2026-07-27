@@ -20,7 +20,7 @@ sys.stdin.reconfigure(encoding="utf-8")
 
 from content import (
     Item, load_persona_system_prompt, load_roster, load_personal_items,
-    add_personal_items, pieces_of, pick_next_index, vocab_set, snap_candidates,
+    add_personal_items, pieces_of, pick_next_index, vocab_set,
 )
 from srs import ProgressStore, update_after_practice
 from voice import SpeechPipeline
@@ -614,8 +614,7 @@ def _conversation_loop(api_key, messages, store, roster, queue_items, todays_ite
             first = False
         else:
             t0 = time.monotonic()
-            vocab_hint = snap_candidates(roster)
-            user_input = listen_and_transcribe(vocab_hint)
+            user_input = listen_and_transcribe()
             print(f"  [chrono] ecoute+transcription: {time.monotonic() - t0:.1f}s")
             if not user_input:
                 print("  (rien entendu, on reecoute)")
