@@ -7,8 +7,7 @@ sessions_practiced, user_initiated. Same core rule as memai:
 - retrievals count successful recalls only, not mere exposure
 """
 import json
-import math
-from dataclasses import dataclass, field, asdict
+from dataclasses import dataclass, asdict
 from datetime import date
 from pathlib import Path
 
@@ -99,23 +98,33 @@ class ProgressStore:
         raw = {name: asdict(s) for name, s in self._states.items()}
         self.path.write_text(json.dumps(raw, ensure_ascii=False, indent=2), encoding="utf-8")
 
-    def select_today(self, all_item_names: list[str], today: date, limit: int = 8) -> list[str]:
-        """Mix of due reviews (stalest retention first) and new items in
-        roster order; deprioritized items sort to the back of whichever
-        queue they're in rather than being excluded outright."""
-        def is_new(n: str) -> bool:
-            s = self._states.get(n)
-            return s is None or s.last_practiced_on is None
+    def is_new(self, name: str) -> bool:
+        s = self._states.get(name)
+        return s is None or s.last_practiced_on is None
 
-        def is_deprioritized(n: str) -> bool:
-            s = self._states.get(n)
-            return s.deprioritized if s else False
+    def _is_deprioritized(self, name: str) -> bool:
+        s = self._states.get(name)
+        return s.deprioritized if s else False
 
-        new_items = [n for n in all_item_names if is_new(n)]
-        review_items = [n for n in all_item_names if not is_new(n)]
-        new_items.sort(key=is_deprioritized)
-        review_items.sort(key=lambda n: (is_deprioritized(n), retention(self._states[n], today)))
+    def select_new(self, all_item_names: list[str], limit: int = 30) -> list[str]:
+        """The forward sequence: never-practiced items in ROSTER ORDER, full stop.
 
-        n_review = min(len(review_items), math.ceil(limit / 2))
-        n_new = min(len(new_items), limit - n_review)
-        return review_items[:n_review] + new_items[:n_new]
+        Roster order is a composed progression (words first, then the
+        construction that assembles them) -- reordering it breaks the method,
+        so nothing here sorts by retention. Deprioritized items go to the back
+        rather than being dropped, since later constructions may build on them.
+        """
+        new_items = [n for n in all_item_names if self.is_new(n)]
+        new_items.sort(key=self._is_deprioritized)  # stable: roster order preserved within each group
+        return new_items[:limit]
+
+    def select_reviews(self, all_item_names: list[str], today: date, limit: int = 8) -> list[str]:
+        """Already-seen items that are due, stalest retention first.
+
+        These are NOT drawn as new items -- they're the pool the tutor pulls
+        from for the "and again, what was X?" recall chain that precedes every
+        combination, which is where revision actually lives in this method.
+        """
+        review_items = [n for n in all_item_names if not self.is_new(n)]
+        review_items.sort(key=lambda n: (self._is_deprioritized(n), retention(self._states[n], today)))
+        return review_items[:limit]

@@ -5,7 +5,10 @@ Everything else -> the tutor's own (English) voice.
 Splits the LLM's response into runs of consecutive same-language text so
 each run is spoken by the correct voice, matching the two-voice cast rule.
 """
+import queue
 import re
+import threading
+from concurrent.futures import Future, ThreadPoolExecutor
 import winsound
 import urllib.request
 import urllib.error
@@ -102,12 +105,18 @@ def split_by_voice(text: str, known_vn_words: frozenset[str] = frozenset()) -> l
 
 _MARKDOWN_CHARS = re.compile(r"[*_#`~]")
 
+# Stage directions the model writes despite the cast rules saying voices are
+# routed automatically: "Minh: tôi." makes the English voice announce "Minh"
+# before the word. Same class of problem as the markdown above -- the prompt
+# says don't, the model does it anyway, so strip it rather than argue.
+_SPEAKER_LABEL = re.compile(r"^\s*(minh|tutor|teacher|tuteur|prof)\s*:\s*", re.IGNORECASE)
+
 
 def _strip_markdown(text: str) -> str:
     """Defensive backstop: the model keeps writing **word** despite being
     told not to, twice now -- stop relying on the prompt and just strip it
     before anything reaches TTS, so a literal asterisk never gets spoken."""
-    return _MARKDOWN_CHARS.sub("", text)
+    return _SPEAKER_LABEL.sub("", _MARKDOWN_CHARS.sub("", text))
 
 
 _TTS_ERRORS = (urllib.error.URLError, TimeoutError, OSError)
@@ -139,7 +148,9 @@ def synthesize(text: str, voice_key: str, retries: int = 2) -> bytes | None:
     )
     for attempt in range(retries):
         try:
-            with urllib.request.urlopen(req, timeout=8) as resp:
+            # 15s, not 8: measured cold-connection clips legitimately take
+            # 4-5s, and an 8s ceiling was dropping real speech on the floor.
+            with urllib.request.urlopen(req, timeout=15) as resp:
                 return resp.read()
         except _TTS_ERRORS as e:
             if attempt < retries - 1:
@@ -149,12 +160,61 @@ def synthesize(text: str, voice_key: str, retries: int = 2) -> bytes | None:
             return None
 
 
+class SpeechPipeline:
+    """Synthesizes the next clip while the current one is still playing.
+
+    Speaking used to be strictly serial -- synthesize, play, synthesize, play --
+    so every gap between two spoken sentences was a full Azure round trip of
+    dead air, varying with Azure's load. Found live: a seven-sentence opening
+    turn took 44s of which the model accounted for 1s. Here synthesis stays
+    ahead of playback, so only the very first clip pays that cost.
+
+    Synthesis runs on a POOL, not a single worker. Measured against Azure:
+    per-clip latency is bimodal (0.27s when a connection is warm, 4-5s when a
+    new one has to be established), so one worker stalls on every cold clip.
+    Seven clips took 31s serially against 6.9s across four workers. Playback
+    stays strictly serial and in order -- only synthesis fans out.
+    """
+
+    SYNTH_WORKERS = 4
+
+    def __init__(self, known_vn_words: frozenset[str] = frozenset()):
+        self._known_vn_words = known_vn_words
+        self._pool = ThreadPoolExecutor(max_workers=self.SYNTH_WORKERS)
+        self._to_play: "queue.Queue[Future]" = queue.Queue()
+        self._playback_path = Path(__file__).parent / "voices" / "_playback.wav"
+        threading.Thread(target=self._play_loop, daemon=True).start()
+
+    def _play_loop(self) -> None:
+        while True:
+            future = self._to_play.get()
+            try:
+                audio = future.result()
+                if audio is not None:  # None = Azure gave up; skip, don't hang
+                    self._playback_path.write_bytes(audio)
+                    winsound.PlaySound(str(self._playback_path), winsound.SND_FILENAME)
+            except Exception as e:
+                print(f"  (lecture audio ignoree: {e})")
+            finally:
+                self._to_play.task_done()
+
+    def say(self, text: str) -> None:
+        """Queues text for speech and returns immediately.
+
+        Submitting to the pool starts synthesis at once, so by the time the
+        playback thread reaches a clip its audio is usually already in hand.
+        """
+        for voice_key, chunk in split_by_voice(text, self._known_vn_words):
+            self._to_play.put(self._pool.submit(synthesize, chunk, voice_key))
+
+    def wait(self) -> None:
+        """Blocks until everything queued has actually finished playing --
+        must be called before opening the mic, or it records our own voice."""
+        self._to_play.join()
+
+
 def speak(text: str, known_vn_words: frozenset[str] = frozenset()) -> None:
-    """Splits text by voice, synthesizes each run, plays them back in order."""
-    for voice_key, chunk in split_by_voice(text, known_vn_words):
-        audio = synthesize(chunk, voice_key)
-        if audio is None:
-            continue
-        tmp_path = Path(__file__).parent / "voices" / "_playback.wav"
-        tmp_path.write_bytes(audio)
-        winsound.PlaySound(str(tmp_path), winsound.SND_FILENAME)
+    """Blocking one-shot speech, kept for callers that don't hold a pipeline."""
+    pipeline = SpeechPipeline(known_vn_words)
+    pipeline.say(text)
+    pipeline.wait()

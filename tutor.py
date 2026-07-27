@@ -6,6 +6,7 @@ assessment pass that updates spaced-repetition state.
 """
 import json
 import os
+import random
 import re
 import sys
 import time
@@ -19,10 +20,15 @@ sys.stdin.reconfigure(encoding="utf-8")
 
 from content import (
     Item, load_persona_system_prompt, load_roster, load_personal_items,
-    add_personal_items,
+    add_personal_items, pieces_of, pick_next_index, vocab_set,
 )
 from srs import ProgressStore, update_after_practice
-from voice import speak
+from voice import SpeechPipeline
+
+# One pipeline for the whole session: its synth/playback threads have to
+# outlive individual turns to keep synthesis running ahead of playback.
+# Set once in run_session, read by _run_turn.
+voice: SpeechPipeline
 from listen import listen_and_transcribe, preload_model
 
 ROOT = Path(__file__).parent
@@ -30,16 +36,31 @@ CONTENT_DIR = ROOT / "content" / "vietnamese"
 STATE_PATH = ROOT / "state.json"
 ENV_PATH = ROOT / ".env"
 
-# Tried in order — if the first is saturated/rate-limited, fall back to the
-# next rather than crash. Found live: Nvidia's free capacity for the 550B
-# model can hit "ResourceExhausted" (HTTP 502 wrapped in a 200 body), which
-# is a real capacity ceiling, not a burst limit that clears in seconds.
+# groq branch: swapped from OpenRouter's free-tier Nemotron (shared leftover
+# capacity, documented slow p95) to Groq's own dedicated LPU hardware --
+# free within real rate limits (30k tokens/min, 14400 req/day), not scraps.
+API_BASE_URL = "https://api.groq.com/openai/v1/chat/completions"
+API_KEY_ENV_VAR = "GROQ_API_KEY"
 MODEL_FALLBACKS = [
-    "nvidia/nemotron-3-ultra-550b-a55b:free",
-    "nvidia/nemotron-3-super-120b-a12b:free",
-    "google/gemma-4-31b-it:free",
+    "openai/gpt-oss-120b",  # flagship, built for tool-calling/reasoning
+    # Same family as the flagship, so it reads this persona the same way.
+    # Tested head to head on a real failing turn: llama-3.1-8b-instant replied
+    # entirely in Vietnamese with a "Minh:" stage direction and dropped the
+    # teaching cycle, and llama-3.3-70b-versatile fired an unrelated tool call
+    # with no speech at all. Neither is an acceptable stand-in mid-lesson.
+    "openai/gpt-oss-20b",
 ]
 RETRYABLE_CODES = {429, 502, 503}
+
+# Groq sits behind Cloudflare, which blocks urllib's default "Python-urllib/x.x"
+# User-Agent as a bot signature (HTTP 403, Cloudflare error code 1010) -- found
+# live, fixed by sending a normal browser-looking one instead.
+def _api_headers(api_key: str) -> dict:
+    return {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    }
 
 # How many items a theme request generates -- they're prepended to the item
 # queue and surface via next_item at whatever pace the session naturally
@@ -47,7 +68,7 @@ RETRYABLE_CODES = {429, 502, 503}
 # fixed-length today anymore.
 N_THEME_GENERATE = 4
 
-# Reservoir size: how many candidates select_today prepares up front. Only
+# Reservoir size: how many candidates select_new prepares up front. Only
 # ever revealed one at a time via next_item, so this just needs to be large
 # enough that a long session never runs dry -- not a target to hit.
 QUEUE_SIZE = 30
@@ -173,10 +194,11 @@ ASSESSMENT_TOOL = [
 
 
 def load_api_key() -> str:
+    prefix = f"{API_KEY_ENV_VAR}="
     for line in ENV_PATH.read_text(encoding="utf-8").splitlines():
-        if line.startswith("OPENROUTER_API_KEY="):
-            return line.split("=", 1)[1].strip()
-    raise RuntimeError("OPENROUTER_API_KEY not found in .env")
+        if line.startswith(prefix):
+            return line[len(prefix):].strip()
+    raise RuntimeError(f"{API_KEY_ENV_VAR} not found in .env")
 
 
 def _try_model(api_key: str, model: str, messages: list[dict], tools: list[dict] | None, retries: int) -> dict | None:
@@ -186,9 +208,9 @@ def _try_model(api_key: str, model: str, messages: list[dict], tools: list[dict]
     if tools:
         body["tools"] = tools
     req = urllib.request.Request(
-        "https://openrouter.ai/api/v1/chat/completions",
+        API_BASE_URL,
         data=json.dumps(body).encode("utf-8"),
-        headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+        headers=_api_headers(api_key),
         method="POST",
     )
     for attempt in range(retries):
@@ -262,9 +284,9 @@ def stream_llm_reply(api_key: str, models: list[str], messages: list[dict], tool
                 if tools:
                     body["tools"] = tools
                 req = urllib.request.Request(
-                    "https://openrouter.ai/api/v1/chat/completions",
+                    API_BASE_URL,
                     data=json.dumps(body).encode("utf-8"),
-                    headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+                    headers=_api_headers(api_key),
                     method="POST",
                 )
                 with urllib.request.urlopen(req, timeout=120) as resp:
@@ -418,11 +440,175 @@ def _vocab_words(items: list[Item]) -> frozenset[str]:
     return frozenset(words)
 
 
-def _conversation_loop(api_key, messages, store, roster, queue_items, todays_items, themes_generated_this_session):
-    """The live back-and-forth until /fin. Pulled out of run_session so a
-    fatal error here (e.g. the free model staying saturated through every
-    retry) can still be caught by the caller and the session saved, instead
-    of losing all progress to an unhandled crash mid-loop."""
+# How many due items ride along on a next_item result as recall-chain fuel.
+# Small on purpose: the chain is spoken one question at a time, so a long list
+# just invites the model to skim it instead of actually asking each one.
+REVIEW_POOL_SIZE = 8
+N_RECALL_FILLER = 3
+
+# Items the learner must have met before the tone system is explained at all.
+# Paul Noble spends the whole first stretch on listen-and-imitate and only then
+# names what the voice has been doing; naming six tones before there are words
+# to anchor them to is noise. Code-gated rather than left to "later", which the
+# model reads as "now".
+TONES_UNLOCK_AFTER = 6
+
+
+def _format_next_item(item: Item, seen_items: list[Item], review_pool: list[Item]) -> str:
+    """The next_item payload.
+
+    Carries the two things the raw description never did: whether this item is
+    a construction to ASSEMBLE (and out of which already-known pieces), and
+    which due items to fold into the recall chain when it has no pieces of its
+    own -- so revision happens inside the cycle rather than as a separate draw.
+    """
+    lines = [f"[{item.item_type}/{item.category}] {item.name} — {item.description}"]
+
+    pieces = pieces_of(item, seen_items)
+    if pieces:
+        lines.append(
+            "ASSEMBLAGE — cet item se construit a partir de morceaux deja enseignes : "
+            + ", ".join(p.name for p in pieces)
+            + ". Re-cite CHACUN, un par un, une question a la fois, avant de demander la phrase complete."
+        )
+    else:
+        seen_names = {i.name for i in seen_items}
+        filler = [r.name for r in review_pool if r.name in seen_names and r.name != item.name]
+        if filler:
+            lines.append(
+                "MOT NOUVEAU (rien a assembler). A re-citer dans la chaine de rappel, "
+                "un par un : " + ", ".join(filler[:N_RECALL_FILLER])
+            )
+        else:
+            lines.append("MOT NOUVEAU — premier item, rien a rappeler encore.")
+
+    lines.append("TONS: actives" if len(seen_items) >= TONES_UNLOCK_AFTER else "TONS: pas encore")
+    return "\n".join(lines)
+
+
+def _run_turn(api_key, messages, store, roster, queue_items, todays_items, themes_generated_this_session,
+              seen_items, review_pool, vocab) -> bool:
+    """Runs ONE assistant turn: streams the reply, speaks it, processes any
+    tool calls, and appends the tool results to messages. Returns True if
+    tool calls were made, meaning the caller should call this again right
+    away (no new user input) so the model can actually react to what the
+    tool returned -- found live: without this, calling next_item just
+    fetched "tôi" and then the code went straight back to listening for the
+    learner, so the word never actually got introduced out loud. A tool
+    result needs a follow-up model turn, not a wait for the user."""
+    t0 = time.monotonic()
+    first_chunk_at = None
+    buffer = ""
+    full_text = ""
+    tool_calls_final: list[dict] = []
+    for kind, *payload in stream_llm_reply(api_key, MODEL_FALLBACKS, messages, tools=TOOLS):
+        if kind == "content":
+            text = payload[0]
+            if first_chunk_at is None:
+                first_chunk_at = time.monotonic()
+                print(f"  [chrono] premier morceau recu: {first_chunk_at - t0:.1f}s")
+            buffer += text
+            full_text += text
+            while (m := _SENTENCE_BOUNDARY.search(buffer)):
+                sentence = buffer[:m.end()].strip()
+                buffer = buffer[m.end():]
+                if sentence:
+                    print(f"tuteur: {sentence}")
+                    voice.say(sentence)
+        elif kind == "tool_calls":
+            tool_calls_final = payload[0]
+        # "tool_call_partial" ignored here -- only used by theme generation
+        # to show item-by-item progress; the small tools used mid-conversation
+        # (next_item, set_session_focus, deprioritize_item) have trivial
+        # arguments not worth streaming progress for.
+    if buffer.strip():
+        print(f"tuteur: {buffer.strip()}")
+        voice.say(buffer.strip())
+    if not full_text.strip() and tool_calls_final:
+        # Code-level safety net, not a prompt tweak -- tested live: this
+        # exact model calls a tool with zero spoken text roughly every
+        # time the action is unambiguous, in 6/6 trials, regardless of
+        # how forcefully the prompt or the tool's own description asks
+        # for accompanying speech. Prompting alone cannot fix this, so
+        # a silent tool call gets a minimal filler line instead of dead air.
+        filler = random.choice(["Alright, let's continue.", "Okay, moving on.", "Great, let's keep going."])
+        print(f"tuteur: {filler}  [filet: tool_call sans texte]")
+        voice.say(filler)
+        full_text = filler
+
+    voice.wait()  # never open the mic while our own voice is still playing
+    print(f"  [chrono] total (reponse + voix): {time.monotonic() - t0:.1f}s")
+
+    msg = {"role": "assistant", "content": full_text or None}
+    if tool_calls_final:
+        msg["tool_calls"] = tool_calls_final
+    messages.append(msg)
+
+    for call in msg.get("tool_calls") or []:
+        fn = call["function"]
+        print(f"  [tool_call] {fn['name']}({fn['arguments']})")
+        args = json.loads(fn["arguments"])
+        tool_result = "ok"
+
+        if fn["name"] == "next_item":
+            if queue_items:
+                next_i = queue_items.pop(pick_next_index(queue_items, seen_items, vocab))
+                todays_items.append(next_i)
+                tool_result = _format_next_item(next_i, seen_items, review_pool)
+                seen_items.append(next_i)
+                print(f"  -> {next_i.name}")
+            else:
+                tool_result = "(reservoir vide -- termine la session naturellement, ou improvise une petite conversation libre)"
+        elif fn["name"] == "set_session_focus" and args.get("topic"):
+            topic = args["topic"].strip()
+            if topic.lower() not in themes_generated_this_session:
+                themes_generated_this_session.add(topic.lower())
+                print(f"  (generation des items pour '{topic}' en cours -- peut prendre du temps sur le modele gratuit...)")
+                t_theme = time.monotonic()
+                new_items = generate_theme_items(api_key, topic, roster, N_THEME_GENERATE)
+                print(f"  [chrono] generation theme: {time.monotonic() - t_theme:.1f}s")
+                if new_items:
+                    add_personal_items(CONTENT_DIR, new_items)
+                    roster.extend(new_items)
+                    queue_items[:0] = new_items  # next up via next_item, no fixed "today" split anymore
+                    print(f"  (theme '{topic}': {len(new_items)} items generes, ajoutes en tete de la file)")
+        elif fn["name"] == "deprioritize_item":
+            if args.get("name"):
+                store.deprioritize(args["name"])
+                print(f"  (deprioritise: {args['name']})")
+            if args.get("topic"):
+                topic_lower = args["topic"].strip().lower()
+                matched = [i.name for i in roster if (i.topic or "").lower() == topic_lower]
+                for name in matched:
+                    store.deprioritize(name)
+                print(f"  (deprioritise: theme '{args['topic']}' -- {len(matched)} item(s))")
+
+        messages.append({
+            "role": "tool",
+            "tool_call_id": call["id"],
+            "content": tool_result,
+        })
+
+    return bool(tool_calls_final)
+
+
+# Safety cap on consecutive tool-only turns (no new user input in between) --
+# generous enough for a real chain (e.g. next_item then set_session_focus)
+# but stops a pathological loop from running forever without ever handing
+# control back to the learner.
+MAX_CHAINED_TOOL_TURNS = 5
+
+
+def _conversation_loop(api_key, messages, store, roster, queue_items, todays_items, themes_generated_this_session,
+                       seen_items, review_pool, vocab):
+    """The live back-and-forth until interrupted (Ctrl+C). Pulled out of
+    run_session so a fatal error here (e.g. the free model staying
+    saturated through every retry) can still be caught by the caller and
+    the session saved, instead of losing all progress to an unhandled
+    crash mid-loop. No input() between turns -- found live: the only time
+    Enter should matter is starting the session; every per-turn keypress
+    was a chance to get stuck waiting on a forgotten key. Ctrl+C ends the
+    session now, and still saves cleanly via run_session's finally block."""
     first = True
     while True:
         if first:
@@ -430,122 +616,54 @@ def _conversation_loop(api_key, messages, store, roster, queue_items, todays_ite
             print(f"(auto) toi: {user_input}")
             first = False
         else:
-            typed = input("[Entree = parler] ou tape /fin: ").strip()
-            if typed == "/fin":
-                break
-            if typed:
-                user_input = typed  # fallback: typing still works
-            else:
-                t0 = time.monotonic()
-                user_input = listen_and_transcribe()
-                print(f"  [chrono] ecoute+transcription: {time.monotonic() - t0:.1f}s")
-                if not user_input:
-                    print("  (rien entendu, on reessaie)")
-                    continue
-                print(f"toi (transcrit): {user_input}")
+            t0 = time.monotonic()
+            vocab_hint = ", ".join(i.name for i in roster)
+            user_input = listen_and_transcribe(vocab_hint)
+            print(f"  [chrono] ecoute+transcription: {time.monotonic() - t0:.1f}s")
+            if not user_input:
+                print("  (rien entendu, on reecoute)")
+                continue
+            print(f"toi (transcrit): {user_input}")
 
         messages.append({"role": "user", "content": user_input})
-        known_vn_words = _vocab_words(roster)
-        t0 = time.monotonic()
-        first_chunk_at = None
-        buffer = ""
-        full_text = ""
-        tool_calls_final: list[dict] = []
-        for kind, *payload in stream_llm_reply(api_key, MODEL_FALLBACKS, messages, tools=TOOLS):
-            if kind == "content":
-                text = payload[0]
-                if first_chunk_at is None:
-                    first_chunk_at = time.monotonic()
-                    print(f"  [chrono] premier morceau recu: {first_chunk_at - t0:.1f}s")
-                buffer += text
-                full_text += text
-                while (m := _SENTENCE_BOUNDARY.search(buffer)):
-                    sentence = buffer[:m.end()].strip()
-                    buffer = buffer[m.end():]
-                    if sentence:
-                        print(f"tuteur: {sentence}")
-                        speak(sentence, known_vn_words)
-            elif kind == "tool_calls":
-                tool_calls_final = payload[0]
-            # "tool_call_partial" ignored here -- only used by theme generation
-            # to show item-by-item progress; the small tools used mid-conversation
-            # (next_item, set_session_focus, deprioritize_item) have trivial
-            # arguments not worth streaming progress for.
-        if buffer.strip():
-            print(f"tuteur: {buffer.strip()}")
-            speak(buffer.strip(), known_vn_words)
-        print(f"  [chrono] total (reponse + voix): {time.monotonic() - t0:.1f}s")
-
-        msg = {"role": "assistant", "content": full_text or None}
-        if tool_calls_final:
-            msg["tool_calls"] = tool_calls_final
-        messages.append(msg)
-
-        for call in msg.get("tool_calls") or []:
-            fn = call["function"]
-            print(f"  [tool_call] {fn['name']}({fn['arguments']})")
-            args = json.loads(fn["arguments"])
-            tool_result = "ok"
-
-            if fn["name"] == "next_item":
-                if queue_items:
-                    next_i = queue_items.pop(0)
-                    todays_items.append(next_i)
-                    tool_result = f"[{next_i.item_type}/{next_i.category}] {next_i.name} — {next_i.description}"
-                    print(f"  -> {next_i.name}")
-                else:
-                    tool_result = "(reservoir vide -- termine la session naturellement, ou improvise une petite conversation libre)"
-            elif fn["name"] == "set_session_focus" and args.get("topic"):
-                topic = args["topic"].strip()
-                if topic.lower() not in themes_generated_this_session:
-                    themes_generated_this_session.add(topic.lower())
-                    print(f"  (generation des items pour '{topic}' en cours -- peut prendre du temps sur le modele gratuit...)")
-                    t_theme = time.monotonic()
-                    new_items = generate_theme_items(api_key, topic, roster, N_THEME_GENERATE)
-                    print(f"  [chrono] generation theme: {time.monotonic() - t_theme:.1f}s")
-                    if new_items:
-                        add_personal_items(CONTENT_DIR, new_items)
-                        roster.extend(new_items)
-                        queue_items[:0] = new_items  # next up via next_item, no fixed "today" split anymore
-                        print(f"  (theme '{topic}': {len(new_items)} items generes, ajoutes en tete de la file)")
-            elif fn["name"] == "deprioritize_item":
-                if args.get("name"):
-                    store.deprioritize(args["name"])
-                    print(f"  (deprioritise: {args['name']})")
-                if args.get("topic"):
-                    topic_lower = args["topic"].strip().lower()
-                    matched = [i.name for i in roster if (i.topic or "").lower() == topic_lower]
-                    for name in matched:
-                        store.deprioritize(name)
-                    print(f"  (deprioritise: theme '{args['topic']}' -- {len(matched)} item(s))")
-
-            messages.append({
-                "role": "tool",
-                "tool_call_id": call["id"],
-                "content": tool_result,
-            })
+        for _ in range(MAX_CHAINED_TOOL_TURNS):
+            had_tool_calls = _run_turn(api_key, messages, store, roster, queue_items, todays_items,
+                                       themes_generated_this_session, seen_items, review_pool, vocab)
+            if not had_tool_calls:
+                break  # model gave its final spoken reply for this turn -- back to listening
 
 
 def run_session():
-    input("Appuie sur Entree pour demarrer la session (verifie que le terminal est propre)...")
+    print("Demarrage de la session...")
     api_key = load_api_key()
     persona_prompt = load_persona_system_prompt(CONTENT_DIR)
     print("  (preparation du modele de reconnaissance vocale...)")
     preload_model()
-    # personal items first: select_today walks new_items in list order, and
-    # freshly requested content should resurface before the remaining
-    # never-touched curated roster, not queue behind all 30 of it.
-    roster = load_personal_items(CONTENT_DIR) + load_roster(CONTENT_DIR)
+    # Curated roster FIRST. It is a composed progression -- atoms, then the
+    # construction that assembles them -- whereas live-generated personal items
+    # are mostly whole phrases. Found live: prepending personal items opened a
+    # brand-new session on "Rất vui được gặp bạn", a five-word phrase whose
+    # words had never been taught. pick_next_index guards this properly now;
+    # the order here just stops the guard from having to fight the queue.
+    roster = load_roster(CONTENT_DIR) + load_personal_items(CONTENT_DIR)
     store = ProgressStore(STATE_PATH)
 
     today = date.today()
     by_name = {i.name: i for i in roster}
-    queue_names = store.select_today([i.name for i in roster], today, limit=QUEUE_SIZE)
-    queue_items = [by_name[n] for n in queue_names]
+    all_names = [i.name for i in roster]
+    # Forward sequence is NEW items in roster order only. Due reviews are not
+    # drawn as items -- they ride along on each next_item result as the pieces
+    # to re-cite, which is where revision belongs in this method.
+    queue_items = [by_name[n] for n in store.select_new(all_names, limit=QUEUE_SIZE)]
+    review_pool = [by_name[n] for n in store.select_reviews(all_names, today, limit=REVIEW_POOL_SIZE)]
     todays_items: list[Item] = []  # grows as next_item is actually called -- never pre-decided
+    seen_items = [i for i in roster if not store.is_new(i.name)]  # everything ever taught, roster order
+    vocab = vocab_set(roster)
+    global voice
+    voice = SpeechPipeline(_vocab_words(roster))
     themes_generated_this_session: set[str] = set()
 
-    print(f"--- Reservoir prepare ({len(queue_items)} candidats, revele un a la fois) ---")
+    print(f"--- Reservoir prepare ({len(queue_items)} nouveaux, {len(review_pool)} a reviser) ---")
 
     # Skip-intro instruction removed -- found live: it got over-applied, the
     # model dropped ALL spoken content (not just the opening speech) and
@@ -555,10 +673,11 @@ def run_session():
 
     messages = [{"role": "system", "content": persona_prompt}]
 
-    print("Tape /fin pour terminer la session et sauvegarder ta progression.\n")
+    print("Ctrl+C pour terminer la session et sauvegarder ta progression -- plus besoin d'Entree apres celle-ci.\n")
 
     try:
-        _conversation_loop(api_key, messages, store, roster, queue_items, todays_items, themes_generated_this_session)
+        _conversation_loop(api_key, messages, store, roster, queue_items, todays_items,
+                           themes_generated_this_session, seen_items, review_pool, vocab)
     finally:
         # Runs even on a fatal crash (e.g. the free model staying saturated
         # through every retry) -- found live: without this, a mid-session
