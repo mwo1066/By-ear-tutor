@@ -452,14 +452,6 @@ def _vocab_words(items: list[Item]) -> frozenset[str]:
 REVIEW_POOL_SIZE = 8
 N_RECALL_FILLER = 3
 
-# Items the learner must have met before the tone system is explained at all.
-# Paul Noble spends the whole first stretch on listen-and-imitate and only then
-# names what the voice has been doing; naming six tones before there are words
-# to anchor them to is noise. Code-gated rather than left to "later", which the
-# model reads as "now".
-TONES_UNLOCK_AFTER = 6
-
-
 def _format_next_item(item: Item, seen_items: list[Item], review_pool: list[Item]) -> str:
     """The next_item payload.
 
@@ -488,7 +480,6 @@ def _format_next_item(item: Item, seen_items: list[Item], review_pool: list[Item
         else:
             lines.append("MOT NOUVEAU — premier item, rien a rappeler encore.")
 
-    lines.append("TONS: actives" if len(seen_items) >= TONES_UNLOCK_AFTER else "TONS: pas encore")
     return "\n".join(lines)
 
 

@@ -73,12 +73,6 @@ class ProgressStore:
             raw = json.loads(path.read_text(encoding="utf-8"))
             self._states = {name: ItemState(**s) for name, s in raw.items()}
 
-    def has_history(self) -> bool:
-        """False only on a genuine first-ever session -- used to skip the
-        one-time opening speech on every subsequent run instead of repeating
-        it every time the script restarts."""
-        return bool(self._states)
-
     def get(self, name: str) -> ItemState | None:
         return self._states.get(name)
 
