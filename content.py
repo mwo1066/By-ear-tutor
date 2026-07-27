@@ -91,6 +91,26 @@ def vocab_set(items: list[Item]) -> frozenset[str]:
     return frozenset(n[0] for i in items if len(n := _tokens(i.name)) == 1)
 
 
+MAX_SNAP_TOKENS = 4  # beyond this a name is a sentence, not a piece of vocabulary
+
+
+def snap_candidates(items: list[Item]) -> list[str]:
+    """Everything the learner could plausibly be attempting to say.
+
+    Both whole short expressions ("cảm ơn", "xin chào") and the individual
+    words they are made of, since a learner answers sometimes with one and
+    sometimes with the other. Fed to listen.snap_to_known_vocabulary to repair
+    near-miss transcriptions.
+    """
+    out: set[str] = set()
+    for item in items:
+        tokens = _tokens(item.name)
+        if tokens and len(tokens) <= MAX_SNAP_TOKENS:
+            out.add(" ".join(tokens))
+            out.update(tokens)
+    return sorted(out)
+
+
 def unknown_pieces(item: Item, seen_items: list[Item], vocab: frozenset[str]) -> list[str]:
     """Vocabulary words this item is made of that have NOT been taught yet.
 
