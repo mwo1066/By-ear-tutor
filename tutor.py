@@ -67,31 +67,29 @@ def _api_headers(api_key: str) -> dict:
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
     }
 
-# How many items a theme request generates -- they're prepended to the item
-# queue and surface via next_item at whatever pace the session naturally
-# takes; nothing here decides how many happen "today," since there's no
-# fixed-length today anymore.
+# How many items a theme request generates -- they jump to the head of the
+# queue and surface at whatever pace the session naturally takes; nothing here
+# decides how many happen "today," since there's no fixed-length today.
 N_THEME_GENERATE = 4
 
-# Reservoir size: how many candidates select_new prepares up front. Only
-# ever revealed one at a time via next_item, so this just needs to be large
-# enough that a long session never runs dry -- not a target to hit.
+# Reservoir size: how many candidates select_new prepares up front. Only ever
+# revealed one at a time, so this just needs to be large enough that a long
+# session never runs dry -- not a target to hit.
 QUEUE_SIZE = 30
 
+# next_item used to be a tool. It is not any more, and the reason is latency,
+# not tidiness. A tool call is a round trip: the model stops talking to ask,
+# and a WHOLE SECOND REQUEST is needed before it can speak again -- measured at
+# ~6s of dead air per new word, and 19-60s whenever a 429 landed in between.
+# Worse, this model calls tools with no accompanying text, so a third of all
+# requests produced nothing but a "Alright, let's continue." filler.
+# The sequence is composed in advance anyway (pick_next_index decides it, not
+# the model), so there is nothing to ask for: the current and upcoming items
+# ride along in the conversation, and the model just walks the sequence.
+ADVANCE_MARKER = "[SUIVANT]"
+_ADVANCE_RE = re.compile(re.escape(ADVANCE_MARKER), re.IGNORECASE)
+
 TOOLS = [
-    {
-        "type": "function",
-        "function": {
-            "name": "next_item",
-            "description": (
-                "Get the next practice item -- including the very first one, right after any "
-                "opening/greeting. Items are revealed one at a time, never as an upfront list, "
-                "since a session can end at any point and there's no way to know how many will "
-                "be covered. Call this whenever ready to move on from the current item."
-            ),
-            "parameters": {"type": "object", "properties": {}},
-        },
-    },
     {
         "type": "function",
         "function": {
@@ -460,18 +458,56 @@ def _vocab_words(items: list[Item]) -> frozenset[str]:
     return frozenset(words)
 
 
-# How many due items ride along on a next_item result as recall-chain fuel.
+# How many due items ride along in the lesson note as recall-chain fuel.
 # Small on purpose: the chain is spoken one question at a time, so a long list
 # just invites the model to skim it instead of actually asking each one.
 REVIEW_POOL_SIZE = 8
 N_RECALL_FILLER = 3
 
-def _format_next_item(item: Item, seen_items: list[Item], review_pool: list[Item]) -> str:
-    """The next_item payload.
+def _lesson_note(current: Item | None, upcoming: Item | None,
+                 seen_items: list[Item], review_pool: list[Item]) -> str:
+    """The lesson state, handed to the model fresh on every turn.
 
-    Carries the two things the raw description never did: whether this item is
-    a construction to ASSEMBLE (and out of which already-known pieces), and
-    which due items to fold into the recall chain when it has no pieces of its
+    Replaces the next_item tool: rather than asking what to teach and paying a
+    round trip for the answer, the model is simply told what it is working on
+    and what comes after, so it can move on inside the same turn it is already
+    speaking in.
+    """
+    lines = ["ETAT DE LA LECON — contexte pour toi seul, jamais prononce a voix haute."]
+
+    if current is None and upcoming is None:
+        lines.append("Sequence terminee, plus rien a enseigner. Termine la session naturellement, ou improvise une petite conversation libre.")
+        return "\n".join(lines)
+
+    if current is None:
+        lines.append(
+            f"Rien encore commence. Des que l'apprenant est pret, attaque le PREMIER ITEM ci-dessous "
+            f"en commencant ce tour-la par {ADVANCE_MARKER} sur la premiere ligne (marqueur retire "
+            f"avant la synthese vocale, jamais entendu ; sans lui la lecon n'avance pas)."
+        )
+        lines.append("PREMIER ITEM :")
+        lines.append(_describe_item(upcoming, seen_items, review_pool))
+        return "\n".join(lines)
+
+    lines.append("ITEM EN COURS :")
+    lines.append(_describe_item(current, seen_items, review_pool))
+    if upcoming is not None:
+        lines.append(
+            f"ITEM SUIVANT — quand le cycle en cours est fini, enchaine dessus DANS LE MEME TOUR, "
+            f"en commencant ce tour-la par {ADVANCE_MARKER} sur la premiere ligne. Ce marqueur est "
+            f"retire avant la synthese vocale, il n'est jamais entendu. Sans lui, la lecon reste "
+            f"bloquee sur l'item en cours."
+        )
+        lines.append(_describe_item(upcoming, seen_items, review_pool))
+    else:
+        lines.append("Plus rien apres celui-ci : quand son cycle est fini, termine la session naturellement.")
+    return "\n".join(lines)
+
+
+def _describe_item(item: Item, seen_items: list[Item], review_pool: list[Item]) -> str:
+    """One item, with the two things its raw description never carried: whether
+    it is a construction to ASSEMBLE (and out of which already-known pieces),
+    and which due items to fold into the recall chain when it has none of its
     own -- so revision happens inside the cycle rather than as a separate draw.
     """
     lines = [f"[{item.item_type}/{item.category}] {item.name} — {item.description}"]
@@ -497,22 +533,42 @@ def _format_next_item(item: Item, seen_items: list[Item], review_pool: list[Item
     return "\n".join(lines)
 
 
+def _advance_lesson(lesson: dict, queue_items: list[Item], todays_items: list[Item],
+                    seen_items: list[Item], vocab: frozenset[str]) -> None:
+    """Moves the sequence on one step and refills the slot behind it."""
+    lesson["current"] = lesson["upcoming"]
+    todays_items.append(lesson["current"])
+    seen_items.append(lesson["current"])
+    print(f"  -> item en cours : {lesson['current'].name}")
+    lesson["upcoming"] = _take_next(queue_items, seen_items, vocab)
+
+
+def _take_next(queue_items: list[Item], seen_items: list[Item], vocab: frozenset[str]) -> Item | None:
+    """Pops whichever queued item may safely be taught next, or None if dry."""
+    if not queue_items:
+        return None
+    return queue_items.pop(pick_next_index(queue_items, seen_items, vocab))
+
+
 def _run_turn(api_key, messages, store, roster, queue_items, todays_items, themes_generated_this_session,
-              seen_items, review_pool, vocab) -> bool:
-    """Runs ONE assistant turn: streams the reply, speaks it, processes any
-    tool calls, and appends the tool results to messages. Returns True if
-    tool calls were made, meaning the caller should call this again right
-    away (no new user input) so the model can actually react to what the
-    tool returned -- found live: without this, calling next_item just
-    fetched "tôi" and then the code went straight back to listening for the
-    learner, so the word never actually got introduced out loud. A tool
-    result needs a follow-up model turn, not a wait for the user."""
+              seen_items, review_pool, vocab, lesson) -> bool:
+    """Runs ONE assistant turn: streams the reply, speaks it, advances the
+    lesson if the model signalled it moved on, and handles any tool calls.
+    Returns True if tool calls were made, meaning the caller should call this
+    again right away so the model can react to what the tool returned.
+
+    The lesson state is appended as a fresh system message for THIS request
+    only, never kept in history -- otherwise every past turn's stale "item en
+    cours" would pile up in the context and contradict the current one.
+    """
     t0 = time.monotonic()
     first_chunk_at = None
     buffer = ""
     full_text = ""
     tool_calls_final: list[dict] = []
-    for kind, *payload in stream_llm_reply(api_key, MODEL_FALLBACKS, messages, tools=TOOLS):
+    note = _lesson_note(lesson["current"], lesson["upcoming"], seen_items, review_pool)
+    request_messages = messages + [{"role": "system", "content": note}]
+    for kind, *payload in stream_llm_reply(api_key, MODEL_FALLBACKS, request_messages, tools=TOOLS):
         if kind == "content":
             text = payload[0]
             if first_chunk_at is None:
@@ -521,7 +577,7 @@ def _run_turn(api_key, messages, store, roster, queue_items, todays_items, theme
             buffer += text
             full_text += text
             while (m := _SENTENCE_BOUNDARY.search(buffer)):
-                sentence = buffer[:m.end()].strip()
+                sentence = _ADVANCE_RE.sub("", buffer[:m.end()]).strip()
                 buffer = buffer[m.end():]
                 if sentence:
                     print(f"tuteur: {sentence}")
@@ -529,12 +585,16 @@ def _run_turn(api_key, messages, store, roster, queue_items, todays_items, theme
         elif kind == "tool_calls":
             tool_calls_final = payload[0]
         # "tool_call_partial" ignored here -- only used by theme generation
-        # to show item-by-item progress; the small tools used mid-conversation
-        # (next_item, set_session_focus, deprioritize_item) have trivial
-        # arguments not worth streaming progress for.
-    if buffer.strip():
-        print(f"tuteur: {buffer.strip()}")
-        voice.say(buffer.strip())
+        # to show item-by-item progress; the two tools left in conversation
+        # have trivial arguments not worth streaming progress for.
+    tail = _ADVANCE_RE.sub("", buffer).strip()
+    if tail:
+        print(f"tuteur: {tail}")
+        voice.say(tail)
+
+    if _ADVANCE_RE.search(full_text) and lesson["upcoming"] is not None:
+        _advance_lesson(lesson, queue_items, todays_items, seen_items, vocab)
+
     if not full_text.strip() and tool_calls_final:
         # Code-level safety net, not a prompt tweak -- tested live: this
         # exact model calls a tool with zero spoken text roughly every
@@ -561,16 +621,7 @@ def _run_turn(api_key, messages, store, roster, queue_items, todays_items, theme
         args = json.loads(fn["arguments"])
         tool_result = "ok"
 
-        if fn["name"] == "next_item":
-            if queue_items:
-                next_i = queue_items.pop(pick_next_index(queue_items, seen_items, vocab))
-                todays_items.append(next_i)
-                tool_result = _format_next_item(next_i, seen_items, review_pool)
-                seen_items.append(next_i)
-                print(f"  -> {next_i.name}")
-            else:
-                tool_result = "(reservoir vide -- termine la session naturellement, ou improvise une petite conversation libre)"
-        elif fn["name"] == "set_session_focus" and args.get("topic"):
+        if fn["name"] == "set_session_focus" and args.get("topic"):
             topic = args["topic"].strip()
             if topic.lower() not in themes_generated_this_session:
                 themes_generated_this_session.add(topic.lower())
@@ -581,7 +632,7 @@ def _run_turn(api_key, messages, store, roster, queue_items, todays_items, theme
                 if new_items:
                     add_personal_items(CONTENT_DIR, new_items)
                     roster.extend(new_items)
-                    queue_items[:0] = new_items  # next up via next_item, no fixed "today" split anymore
+                    queue_items[:0] = new_items  # jump the queue: requested content comes next
                     print(f"  (theme '{topic}': {len(new_items)} items generes, ajoutes en tete de la file)")
         elif fn["name"] == "deprioritize_item":
             if args.get("name"):
@@ -603,10 +654,10 @@ def _run_turn(api_key, messages, store, roster, queue_items, todays_items, theme
     return bool(tool_calls_final)
 
 
-# Safety cap on consecutive tool-only turns (no new user input in between) --
-# generous enough for a real chain (e.g. next_item then set_session_focus)
-# but stops a pathological loop from running forever without ever handing
-# control back to the learner.
+# Safety cap on consecutive tool-only turns (no new user input in between).
+# Rare now that only set_session_focus and deprioritize_item remain, but it
+# still stops a pathological loop from running forever without handing control
+# back to the learner.
 MAX_CHAINED_TOOL_TURNS = 5
 
 
@@ -638,7 +689,7 @@ def _conversation_loop(api_key, messages, store, roster, queue_items, todays_ite
         messages.append({"role": "user", "content": user_input})
         for _ in range(MAX_CHAINED_TOOL_TURNS):
             had_tool_calls = _run_turn(api_key, messages, store, roster, queue_items, todays_items,
-                                       themes_generated_this_session, seen_items, review_pool, vocab)
+                                       themes_generated_this_session, seen_items, review_pool, vocab, lesson)
             if not had_tool_calls:
                 break  # model gave its final spoken reply for this turn -- back to listening
 
@@ -662,13 +713,16 @@ def run_session():
     by_name = {i.name: i for i in roster}
     all_names = [i.name for i in roster]
     # Forward sequence is NEW items in roster order only. Due reviews are not
-    # drawn as items -- they ride along on each next_item result as the pieces
-    # to re-cite, which is where revision belongs in this method.
+    # drawn as items -- they ride along in the lesson note as the pieces to
+    # re-cite, which is where revision belongs in this method.
     queue_items = [by_name[n] for n in store.select_new(all_names, limit=QUEUE_SIZE)]
     review_pool = [by_name[n] for n in store.select_reviews(all_names, today, limit=REVIEW_POOL_SIZE)]
-    todays_items: list[Item] = []  # grows as next_item is actually called -- never pre-decided
+    todays_items: list[Item] = []  # grows as the sequence advances -- never pre-decided
     seen_items = [i for i in roster if not store.is_new(i.name)]  # everything ever taught, roster order
     vocab = vocab_set(roster)
+    # current stays None through the opening turn, so the tutor greets before
+    # teaching; the first [SUIVANT] promotes the first item into it.
+    lesson = {"current": None, "upcoming": _take_next(queue_items, seen_items, vocab)}
     global voice
     voice = SpeechPipeline(_vocab_words(roster))
     themes_generated_this_session: set[str] = set()
@@ -676,10 +730,8 @@ def run_session():
     print(f"--- Reservoir prepare ({len(queue_items)} nouveaux, {len(review_pool)} a reviser) ---")
 
     # Skip-intro instruction removed -- found live: it got over-applied, the
-    # model dropped ALL spoken content (not just the opening speech) and
-    # went straight to a silent next_item call, breaking the "never call a
-    # tool silently" rule. Keeping the intro every run is more reliable for
-    # now even if slightly repetitive during testing.
+    # model dropped ALL spoken content, not just the opening speech. Keeping
+    # the intro every run is more reliable, even if repetitive while testing.
 
     messages = [{"role": "system", "content": persona_prompt}]
 
@@ -687,7 +739,7 @@ def run_session():
 
     try:
         _conversation_loop(api_key, messages, store, roster, queue_items, todays_items,
-                           themes_generated_this_session, seen_items, review_pool, vocab)
+                           themes_generated_this_session, seen_items, review_pool, vocab, lesson)
     finally:
         # Runs even on a fatal crash (e.g. the free model staying saturated
         # through every retry) -- found live: without this, a mid-session

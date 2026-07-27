@@ -1,6 +1,6 @@
 """Replays a whole lesson in text, with no microphone and no speech synthesis.
 
-Same persona, same roster, same next_item sequencing and tool handling as the
+Same persona, same roster, same item sequencing and tool handling as the
 real session -- only the two ends are swapped: the learner is played by a small
 model instead of a person, and turns are printed instead of spoken. Lets a
 pedagogical change be judged in one run without anyone having to talk, and
@@ -21,13 +21,13 @@ from pathlib import Path
 sys.stdout.reconfigure(encoding="utf-8")
 
 from content import (
-    load_persona_system_prompt, load_roster, load_personal_items,
-    pick_next_index, vocab_set,
+    load_persona_system_prompt, load_roster, load_personal_items, vocab_set,
 )
 from srs import ProgressStore
 from tutor import (
     CONTENT_DIR, STATE_PATH, MODEL_FALLBACKS, QUEUE_SIZE, REVIEW_POOL_SIZE,
-    TOOLS, _format_next_item, load_api_key, stream_llm_reply,
+    TOOLS, _ADVANCE_RE, _advance_lesson, _lesson_note, _take_next,
+    load_api_key, stream_llm_reply,
 )
 
 LEARNER_MODEL = "llama-3.1-8b-instant"
@@ -79,6 +79,9 @@ def main(n_exchanges: int) -> None:
     seen = [i for i in roster if not store.is_new(i.name)]
     vocab = vocab_set(roster)
 
+    lesson = {"current": None, "upcoming": _take_next(queue, seen, vocab)}
+    todays: list = []
+
     messages = [{"role": "system", "content": load_persona_system_prompt(CONTENT_DIR)}]
     messages.append({"role": "user", "content": "[lang:en] Hi, I'm ready."})
     transcript = ["ELEVE: Hi, I'm ready."]
@@ -89,14 +92,20 @@ def main(n_exchanges: int) -> None:
         # then the learner answering. Mirrors _run_turn's chaining.
         for _ in range(5):
             text, tool_calls = "", []
-            for kind, *payload in stream_llm_reply(api_key, MODEL_FALLBACKS, messages, tools=TOOLS):
+            note = _lesson_note(lesson["current"], lesson["upcoming"], seen, review_pool)
+            for kind, *payload in stream_llm_reply(
+                api_key, MODEL_FALLBACKS, messages + [{"role": "system", "content": note}], tools=TOOLS
+            ):
                 if kind == "content":
                     text += payload[0]
                 elif kind == "tool_calls":
                     tool_calls = payload[0]
-            if text.strip():
-                print(f"TUTEUR : {text.strip()}\n")
-                transcript.append(f"TUTEUR: {text.strip()}")
+            if _ADVANCE_RE.search(text) and lesson["upcoming"] is not None:
+                _advance_lesson(lesson, queue, todays, seen, vocab)
+            spoken = _ADVANCE_RE.sub("", text).strip()
+            if spoken:
+                print(f"TUTEUR : {spoken}\n")
+                transcript.append(f"TUTEUR: {spoken}")
             messages.append({
                 "role": "assistant",
                 "content": text or None,
@@ -105,13 +114,7 @@ def main(n_exchanges: int) -> None:
             if not tool_calls:
                 break
             for call in tool_calls:
-                result = "ok"
-                if call["function"]["name"] == "next_item" and queue:
-                    item = queue.pop(pick_next_index(queue, seen, vocab))
-                    result = _format_next_item(item, seen, review_pool)
-                    seen.append(item)
-                    print(f"        [item servi : {item.name}]\n")
-                messages.append({"role": "tool", "tool_call_id": call["id"], "content": result})
+                messages.append({"role": "tool", "tool_call_id": call["id"], "content": "ok"})
             time.sleep(SECONDS_BETWEEN_TURNS)
 
         reply = learner_reply(api_key, transcript)
