@@ -214,5 +214,14 @@
     "description": "Mẫu giới thiệu bản thân kết hợp tên và quê quán, gộp hai mẫu đã học. 'Tôi' thanh ngang, 'tên' thanh ngang, 'là' thanh ngang, 'đến' thanh ngang, 'từ' thanh ngang. Nói liên tục, dừng nhẹ sau tên riêng. Dùng trong gặp gỡ đầu tiên, bối cảnh trang trọng.",
     "source": "personnel",
     "topic": "greetings and introductions"
+  },
+  {
+    "name": "Je suis prêt",
+    "item_type": "concept",
+    "category": "phrase",
+    "language": "vi",
+    "description": "Biểu hiện ‘tôi sẵn sàng’, dùng trong giao tiếp để nói rằng mình đã chuẩn bị xong và sẵn sàng bắt đầu. Giọng điệu trung tính, lịch sự.",
+    "source": "personnel",
+    "topic": null
   }
 ]

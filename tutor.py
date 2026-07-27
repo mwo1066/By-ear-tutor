@@ -492,13 +492,13 @@ def _lesson_note(current: Item | None, upcoming: Item | None,
     lines.append("ITEM EN COURS :")
     lines.append(_describe_item(current, seen_items, review_pool))
     if upcoming is not None:
+        # Name only, not the full description: it is not needed until this
+        # item becomes current, and every turn pays for whatever sits here.
         lines.append(
-            f"ITEM SUIVANT — quand le cycle en cours est fini, enchaine dessus DANS LE MEME TOUR, "
-            f"en commencant ce tour-la par {ADVANCE_MARKER} sur la premiere ligne. Ce marqueur est "
-            f"retire avant la synthese vocale, il n'est jamais entendu. Sans lui, la lecon reste "
-            f"bloquee sur l'item en cours."
+            f"ITEM SUIVANT : {upcoming.name} — enchaine dessus DANS LE MEME TOUR quand le cycle en "
+            f"cours est fini, en commencant ce tour-la par {ADVANCE_MARKER} seul sur la premiere "
+            f"ligne (retire avant la voix, jamais entendu ; sans lui la lecon reste bloquee)."
         )
-        lines.append(_describe_item(upcoming, seen_items, review_pool))
     else:
         lines.append("Plus rien apres celui-ci : quand son cycle est fini, termine la session naturellement.")
     return "\n".join(lines)
