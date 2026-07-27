@@ -662,7 +662,7 @@ MAX_CHAINED_TOOL_TURNS = 5
 
 
 def _conversation_loop(api_key, messages, store, roster, queue_items, todays_items, themes_generated_this_session,
-                       seen_items, review_pool, vocab):
+                       seen_items, review_pool, vocab, lesson):
     """The live back-and-forth until interrupted (Ctrl+C). Pulled out of
     run_session so a fatal error here (e.g. the free model staying
     saturated through every retry) can still be caught by the caller and
