@@ -41,21 +41,20 @@ ENV_PATH = ROOT / ".env"
 # free within real rate limits (30k tokens/min, 14400 req/day), not scraps.
 API_BASE_URL = "https://api.groq.com/openai/v1/chat/completions"
 API_KEY_ENV_VAR = "GROQ_API_KEY"
-MODEL_FALLBACKS = [
-    "openai/gpt-oss-120b",  # flagship, built for tool-calling/reasoning
-    # Every candidate here is bad; this one is the least bad, and it is a
-    # stopgap for rate limits (each model has its own token bucket), not a
-    # quality choice. Measured on real failing turns:
-    #   gpt-oss-20b            -- leaks harmony tokens into tool names
-    #                             ("next_item<|channel|>commentary" -> HTTP 400),
-    #                             which kills the turn outright
-    #   llama-3.3-70b-versatile -- fires an unrelated tool with no speech
-    #   llama-3.1-8b-instant    -- replies entirely in Vietnamese with a "Minh:"
-    #                             stage direction and drops the teaching cycle
-    # The last one at least degrades instead of crashing, so the lesson limps
-    # on rather than dying mid-sentence.
-    "llama-3.1-8b-instant",
-]
+# ONE model, no fallback. The fallback list is a leftover from the OpenRouter
+# era, where the free model could be genuinely unavailable for minutes and
+# switching to another was the only way through. Groq fails differently: a 429
+# is a throughput limit whose bucket refills in under a second, so waiting beats
+# degrading. And degrading was not "a slightly worse lesson" -- measured on real
+# sessions, every alternative breaks the format outright:
+#   llama-3.1-8b-instant    -- writes tool calls as literal text
+#                              ("<function=set_session_focus>{...}"), so the tool
+#                              never runs AND the tutor's voice reads the code out
+#   openai/gpt-oss-20b      -- leaks harmony tokens into tool names
+#                              ("next_item<|channel|>commentary" -> HTTP 400)
+#   llama-3.3-70b-versatile -- fires unrelated tools with no speech at all
+MODEL = "openai/gpt-oss-120b"
+MODEL_FALLBACKS = [MODEL]  # kept as a list: callers pass an explicit model in tests
 RETRYABLE_CODES = {429, 502, 503}
 
 # Groq sits behind Cloudflare, which blocks urllib's default "Python-urllib/x.x"
@@ -252,14 +251,11 @@ def _try_model(api_key: str, model: str, messages: list[dict], tools: list[dict]
 
 
 def call_llm(api_key: str, messages: list[dict], tools: list[dict] | None = None, retries: int = 3) -> dict:
-    """Tries each model in MODEL_FALLBACKS in order; only raises if every
-    model in the list is unavailable."""
-    for model in MODEL_FALLBACKS:
-        result = _try_model(api_key, model, messages, tools, retries)
-        if result is not None:
-            return result
-        print(f"  ({model} indisponible, on passe au modele de secours suivant)")
-    raise RuntimeError(f"Tous les modeles de secours sont indisponibles: {MODEL_FALLBACKS}")
+    """Non-streaming call, used by the theme and assessment passes."""
+    result = _try_model(api_key, MODEL, messages, tools, retries)
+    if result is None:
+        raise RuntimeError(f"{MODEL} indisponible apres {retries} tentatives")
+    return result
 
 
 _SENTENCE_BOUNDARY = re.compile(r"([.!?])(\s|$)")
@@ -268,19 +264,21 @@ _SENTENCE_BOUNDARY = re.compile(r"([.!?])(\s|$)")
 _STREAM_ERRORS = (urllib.error.URLError, TimeoutError, OSError, json.JSONDecodeError, RuntimeError)
 
 
-def stream_llm_reply(api_key: str, models: list[str], messages: list[dict], tools: list[dict] | None = None, rounds: int = 2):
-    """Streams a reply, trying each model in `models` in order. Yields
-    ("content", text_delta) chunks as they arrive, then a final
-    ("tool_calls", [...]) once the stream ends -- lets the caller start
-    speaking the first sentence long before the whole reply has been
+def stream_llm_reply(api_key: str, models: list[str], messages: list[dict], tools: list[dict] | None = None, rounds: int = 5):
+    """Streams a reply. Yields ("content", text_delta) chunks as they arrive,
+    then a final ("tool_calls", [...]) once the stream ends -- lets the caller
+    start speaking the first sentence long before the whole reply has been
     generated, instead of waiting on the entire response.
 
-    No wait between models -- a fresh model doesn't need to "wait out" the
-    previous one's problem, so on a failure it moves to the next model
-    immediately. Only if EVERY model fails in one pass does it wait before
-    trying the whole list again, up to `rounds` times. A mid-stream failure
-    after content has already been spoken ends the turn gracefully instead
-    of retrying (which would just repeat what was already said)."""
+    On failure it WAITS and retries the same model rather than degrading to a
+    lesser one: the usual failure here is a 429 throughput limit whose bucket
+    refills in about a second, and every alternative model breaks the lesson
+    format (see MODEL). Groq's own Retry-After is honoured when present,
+    otherwise the wait backs off, covering roughly a minute across `rounds`.
+
+    A mid-stream failure after content has already been spoken ends the turn
+    gracefully instead of retrying, which would just repeat what was said."""
+    last_error: Exception | None = None
     for round_num in range(rounds):
         for model in models:
             got_any = False
@@ -338,12 +336,28 @@ def stream_llm_reply(api_key: str, models: list[str], messages: list[dict], tool
                     print(f"  (flux interrompu apres un debut de reponse ({e}) -- fin du tour sans reessayer)")
                     yield ("tool_calls", [tool_calls_acc[i] for i in sorted(tool_calls_acc)])
                     return
-                print(f"  ({model}: {e} -- on essaie le modele suivant immediatement)")
+                last_error = e
+                print(f"  ({model}: {e})")
         if round_num < rounds - 1:
-            wait = 5 * (round_num + 1)
-            print(f"  (tous les modeles ont echoue -- nouvel essai complet dans {wait}s...)")
+            wait = _retry_after_seconds(last_error, default=2 * (round_num + 1))
+            print(f"  (nouvel essai dans {wait:.0f}s...)")
             time.sleep(wait)
-    raise RuntimeError(f"Tous les modeles de secours sont indisponibles apres {rounds} passages: {models}")
+    raise RuntimeError(f"{models} indisponible apres {rounds} tentatives: {last_error}")
+
+
+def _retry_after_seconds(error, default: float) -> float:
+    """How long Groq says to wait, when it says so.
+
+    A 429 carries Retry-After telling us exactly when the token bucket is
+    refilled -- usually a second or two. Guessing longer just wastes lesson
+    time, guessing shorter earns another 429.
+    """
+    header = getattr(error, "headers", None)
+    raw = header.get("retry-after") if header else None
+    try:
+        return min(float(raw), 60.0)
+    except (TypeError, ValueError):
+        return default
 
 
 def _extract_complete_json_objects(text: str) -> list[str]:
