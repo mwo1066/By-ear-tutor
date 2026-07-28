@@ -20,7 +20,7 @@ sys.stdin.reconfigure(encoding="utf-8")
 
 from content import (
     Item, load_persona_system_prompt, load_roster, load_personal_items,
-    add_personal_items, pieces_of, pick_next_index, vocab_set,
+    add_personal_items, pieces_of, pick_next_index, vocab_set, _tokens, _contains_run,
 )
 from srs import ProgressStore, update_after_practice
 from voice import SpeechPipeline
@@ -535,6 +535,25 @@ def _describe_item(item: Item, seen_items: list[Item], review_pool: list[Item]) 
     return "\n".join(lines)
 
 
+def _has_moved_on(text: str, upcoming: Item) -> bool:
+    """True when this turn started teaching the next item.
+
+    Two signals, either is enough. The marker is what the model is asked for,
+    but asking is not guaranteeing: on the very first real session it taught
+    "tên" without ever emitting one, leaving the code convinced the lesson was
+    still on "là" while the tutor had moved on. So the words themselves count
+    as evidence too -- the upcoming item has by definition never been taught,
+    so the tutor saying it out loud means it is being introduced right now.
+    """
+    if _ADVANCE_RE.search(text):
+        return True
+    target = _tokens(upcoming.name)
+    if not target:
+        return False
+    spoken = _tokens(text)
+    return _contains_run(spoken, target)
+
+
 def _advance_lesson(lesson: dict, queue_items: list[Item], todays_items: list[Item],
                     seen_items: list[Item], vocab: frozenset[str]) -> None:
     """Moves the sequence on one step and refills the slot behind it."""
@@ -594,7 +613,7 @@ def _run_turn(api_key, messages, store, roster, queue_items, todays_items, theme
         print(f"tuteur: {tail}")
         voice.say(tail)
 
-    if _ADVANCE_RE.search(full_text) and lesson["upcoming"] is not None:
+    if lesson["upcoming"] is not None and _has_moved_on(full_text, lesson["upcoming"]):
         _advance_lesson(lesson, queue_items, todays_items, seen_items, vocab)
 
     if not full_text.strip() and tool_calls_final:

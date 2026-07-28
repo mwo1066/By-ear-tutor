@@ -1,5 +1,6 @@
 """Loads the roster (ordered items) and persona from the TOML content files."""
 import json
+import re
 import tomllib
 from dataclasses import dataclass, asdict
 from pathlib import Path
@@ -71,15 +72,21 @@ def _tokens(name: str) -> list[str]:
     ("phủ định động từ: không + ..."). Only what follows the colon is text the
     learner ever says, so the label is dropped before splitting.
     """
-    name = name.split(":", 1)[-1]
+    name = _PLACEHOLDER.sub(" ", name.split(":", 1)[-1])
     out = []
     for tok in name.split():
-        if tok.startswith("[") or tok in {"+", "..."}:
+        if tok in {"+", "..."}:
             continue
         tok = tok.strip("+[]?.,!:'\"…").lower()
         if tok:
             out.append(tok)
     return out
+
+
+# Whole bracketed spans, not just the opening token: skipping only tokens that
+# START with "[" left the tail behind, so "+ [tên riêng]" yielded a phantom
+# "riêng" that no learner ever says and that broke matching against real speech.
+_PLACEHOLDER = re.compile(r"\[[^\]]*\]")
 
 
 def vocab_set(items: list[Item]) -> frozenset[str]:
