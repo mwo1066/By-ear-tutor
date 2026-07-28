@@ -480,13 +480,15 @@ def _lesson_note(current: Item | None, upcoming: Item | None,
         return "\n".join(lines)
 
     if current is None:
+        # No item description here on purpose. Handing one over at this point
+        # makes the model skip the opening speech and teach immediately --
+        # seen live: "Hi, I'm ready" went straight into the first word.
         lines.append(
-            f"Rien encore commence. Des que l'apprenant est pret, attaque le PREMIER ITEM ci-dessous "
-            f"en commencant ce tour-la par {ADVANCE_MARKER} sur la premiere ligne (marqueur retire "
-            f"avant la synthese vocale, jamais entendu ; sans lui la lecon n'avance pas)."
+            f"Rien encore commence : fais D'ABORD le discours d'ouverture, puis ARRETE-TOI et attends. "
+            f"N'enseigne rien dans ce tour-la. Au tour suivant seulement, attaque le premier item "
+            f"({upcoming.name}) en commencant par {ADVANCE_MARKER} seul sur la premiere ligne "
+            f"(retire avant la voix, jamais entendu ; sans lui la lecon n'avance pas)."
         )
-        lines.append("PREMIER ITEM :")
-        lines.append(_describe_item(upcoming, seen_items, review_pool))
         return "\n".join(lines)
 
     lines.append("ITEM EN COURS :")
