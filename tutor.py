@@ -480,15 +480,20 @@ def _lesson_note(current: Item | None, upcoming: Item | None,
         return "\n".join(lines)
 
     if current is None:
-        # No item description here on purpose. Handing one over at this point
-        # makes the model skip the opening speech and teach immediately --
-        # seen live: "Hi, I'm ready" went straight into the first word.
+        # The description has to be here. Without it the model was handed a
+        # bare name, had nothing to teach from, and improvised its own words
+        # instead -- teaching "tôi" and "tên" while the sequence sat on "là".
+        # Withholding it stopped the opening being skipped and broke the far
+        # more important thing, which is teaching the right item at all.
         lines.append(
-            f"Rien encore commence : fais D'ABORD le discours d'ouverture, puis ARRETE-TOI et attends. "
-            f"N'enseigne rien dans ce tour-la. Au tour suivant seulement, attaque le premier item "
-            f"({upcoming.name}) en commencant par {ADVANCE_MARKER} seul sur la premiere ligne "
-            f"(retire avant la voix, jamais entendu ; sans lui la lecon n'avance pas)."
+            f"Rien encore commence. Ce tour-ci est le discours d'ouverture UNIQUEMENT : "
+            f"n'enseigne rien, ne prononce aucun mot vietnamien a apprendre, termine sur ta question "
+            f"et ARRETE-TOI. Le premier item ci-dessous n'est PAS pour ce tour — tu l'attaqueras au "
+            f"tour suivant, en commencant par {ADVANCE_MARKER} seul sur la premiere ligne (retire "
+            f"avant la voix, jamais entendu ; sans lui la lecon n'avance pas)."
         )
+        lines.append("PREMIER ITEM, POUR LE TOUR D'APRES :")
+        lines.append(_describe_item(upcoming, seen_items, review_pool))
         return "\n".join(lines)
 
     lines.append("ITEM EN COURS :")
@@ -545,13 +550,17 @@ def _has_moved_on(text: str, upcoming: Item) -> bool:
     as evidence too -- the upcoming item has by definition never been taught,
     so the tutor saying it out loud means it is being introduced right now.
     """
-    if _ADVANCE_RE.search(text):
-        return True
     target = _tokens(upcoming.name)
-    if not target:
-        return False
-    spoken = _tokens(text)
-    return _contains_run(spoken, target)
+    said_it = bool(target) and _contains_run(_tokens(text), target)
+    if _ADVANCE_RE.search(text):
+        if not said_it:
+            # Moved on without teaching what it was given -- almost always
+            # means it improvised its own word. Surfaced rather than silently
+            # accepted, because the lesson state and the lesson then disagree
+            # for the rest of the session.
+            print(f"  [diag] !! marqueur emis sans enseigner '{upcoming.name}' -- risque de desynchronisation")
+        return True
+    return said_it
 
 
 def _advance_lesson(lesson: dict, queue_items: list[Item], todays_items: list[Item],
