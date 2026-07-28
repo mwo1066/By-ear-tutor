@@ -12,6 +12,7 @@ import sys
 import time
 import urllib.error
 import urllib.request
+from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
 
@@ -77,18 +78,16 @@ N_THEME_GENERATE = 4
 # session never runs dry -- not a target to hit.
 QUEUE_SIZE = 30
 
-# next_item used to be a tool. It is not any more, and the reason is latency,
-# not tidiness. A tool call is a round trip: the model stops talking to ask,
-# and a WHOLE SECOND REQUEST is needed before it can speak again -- measured at
-# ~6s of dead air per new word, and 19-60s whenever a 429 landed in between.
-# Worse, this model calls tools with no accompanying text, so a third of all
-# requests produced nothing but a "Alright, let's continue." filler.
-# The sequence is composed in advance anyway (pick_next_index decides it, not
-# the model), so there is nothing to ask for: the current and upcoming items
-# ride along in the conversation, and the model just walks the sequence.
-ADVANCE_MARKER = "[SUIVANT]"
-_ADVANCE_RE = re.compile(re.escape(ADVANCE_MARKER), re.IGNORECASE)
-
+# The teaching cycle is a state machine in code, not prose in the prompt, and
+# next_item is not a tool. Both for the same reason: the model holds no state
+# between turns. It re-derived its position by re-reading the conversation
+# every time, and drifted -- ten steps in one breath, the same word asked four
+# times running, a chain missing a piece. And a tool call cost a round trip:
+# the model stopped speaking to ask what to teach, then needed a whole second
+# request to say anything, ~6s of dead air per word and a third of all
+# requests spent on a "let's continue" filler.
+# The sequence is composed in advance anyway (pick_next_index decides it), so
+# each turn simply carries its own single instruction.
 TOOLS = [
     {
         "type": "function",
@@ -458,119 +457,146 @@ def _vocab_words(items: list[Item]) -> frozenset[str]:
     return frozenset(words)
 
 
-# How many due items ride along in the lesson note as recall-chain fuel.
-# Small on purpose: the chain is spoken one question at a time, so a long list
-# just invites the model to skim it instead of actually asking each one.
-REVIEW_POOL_SIZE = 8
-N_RECALL_FILLER = 3
+# How many isolated recalls close out an item's plan. Three, because that is
+# roughly the density measured in the reference course: across its teaching
+# stretch, learner-facing recall questions land at about three per new item.
+N_RAPIDFIRE = 3
+N_VARIATIONS = 3
 
-def _lesson_note(current: Item | None, upcoming: Item | None,
-                 seen_items: list[Item], review_pool: list[Item]) -> str:
-    """The lesson state, handed to the model fresh on every turn.
 
-    Replaces the next_item tool: rather than asking what to teach and paying a
-    round trip for the answer, the model is simply told what it is working on
-    and what comes after, so it can move on inside the same turn it is already
-    speaking in.
+@dataclass
+class Step:
+    """One assistant turn, decided by the code rather than by the model.
+
+    The model used to hold the whole nine-step cycle in its head and re-derive
+    its position every turn by re-reading the conversation. It has no state, so
+    it drifted: ten steps recited in one breath, the same word asked four times
+    running, a piece of the recall chain skipped, the lesson teaching one item
+    while the sequence sat on another. None of those are possible once a turn
+    is a single instruction handed over one at a time.
+    """
+    kind: str
+    target: str | None
+    instruction: str
+
+
+def build_plan(item: Item, pieces: list[Item], recall_targets: list[str]) -> list[Step]:
+    """The full turn-by-turn plan for teaching one item.
+
+    Mirrors the reference method: a lone new word is introduced and heard, a
+    construction is assembled by re-citing every piece one question at a time,
+    scaffolded with the literal word order, then varied, then named, then
+    drilled bare.
+    """
+    plan: list[Step] = []
+
+    if not pieces:
+        plan.append(Step(
+            "introduce", item.name,
+            f"Introduis « {item.name} ». Une accroche d'une phrase SEULEMENT si tu as un fait reel "
+            f"a raconter, sinon enchaine directement. Revele le mot en finissant ta phrase dessus, "
+            f"Minh le dit DEUX fois seul, puis demande a l'apprenant de le dire. Rien d'autre.",
+        ))
+    else:
+        for piece in pieces:
+            plan.append(Step(
+                "recall_piece", piece.name,
+                f"Demande UNIQUEMENT : « et encore une fois, c'etait quoi {piece.name} ? » "
+                f"(dans la langue de l'apprenant). Une seule question, puis tu t'arretes. "
+                f"N'annonce pas les autres morceaux, ne dis pas ce qu'il sait deja.",
+            ))
+        plan.append(Step(
+            "scaffold", item.name,
+            f"Donne l'ordre litteral vietnamien de « {item.name} » mot a mot dans la langue de "
+            f"l'apprenant, puis demande-lui la phrase complete. Ne l'assemble pas a sa place.",
+        ))
+        plan.append(Step(
+            "answer", item.name,
+            f"Minh dit la phrase complete correcte DEUX fois. Puis demande la meme structure avec "
+            f"un element change. Une seule question.",
+        ))
+        for _ in range(N_VARIATIONS - 1):
+            plan.append(Step(
+                "vary", item.name,
+                "Meme structure, un seul element change, pose la comme une question et arrete-toi.",
+            ))
+        if item.item_type == "procedure":
+            plan.append(Step(
+                "rule", item.name,
+                "Enonce maintenant la regle en UNE phrase simple, comme un constat de ce qu'il "
+                "vient de produire. Puis enchaine sur une derniere question.",
+            ))
+
+    for name in recall_targets[:N_RAPIDFIRE]:
+        plan.append(Step(
+            "rapidfire", name,
+            f"Rappel isole, sans contexte : « et tout seul, c'etait quoi {name} ? » "
+            f"Une seule question, puis tu t'arretes.",
+        ))
+    return plan
+
+
+def _lesson_note(lesson: dict) -> str:
+    """What the model is told this turn: its one instruction, and nothing else.
+
+    Deliberately does NOT restate the cycle, the sequence, or what comes next.
+    Everything the model does not need in order to speak this turn is weight it
+    pays for on every request.
     """
     lines = ["ETAT DE LA LECON — contexte pour toi seul, jamais prononce a voix haute."]
+    step = current_step(lesson)
 
-    if current is None and upcoming is None:
-        lines.append("Sequence terminee, plus rien a enseigner. Termine la session naturellement, ou improvise une petite conversation libre.")
+    if step is None:
+        lines.append("Plus rien a enseigner. Termine la session naturellement, ou improvise une petite conversation libre.")
         return "\n".join(lines)
 
-    if current is None:
-        # The description has to be here. Without it the model was handed a
-        # bare name, had nothing to teach from, and improvised its own words
-        # instead -- teaching "tôi" and "tên" while the sequence sat on "là".
-        # Withholding it stopped the opening being skipped and broke the far
-        # more important thing, which is teaching the right item at all.
-        lines.append(
-            f"Rien encore commence. Ce tour-ci est le discours d'ouverture UNIQUEMENT : "
-            f"n'enseigne rien, ne prononce aucun mot vietnamien a apprendre, termine sur ta question "
-            f"et ARRETE-TOI. Le premier item ci-dessous n'est PAS pour ce tour — tu l'attaqueras au "
-            f"tour suivant, en commencant par {ADVANCE_MARKER} seul sur la premiere ligne (retire "
-            f"avant la voix, jamais entendu ; sans lui la lecon n'avance pas)."
-        )
-        lines.append("PREMIER ITEM, POUR LE TOUR D'APRES :")
-        lines.append(_describe_item(upcoming, seen_items, review_pool))
-        return "\n".join(lines)
-
-    lines.append("ITEM EN COURS :")
-    lines.append(_describe_item(current, seen_items, review_pool))
-    if upcoming is not None:
-        # Name only, not the full description: it is not needed until this
-        # item becomes current, and every turn pays for whatever sits here.
-        lines.append(
-            f"ITEM SUIVANT : {upcoming.name} — enchaine dessus DANS LE MEME TOUR quand le cycle en "
-            f"cours est fini, en commencant ce tour-la par {ADVANCE_MARKER} seul sur la premiere "
-            f"ligne (retire avant la voix, jamais entendu ; sans lui la lecon reste bloquee)."
-        )
-    else:
-        lines.append("Plus rien apres celui-ci : quand son cycle est fini, termine la session naturellement.")
+    if lesson["item"] is not None:
+        lines.append(f"Item travaille : {lesson['item'].name} — {lesson['item'].description}")
+    lines.append(f"CE TOUR-CI, UNIQUEMENT CECI : {step.instruction}")
     return "\n".join(lines)
 
 
-def _describe_item(item: Item, seen_items: list[Item], review_pool: list[Item]) -> str:
-    """One item, with the two things its raw description never carried: whether
-    it is a construction to ASSEMBLE (and out of which already-known pieces),
-    and which due items to fold into the recall chain when it has none of its
-    own -- so revision happens inside the cycle rather than as a separate draw.
+def current_step(lesson: dict) -> Step | None:
+    plan = lesson["plan"]
+    return plan[lesson["i"]] if lesson["i"] < len(plan) else None
+
+
+def start_item(lesson: dict, item: Item | None, seen_items: list[Item], recall_targets: list[str]) -> None:
+    """Loads the plan for the next item and rewinds to its first step."""
+    lesson["item"] = item
+    lesson["i"] = 0
+    if item is None:
+        lesson["plan"] = []
+        return
+    lesson["plan"] = build_plan(item, pieces_of(item, seen_items), recall_targets)
+    kinds = " -> ".join(s.kind for s in lesson["plan"])
+    print(f"  -> item : {item.name}  [{len(lesson['plan'])} tours : {kinds}]")
+
+
+_QUESTION_MARK = re.compile(r"\?\s*$")
+
+
+def learner_asked_something(user_text: str) -> bool:
+    """A real question from the learner, in their own language.
+
+    The escape hatch. Without it a plan steamrollers anything the learner says
+    that is not the expected answer, which is the failure mode of any scripted
+    tutor. Their turn still gets used, the plan simply does not advance past a
+    step that was never actually done.
     """
-    lines = [f"[{item.item_type}/{item.category}] {item.name} — {item.description}"]
-
-    pieces = pieces_of(item, seen_items)
-    if pieces:
-        lines.append(
-            "ASSEMBLAGE — cet item se construit a partir de morceaux deja enseignes : "
-            + ", ".join(p.name for p in pieces)
-            + ". Re-cite CHACUN, un par un, une question a la fois, avant de demander la phrase complete."
-        )
-    else:
-        seen_names = {i.name for i in seen_items}
-        filler = [r.name for r in review_pool if r.name in seen_names and r.name != item.name]
-        if filler:
-            lines.append(
-                "MOT NOUVEAU (rien a assembler). A re-citer dans la chaine de rappel, "
-                "un par un : " + ", ".join(filler[:N_RECALL_FILLER])
-            )
-        else:
-            lines.append("MOT NOUVEAU — premier item, rien a rappeler encore.")
-
-    return "\n".join(lines)
+    return "[lang:vi]" not in user_text and bool(_QUESTION_MARK.search(user_text.strip()))
 
 
-def _has_moved_on(text: str, upcoming: Item) -> bool:
-    """True when this turn started teaching the next item.
+def _recall_targets(seen_items: list[Item], skip: Item | None) -> list[str]:
+    """Which already-taught words the rapid-fire slots will ask for.
 
-    Two signals, either is enough. The marker is what the model is asked for,
-    but asking is not guaranteeing: on the very first real session it taught
-    "tên" without ever emitting one, leaving the code convinced the lesson was
-    still on "là" while the tutor had moved on. So the words themselves count
-    as evidence too -- the upcoming item has by definition never been taught,
-    so the tutor saying it out loud means it is being introduced right now.
+    Deliberately crude for now -- most recently taught first, excluding the
+    item being worked. Step two replaces this with a weighted draw on each
+    word's level, so a word met once keeps coming back and one met often
+    fades, without ever dropping out.
     """
-    target = _tokens(upcoming.name)
-    said_it = bool(target) and _contains_run(_tokens(text), target)
-    if _ADVANCE_RE.search(text):
-        if not said_it:
-            # Moved on without teaching what it was given -- almost always
-            # means it improvised its own word. Surfaced rather than silently
-            # accepted, because the lesson state and the lesson then disagree
-            # for the rest of the session.
-            print(f"  [diag] !! marqueur emis sans enseigner '{upcoming.name}' -- risque de desynchronisation")
-        return True
-    return said_it
-
-
-def _advance_lesson(lesson: dict, queue_items: list[Item], todays_items: list[Item],
-                    seen_items: list[Item], vocab: frozenset[str]) -> None:
-    """Moves the sequence on one step and refills the slot behind it."""
-    lesson["current"] = lesson["upcoming"]
-    todays_items.append(lesson["current"])
-    seen_items.append(lesson["current"])
-    print(f"  -> item en cours : {lesson['current'].name}")
-    lesson["upcoming"] = _take_next(queue_items, seen_items, vocab)
+    names = [i.name for i in reversed(seen_items) if skip is None or i.name != skip.name]
+    return names
 
 
 def _take_next(queue_items: list[Item], seen_items: list[Item], vocab: frozenset[str]) -> Item | None:
@@ -581,7 +607,7 @@ def _take_next(queue_items: list[Item], seen_items: list[Item], vocab: frozenset
 
 
 def _run_turn(api_key, messages, store, roster, queue_items, todays_items, themes_generated_this_session,
-              seen_items, review_pool, vocab, lesson) -> bool:
+              seen_items, vocab, lesson) -> bool:
     """Runs ONE assistant turn: streams the reply, speaks it, advances the
     lesson if the model signalled it moved on, and handles any tool calls.
     Returns True if tool calls were made, meaning the caller should call this
@@ -596,7 +622,7 @@ def _run_turn(api_key, messages, store, roster, queue_items, todays_items, theme
     buffer = ""
     full_text = ""
     tool_calls_final: list[dict] = []
-    note = _lesson_note(lesson["current"], lesson["upcoming"], seen_items, review_pool)
+    note = _lesson_note(lesson)
     request_messages = messages + [{"role": "system", "content": note}]
     for kind, *payload in stream_llm_reply(api_key, MODEL_FALLBACKS, request_messages, tools=TOOLS):
         if kind == "content":
@@ -607,7 +633,7 @@ def _run_turn(api_key, messages, store, roster, queue_items, todays_items, theme
             buffer += text
             full_text += text
             while (m := _SENTENCE_BOUNDARY.search(buffer)):
-                sentence = _ADVANCE_RE.sub("", buffer[:m.end()]).strip()
+                sentence = buffer[:m.end()].strip()
                 buffer = buffer[m.end():]
                 if sentence:
                     print(f"tuteur: {sentence}")
@@ -617,13 +643,10 @@ def _run_turn(api_key, messages, store, roster, queue_items, todays_items, theme
         # "tool_call_partial" ignored here -- only used by theme generation
         # to show item-by-item progress; the two tools left in conversation
         # have trivial arguments not worth streaming progress for.
-    tail = _ADVANCE_RE.sub("", buffer).strip()
+    tail = buffer.strip()
     if tail:
         print(f"tuteur: {tail}")
         voice.say(tail)
-
-    if lesson["upcoming"] is not None and _has_moved_on(full_text, lesson["upcoming"]):
-        _advance_lesson(lesson, queue_items, todays_items, seen_items, vocab)
 
     if not full_text.strip() and tool_calls_final:
         # Code-level safety net, not a prompt tweak -- tested live: this
@@ -692,7 +715,7 @@ MAX_CHAINED_TOOL_TURNS = 5
 
 
 def _conversation_loop(api_key, messages, store, roster, queue_items, todays_items, themes_generated_this_session,
-                       seen_items, review_pool, vocab, lesson):
+                       seen_items, vocab, lesson):
     """The live back-and-forth until interrupted (Ctrl+C). Pulled out of
     run_session so a fatal error here (e.g. the free model staying
     saturated through every retry) can still be caught by the caller and
@@ -701,12 +724,11 @@ def _conversation_loop(api_key, messages, store, roster, queue_items, todays_ite
     Enter should matter is starting the session; every per-turn keypress
     was a chance to get stuck waiting on a forgotten key. Ctrl+C ends the
     session now, and still saves cleanly via run_session's finally block."""
-    first = True
+    turns_done = 0
     while True:
-        if first:
+        if turns_done == 0:
             user_input = "[lang:en] Hi, I'm ready."
             print(f"(auto) toi: {user_input}")
-            first = False
         else:
             t0 = time.monotonic()
             user_input = listen_and_transcribe()
@@ -716,12 +738,29 @@ def _conversation_loop(api_key, messages, store, roster, queue_items, todays_ite
                 continue
             print(f"toi (transcrit): {user_input}")
 
+        # The learner's turn is what closes the step the tutor just set up, so
+        # the plan advances HERE, not after the tutor speaks. Turn zero is the
+        # opening speech: it has no step to close and must not load an item, or
+        # the tutor greets and teaches in the same breath.
+        if turns_done > 0:
+            if learner_asked_something(user_input):
+                print("  (question de l'apprenant -- l'etape est rejouee apres reponse)")
+            else:
+                lesson["i"] += 1
+            if current_step(lesson) is None:
+                item = _take_next(queue_items, seen_items, vocab)
+                if item is not None:
+                    todays_items.append(item)
+                    seen_items.append(item)
+                start_item(lesson, item, seen_items, _recall_targets(seen_items, item))
+
         messages.append({"role": "user", "content": user_input})
         for _ in range(MAX_CHAINED_TOOL_TURNS):
             had_tool_calls = _run_turn(api_key, messages, store, roster, queue_items, todays_items,
-                                       themes_generated_this_session, seen_items, review_pool, vocab, lesson)
+                                       themes_generated_this_session, seen_items, vocab, lesson)
             if not had_tool_calls:
                 break  # model gave its final spoken reply for this turn -- back to listening
+        turns_done += 1
 
 
 def run_session():
@@ -746,18 +785,17 @@ def run_session():
     # drawn as items -- they ride along in the lesson note as the pieces to
     # re-cite, which is where revision belongs in this method.
     queue_items = [by_name[n] for n in store.select_new(all_names, limit=QUEUE_SIZE)]
-    review_pool = [by_name[n] for n in store.select_reviews(all_names, today, limit=REVIEW_POOL_SIZE)]
     todays_items: list[Item] = []  # grows as the sequence advances -- never pre-decided
     seen_items = [i for i in roster if not store.is_new(i.name)]  # everything ever taught, roster order
     vocab = vocab_set(roster)
-    # current stays None through the opening turn, so the tutor greets before
-    # teaching; the first [SUIVANT] promotes the first item into it.
-    lesson = {"current": None, "upcoming": _take_next(queue_items, seen_items, vocab)}
+    # An empty plan means the opening turn: the tutor greets, and the first
+    # item is loaded only once that turn is behind us.
+    lesson = {"item": None, "plan": [], "i": 0}
     global voice
     voice = SpeechPipeline(_vocab_words(roster))
     themes_generated_this_session: set[str] = set()
 
-    print(f"--- Reservoir prepare ({len(queue_items)} nouveaux, {len(review_pool)} a reviser) ---")
+    print(f"--- Reservoir prepare : {len(queue_items)} items a enseigner ---")
 
     # Skip-intro instruction removed -- found live: it got over-applied, the
     # model dropped ALL spoken content, not just the opening speech. Keeping
@@ -769,7 +807,7 @@ def run_session():
 
     try:
         _conversation_loop(api_key, messages, store, roster, queue_items, todays_items,
-                           themes_generated_this_session, seen_items, review_pool, vocab, lesson)
+                           themes_generated_this_session, seen_items, vocab, lesson)
     finally:
         # Runs even on a fatal crash (e.g. the free model staying saturated
         # through every retry) -- found live: without this, a mid-session

@@ -19,6 +19,7 @@ sys.stdout.reconfigure(encoding="utf-8")
 import tutor
 
 SPOKEN: list[str] = []
+instructions: list[str] = []
 
 
 class FakeVoice:
@@ -33,17 +34,15 @@ def main() -> int:
     turns = {"n": 0}
 
     def fake_stream(api_key, models, messages, tools=None, rounds=5):
-        """Two teaching turns, then stop -- the second advances the sequence."""
+        """Records the single instruction the state machine hands over each turn,
+        so the assertions below can check the plan really advances."""
         turns["n"] += 1
-        if turns["n"] == 1:
-            yield ("content", "Ready to dive in, or anything you want to ask first?")
-        else:
-            yield ("content", f"{tutor.ADVANCE_MARKER}\nIn Vietnamese, that's tôi. So how would you say it?")
+        instructions.append(messages[-1]["content"])
+        yield ("content", "Ready to dive in?" if turns["n"] == 1 else "In Vietnamese, that's tôi.")
         yield ("tool_calls", [])
 
     def fake_listen():
-        # Two answers, then end the session the way a learner does: Ctrl+C.
-        if turns["n"] >= 2:
+        if turns["n"] >= 4:
             raise KeyboardInterrupt
         return "[lang:vi] tôi"
 
@@ -66,11 +65,19 @@ def main() -> int:
     if not SPOKEN:
         print("ECHEC — la session n'a rien dit du tout")
         return 1
-    if any(tutor.ADVANCE_MARKER.lower() in s.lower() for s in SPOKEN):
-        print(f"ECHEC — le marqueur {tutor.ADVANCE_MARKER} a ete envoye a la voix")
+    steps = [n for n in instructions if "CE TOUR-CI" in n]
+    if not steps:
+        print("ECHEC — aucune instruction d'etape n'a ete transmise au modele")
+        return 1
+    if len(set(steps)) < 2:
+        print("ECHEC — la meme etape a ete servie deux fois : le plan n'avance pas")
+        for n in steps:
+            print("   ", n.splitlines()[-1][:100])
         return 1
 
-    print(f"OK — session complete, {len(SPOKEN)} passages parles, marqueur jamais prononce")
+    print(f"OK — session complete, {len(SPOKEN)} passages parles, {len(steps)} etapes distinctes servies")
+    for n in steps:
+        print("   ", n.splitlines()[-1][:110])
     return 0
 
 
