@@ -1,124 +1,131 @@
-"""Spaced repetition (half-life regression), simplified from memai's model.
+"""How often a word comes back, and how the course knows where you are.
 
-Each item has: half_life_days, last_practiced_on, retrievals, errors,
-sessions_practiced, user_initiated. Same core rule as memai:
-- half-life only moves once per calendar day (sleep-gated)
-- an error shrinks it; a success (with no error) grows it
-- retrievals count successful recalls only, not mere exposure
+Not a forgetting model. The reference course this follows never schedules a
+review and never grades an answer -- a word comes back because a later sentence
+needs it, and because the teacher keeps circling old ground with the density
+tapering as the vocabulary grows. Measured on its transcripts: nothing is ever
+"acquired" and retired, the same word simply appears less and less.
+
+So each word carries one number, its level. Fresh out of the box it is level 0
+and gets picked constantly; each time it is asked it climbs a level and its
+odds fall. They never reach zero, so a word from the very first lesson can
+still surface an hour later -- rarely, which is the point.
+
+Deliberately NOT tracked: errors (a wrong answer means the word needs more
+exposure, which the level already arranges), dates, and sessions. The course is
+one continuous line you stop and resume, so spacing counts in words met, never
+in days.
 """
 import json
+import math
+import random
 from dataclasses import dataclass, asdict
-from datetime import date
 from pathlib import Path
 
-INITIAL_HALF_LIFE = 1.0
-GROWTH = 2.0
-SHRINK = 0.5
-MIN_HALF_LIFE = 0.5
-USER_INITIATED_BOOST = 2.0
+# How sharply the odds fall as a word is drilled. Chosen for shape, not
+# theory: 1/2^level makes a word invisible after about seven recalls, which is
+# retirement in disguise, and a flat 1/(level+1) leaves a word from lesson one
+# competing evenly with one met a minute ago. This sits between the two --
+# steep early, with a thin tail that never quite closes.
+DECAY = 1.5
+
+# Where deprioritise puts a word: far down the odds, still not gone.
+DEPRIORITIZED_LEVEL = 12
 
 
 @dataclass
 class ItemState:
     name: str
-    half_life_days: float = INITIAL_HALF_LIFE
-    last_practiced_on: str | None = None
-    retrievals: int = 0
-    errors: int = 0
-    sessions_practiced: int = 0
-    user_initiated: bool = False
-    deprioritized: bool = False
+    level: int = 0
 
 
-def retention(state: ItemState, today: date) -> float:
-    """Estimated retention in [0, 1]; -1.0 if never practiced (most due)."""
-    if state.last_practiced_on is None:
-        return -1.0
-    last = date.fromisoformat(state.last_practiced_on)
-    days_since = max((today - last).days, 0)
-    return 2.0 ** (-days_since / state.half_life_days)
-
-
-def update_after_practice(
-    state: ItemState, today: date, retrievals: int, errors: int, user_initiated: bool = False
-) -> ItemState:
-    new_day = state.last_practiced_on is None or date.fromisoformat(state.last_practiced_on) < today
-    half_life = state.half_life_days
-    if state.last_practiced_on is None:
-        initial = INITIAL_HALF_LIFE * (USER_INITIATED_BOOST if user_initiated else 1.0)
-        half_life = initial
-    elif new_day:
-        if errors > 0:
-            half_life = max(half_life * SHRINK, MIN_HALF_LIFE)
-        elif retrievals > 0:
-            half_life *= GROWTH
-    return ItemState(
-        name=state.name,
-        half_life_days=half_life,
-        last_practiced_on=today.isoformat(),
-        retrievals=state.retrievals + retrievals,
-        errors=state.errors + errors,
-        sessions_practiced=state.sessions_practiced + 1,
-        user_initiated=state.user_initiated or user_initiated,
-    )
+def weight(level: int) -> float:
+    """A word's share of the recall draw. Level 0 is the reference, weight 1."""
+    return 1.0 / (level + 1) ** DECAY
 
 
 class ProgressStore:
-    """Loads/saves per-item SRS state to a local JSON file."""
+    """Every word met so far, and how consolidated each one is.
+
+    Answers exactly one question -- where are you in the sequence -- which is
+    all the persistence this needs. The previous version stored half-lives,
+    retrieval counts and error counts, all fed by a model re-reading the
+    transcript at the end of a session; it scored "tôi" at zero recalls and
+    five errors after the learner had said it correctly several times, and
+    promoted a mis-transcription into the vocabulary.
+    """
 
     def __init__(self, path: Path):
         self.path = path
         self._states: dict[str, ItemState] = {}
         if path.exists():
             raw = json.loads(path.read_text(encoding="utf-8"))
-            self._states = {name: ItemState(**s) for name, s in raw.items()}
+            for name, entry in raw.items():
+                # Tolerates the old half-life format by keeping only the name.
+                level = entry.get("level", 0) if isinstance(entry, dict) else 0
+                self._states[name] = ItemState(name=name, level=level)
 
-    def get(self, name: str) -> ItemState | None:
-        return self._states.get(name)
+    def is_new(self, name: str) -> bool:
+        return name not in self._states
 
-    def set(self, state: ItemState) -> None:
-        self._states[state.name] = state
+    def level(self, name: str) -> int:
+        state = self._states.get(name)
+        return state.level if state else 0
+
+    def mark_introduced(self, name: str) -> None:
+        self._states.setdefault(name, ItemState(name=name))
+
+    def record_recall(self, name: str) -> None:
+        """One more exposure: the word drops down the odds by one notch.
+
+        Called when a recall the CODE asked for has been answered, so it counts
+        what actually happened rather than what a grader thought it saw.
+        """
+        state = self._states.setdefault(name, ItemState(name=name))
+        state.level += 1
 
     def deprioritize(self, name: str) -> None:
-        """Learner asked to stop working on this item. Doesn't remove it or
-        its history -- just pushes it to the back of both the review and new
-        queues in select_today, so in practice it stops surfacing without
-        breaking a roster item other items may build on."""
-        existing = self._states.get(name) or ItemState(name=name)
-        existing.deprioritized = True
-        self._states[name] = existing
+        """The learner asked to stop working on this. Buried, never deleted."""
+        self._states.setdefault(name, ItemState(name=name)).level = DEPRIORITIZED_LEVEL
+
+    def select_new(self, all_item_names: list[str], limit: int = 30) -> list[str]:
+        """The forward sequence: never-introduced items in ROSTER ORDER.
+
+        Roster order is a composed progression -- words first, then the
+        construction that assembles them -- so nothing here reorders it.
+        """
+        return [n for n in all_item_names if self.is_new(n)][:limit]
+
+    def draw_recalls(self, count: int, exclude: set[str] | None = None) -> list[str]:
+        """Words for the bare recall slots, drawn by level without repeats.
+
+        Weighted rather than sorted: a strict "least consolidated first" would
+        replay the same handful in the same order every time, which a learner
+        notices and starts answering from rhythm instead of memory.
+        """
+        exclude = exclude or set()
+        pool = [s for s in self._states.values() if s.name not in exclude]
+        picked: list[str] = []
+        while pool and len(picked) < count:
+            weights = [weight(s.level) for s in pool]
+            chosen = random.choices(pool, weights=weights)[0]
+            picked.append(chosen.name)
+            pool.remove(chosen)
+        return picked
 
     def save(self) -> None:
         raw = {name: asdict(s) for name, s in self._states.items()}
         self.path.write_text(json.dumps(raw, ensure_ascii=False, indent=2), encoding="utf-8")
 
-    def is_new(self, name: str) -> bool:
-        s = self._states.get(name)
-        return s is None or s.last_practiced_on is None
-
-    def _is_deprioritized(self, name: str) -> bool:
-        s = self._states.get(name)
-        return s.deprioritized if s else False
-
-    def select_new(self, all_item_names: list[str], limit: int = 30) -> list[str]:
-        """The forward sequence: never-practiced items in ROSTER ORDER, full stop.
-
-        Roster order is a composed progression (words first, then the
-        construction that assembles them) -- reordering it breaks the method,
-        so nothing here sorts by retention. Deprioritized items go to the back
-        rather than being dropped, since later constructions may build on them.
-        """
-        new_items = [n for n in all_item_names if self.is_new(n)]
-        new_items.sort(key=self._is_deprioritized)  # stable: roster order preserved within each group
-        return new_items[:limit]
-
-    def select_reviews(self, all_item_names: list[str], today: date, limit: int = 8) -> list[str]:
-        """Already-seen items that are due, stalest retention first.
-
-        These are NOT drawn as new items -- they're the pool the tutor pulls
-        from for the "and again, what was X?" recall chain that precedes every
-        combination, which is where revision actually lives in this method.
-        """
-        review_items = [n for n in all_item_names if not self.is_new(n)]
-        review_items.sort(key=lambda n: (self._is_deprioritized(n), retention(self._states[n], today)))
-        return review_items[:limit]
+    def summary(self) -> str:
+        """One line per level band, for the end-of-session print."""
+        if not self._states:
+            return "(rien appris pour l'instant)"
+        bands: dict[int, list[str]] = {}
+        for s in sorted(self._states.values(), key=lambda s: s.level):
+            bands.setdefault(s.level, []).append(s.name)
+        return "\n".join(
+            f"  niveau {lvl} ({len(names)} mot{'s' if len(names) > 1 else ''}, "
+            f"1 chance sur {max(1, round(1 / weight(lvl)))}) : {', '.join(names)}"
+            for lvl, names in bands.items()
+        )

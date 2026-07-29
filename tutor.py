@@ -23,7 +23,7 @@ from content import (
     Item, load_persona_system_prompt, load_roster, load_personal_items,
     add_personal_items, pieces_of, pick_next_index, vocab_set, _tokens, _contains_run,
 )
-from srs import ProgressStore, update_after_practice
+from srs import ProgressStore
 from voice import SpeechPipeline
 
 # One pipeline for the whole session: its synth/playback threads have to
@@ -107,6 +107,29 @@ TOOLS = [
     {
         "type": "function",
         "function": {
+            "name": "remember_word",
+            "description": (
+                "The learner explicitly asked how to say something that is not part of the course, "
+                "and you told them. Call this so the word joins their vocabulary and comes back "
+                "later like any other. Only on a real request from them -- never for a word you "
+                "merely mentioned, and never for something you suspect was misheard."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "name": {"type": "string", "description": "the Vietnamese word or phrase, correctly spelled"},
+                    "description": {
+                        "type": "string",
+                        "description": "Vietnamese-language notes (meaning, usage), same style as the course's own items",
+                    },
+                },
+                "required": ["name", "description"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
             "name": "deprioritize_item",
             "description": (
                 "The learner explicitly asked to stop working on a specific word/phrase, or on "
@@ -155,45 +178,6 @@ THEME_GENERATION_TOOL = [
         },
     }
 ]
-
-ASSESSMENT_TOOL = [
-    {
-        "type": "function",
-        "function": {
-            "name": "report_practice_results",
-            "description": "Report how the learner did on each item practiced this session.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "items": {
-                        "type": "array",
-                        "items": {
-                            "type": "object",
-                            "properties": {
-                                "name": {"type": "string"},
-                                "retrievals": {"type": "integer", "description": "successful recalls, not exposures"},
-                                "errors": {"type": "integer"},
-                                "user_initiated": {"type": "boolean"},
-                                "item_type": {
-                                    "type": "string", "enum": ["concept", "procedure"],
-                                    "description": "only for a spontaneous item not already tracked -- omit for known roster/personal items",
-                                },
-                                "category": {"type": "string", "description": "only for a spontaneous new item"},
-                                "description": {
-                                    "type": "string",
-                                    "description": "Vietnamese-language notes (meaning, tone, usage) -- only for a spontaneous new item, so it can be tracked going forward",
-                                },
-                            },
-                            "required": ["name", "retrievals", "errors"],
-                        },
-                    }
-                },
-                "required": ["items"],
-            },
-        },
-    }
-]
-
 
 def load_api_key() -> str:
     prefix = f"{API_KEY_ENV_VAR}="
@@ -559,7 +543,7 @@ def current_step(lesson: dict) -> Step | None:
     return plan[lesson["i"]] if lesson["i"] < len(plan) else None
 
 
-def start_item(lesson: dict, item: Item | None, seen_items: list[Item], recall_targets: list[str]) -> None:
+def start_item(lesson: dict, item: Item | None, seen_items: list[Item], store: ProgressStore) -> None:
     """Loads the plan for the next item and rewinds to its first step."""
     lesson["item"] = item
     lesson["i"] = 0
@@ -567,7 +551,9 @@ def start_item(lesson: dict, item: Item | None, seen_items: list[Item], recall_t
     if item is None:
         lesson["plan"] = []
         return
-    lesson["plan"] = build_plan(item, pieces_of(item, seen_items), recall_targets)
+    pieces = pieces_of(item, seen_items)
+    store.mark_introduced(item.name)
+    lesson["plan"] = build_plan(item, pieces, _recall_targets(store, item, pieces))
     kinds = " -> ".join(s.kind for s in lesson["plan"])
     print(f"  -> item : {item.name}  [{len(lesson['plan'])} tours : {kinds}]")
 
@@ -586,16 +572,18 @@ def learner_asked_something(user_text: str) -> bool:
     return "[lang:vi]" not in user_text and bool(_QUESTION_MARK.search(user_text.strip()))
 
 
-def _recall_targets(seen_items: list[Item], skip: Item | None) -> list[str]:
-    """Which already-taught words the rapid-fire slots will ask for.
+def _recall_targets(store: ProgressStore, item: Item | None, pieces: list[Item]) -> list[str]:
+    """Which already-met words the bare recall slots will ask for.
 
-    Deliberately crude for now -- most recently taught first, excluding the
-    item being worked. Step two replaces this with a weighted draw on each
-    word's level, so a word met once keeps coming back and one met often
-    fades, without ever dropping out.
+    Drawn by level, so the least consolidated word is likeliest and a
+    well-drilled one turns up rarely without ever dropping out. The item being
+    taught and the pieces its own chain already covers are excluded -- asking
+    for a word twice in the same handful of turns wastes a slot.
     """
-    names = [i.name for i in reversed(seen_items) if skip is None or i.name != skip.name]
-    return names
+    exclude = {p.name for p in pieces}
+    if item is not None:
+        exclude.add(item.name)
+    return store.draw_recalls(N_RAPIDFIRE, exclude=exclude)
 
 
 def _take_next(queue_items: list[Item], seen_items: list[Item], vocab: frozenset[str]) -> Item | None:
@@ -673,7 +661,27 @@ def _run_turn(api_key, messages, store, roster, queue_items, todays_items, theme
         args = json.loads(fn["arguments"])
         tool_result = "ok"
 
-        if fn["name"] == "set_session_focus" and args.get("topic"):
+        if fn["name"] == "remember_word" and args.get("name"):
+            # Captured live, on the learner's own request, instead of by a
+            # grader re-reading the transcript afterwards -- which is how
+            # "Je suis prêt", a mis-transcribed "I'm ready", once became a
+            # Vietnamese vocabulary item.
+            word = Item(
+                name=args["name"].strip(),
+                item_type="concept",
+                category="spontane",
+                language="vi",
+                description=args.get("description", "").strip(),
+                source="personnel",
+            )
+            if store.is_new(word.name):
+                add_personal_items(CONTENT_DIR, [word])
+                roster.append(word)
+                seen_items.append(word)
+                store.mark_introduced(word.name)
+                store.save()
+                print(f"  (mot retenu : {word.name})")
+        elif fn["name"] == "set_session_focus" and args.get("topic"):
             topic = args["topic"].strip()
             if topic.lower() not in themes_generated_this_session:
                 themes_generated_this_session.add(topic.lower())
@@ -745,13 +753,22 @@ def _conversation_loop(api_key, messages, store, roster, queue_items, todays_ite
             if learner_asked_something(user_input):
                 print("  (question de l'apprenant -- l'etape est rejouee apres reponse)")
             else:
+                # The step the learner just answered is done. If it asked for a
+                # word, that IS the exposure -- recorded here, where the code
+                # knows exactly what it asked, instead of being reconstructed
+                # afterwards by a model re-reading the transcript.
+                done = current_step(lesson)
+                if done is not None and done.kind in ("recall_piece", "rapidfire") and done.target:
+                    store.record_recall(done.target)
+                    print(f"  [niveau] {done.target} -> {store.level(done.target)}")
                 lesson["i"] += 1
             if current_step(lesson) is None:
                 item = _take_next(queue_items, seen_items, vocab)
                 if item is not None:
                     todays_items.append(item)
                     seen_items.append(item)
-                start_item(lesson, item, seen_items, _recall_targets(seen_items, item))
+                start_item(lesson, item, seen_items, store)
+                store.save()  # progress survives a crash without waiting for the end
 
         messages.append({"role": "user", "content": user_input})
         for _ in range(MAX_CHAINED_TOOL_TURNS):
@@ -812,69 +829,10 @@ def run_session():
         # through every retry) -- found live: without this, a mid-session
         # outage lost the whole session, since saving only ever happened
         # after a clean /fin.
-        print("\n--- Fin de session : evaluation en cours ---")
-        try:
-            run_assessment(api_key, messages, todays_items, store, today, roster)
-        except Exception as e:
-            print(f"  (evaluation impossible ({e}) -- la progression brute est quand meme sauvegardee)")
         store.save()
-        print(f"Progression sauvegardee dans {STATE_PATH}")
-
-
-def run_assessment(api_key, messages, todays_items, store, today, known_items):
-    transcript = "\n".join(
-        f"{m['role']}: {m.get('content', '')}" for m in messages if m["role"] in ("user", "assistant") and m.get("content")
-    )
-    items_list = "\n".join(f"- {i.name}" for i in todays_items)
-    assess_messages = [
-        {
-            "role": "system",
-            "content": (
-                "You are grading a language-learning conversation. Below is the full transcript "
-                "and the list of items that were supposed to be practiced. For each item that was "
-                "actually touched in the conversation, report how many times the learner SUCCESSFULLY "
-                "retrieved/used it correctly (not just heard it) and how many errors they made. "
-                "If the learner asked about or practiced a genuinely new word/phrase that is NOT in "
-                "the planned list, report it too, and additionally fill in item_type, category, and a "
-                "Vietnamese-language description (meaning, tone, usage) so it can be tracked going "
-                "forward -- omit those three fields for items already in the planned list. "
-                "Call report_practice_results with your findings. Omit items never actually touched."
-            ),
-        },
-        {"role": "user", "content": f"Items prevus:\n{items_list}\n\nTranscript:\n{transcript}"},
-    ]
-    result = call_llm(api_key, assess_messages, tools=ASSESSMENT_TOOL)
-    msg = result["choices"][0]["message"]
-    tool_calls = msg.get("tool_calls") or []
-    if not tool_calls:
-        print("  (aucune evaluation retournee)")
-        return
-    args = json.loads(tool_calls[0]["function"]["arguments"])
-    known_names = {i.name for i in known_items}
-    new_personal_items = []
-    for entry in args.get("items", []):
-        if entry["name"] not in known_names and entry.get("description"):
-            new_personal_items.append(Item(
-                name=entry["name"], item_type=entry.get("item_type", "concept"),
-                category=entry.get("category", "vocabulary"), language="vi",
-                description=entry["description"], source="personnel",
-            ))
-        existing = store.get(entry["name"])
-        if existing is None:
-            from srs import ItemState
-            existing = ItemState(name=entry["name"])
-        updated = update_after_practice(
-            existing, today,
-            retrievals=entry.get("retrievals", 0),
-            errors=entry.get("errors", 0),
-            user_initiated=entry.get("user_initiated", False),
-        )
-        store.set(updated)
-        print(f"  {entry['name']}: retrievals={entry.get('retrievals')} errors={entry.get('errors')} "
-              f"-> demi-vie={updated.half_life_days:.2f}j")
-    if new_personal_items:
-        add_personal_items(CONTENT_DIR, new_personal_items)
-        print(f"  ({len(new_personal_items)} nouveau(x) mot(s) spontane(s) ajoute(s) au suivi personnel)")
+        print("\n--- Fin de session ---")
+        print(store.summary())
+        print(f"\nProgression sauvegardee dans {STATE_PATH}")
 
 
 if __name__ == "__main__":
