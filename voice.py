@@ -160,6 +160,14 @@ def synthesize(text: str, voice_key: str, retries: int = 2) -> bytes | None:
             return None
 
 
+_WAV_MIN_BYTES = 128  # a RIFF header alone is 44; anything near that carries no speech
+
+
+def _is_playable_wav(audio: bytes) -> bool:
+    """Cheap sanity check before handing bytes to the sound driver."""
+    return len(audio) >= _WAV_MIN_BYTES and audio[:4] == b"RIFF" and audio[8:12] == b"WAVE"
+
+
 class SpeechPipeline:
     """Synthesizes the next clip while the current one is still playing.
 
@@ -190,9 +198,21 @@ class SpeechPipeline:
             future = self._to_play.get()
             try:
                 audio = future.result()
-                if audio is not None:  # None = Azure gave up; skip, don't hang
+                if audio is None:  # Azure gave up; skip, don't hang
+                    pass
+                elif not _is_playable_wav(audio):
+                    # Azure occasionally answers 200 with a body that is not
+                    # audio (an error document, or a truncated stream). Caught
+                    # here rather than handed to PlaySound, which would fall
+                    # back to the Windows default chime -- the mystery "ding"
+                    # heard mid-lesson was exactly this.
+                    print(f"  (audio invalide ignore: {len(audio)} octets, pas un WAV lisible)")
+                else:
                     self._playback_path.write_bytes(audio)
-                    winsound.PlaySound(str(self._playback_path), winsound.SND_FILENAME)
+                    winsound.PlaySound(
+                        str(self._playback_path),
+                        winsound.SND_FILENAME | winsound.SND_NODEFAULT,
+                    )
             except Exception as e:
                 print(f"  (lecture audio ignoree: {e})")
             finally:
