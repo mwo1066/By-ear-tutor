@@ -498,11 +498,21 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[str]) -> lis
     plan: list[Step] = []
 
     if not pieces:
+        # Two turns, not one. A single turn meant a word was revealed, heard
+        # once and gone -- three of them stacked back to back before anything
+        # was combined, which is what made the lesson feel like it was skimming.
+        # The reference course does the same thing: it gives the word, then
+        # comes straight back with "again, the word for X is ...".
         plan.append(Step(
             "introduce", item.name,
             f"Introduce the word {item.name}. One sentence of real context only if you have a true "
             f"fact worth telling, otherwise go straight in. End a sentence on the word itself, have "
             f"Minh say it twice alone, then ask the learner to say it. Nothing else.",
+        ))
+        plan.append(Step(
+            "settle", item.name,
+            f"Stay on {item.name} one more turn. React in a few words to what they just said, have "
+            f"Minh say it once more, and ask for it again. Do not introduce anything new.",
         ))
     else:
         for piece in pieces:
@@ -781,7 +791,7 @@ def _conversation_loop(api_key, messages, store, roster, queue_items, todays_ite
                 # knows exactly what it asked, instead of being reconstructed
                 # afterwards by a model re-reading the transcript.
                 done = current_step(lesson)
-                if done is not None and done.kind in ("recall_piece", "rapidfire") and done.target:
+                if done is not None and done.kind in ("recall_piece", "rapidfire", "settle") and done.target:
                     store.record_recall(done.target)
                     print(f"  [niveau] {done.target} -> {store.level(done.target)}")
                 lesson["i"] += 1

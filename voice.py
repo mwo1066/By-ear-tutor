@@ -161,6 +161,7 @@ def synthesize(text: str, voice_key: str, retries: int = 2) -> bytes | None:
 
 
 _WAV_MIN_BYTES = 128  # a RIFF header alone is 44; anything near that carries no speech
+_EMPTY_WAV_BYTES = 64  # at or under this it is just a header: silence, by design
 
 
 def _is_playable_wav(audio: bytes) -> bool:
@@ -206,7 +207,12 @@ class SpeechPipeline:
                     # here rather than handed to PlaySound, which would fall
                     # back to the Windows default chime -- the mystery "ding"
                     # heard mid-lesson was exactly this.
-                    print(f"  (audio invalide ignore: {len(audio)} octets, pas un WAV lisible)")
+                    # A bare header is the ordinary case, not a fault: a
+                    # stripped "Minh:" stage direction leaves an empty string,
+                    # and Azure dutifully returns silence. Nothing is lost, so
+                    # it is not worth a line of log every single turn.
+                    if len(audio) > _EMPTY_WAV_BYTES:
+                        print(f"  (audio invalide ignore: {len(audio)} octets)")
                 else:
                     self._playback_path.write_bytes(audio)
                     winsound.PlaySound(
