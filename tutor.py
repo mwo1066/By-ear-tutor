@@ -493,45 +493,43 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[str]) -> lis
     if not pieces:
         plan.append(Step(
             "introduce", item.name,
-            f"Introduis « {item.name} ». Une accroche d'une phrase SEULEMENT si tu as un fait reel "
-            f"a raconter, sinon enchaine directement. Revele le mot en finissant ta phrase dessus, "
-            f"Minh le dit DEUX fois seul, puis demande a l'apprenant de le dire. Rien d'autre.",
+            f"Introduce the word {item.name}. One sentence of real context only if you have a true "
+            f"fact worth telling, otherwise go straight in. End a sentence on the word itself, have "
+            f"Minh say it twice alone, then ask the learner to say it. Nothing else.",
         ))
     else:
         for piece in pieces:
             plan.append(Step(
                 "recall_piece", piece.name,
-                f"Demande UNIQUEMENT : « et encore une fois, c'etait quoi {piece.name} ? » "
-                f"(dans la langue de l'apprenant). Une seule question, puis tu t'arretes. "
-                f"N'annonce pas les autres morceaux, ne dis pas ce qu'il sait deja.",
+                f"Ask the learner what {piece.name} was. One question, in their own language, then "
+                f"stop. Do not name the other pieces, do not say what they already know.",
             ))
         plan.append(Step(
             "scaffold", item.name,
-            f"Donne l'ordre litteral vietnamien de « {item.name} » mot a mot dans la langue de "
-            f"l'apprenant, puis demande-lui la phrase complete. Ne l'assemble pas a sa place.",
+            f"Give the literal Vietnamese word order of {item.name}, word by word in the learner's "
+            f"language, then ask them for the whole sentence. Do not assemble it for them.",
         ))
         plan.append(Step(
             "answer", item.name,
-            f"Minh dit la phrase complete correcte DEUX fois. Puis demande la meme structure avec "
-            f"un element change. Une seule question.",
+            "Have Minh say the correct full sentence twice. Then ask for the same structure with one "
+            "element swapped. One question.",
         ))
         for _ in range(N_VARIATIONS - 1):
             plan.append(Step(
                 "vary", item.name,
-                "Meme structure, un seul element change, pose la comme une question et arrete-toi.",
+                "Same structure, one element swapped, asked as a question. Then stop.",
             ))
         if item.item_type == "procedure":
             plan.append(Step(
                 "rule", item.name,
-                "Enonce maintenant la regle en UNE phrase simple, comme un constat de ce qu'il "
-                "vient de produire. Puis enchaine sur une derniere question.",
+                "State the pattern now, in one plain sentence, as something they just noticed. Then "
+                "one last question.",
             ))
 
     for name in recall_targets[:N_RAPIDFIRE]:
         plan.append(Step(
             "rapidfire", name,
-            f"Rappel isole, sans contexte : « et tout seul, c'etait quoi {name} ? » "
-            f"Une seule question, puis tu t'arretes.",
+            f"Bare recall, no context: ask what {name} was, on its own. One question, then stop.",
         ))
     return plan
 
@@ -551,8 +549,8 @@ def _lesson_note(lesson: dict) -> str:
         return "\n".join(lines)
 
     if lesson["item"] is not None:
-        lines.append(f"Item travaille : {lesson['item'].name} — {lesson['item'].description}")
-    lines.append(f"CE TOUR-CI, UNIQUEMENT CECI : {step.instruction}")
+        lines.append(f"Item being worked: {lesson['item'].name} — {lesson['item'].description}")
+    lines.append(f"THIS TURN, THIS ONLY: {step.instruction}")
     return "\n".join(lines)
 
 
@@ -565,6 +563,7 @@ def start_item(lesson: dict, item: Item | None, seen_items: list[Item], recall_t
     """Loads the plan for the next item and rewinds to its first step."""
     lesson["item"] = item
     lesson["i"] = 0
+    lesson["started"] = True
     if item is None:
         lesson["plan"] = []
         return
@@ -790,7 +789,7 @@ def run_session():
     vocab = vocab_set(roster)
     # An empty plan means the opening turn: the tutor greets, and the first
     # item is loaded only once that turn is behind us.
-    lesson = {"item": None, "plan": [], "i": 0}
+    lesson = {"item": None, "plan": [], "i": 0, "started": False}
     global voice
     voice = SpeechPipeline(_vocab_words(roster))
     themes_generated_this_session: set[str] = set()

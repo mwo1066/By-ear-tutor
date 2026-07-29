@@ -65,7 +65,7 @@ def main() -> int:
     if not SPOKEN:
         print("ECHEC — la session n'a rien dit du tout")
         return 1
-    steps = [n for n in instructions if "CE TOUR-CI" in n]
+    steps = [n for n in instructions if "THIS TURN, THIS ONLY" in n]
     if not steps:
         print("ECHEC — aucune instruction d'etape n'a ete transmise au modele")
         return 1
