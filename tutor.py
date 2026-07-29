@@ -78,6 +78,10 @@ N_THEME_GENERATE = 4
 # session never runs dry -- not a target to hit.
 QUEUE_SIZE = 30
 
+# A turn is three sentences at most, so this is a ceiling against runaway
+# reasoning rather than a real constraint on what gets said.
+MAX_TOKENS_PER_TURN = 500
+
 # The teaching cycle is a state machine in code, not prose in the prompt, and
 # next_item is not a tool. Both for the same reason: the model holds no state
 # between turns. It re-derived its position by re-reading the conversation
@@ -263,9 +267,23 @@ def stream_llm_reply(api_key: str, models: list[str], messages: list[dict], tool
     for round_num in range(rounds):
         for model in models:
             got_any = False
+            reasoning_chars = 0
             tool_calls_acc: dict[int, dict] = {}
             try:
-                body = {"model": model, "messages": messages, "stream": True}
+                body = {
+                    "model": model,
+                    "messages": messages,
+                    "stream": True,
+                    # Bounded on purpose. gpt-oss reasons on a separate channel
+                    # before it says anything, and an unbounded budget lets it
+                    # think until it runs out with nothing spoken -- seen live
+                    # as finish_reason=length and total silence. A turn here is
+                    # three sentences at most, so this ceiling is generous.
+                    "max_tokens": MAX_TOKENS_PER_TURN,
+                    # Same reason: these turns are one instruction each, there
+                    # is nothing to deliberate about.
+                    "reasoning_effort": "low",
+                }
                 if tools:
                     body["tools"] = tools
                 req = urllib.request.Request(
@@ -289,6 +307,8 @@ def stream_llm_reply(api_key: str, models: list[str], messages: list[dict], tool
                             continue  # some providers send metadata-only chunks with an empty choices list
                         choice = chunk["choices"][0]
                         delta = choice["delta"]
+                        if delta.get("reasoning"):
+                            reasoning_chars += len(delta["reasoning"])
                         if delta.get("content"):
                             got_any = True
                             yield ("content", delta["content"])
@@ -307,9 +327,12 @@ def stream_llm_reply(api_key: str, models: list[str], messages: list[dict], tool
                                 slot["function"]["arguments"] += fn["arguments"]
                                 yield ("tool_call_partial", idx, slot["function"]["arguments"])
                         if choice.get("finish_reason"):
-                            print(f"  [diag] modele={model} finish_reason={choice['finish_reason']}")
-                            if choice["finish_reason"] == "length":
-                                print("  [diag] !! reponse TRONQUEE faute de place (max_tokens atteint) -- pas un choix du modele")
+                            extra = f", raisonnement={reasoning_chars} car" if reasoning_chars else ""
+                            print(f"  [diag] modele={model} finish_reason={choice['finish_reason']}{extra}")
+                            if choice["finish_reason"] == "length" and not got_any:
+                                print("  [diag] !! budget epuise SANS un mot dit -- le modele a raisonne dans le vide")
+                            elif choice["finish_reason"] == "length":
+                                print("  [diag] !! reponse coupee en cours de route (max_tokens atteint)")
                 yield ("tool_calls", [tool_calls_acc[i] for i in sorted(tool_calls_acc)])
                 return
             except _STREAM_ERRORS as e:
