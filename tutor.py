@@ -558,11 +558,23 @@ def _lesson_note(lesson: dict) -> str:
     Everything the model does not need in order to speak this turn is weight it
     pays for on every request.
     """
-    lines = ["ETAT DE LA LECON — contexte pour toi seul, jamais prononce a voix haute."]
+    lines = [
+        "LESSON STATE — for you only. This is a directive, never a script: do not read any of it "
+        "aloud and do not repeat its wording. Say it your own way, in the learner's language."
+    ]
     step = current_step(lesson)
 
     if step is None:
-        lines.append("Plus rien a enseigner. Termine la session naturellement, ou improvise une petite conversation libre.")
+        # An empty plan means opposite things at the two ends of a session --
+        # nothing started yet, or nothing left -- and conflating them made the
+        # tutor open with "let's wrap up for today" on the very first turn.
+        if lesson["started"]:
+            lines.append("Nothing left to teach. Wind the session down naturally, or make small talk.")
+        else:
+            lines.append(
+                "THIS TURN IS THE OPENING SPEECH AND NOTHING ELSE. Teach nothing, say no Vietnamese "
+                "word to be learned, end on your question and stop."
+            )
         return "\n".join(lines)
 
     if lesson["item"] is not None:
