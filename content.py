@@ -162,12 +162,3 @@ def _contains_run(haystack: list[str], needle: list[str]) -> bool:
 def load_persona_system_prompt(content_dir: Path) -> str:
     data = tomllib.loads((content_dir / "persona.toml").read_text(encoding="utf-8"))
     return data["persona"]["system_prompt"]
-
-
-def format_items_for_prompt(items: list[Item]) -> str:
-    """A compact block telling the LLM exactly which items to work today,
-    in order — replaces memai's selection payload for this simple standalone version."""
-    lines = ["Items a travailler cette session, dans cet ordre (ne pas en sauter, ne pas en ajouter d'autres) :"]
-    for i, item in enumerate(items, 1):
-        lines.append(f"{i}. [{item.item_type}/{item.category}] {item.name} — {item.description}")
-    return "\n".join(lines)

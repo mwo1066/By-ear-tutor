@@ -1,10 +1,12 @@
-"""Microphone capture (automatic silence detection, like memai's client)
-+ faster-whisper transcription.
+"""Microphone capture with automatic silence detection, transcribed on Groq.
 
-Uses webrtcvad frame-by-frame, same approach and aggressiveness (2) as
-memai's own client: waits for speech to start, keeps recording through it,
-and stops automatically after a stretch of trailing silence -- no key to
-press to end your turn.
+webrtcvad frame by frame: waits for speech to start, keeps recording through
+it, stops after a stretch of trailing silence. No key to press to end a turn.
+
+The local faster-whisper path that used to sit alongside this is gone. It had
+not run since Groq STT became the default, cost 1.3s of import on every start,
+and was where a vad_filter fix quietly stopped applying -- a fallback nobody
+exercises is not a fallback. It is in git history if it is ever wanted back.
 """
 import io
 import json
@@ -18,7 +20,6 @@ from pathlib import Path
 import numpy as np
 import sounddevice as sd
 import webrtcvad
-from faster_whisper import WhisperModel
 
 ENV_PATH = Path(__file__).parent / ".env"
 
@@ -34,30 +35,7 @@ TRAILING_SILENCE_MS = 1200        # stop after this much silence once speech has
 MAX_WAIT_FOR_SPEECH_S = 10        # give up if nobody starts talking
 MAX_RECORDING_S = 30              # hard safety cap
 
-_model: WhisperModel | None = None
 _vad = webrtcvad.Vad(VAD_AGGRESSIVENESS)
-
-
-def _get_model() -> WhisperModel:
-    global _model
-    if _model is None:
-        print("  (chargement du modele Whisper, une seule fois...)")
-        # cpu_threads=8: benchmarked live on this machine (12 logical cores) --
-        # the default under-uses available cores; 8 threads gave a consistent
-        # ~15-20% speedup over default, with 12 threads no better (overhead).
-        _model = WhisperModel("small", device="cpu", compute_type="int8", cpu_threads=8)
-    return _model
-
-
-def preload_model() -> None:
-    """Loads the local Whisper model up front so the cost doesn't land on
-    the first real listen -- found live: the first listen_and_transcribe()
-    call ate both the VAD wait AND several seconds of model loading,
-    sometimes eating into the speech-detection window itself and causing a
-    missed turn. No-op when USE_GROQ_STT is on -- there's no local model to
-    warm up, transcription happens on Groq's hardware instead."""
-    if not USE_GROQ_STT:
-        _get_model()
 
 
 def record_until_silence() -> np.ndarray:
@@ -150,26 +128,6 @@ def _trim_to_speech(frames: list[np.ndarray], speech_flags: list[bool]) -> np.nd
     return np.concatenate(kept, axis=0).flatten()
 
 
-def record_until_enter() -> np.ndarray:
-    """Push-to-talk: press Enter to start, Enter again to stop. Faster to
-    iterate with while testing -- no VAD trailing-silence wait, no risk of
-    it cutting you off early or missing a quiet start."""
-    frames: list[np.ndarray] = []
-
-    def callback(indata, frame_count, time_info, status):
-        frames.append(indata.copy())
-
-    stream = sd.InputStream(
-        samplerate=SAMPLE_RATE, channels=1, dtype="int16", callback=callback
-    )
-    print("  [enregistrement -- appuie sur Entree pour ARRETER]")
-    with stream:
-        input()
-    if not frames:
-        return np.array([], dtype=np.int16)
-    return np.concatenate(frames, axis=0).flatten()
-
-
 # Only languages that actually make sense here: the target language, and
 # the learner's own. Whisper's full language auto-detect will happily guess
 # Polish or Japanese from a few unclear syllables -- found live, attempts at
@@ -178,19 +136,6 @@ def record_until_enter() -> np.ndarray:
 # already knows how to handle -- so it gets normalized to "vi" instead of
 # passing through a meaningless exotic tag.
 ALLOWED_LANGUAGES = {"vi", "en", "fr"}
-
-
-def _run_transcribe(audio_float, language: str | None, initial_prompt: str | None):
-    segments, info = _get_model().transcribe(
-        audio_float, beam_size=5, vad_filter=True, language=language,
-        initial_prompt=initial_prompt,
-        # vad_filter trims silence before/around speech -- without it, silence-
-        # padded recordings can make Whisper hallucinate repeated phrases
-        # (seen live: "I don't know why, I don't know why...").
-        vad_parameters={"min_silence_duration_ms": 500},
-    )
-    text = " ".join(seg.text.strip() for seg in segments)
-    return text.strip(), info.language
 
 
 def _load_groq_key() -> str:
@@ -267,9 +212,6 @@ def _run_transcribe_groq(wav_bytes: bytes, language: str | None, prompt: str | N
 # local "small" CPU model -- consistent with the rest of the project (Azure
 # for TTS, Groq for the LLM): the priority is the learning experience, not
 # staying 100% local the way memai does. Toggle back to False to compare.
-USE_GROQ_STT = True
-
-
 def transcribe(audio: np.ndarray) -> tuple[str, str]:
     """Returns (text, language_code), language_code always in ALLOWED_LANGUAGES.
 
@@ -285,43 +227,25 @@ def transcribe(audio: np.ndarray) -> tuple[str, str]:
         return "", "en"
     print(f"  [diag] audio enregistre: {len(audio) / SAMPLE_RATE:.1f}s")
     t0 = time.monotonic()
-    if USE_GROQ_STT:
-        wav_bytes = _audio_to_wav_bytes(audio)
-        text, lang = _run_transcribe_groq(wav_bytes, language=None, prompt=None)
-        print(f"  [diag] 1ere passe groq stt: {time.monotonic() - t0:.1f}s (langue detectee: {lang})")
-        if lang not in ALLOWED_LANGUAGES:
-            t1 = time.monotonic()
-            text, _ = _run_transcribe_groq(wav_bytes, language="vi", prompt=None)
-            print(f"  [diag] 2eme passe groq stt (langue forcee vi): {time.monotonic() - t1:.1f}s")
-            lang = "vi"
-        return text, lang
-
-    audio_float = audio.astype(np.float32) / 32768.0
-    text, lang = _run_transcribe(audio_float, language=None, initial_prompt=None)
-    print(f"  [diag] 1ere passe whisper: {time.monotonic() - t0:.1f}s (langue detectee: {lang})")
+    wav_bytes = _audio_to_wav_bytes(audio)
+    text, lang = _run_transcribe_groq(wav_bytes, language=None, prompt=None)
+    print(f"  [diag] 1ere passe groq stt: {time.monotonic() - t0:.1f}s (langue detectee: {lang})")
     if lang not in ALLOWED_LANGUAGES:
         # Auto-detect landed on something nonsensical for this context (seen
         # live: literal Japanese/Korean script from a mangled pronunciation
-        # attempt) -- clamping just the language TAG before left the actual
-        # transcribed text in that foreign script, useless to the tutor.
-        # Re-run forcing Vietnamese phonetics instead of trusting the guess.
+        # attempt) -- clamping just the language TAG left the transcribed text
+        # in that foreign script, useless to the tutor. Re-run forcing
+        # Vietnamese phonetics instead of trusting the guess.
         t1 = time.monotonic()
-        text, _ = _run_transcribe(audio_float, language="vi", initial_prompt=None)
-        print(f"  [diag] 2eme passe whisper (langue forcee vi): {time.monotonic() - t1:.1f}s")
+        text, _ = _run_transcribe_groq(wav_bytes, language="vi", prompt=None)
+        print(f"  [diag] 2eme passe groq stt (langue forcee vi): {time.monotonic() - t1:.1f}s")
         lang = "vi"
     return text, lang
 
 
-# Found live: forgetting the second Enter press to STOP recording leaves
-# the program blocked on input(), looking exactly like "nothing happens."
-# Hands-free (VAD auto-stop) avoids that whole class of confusion.
-USE_PUSH_TO_TALK = False
-
-
 def listen_and_transcribe() -> str:
-    """Full turn: listen (push-to-talk or hands-free per USE_PUSH_TO_TALK),
-    transcribe, return a [lang:xx]-tagged string."""
-    audio = record_until_enter() if USE_PUSH_TO_TALK else record_until_silence()
+    """Full turn: listen hands-free, transcribe, return a [lang:xx]-tagged string."""
+    audio = record_until_silence()
     text, lang = transcribe(audio)
     if not text:
         return ""

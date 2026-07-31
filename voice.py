@@ -237,10 +237,3 @@ class SpeechPipeline:
         """Blocks until everything queued has actually finished playing --
         must be called before opening the mic, or it records our own voice."""
         self._to_play.join()
-
-
-def speak(text: str, known_vn_words: frozenset[str] = frozenset()) -> None:
-    """Blocking one-shot speech, kept for callers that don't hold a pipeline."""
-    pipeline = SpeechPipeline(known_vn_words)
-    pipeline.say(text)
-    pipeline.wait()

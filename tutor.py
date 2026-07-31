@@ -30,7 +30,7 @@ from voice import SpeechPipeline
 # outlive individual turns to keep synthesis running ahead of playback.
 # Set once in run_session, read by _run_turn.
 voice: SpeechPipeline
-from listen import listen_and_transcribe, preload_model
+from listen import listen_and_transcribe
 
 ROOT = Path(__file__).parent
 CONTENT_DIR = ROOT / "content" / "vietnamese"
@@ -638,7 +638,7 @@ def _take_next(queue_items: list[Item], seen_items: list[Item], vocab: frozenset
     return queue_items.pop(pick_next_index(queue_items, seen_items, vocab))
 
 
-def _run_turn(api_key, messages, store, roster, queue_items, todays_items, themes_generated_this_session,
+def _run_turn(api_key, messages, store, roster, queue_items, themes_generated_this_session,
               seen_items, vocab, lesson) -> bool:
     """Runs ONE assistant turn: streams the reply, speaks it, advances the
     lesson if the model signalled it moved on, and handles any tool calls.
@@ -766,7 +766,7 @@ def _run_turn(api_key, messages, store, roster, queue_items, todays_items, theme
 MAX_CHAINED_TOOL_TURNS = 5
 
 
-def _conversation_loop(api_key, messages, store, roster, queue_items, todays_items, themes_generated_this_session,
+def _conversation_loop(api_key, messages, store, roster, queue_items, themes_generated_this_session,
                        seen_items, vocab, lesson):
     """The live back-and-forth until interrupted (Ctrl+C). Pulled out of
     run_session so a fatal error here (e.g. the free model staying
@@ -810,14 +810,13 @@ def _conversation_loop(api_key, messages, store, roster, queue_items, todays_ite
             if current_step(lesson) is None:
                 item = _take_next(queue_items, seen_items, vocab)
                 if item is not None:
-                    todays_items.append(item)
                     seen_items.append(item)
                 start_item(lesson, item, seen_items, store)
                 store.save()  # progress survives a crash without waiting for the end
 
         messages.append({"role": "user", "content": user_input})
         for _ in range(MAX_CHAINED_TOOL_TURNS):
-            had_tool_calls = _run_turn(api_key, messages, store, roster, queue_items, todays_items,
+            had_tool_calls = _run_turn(api_key, messages, store, roster, queue_items,
                                        themes_generated_this_session, seen_items, vocab, lesson)
             if not had_tool_calls:
                 break  # model gave its final spoken reply for this turn -- back to listening
@@ -828,8 +827,6 @@ def run_session():
     print("Demarrage de la session...")
     api_key = load_api_key()
     persona_prompt = load_persona_system_prompt(CONTENT_DIR)
-    print("  (preparation du modele de reconnaissance vocale...)")
-    preload_model()
     # Curated roster FIRST. It is a composed progression -- atoms, then the
     # construction that assembles them -- whereas live-generated personal items
     # are mostly whole phrases. Found live: prepending personal items opened a
@@ -846,7 +843,6 @@ def run_session():
     # drawn as items -- they ride along in the lesson note as the pieces to
     # re-cite, which is where revision belongs in this method.
     queue_items = [by_name[n] for n in store.select_new(all_names, limit=QUEUE_SIZE)]
-    todays_items: list[Item] = []  # grows as the sequence advances -- never pre-decided
     seen_items = [i for i in roster if not store.is_new(i.name)]  # everything ever taught, roster order
     vocab = vocab_set(roster)
     # An empty plan means the opening turn: the tutor greets, and the first
@@ -867,7 +863,7 @@ def run_session():
     print("Ctrl+C pour terminer la session et sauvegarder ta progression -- plus besoin d'Entree apres celle-ci.\n")
 
     try:
-        _conversation_loop(api_key, messages, store, roster, queue_items, todays_items,
+        _conversation_loop(api_key, messages, store, roster, queue_items,
                            themes_generated_this_session, seen_items, vocab, lesson)
     finally:
         # Runs even on a fatal crash (e.g. the free model staying saturated

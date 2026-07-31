@@ -15,7 +15,6 @@ Run: python simulate_session.py [number_of_exchanges]
 """
 import sys
 import time
-from datetime import date
 from pathlib import Path
 
 sys.stdout.reconfigure(encoding="utf-8")
@@ -25,8 +24,8 @@ from content import (
 )
 from srs import ProgressStore
 from tutor import (
-    CONTENT_DIR, STATE_PATH, MODEL_FALLBACKS, QUEUE_SIZE, REVIEW_POOL_SIZE,
-    TOOLS, _ADVANCE_RE, _advance_lesson, _lesson_note, _take_next,
+    CONTENT_DIR, STATE_PATH, MODEL_FALLBACKS, QUEUE_SIZE, TOOLS,
+    _lesson_note, _take_next, current_step, learner_asked_something, start_item,
     load_api_key, stream_llm_reply,
 )
 
@@ -75,12 +74,9 @@ def main(n_exchanges: int) -> None:
     by_name = {i.name: i for i in roster}
 
     queue = [by_name[n] for n in store.select_new(all_names, limit=QUEUE_SIZE)]
-    review_pool = [by_name[n] for n in store.select_reviews(all_names, date.today(), limit=REVIEW_POOL_SIZE)]
     seen = [i for i in roster if not store.is_new(i.name)]
     vocab = vocab_set(roster)
-
-    lesson = {"current": None, "upcoming": _take_next(queue, seen, vocab)}
-    todays: list = []
+    lesson = {"item": None, "plan": [], "i": 0, "started": False}
 
     messages = [{"role": "system", "content": load_persona_system_prompt(CONTENT_DIR)}]
     messages.append({"role": "user", "content": "[lang:en] Hi, I'm ready."})
@@ -92,7 +88,7 @@ def main(n_exchanges: int) -> None:
         # then the learner answering. Mirrors _run_turn's chaining.
         for _ in range(5):
             text, tool_calls = "", []
-            note = _lesson_note(lesson["current"], lesson["upcoming"], seen, review_pool)
+            note = _lesson_note(lesson)
             for kind, *payload in stream_llm_reply(
                 api_key, MODEL_FALLBACKS, messages + [{"role": "system", "content": note}], tools=TOOLS
             ):
@@ -100,9 +96,7 @@ def main(n_exchanges: int) -> None:
                     text += payload[0]
                 elif kind == "tool_calls":
                     tool_calls = payload[0]
-            if _ADVANCE_RE.search(text) and lesson["upcoming"] is not None:
-                _advance_lesson(lesson, queue, todays, seen, vocab)
-            spoken = _ADVANCE_RE.sub("", text).strip()
+            spoken = text.strip()
             if spoken:
                 print(f"TUTEUR : {spoken}\n")
                 transcript.append(f"TUTEUR: {spoken}")
@@ -120,7 +114,18 @@ def main(n_exchanges: int) -> None:
         reply = learner_reply(api_key, transcript)
         print(f"ELEVE : {reply}\n")
         transcript.append(f"ELEVE: {reply}")
-        messages.append({"role": "user", "content": f"[lang:{_lang_tag(reply)}] {reply}"})
+        tagged = f"[lang:{_lang_tag(reply)}] {reply}"
+        messages.append({"role": "user", "content": tagged})
+
+        # Same plan bookkeeping as the real loop, so a transcript from here
+        # reflects a real lesson rather than a parallel version of one.
+        if not learner_asked_something(tagged):
+            lesson["i"] += 1
+        if current_step(lesson) is None:
+            item = _take_next(queue, seen, vocab)
+            if item is not None:
+                seen.append(item)
+            start_item(lesson, item, seen, store)
         time.sleep(SECONDS_BETWEEN_TURNS)
 
 
