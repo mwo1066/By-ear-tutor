@@ -154,9 +154,9 @@ def synthesize(text: str, voice_key: str, retries: int = 2) -> bytes | None:
                 return resp.read()
         except _TTS_ERRORS as e:
             if attempt < retries - 1:
-                print(f"  (Azure TTS: {e} -- nouvel essai...)")
+                print(f"  (Azure TTS: {e} -- retrying...)")
                 continue
-            print(f"  (Azure TTS indisponible apres {retries} essais ({e}) -- ce passage ne sera pas dit a voix haute)")
+            print(f"  (Azure TTS unavailable after {retries} attempts ({e}) -- this passage will not be spoken)")
             return None
 
 
@@ -212,7 +212,7 @@ class SpeechPipeline:
                     # and Azure dutifully returns silence. Nothing is lost, so
                     # it is not worth a line of log every single turn.
                     if len(audio) > _EMPTY_WAV_BYTES:
-                        print(f"  (audio invalide ignore: {len(audio)} octets)")
+                        print(f"  (invalid audio skipped: {len(audio)} bytes)")
                 else:
                     self._playback_path.write_bytes(audio)
                     winsound.PlaySound(
@@ -220,7 +220,7 @@ class SpeechPipeline:
                         winsound.SND_FILENAME | winsound.SND_NODEFAULT,
                     )
             except Exception as e:
-                print(f"  (lecture audio ignoree: {e})")
+                print(f"  (playback skipped: {e})")
             finally:
                 self._to_play.task_done()
 

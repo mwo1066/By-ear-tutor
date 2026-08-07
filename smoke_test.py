@@ -59,31 +59,31 @@ def main() -> int:
     except KeyboardInterrupt:
         pass  # the intended way out
     except Exception as e:
-        print(f"ECHEC — la session a plante : {type(e).__name__}: {e}")
+        print(f"FAIL — the session crashed: {type(e).__name__}: {e}")
         raise
 
     if not SPOKEN:
-        print("ECHEC — la session n'a rien dit du tout")
+        print("FAIL — the session said nothing at all")
         return 1
     # The opening turn must ask for the opening speech, not the wind-down.
     # An empty plan means both "not started" and "finished", and conflating
     # them once made the tutor greet with "let's wrap up for today".
     if "OPENING SPEECH" not in instructions[0]:
-        print("ECHEC — le premier tour n'a pas demande le discours d'ouverture :")
+        print("FAIL — the first turn did not ask for the opening speech:")
         print("   ", instructions[0].splitlines()[-1][:120])
         return 1
 
     steps = [n for n in instructions if "THIS TURN, THIS ONLY" in n]
     if not steps:
-        print("ECHEC — aucune instruction d'etape n'a ete transmise au modele")
+        print("FAIL — no step instruction was ever handed to the model")
         return 1
     if len(set(steps)) < 2:
-        print("ECHEC — la meme etape a ete servie deux fois : le plan n'avance pas")
+        print("FAIL — the same step was served twice: the plan is not advancing")
         for n in steps:
             print("   ", n.splitlines()[-1][:100])
         return 1
 
-    print(f"OK — session complete, {len(SPOKEN)} passages parles, {len(steps)} etapes distinctes servies")
+    print(f"OK — session completed, {len(SPOKEN)} passages spoken, {len(steps)} distinct steps served")
     for n in steps:
         print("   ", n.splitlines()[-1][:110])
     return 0

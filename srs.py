@@ -120,12 +120,12 @@ class ProgressStore:
     def summary(self) -> str:
         """One line per level band, for the end-of-session print."""
         if not self._states:
-            return "(rien appris pour l'instant)"
+            return "(nothing learned yet)"
         bands: dict[int, list[str]] = {}
         for s in sorted(self._states.values(), key=lambda s: s.level):
             bands.setdefault(s.level, []).append(s.name)
         return "\n".join(
-            f"  niveau {lvl} ({len(names)} mot{'s' if len(names) > 1 else ''}, "
-            f"1 chance sur {max(1, round(1 / weight(lvl)))}) : {', '.join(names)}"
+            f"  level {lvl} ({len(names)} word{'s' if len(names) > 1 else ''}, "
+            f"1 in {max(1, round(1 / weight(lvl)))}) : {', '.join(names)}"
             for lvl, names in bands.items()
         )

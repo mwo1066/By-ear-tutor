@@ -73,7 +73,7 @@ def record_until_silence() -> np.ndarray:
             if consecutive_silence_frames >= frames_needed_silence:
                 done = True
 
-    print("  [ecoute en cours -- parle maintenant. NE RAPPUIE PAS sur Entree, ca s'arrete tout seul quand tu te tais]")
+    print("  [listening -- speak now. Do NOT press Enter, it stops on its own when you go quiet]")
     with sd.InputStream(
         samplerate=SAMPLE_RATE, channels=1, dtype="int16",
         blocksize=FRAME_SAMPLES, callback=callback,
@@ -87,8 +87,8 @@ def record_until_silence() -> np.ndarray:
                 break
 
     total_frames = len(frames)
-    speech_first_str = f"{speech_first_detected_at:.1f}s" if speech_first_detected_at is not None else "jamais"
-    print(f"  [diag] parole detectee apres: {speech_first_str} -- frames de parole: {speech_frame_count}/{total_frames} -- bruit ayant interrompu un silence: {silence_reset_count}x")
+    speech_first_str = f"{speech_first_detected_at:.1f}s" if speech_first_detected_at is not None else "never"
+    print(f"  [diag] speech after: {speech_first_str} -- speech frames: {speech_frame_count}/{total_frames} -- noise breaking a silence: {silence_reset_count}x")
 
     if not frames:
         return np.array([], dtype=np.int16)
@@ -124,7 +124,7 @@ def _trim_to_speech(frames: list[np.ndarray], speech_flags: list[bool]) -> np.nd
     kept = frames[start:end]
     dropped_ms = (len(frames) - len(kept)) * FRAME_MS
     if dropped_ms:
-        print(f"  [diag] silence retire avant envoi: {dropped_ms}ms ({len(kept)}/{len(frames)} frames gardees)")
+        print(f"  [diag] silence trimmed before upload: {dropped_ms}ms ({len(kept)}/{len(frames)} frames kept)")
     return np.concatenate(kept, axis=0).flatten()
 
 
@@ -225,11 +225,11 @@ def transcribe(audio: np.ndarray) -> tuple[str, str]:
     """
     if audio.size == 0:
         return "", "en"
-    print(f"  [diag] audio enregistre: {len(audio) / SAMPLE_RATE:.1f}s")
+    print(f"  [diag] audio recorded: {len(audio) / SAMPLE_RATE:.1f}s")
     t0 = time.monotonic()
     wav_bytes = _audio_to_wav_bytes(audio)
     text, lang = _run_transcribe_groq(wav_bytes, language=None, prompt=None)
-    print(f"  [diag] 1ere passe groq stt: {time.monotonic() - t0:.1f}s (langue detectee: {lang})")
+    print(f"  [diag] groq stt pass 1: {time.monotonic() - t0:.1f}s (detected language: {lang})")
     if lang not in ALLOWED_LANGUAGES:
         # Auto-detect landed on something nonsensical for this context (seen
         # live: literal Japanese/Korean script from a mangled pronunciation
@@ -238,7 +238,7 @@ def transcribe(audio: np.ndarray) -> tuple[str, str]:
         # Vietnamese phonetics instead of trusting the guess.
         t1 = time.monotonic()
         text, _ = _run_transcribe_groq(wav_bytes, language="vi", prompt=None)
-        print(f"  [diag] 2eme passe groq stt (langue forcee vi): {time.monotonic() - t1:.1f}s")
+        print(f"  [diag] groq stt pass 2 (forced vi): {time.monotonic() - t1:.1f}s")
         lang = "vi"
     return text, lang
 

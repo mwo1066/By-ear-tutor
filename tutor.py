@@ -1,8 +1,13 @@
-"""Text-only tutor loop — step 2: prove the brain works before adding voice.
+"""The lesson loop: plans each turn, speaks it, listens, and moves on.
+
+Voice only. Nothing is typed and nothing is read: the tutor speaks, the mic
+opens on its own, and the recording stops when you go quiet. Ctrl+C ends the
+session and saves.
+
+The teaching sequence is decided here rather than by the model, one turn at a
+time -- see build_plan. The model supplies the words, never the structure.
 
 Run: python tutor.py
-Type your replies; type /fin to end the session and run the end-of-session
-assessment pass that updates spaced-repetition state.
 """
 import json
 import os
@@ -37,9 +42,11 @@ CONTENT_DIR = ROOT / "content" / "vietnamese"
 STATE_PATH = ROOT / "state.json"
 ENV_PATH = ROOT / ".env"
 
-# groq branch: swapped from OpenRouter's free-tier Nemotron (shared leftover
-# capacity, documented slow p95) to Groq's own dedicated LPU hardware --
-# free within real rate limits (30k tokens/min, 14400 req/day), not scraps.
+# Groq, after OpenRouter's free tier proved too slow to hold a conversation.
+# Its free limit is real and tight: measured at 8000 tokens per minute for the
+# model below, which at roughly 3000 tokens a request allows about two and a
+# half turns a minute. Exceeding it earns a Retry-After of a minute or more,
+# so keeping the system prompt small is a pacing concern, not tidiness.
 API_BASE_URL = "https://api.groq.com/openai/v1/chat/completions"
 API_KEY_ENV_VAR = "GROQ_API_KEY"
 # ONE model, no fallback. The fallback list is a leftover from the OpenRouter
@@ -215,7 +222,7 @@ def _try_model(api_key: str, model: str, messages: list[dict], tools: list[dict]
                 code = parsed["error"].get("code")
                 if code in RETRYABLE_CODES and attempt < retries - 1:
                     wait = 5 * (attempt + 1)
-                    print(f"  ({model}: {parsed['error'].get('message', code)} — nouvel essai dans {wait}s...)")
+                    print(f"  ({model}: {parsed['error'].get('message', code)} — retrying in {wait}s...)")
                     time.sleep(wait)
                     continue
                 if code in RETRYABLE_CODES:
@@ -225,7 +232,7 @@ def _try_model(api_key: str, model: str, messages: list[dict], tools: list[dict]
         except urllib.error.HTTPError as e:
             if e.code in RETRYABLE_CODES and attempt < retries - 1:
                 wait = 5 * (attempt + 1)
-                print(f"  ({model}: HTTP {e.code} — nouvel essai dans {wait}s...)")
+                print(f"  ({model}: HTTP {e.code} — retrying in {wait}s...)")
                 time.sleep(wait)
                 continue
             if e.code in RETRYABLE_CODES:
@@ -239,7 +246,7 @@ def call_llm(api_key: str, messages: list[dict], tools: list[dict] | None = None
     """Non-streaming call, used by the theme and assessment passes."""
     result = _try_model(api_key, MODEL, messages, tools, retries)
     if result is None:
-        raise RuntimeError(f"{MODEL} indisponible apres {retries} tentatives")
+        raise RuntimeError(f"{MODEL} unavailable after {retries} attempts")
     return result
 
 
@@ -330,23 +337,23 @@ def stream_llm_reply(api_key: str, models: list[str], messages: list[dict], tool
                             extra = f", raisonnement={reasoning_chars} car" if reasoning_chars else ""
                             print(f"  [diag] modele={model} finish_reason={choice['finish_reason']}{extra}")
                             if choice["finish_reason"] == "length" and not got_any:
-                                print("  [diag] !! budget epuise SANS un mot dit -- le modele a raisonne dans le vide")
+                                print("  [diag] !! budget spent WITHOUT a word said -- the model reasoned into the void")
                             elif choice["finish_reason"] == "length":
-                                print("  [diag] !! reponse coupee en cours de route (max_tokens atteint)")
+                                print("  [diag] !! reply cut off mid-sentence (max_tokens reached)")
                 yield ("tool_calls", [tool_calls_acc[i] for i in sorted(tool_calls_acc)])
                 return
             except _STREAM_ERRORS as e:
                 if got_any:
-                    print(f"  (flux interrompu apres un debut de reponse ({e}) -- fin du tour sans reessayer)")
+                    print(f"  (stream broke after speech had started ({e}) -- ending the turn without retrying)")
                     yield ("tool_calls", [tool_calls_acc[i] for i in sorted(tool_calls_acc)])
                     return
                 last_error = e
                 print(f"  ({model}: {e})")
         if round_num < rounds - 1:
             wait = _retry_after_seconds(last_error, default=2 * (round_num + 1))
-            print(f"  (nouvel essai dans {wait:.0f}s...)")
+            print(f"  (retrying in {wait:.0f}s...)")
             time.sleep(wait)
-    raise RuntimeError(f"{models} indisponible apres {rounds} tentatives: {last_error}")
+    raise RuntimeError(f"{models} unavailable after {rounds} attempts: {last_error}")
 
 
 def _retry_after_seconds(error, default: float) -> float:
@@ -400,7 +407,7 @@ def _extract_complete_json_objects(text: str) -> list[str]:
 def generate_theme_items(api_key: str, topic: str, known_items: list[Item], count: int) -> list[Item]:
     """One-off LLM call producing a batch of new Vietnamese items for a
     learner-requested theme, in the same shape/style as the curated roster."""
-    known_names = ", ".join(i.name for i in known_items) or "(aucun)"
+    known_names = ", ".join(i.name for i in known_items) or "(none)"
     example = known_items[0] if known_items else None
     example_line = (
         f'Exemple de style pour "description" (meme langue, meme niveau de detail): '
@@ -422,10 +429,10 @@ def generate_theme_items(api_key: str, topic: str, known_items: list[Item], coun
         {
             "role": "user",
             "content": (
-                f"Theme demande par l'apprenant : {topic}\n"
-                f"Items deja connus (ne pas dupliquer) : {known_names}\n"
+                f"Theme requested by the learner: {topic}\n"
+                f"Items already known (do not duplicate): {known_names}\n"
                 f"{example_line}\n"
-                f"Propose exactement {count} nouveaux items pour ce theme."
+                f"Propose exactly {count} new items for this theme."
             ),
         },
     ]
@@ -445,7 +452,7 @@ def generate_theme_items(api_key: str, topic: str, known_items: list[Item], coun
                 name=entry["name"], item_type=entry["item_type"], category=entry["category"],
                 language="vi", description=entry["description"], source="personnel", topic=topic,
             ))
-            print(f"    -> item {len(items)}/{count} pret: {entry['name']}")
+            print(f"    -> item {len(items)}/{count} ready: {entry['name']}")
         n_extracted = len(complete)
     return items
 
@@ -600,7 +607,7 @@ def start_item(lesson: dict, item: Item | None, seen_items: list[Item], store: P
     store.mark_introduced(item.name)
     lesson["plan"] = build_plan(item, pieces, _recall_targets(store, item, pieces))
     kinds = " -> ".join(s.kind for s in lesson["plan"])
-    print(f"  -> item : {item.name}  [{len(lesson['plan'])} tours : {kinds}]")
+    print(f"  -> item: {item.name}  [{len(lesson['plan'])} turns: {kinds}]")
 
 
 _QUESTION_MARK = re.compile(r"\?\s*$")
@@ -661,14 +668,14 @@ def _run_turn(api_key, messages, store, roster, queue_items, themes_generated_th
             text = payload[0]
             if first_chunk_at is None:
                 first_chunk_at = time.monotonic()
-                print(f"  [chrono] premier morceau recu: {first_chunk_at - t0:.1f}s")
+                print(f"  [timing] first chunk received: {first_chunk_at - t0:.1f}s")
             buffer += text
             full_text += text
             while (m := _SENTENCE_BOUNDARY.search(buffer)):
                 sentence = buffer[:m.end()].strip()
                 buffer = buffer[m.end():]
                 if sentence:
-                    print(f"tuteur: {sentence}")
+                    print(f"tutor: {sentence}")
                     voice.say(sentence)
         elif kind == "tool_calls":
             tool_calls_final = payload[0]
@@ -677,7 +684,7 @@ def _run_turn(api_key, messages, store, roster, queue_items, themes_generated_th
         # have trivial arguments not worth streaming progress for.
     tail = buffer.strip()
     if tail:
-        print(f"tuteur: {tail}")
+        print(f"tutor: {tail}")
         voice.say(tail)
 
     if not full_text.strip() and tool_calls_final:
@@ -688,12 +695,12 @@ def _run_turn(api_key, messages, store, roster, queue_items, themes_generated_th
         # for accompanying speech. Prompting alone cannot fix this, so
         # a silent tool call gets a minimal filler line instead of dead air.
         filler = random.choice(["Alright, let's continue.", "Okay, moving on.", "Great, let's keep going."])
-        print(f"tuteur: {filler}  [filet: tool_call sans texte]")
+        print(f"tutor: {filler}  [safety net: tool call with no text]")
         voice.say(filler)
         full_text = filler
 
     voice.wait()  # never open the mic while our own voice is still playing
-    print(f"  [chrono] total (reponse + voix): {time.monotonic() - t0:.1f}s")
+    print(f"  [timing] total (reply + speech): {time.monotonic() - t0:.1f}s")
 
     msg = {"role": "assistant", "content": full_text or None}
     if tool_calls_final:
@@ -725,30 +732,30 @@ def _run_turn(api_key, messages, store, roster, queue_items, themes_generated_th
                 seen_items.append(word)
                 store.mark_introduced(word.name)
                 store.save()
-                print(f"  (mot retenu : {word.name})")
+                print(f"  (word remembered: {word.name})")
         elif fn["name"] == "set_session_focus" and args.get("topic"):
             topic = args["topic"].strip()
             if topic.lower() not in themes_generated_this_session:
                 themes_generated_this_session.add(topic.lower())
-                print(f"  (generation des items pour '{topic}' en cours -- peut prendre du temps sur le modele gratuit...)")
+                print(f"  (generating items for '{topic}' -- this can take a while...)")
                 t_theme = time.monotonic()
                 new_items = generate_theme_items(api_key, topic, roster, N_THEME_GENERATE)
-                print(f"  [chrono] generation theme: {time.monotonic() - t_theme:.1f}s")
+                print(f"  [timing] theme generation: {time.monotonic() - t_theme:.1f}s")
                 if new_items:
                     add_personal_items(CONTENT_DIR, new_items)
                     roster.extend(new_items)
                     queue_items[:0] = new_items  # jump the queue: requested content comes next
-                    print(f"  (theme '{topic}': {len(new_items)} items generes, ajoutes en tete de la file)")
+                    print(f"  (theme '{topic}': {len(new_items)} items generated, moved to the front of the queue)")
         elif fn["name"] == "deprioritize_item":
             if args.get("name"):
                 store.deprioritize(args["name"])
-                print(f"  (deprioritise: {args['name']})")
+                print(f"  (deprioritised: {args['name']})")
             if args.get("topic"):
                 topic_lower = args["topic"].strip().lower()
                 matched = [i.name for i in roster if (i.topic or "").lower() == topic_lower]
                 for name in matched:
                     store.deprioritize(name)
-                print(f"  (deprioritise: theme '{args['topic']}' -- {len(matched)} item(s))")
+                print(f"  (deprioritised: theme '{args['topic']}' -- {len(matched)} item(s))")
 
         messages.append({
             "role": "tool",
@@ -780,15 +787,15 @@ def _conversation_loop(api_key, messages, store, roster, queue_items, themes_gen
     while True:
         if turns_done == 0:
             user_input = "[lang:en] Hi, I'm ready."
-            print(f"(auto) toi: {user_input}")
+            print(f"(auto) you: {user_input}")
         else:
             t0 = time.monotonic()
             user_input = listen_and_transcribe()
-            print(f"  [chrono] ecoute+transcription: {time.monotonic() - t0:.1f}s")
+            print(f"  [timing] listen+transcribe: {time.monotonic() - t0:.1f}s")
             if not user_input:
-                print("  (rien entendu, on reecoute)")
+                print("  (nothing heard, listening again)")
                 continue
-            print(f"toi (transcrit): {user_input}")
+            print(f"you (transcribed): {user_input}")
 
         # The learner's turn is what closes the step the tutor just set up, so
         # the plan advances HERE, not after the tutor speaks. Turn zero is the
@@ -796,7 +803,7 @@ def _conversation_loop(api_key, messages, store, roster, queue_items, themes_gen
         # the tutor greets and teaches in the same breath.
         if turns_done > 0:
             if learner_asked_something(user_input):
-                print("  (question de l'apprenant -- l'etape est rejouee apres reponse)")
+                print("  (learner asked a question -- the step is replayed after answering)")
             else:
                 # The step the learner just answered is done. If it asked for a
                 # word, that IS the exposure -- recorded here, where the code
@@ -805,7 +812,7 @@ def _conversation_loop(api_key, messages, store, roster, queue_items, themes_gen
                 done = current_step(lesson)
                 if done is not None and done.kind in ("recall_piece", "rapidfire", "settle") and done.target:
                     store.record_recall(done.target)
-                    print(f"  [niveau] {done.target} -> {store.level(done.target)}")
+                    print(f"  [level] {done.target} -> {store.level(done.target)}")
                 lesson["i"] += 1
             if current_step(lesson) is None:
                 item = _take_next(queue_items, seen_items, vocab)
@@ -824,7 +831,7 @@ def _conversation_loop(api_key, messages, store, roster, queue_items, themes_gen
 
 
 def run_session():
-    print("Demarrage de la session...")
+    print("Starting session...")
     api_key = load_api_key()
     persona_prompt = load_persona_system_prompt(CONTENT_DIR)
     # Curated roster FIRST. It is a composed progression -- atoms, then the
@@ -852,7 +859,7 @@ def run_session():
     voice = SpeechPipeline(_vocab_words(roster))
     themes_generated_this_session: set[str] = set()
 
-    print(f"--- Reservoir prepare : {len(queue_items)} items a enseigner ---")
+    print(f"--- Reservoir ready: {len(queue_items)} items to teach ---")
 
     # Skip-intro instruction removed -- found live: it got over-applied, the
     # model dropped ALL spoken content, not just the opening speech. Keeping
@@ -860,7 +867,7 @@ def run_session():
 
     messages = [{"role": "system", "content": persona_prompt}]
 
-    print("Ctrl+C pour terminer la session et sauvegarder ta progression -- plus besoin d'Entree apres celle-ci.\n")
+    print("Ctrl+C ends the session and saves your progress. No Enter needed from here on.\n")
 
     try:
         _conversation_loop(api_key, messages, store, roster, queue_items,
@@ -871,9 +878,9 @@ def run_session():
         # outage lost the whole session, since saving only ever happened
         # after a clean /fin.
         store.save()
-        print("\n--- Fin de session ---")
+        print("\n--- End of session ---")
         print(store.summary())
-        print(f"\nProgression sauvegardee dans {STATE_PATH}")
+        print(f"\nProgress saved to {STATE_PATH}")
 
 
 if __name__ == "__main__":
