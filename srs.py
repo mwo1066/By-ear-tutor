@@ -55,10 +55,15 @@ class ProgressStore:
     promoted a mis-transcription into the vocabulary.
     """
 
-    def __init__(self, path: Path):
+    def __init__(self, path: Path | None):
+        """A path of None means a throwaway store: starts empty, saves nothing.
+
+        Used by --fresh while the teaching loop is being worked on, where
+        carried-over progress makes every run start somewhere different.
+        """
         self.path = path
         self._states: dict[str, ItemState] = {}
-        if path.exists():
+        if path is not None and path.exists():
             raw = json.loads(path.read_text(encoding="utf-8"))
             for name, entry in raw.items():
                 # Tolerates the old half-life format by keeping only the name.
@@ -114,6 +119,8 @@ class ProgressStore:
         return picked
 
     def save(self) -> None:
+        if self.path is None:
+            return
         raw = {name: asdict(s) for name, s in self._states.items()}
         self.path.write_text(json.dumps(raw, ensure_ascii=False, indent=2), encoding="utf-8")
 

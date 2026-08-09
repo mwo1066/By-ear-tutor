@@ -1014,8 +1014,12 @@ def _conversation_loop(api_key, messages, store, roster, queue_items, themes_gen
         turns_done += 1
 
 
-def run_session():
-    print("Starting session...")
+def run_session(fresh: bool = False):
+    """Runs one lesson. `fresh` starts from the first word and saves nothing --
+    for testing the teaching loop, where carried-over progress means every run
+    begins somewhere different and no two runs can be compared.
+    """
+    print("Starting session..." if not fresh else "Starting session... [fresh: nothing will be saved]")
     api_key = load_api_key()
     persona_prompt = load_persona_system_prompt(CONTENT_DIR)
     # Curated roster FIRST. It is a composed progression -- atoms, then the
@@ -1025,7 +1029,7 @@ def run_session():
     # words had never been taught. pick_next_index guards this properly now;
     # the order here just stops the guard from having to fight the queue.
     roster = load_roster(CONTENT_DIR) + load_personal_items(CONTENT_DIR)
-    store = ProgressStore(STATE_PATH)
+    store = ProgressStore(None if fresh else STATE_PATH)
 
     today = date.today()
     by_name = {i.name: i for i in roster}
@@ -1073,4 +1077,4 @@ def run_session():
 
 
 if __name__ == "__main__":
-    run_session()
+    run_session(fresh="--fresh" in sys.argv)

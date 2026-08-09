@@ -89,6 +89,14 @@ Talk when it asks. Ctrl+C ends the session and saves your progress to
 `state.json`.
 
 ```bash
+python tutor.py --fresh
+```
+
+Same lesson from the first word, saving nothing. For working on the teaching
+loop itself, where carried-over progress means no two runs start in the same
+place and none of them can be compared.
+
+```bash
 python smoke_test.py
 ```
 
