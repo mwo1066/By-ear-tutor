@@ -624,8 +624,9 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item]) -> li
             f'Introduce {item.name}. Say in ONE sentence that the Vietnamese for {_ask_for(item)} is '
             f'{item.name} — the meaning and the word together, ending on the word, so the pair lands '
             f'as one thing. (One sentence of real context first only if you have a true fact worth '
-            f'telling.) Then give Minh a single line, the word said twice: "{item.name}, '
-            f'{item.name}." Then ask them to say it. Nothing else.',
+            f'telling.) Then give Minh a single line containing the word ONCE: "{item.name}." '
+            f'By then they have heard it twice, at the end of your sentence and from Minh, which is '
+            f'enough. Then ask them to say it. Nothing else.',
         ))
         plan.append(Step(
             "settle", item.name,
