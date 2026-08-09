@@ -9,12 +9,14 @@ time -- see build_plan. The model supplies the words, never the structure.
 
 Run: python tutor.py
 """
+import difflib
 import json
 import os
 import random
 import re
 import sys
 import time
+import unicodedata
 import urllib.error
 import urllib.request
 from dataclasses import dataclass
@@ -688,6 +690,13 @@ def _lesson_note(lesson: dict) -> str:
     if lesson["item"] is not None:
         lines.append(f"Item being worked: {lesson['item'].name} — {lesson['item'].description}")
     lines.append(f"THIS TURN, THIS ONLY: {step.instruction}")
+    if lesson.get("retried"):
+        lines.append(
+            f"They answered with a different word, so this is a second go at the same question. "
+            f"Do not repeat it word for word and do not tell them they were wrong: have Minh say "
+            f"{step.target} once, then ask again in a different way. Whatever they answer this "
+            f"time, you move on afterwards."
+        )
     return "\n".join(lines)
 
 
@@ -709,6 +718,53 @@ def start_item(lesson: dict, item: Item | None, seen_items: list[Item], store: P
     lesson["plan"] = build_plan(item, pieces, _recall_targets(store, item, pieces, seen_items))
     kinds = " -> ".join(s.kind for s in lesson["plan"])
     print(f"  -> item: {item.name}  [{len(lesson['plan'])} turns: {kinds}]")
+
+
+# Above this similarity the answer counts as the target word. Placed in the
+# middle of a gap that turned out to be wide: across real transcriptions every
+# recognisable attempt scored 0.67 or better ("toy" for tôi, "Then" for tên,
+# "laa" for là) and every genuinely different word scored 0.33 or less. Set
+# generously on purpose -- what arrives is a beginner's mouth through a rough
+# microphone, so approximate is the normal case, and treating a near miss as a
+# miss would fail someone for a lost accent.
+ANSWER_MATCH_THRESHOLD = 0.5
+
+
+def _bare(text: str) -> str:
+    """Letters only, no tone marks -- what a beginner and a recogniser both lose first."""
+    lowered = unicodedata.normalize("NFD", text.lower()).replace("đ", "d")
+    return "".join(c for c in lowered if c.isalpha())
+
+
+# Steps that ask the learner to produce a word we can check against.
+RECALL_KINDS = ("recall_piece", "rapidfire", "settle")
+
+
+def _should_retry(step, user_text: str, lesson: dict) -> bool:
+    """One second chance on a missed recall, never two.
+
+    Capped deliberately: the version before the state machine had no counter at
+    all and asked the same word four times running.
+    """
+    if step is None or lesson.get("retried") or step.kind not in RECALL_KINDS or not step.target:
+        return False
+    return not answered_target(user_text, step.target)
+
+
+def answered_target(user_text: str, target: str) -> bool:
+    """Whether the learner's turn contains the word that was asked for.
+
+    Only ever used to decide whether the tutor gets a second go at a step. It
+    never rewrites what was said: an earlier version snapped the transcription
+    onto the nearest known word, which repaired the mispronunciation the tutor
+    is supposed to hear.
+    """
+    said, want = _bare(user_text), _bare(target)
+    if not want:
+        return True
+    if want in said:
+        return True
+    return difflib.SequenceMatcher(None, said, want).ratio() >= ANSWER_MATCH_THRESHOLD
 
 
 _QUESTION_MARK = re.compile(r"\?\s*$")
@@ -922,17 +978,25 @@ def _conversation_loop(api_key, messages, store, roster, queue_items, themes_gen
         # opening speech: it has no step to close and must not load an item, or
         # the tutor greets and teaches in the same breath.
         if turns_done > 0:
+            done = current_step(lesson)
             if learner_asked_something(user_input):
                 print("  (learner asked a question -- the step is replayed after answering)")
+            elif _should_retry(done, user_input, lesson):
+                # They answered a different word entirely. Worth one more go --
+                # the plan used to advance regardless, so the "wrong word, Minh
+                # says it, ask again" rule could never once fire and a missed
+                # word was met with silence and the next question.
+                lesson["retried"] = True
+                print(f"  (missed '{done.target}' -- one more go)")
             else:
-                # The step the learner just answered is done. If it asked for a
-                # word, that IS the exposure -- recorded here, where the code
-                # knows exactly what it asked, instead of being reconstructed
-                # afterwards by a model re-reading the transcript.
-                done = current_step(lesson)
-                if done is not None and done.kind in ("recall_piece", "rapidfire", "settle") and done.target:
+                # The step is done. If it asked for a word, that IS the
+                # exposure -- recorded here, where the code knows exactly what
+                # it asked, instead of being reconstructed afterwards by a
+                # model re-reading the transcript.
+                if done is not None and done.kind in RECALL_KINDS and done.target:
                     store.record_recall(done.target)
                     print(f"  [level] {done.target} -> {store.level(done.target)}")
+                lesson["retried"] = False
                 lesson["i"] += 1
             if current_step(lesson) is None:
                 item = _take_next(queue_items, seen_items)
@@ -973,7 +1037,7 @@ def run_session():
     seen_items = [i for i in roster if not store.is_new(i.name)]  # everything ever taught, roster order
     # An empty plan means the opening turn: the tutor greets, and the first
     # item is loaded only once that turn is behind us.
-    lesson = {"item": None, "plan": [], "i": 0, "started": False}
+    lesson = {"item": None, "plan": [], "i": 0, "started": False, "retried": False}
     global voice
     voice = SpeechPipeline(_vocab_words(roster))
     themes_generated_this_session: set[str] = set()
