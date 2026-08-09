@@ -1014,12 +1014,16 @@ def _conversation_loop(api_key, messages, store, roster, queue_items, themes_gen
         turns_done += 1
 
 
-def run_session(fresh: bool = False):
-    """Runs one lesson. `fresh` starts from the first word and saves nothing --
-    for testing the teaching loop, where carried-over progress means every run
-    begins somewhere different and no two runs can be compared.
+def run_session(fresh: bool = False, no_intro: bool = False):
+    """Runs one lesson.
+
+    Both flags exist for working ON the tutor rather than with it. `fresh`
+    starts from the first word and saves nothing, so runs are comparable.
+    `no_intro` skips the opening speech, which is 55 seconds of synthesis
+    standing between you and the thing you are trying to test.
     """
-    print("Starting session..." if not fresh else "Starting session... [fresh: nothing will be saved]")
+    flags = [n for n, on in (("fresh: nothing saved", fresh), ("no intro", no_intro)) if on]
+    print("Starting session..." + (f"  [{', '.join(flags)}]" if flags else ""))
     api_key = load_api_key()
     persona_prompt = load_persona_system_prompt(CONTENT_DIR)
     # Curated roster FIRST. It is a composed progression -- atoms, then the
@@ -1054,9 +1058,16 @@ def run_session(fresh: bool = False):
     for problem in check_roster(roster):
         print(f"  [content] {problem}")
 
-    # Skip-intro instruction removed -- found live: it got over-applied, the
-    # model dropped ALL spoken content, not just the opening speech. Keeping
-    # the intro every run is more reliable, even if repetitive while testing.
+    if no_intro:
+        # Loading an item up front means turn one already carries a teaching
+        # instruction, so the opening branch of the note is never reached.
+        # Decided here rather than asked of the model: an earlier attempt put
+        # "skip the opening speech" in the prompt and it was over-applied --
+        # the model dropped ALL spoken content, teaching included.
+        item = _take_next(queue_items, seen_items)
+        if item is not None:
+            seen_items.append(item)
+        start_item(lesson, item, seen_items, store)
 
     messages = [{"role": "system", "content": persona_prompt}]
 
@@ -1077,4 +1088,4 @@ def run_session(fresh: bool = False):
 
 
 if __name__ == "__main__":
-    run_session(fresh="--fresh" in sys.argv)
+    run_session(fresh="--fresh" in sys.argv, no_intro="--no-intro" in sys.argv)

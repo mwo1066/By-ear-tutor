@@ -89,12 +89,13 @@ Talk when it asks. Ctrl+C ends the session and saves your progress to
 `state.json`.
 
 ```bash
-python tutor.py --fresh
+python tutor.py --fresh --no-intro
 ```
 
-Same lesson from the first word, saving nothing. For working on the teaching
-loop itself, where carried-over progress means no two runs start in the same
-place and none of them can be compared.
+Two flags for working ON the tutor rather than with it. `--fresh` starts from
+the first word and saves nothing, so two runs are comparable. `--no-intro`
+skips the opening speech — 55 seconds of synthesis standing between you and
+whatever you are trying to test. Use both while iterating.
 
 ```bash
 python smoke_test.py

@@ -30,7 +30,7 @@ class FakeVoice:
         pass
 
 
-def main() -> int:
+def main(NO_INTRO=False) -> int:
     turns = {"n": 0}
 
     def fake_stream(api_key, models, messages, tools=None, rounds=5):
@@ -55,7 +55,7 @@ def main() -> int:
     tutor.ProgressStore.save = lambda self: None  # never touch real progress
 
     try:
-        tutor.run_session()
+        tutor.run_session(no_intro=NO_INTRO)
     except KeyboardInterrupt:
         pass  # the intended way out
     except Exception as e:
@@ -68,7 +68,7 @@ def main() -> int:
     # The opening turn must ask for the opening speech, not the wind-down.
     # An empty plan means both "not started" and "finished", and conflating
     # them once made the tutor greet with "let's wrap up for today".
-    if "OPENING SPEECH" not in instructions[0]:
+    if not NO_INTRO and "OPENING SPEECH" not in instructions[0]:
         print("FAIL — the first turn did not ask for the opening speech:")
         print("   ", instructions[0].splitlines()[-1][:120])
         return 1
@@ -90,4 +90,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(main(NO_INTRO="--no-intro" in sys.argv))
