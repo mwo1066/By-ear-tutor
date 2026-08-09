@@ -3,6 +3,8 @@ title = "Xưng hô: anh, chị, em"
 [[items]]
 type = "concept"
 name = "anh"
+kind = "atom"
+gloss = "address for an older male"
 category = "function_word"
 language = "vi"
 description = "Từ xưng hô với đàn ông bằng tuổi hoặc hơn tuổi mình một chút — nghĩa gốc là 'anh trai'. Thanh ngang. Dùng cho cả người nói lẫn người nghe tùy vai: người lớn tuổi hơn tự xưng 'anh'; người nghe lớn tuổi hơn được gọi là 'anh'. 'Chào anh! Anh tên là gì?'"
@@ -10,6 +12,8 @@ description = "Từ xưng hô với đàn ông bằng tuổi hoặc hơn tuổi 
 [[items]]
 type = "concept"
 name = "chị"
+kind = "atom"
+gloss = "address for an older female"
 category = "function_word"
 language = "vi"
 description = "Từ xưng hô với phụ nữ bằng tuổi hoặc hơn tuổi mình một chút — nghĩa gốc là 'chị gái'. Thanh nặng — thấp, ngắt gọn. 'Chào chị! Chị tên là gì?'"
@@ -17,6 +21,8 @@ description = "Từ xưng hô với phụ nữ bằng tuổi hoặc hơn tuổi 
 [[items]]
 type = "concept"
 name = "em"
+kind = "atom"
+gloss = "address for a younger person"
 category = "function_word"
 language = "vi"
 description = "Từ xưng hô với người ít tuổi hơn mình, nam hay nữ đều được — nghĩa gốc là 'em'. Thanh ngang. Người ít tuổi tự xưng 'em' khi nói với anh, chị. 'Chào em! Em tên là gì?'"
@@ -24,6 +30,8 @@ description = "Từ xưng hô với người ít tuổi hơn mình, nam hay nữ
 [[items]]
 type = "procedure"
 name = "cách chọn từ xưng hô"
+kind = "rule"
+gloss = "how to choose address terms"
 category = "rules"
 language = "vi"
 description = "Quy tắc chọn từ xưng hô theo tuổi và giới tính của người đối diện so với mình. Cùng một người có thể là 'anh' với người này và 'em' với người kia — xưng hô đổi theo từng cặp người nói chuyện. Người mới học chọn sai không ai giận, nhưng chọn đúng nghe ấm và tự nhiên hơn nhiều so với 'tôi' — 'tôi' đúng ngữ pháp nhưng lạnh."
@@ -32,6 +40,8 @@ steps = ["đàn ông hơn tuổi mình → anh", "phụ nữ hơn tuổi mình �
 [[items]]
 type = "concept"
 name = "cảm ơn"
+kind = "atom"
+gloss = "thank you"
 category = "function_word"
 language = "vi"
 description = "Lời cám ơn. 'Cảm' thanh hỏi — giọng xuống rồi vòng lên; 'ơn' thanh ngang. Tự nhiên nhất khi ghép với từ xưng hô: 'Cảm ơn anh!', 'Cảm ơn chị!', 'Cảm ơn em!'"
@@ -39,6 +49,8 @@ description = "Lời cám ơn. 'Cảm' thanh hỏi — giọng xuống rồi vò
 [[items]]
 type = "concept"
 name = "không"
+kind = "atom"
+gloss = "no / not"
 category = "function_word"
 language = "vi"
 description = "Từ phủ định cơ bản nhất — dùng một mình để trả lời: 'Không.' Thanh ngang, giọng đều."
@@ -46,6 +58,10 @@ description = "Từ phủ định cơ bản nhất — dùng một mình để t
 [[items]]
 type = "procedure"
 name = "không phải là + [danh từ]"
+kind = "construction"
+gloss = "not be + [noun]"
+pieces = ["không", "là"]
+literal = "not be + [noun]"
 category = "construction"
 language = "vi"
 description = "Khung phủ định của 'là': thêm 'không phải' vào trước. 'Tôi không phải là Nam.' 'Em không phải là Linh.' Dùng 'không' đã biết, cộng 'phải' — cặp 'không phải' luôn đi liền nhau trước 'là'."

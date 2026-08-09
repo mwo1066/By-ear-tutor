@@ -3,6 +3,8 @@ title = "Tên và chào hỏi"
 [[items]]
 type = "concept"
 name = "tôi"
+kind = "atom"
+gloss = "I / me"
 category = "function_word"
 language = "vi"
 description = "Đại từ ngôi thứ nhất, trung lập và luôn đúng ngữ pháp. Thanh ngang — giọng đều, không lên không xuống. Lưu ý: 'tôi' hơi trang trọng và xa cách; trong nói chuyện thân mật, người Việt thường xưng hô theo vai vế gia đình thay vì 'tôi'. Dùng 'tôi' khi mới học, khi trang trọng, hoặc khi chưa biết xưng hô thế nào cho đúng."
@@ -10,6 +12,8 @@ description = "Đại từ ngôi thứ nhất, trung lập và luôn đúng ng�
 [[items]]
 type = "concept"
 name = "tên"
+kind = "atom"
+gloss = "name"
 category = "noun"
 language = "vi"
 description = "Danh từ: tên gọi của một người. Thanh ngang. Ghép thẳng với đại từ đã biết: 'tên tôi' — tên của mình. Dùng khi giới thiệu và làm quen."
@@ -17,6 +21,8 @@ description = "Danh từ: tên gọi của một người. Thanh ngang. Ghép th
 [[items]]
 type = "concept"
 name = "là"
+kind = "atom"
+gloss = "to be"
 category = "verb"
 language = "vi"
 description = "Động từ nối để nói A là B, ví dụ khi giới thiệu tên. Thanh huyền — giọng xuống nhẹ. Chỉ đứng trước danh từ: 'Tôi là Nam.'"
@@ -24,6 +30,10 @@ description = "Động từ nối để nói A là B, ví dụ khi giới thiệ
 [[items]]
 type = "procedure"
 name = "tôi tên là + [tên riêng]"
+kind = "construction"
+gloss = "My name is ___"
+pieces = ["tôi", "tên", "là"]
+literal = "I name is [name]"
 category = "construction"
 language = "vi"
 description = "Khung câu giới thiệu tên: 'tôi tên là' cộng tên riêng của mình. 'Tôi tên là Nam.' Ghép từ ba từ đã biết: tôi, tên, là — câu hoàn chỉnh đầu tiên."
@@ -31,6 +41,8 @@ description = "Khung câu giới thiệu tên: 'tôi tên là' cộng tên riên
 [[items]]
 type = "concept"
 name = "bạn"
+kind = "atom"
+gloss = "you"
 category = "function_word"
 language = "vi"
 description = "Đại từ ngôi thứ hai trung lập — nghĩa gốc là 'người bạn'. Thanh nặng — giọng thấp, ngắn, ngắt gọn. An toàn khi chưa biết tuổi người đối diện, hay dùng giữa người trẻ cùng lứa. 'Bạn' và 'tôi' là cặp trung lập để bắt đầu."
@@ -38,6 +50,8 @@ description = "Đại từ ngôi thứ hai trung lập — nghĩa gốc là 'ng�
 [[items]]
 type = "concept"
 name = "gì"
+kind = "atom"
+gloss = "what"
 category = "function_word"
 language = "vi"
 description = "Từ để hỏi, nghĩa là 'cái gì'. Thanh huyền. Đứng ở CUỐI câu hỏi, không đảo lên đầu câu: '... gì?'"
@@ -45,6 +59,10 @@ description = "Từ để hỏi, nghĩa là 'cái gì'. Thanh huyền. Đứng �
 [[items]]
 type = "procedure"
 name = "bạn tên là gì?"
+kind = "construction"
+gloss = "What is your name?"
+pieces = ["bạn", "tên", "là", "gì"]
+literal = "you name is what"
 category = "construction"
 language = "vi"
 description = "Câu hỏi tên: 'Bạn tên là gì?' Từ hỏi 'gì' nằm cuối câu. Trả lời bằng khung đã biết: 'Tôi tên là Nam.' Toàn bộ từ trong câu đều đã học."
@@ -52,6 +70,8 @@ description = "Câu hỏi tên: 'Bạn tên là gì?' Từ hỏi 'gì' nằm cu�
 [[items]]
 type = "concept"
 name = "chào"
+kind = "atom"
+gloss = "hello"
 category = "function_word"
 language = "vi"
 description = "Lời chào — dùng cả khi gặp nhau và khi tạm biệt. Thanh huyền — giọng xuống. Nói 'chào' một mình hơi cộc; tự nhiên hơn khi ghép với đại từ: 'Chào bạn!' Dạng lịch sự, trang trọng hơn: 'Xin chào.'"

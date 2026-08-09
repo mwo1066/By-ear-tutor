@@ -1,11 +1,19 @@
 """Loads the roster (ordered items) and persona from the TOML content files."""
 import json
-import re
 import tomllib
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass, asdict, field
 from pathlib import Path
 
 PERSONAL_ITEMS_FILENAME = "personal_items.json"
+
+# How an item is TAUGHT -- the only axis the turn planner branches on.
+#   atom          a single thing the learner says, taught by introducing it
+#                 ("tôi", and also multi-word units like "cà phê" that are one
+#                 lexical block, not an assembly)
+#   construction  a sentence pattern assembled out of items already taught
+#   rule          something the tutor STATES; the learner never says it back,
+#                 so it is never a recall target ("tính từ không cần 'là'")
+KINDS = {"atom", "construction", "rule"}
 
 
 @dataclass
@@ -15,6 +23,24 @@ class Item:
     category: str
     language: str
     description: str
+    # The English side of the pair. Load-bearing, not decoration: the code
+    # forms every question FROM the gloss and asks for the name, so without it
+    # the model has to invent the meaning side -- and measured live, it as
+    # often just parroted the target back ("So how would you say là?"), which
+    # is a question containing its own answer.
+    gloss: str = ""
+    kind: str = "atom"
+    # For a construction: the exact item names it is assembled from, in order.
+    # Written down rather than recovered by splitting the name on spaces --
+    # that guesswork read "cà phê" as two pieces, and found "không" + "là"
+    # inside the rule "tính từ không cần 'là'", making a rule look like a
+    # sentence to build.
+    pieces: list[str] = field(default_factory=list)
+    # The literal word-by-word order in English ("I name is [name]"), which is
+    # the scaffold the learner needs before producing a sentence whose order
+    # differs from their own. Cannot always be derived from the pieces' glosses
+    # -- "không phải là" runs through "phải", which the course never teaches.
+    literal: str = ""
     source: str = "roster"  # "roster" (curated TOML) or "personnel" (LLM-generated live)
     topic: str | None = None  # theme this item was generated for, if any -- lets a whole theme be deprioritized at once
 
@@ -33,8 +59,34 @@ def load_roster(content_dir: Path) -> list[Item]:
                 category=raw["category"],
                 language=raw["language"],
                 description=raw["description"],
+                gloss=raw.get("gloss", ""),
+                kind=raw.get("kind", "atom"),
+                pieces=list(raw.get("pieces", [])),
+                literal=raw.get("literal", ""),
             ))
     return items
+
+
+def check_roster(items: list[Item]) -> list[str]:
+    """Authoring defects that would silently degrade a lesson, as messages.
+
+    Reported at startup rather than discovered live: a missing gloss does not
+    crash anything, it just makes the tutor improvise the meaning side of a
+    question, which is how a recall ends up giving away its own answer.
+    """
+    known = {i.name for i in items}
+    problems = []
+    for i in items:
+        if i.kind not in KINDS:
+            problems.append(f"{i.name}: unknown kind {i.kind!r}")
+        if not i.gloss and i.kind != "rule":
+            problems.append(f"{i.name}: no gloss — questions about it cannot be asked from the meaning side")
+        if i.kind == "construction" and not i.pieces:
+            problems.append(f"{i.name}: construction with no pieces listed")
+        for p in i.pieces:
+            if p not in known:
+                problems.append(f"{i.name}: piece {p!r} is not an item in the roster")
+    return problems
 
 
 def load_personal_items(content_dir: Path) -> list[Item]:
@@ -64,56 +116,20 @@ def add_personal_items(content_dir: Path, new_items: list[Item]) -> None:
     save_personal_items(content_dir, existing)
 
 
-def _tokens(name: str) -> list[str]:
-    """Vietnamese words in an item name, minus scaffolding.
+def unknown_pieces(item: Item, seen_items: list[Item]) -> list[str]:
+    """The item's declared pieces that have NOT been taught yet.
 
-    Names mix real target text with authoring scaffolding -- placeholders
-    ("+ [tên riêng]"), ellipses, and a descriptive label before a colon
-    ("phủ định động từ: không + ..."). Only what follows the colon is text the
-    learner ever says, so the label is dropped before splitting.
+    A plain lookup now that pieces are authored rather than recovered from the
+    name. The string-splitting version had to guess what counted as a word and
+    got it wrong in both directions -- "cà phê" looked like an assembly of two
+    unknown pieces, and the rule "tính từ không cần 'là'" looked like a
+    sentence built from "không" and "là".
     """
-    name = _PLACEHOLDER.sub(" ", name.split(":", 1)[-1])
-    out = []
-    for tok in name.split():
-        if tok in {"+", "..."}:
-            continue
-        tok = tok.strip("+[]?.,!:'\"…").lower()
-        if tok:
-            out.append(tok)
-    return out
+    seen = {i.name for i in seen_items}
+    return [p for p in item.pieces if p not in seen]
 
 
-# Whole bracketed spans, not just the opening token: skipping only tokens that
-# START with "[" left the tail behind, so "+ [tên riêng]" yielded a phantom
-# "riêng" that no learner ever says and that broke matching against real speech.
-_PLACEHOLDER = re.compile(r"\[[^\]]*\]")
-
-
-def vocab_set(items: list[Item]) -> frozenset[str]:
-    """Item names that are a single word -- the atoms the course actually teaches.
-
-    Multi-word names are constructions built from these; anything in a name
-    that is NOT one of these is authoring prose, not vocabulary.
-    """
-    return frozenset(n[0] for i in items if len(n := _tokens(i.name)) == 1)
-
-
-def unknown_pieces(item: Item, seen_items: list[Item], vocab: frozenset[str]) -> list[str]:
-    """Vocabulary words this item is made of that have NOT been taught yet.
-
-    A single-word item is an atom, not a composition -- it has no pieces, and
-    must not count itself as one. Without this it outranked nothing and even
-    lost to multi-word items made of non-vocabulary tokens, which put "cảm ơn"
-    ahead of "tôi" on a fresh session.
-    """
-    tokens = _tokens(item.name)
-    if len(tokens) <= 1:
-        return []
-    seen_words = {w for i in seen_items for w in _tokens(i.name)}
-    return [t for t in tokens if t in vocab and t not in seen_words]
-
-
-def pick_next_index(queue: list[Item], seen_items: list[Item], vocab: frozenset[str]) -> int:
+def pick_next_index(queue: list[Item], seen_items: list[Item]) -> int:
     """Index of the next item that may safely be taught.
 
     Queue order is the composed progression and leads: normally this is simply
@@ -129,34 +145,19 @@ def pick_next_index(queue: list[Item], seen_items: list[Item], vocab: frozenset[
     If nothing is fully teachable (a phrase whose words the course never teaches
     separately), the least-blocked item wins rather than deadlocking.
     """
-    ready = [i for i, item in enumerate(queue) if not unknown_pieces(item, seen_items, vocab)]
+    ready = [i for i, item in enumerate(queue) if not unknown_pieces(item, seen_items)]
     if ready:
         return ready[0]
-    return min(range(len(queue)), key=lambda i: (len(unknown_pieces(queue[i], seen_items, vocab)), i))
+    return min(range(len(queue)), key=lambda i: (len(unknown_pieces(queue[i], seen_items)), i))
 
 
 def pieces_of(item: Item, already_seen: list[Item]) -> list[Item]:
-    """The already-taught items whose name appears inside this item's name.
-
-    Roster constructions are literally spelled out of earlier words
-    ("tôi tên là + [tên riêng]" is tôi + tên + là), so this recovers the
-    assembly the learner has to make -- which is exactly the set the tutor
-    must re-cite one at a time before asking for the full sentence.
+    """The already-taught items this construction is assembled from, in the
+    order they are declared -- exactly the set the tutor must re-cite one at a
+    time before asking for the full sentence.
     """
-    def tokens(name: str) -> list[str]:
-        return [w for w in (t.strip("+[]?.,!:").lower() for t in name.split()) if w]
-
-    target = tokens(item.name)
-    return [
-        i for i in already_seen
-        if i.name != item.name and (t := tokens(i.name)) and _contains_run(target, t)
-    ]
-
-
-def _contains_run(haystack: list[str], needle: list[str]) -> bool:
-    """True if `needle`'s words appear consecutively somewhere in `haystack`."""
-    n = len(needle)
-    return any(haystack[i:i + n] == needle for i in range(len(haystack) - n + 1))
+    by_name = {i.name: i for i in already_seen}
+    return [by_name[p] for p in item.pieces if p in by_name]
 
 
 def load_persona_system_prompt(content_dir: Path) -> str:

@@ -128,14 +128,21 @@ def _trim_to_speech(frames: list[np.ndarray], speech_flags: list[bool]) -> np.nd
     return np.concatenate(kept, axis=0).flatten()
 
 
-# Only languages that actually make sense here: the target language, and
-# the learner's own. Whisper's full language auto-detect will happily guess
-# Polish or Japanese from a few unclear syllables -- found live, attempts at
-# "tôi" got tagged [lang:pl]/[lang:ja]. Anything outside this set almost
-# certainly means "mangled pronunciation attempt", which the persona prompt
-# already knows how to handle -- so it gets normalized to "vi" instead of
-# passing through a meaningless exotic tag.
-ALLOWED_LANGUAGES = {"vi", "en", "fr"}
+# Only languages that actually make sense here: the target language, and the
+# one the session is conducted in. Whisper's full language auto-detect will
+# happily guess Polish or Japanese from a few unclear syllables -- found live,
+# attempts at "tôi" got tagged [lang:pl]/[lang:ja]. Anything outside this set
+# almost certainly means "mangled pronunciation attempt", which the persona
+# prompt already knows how to handle -- so it gets normalized to "vi" instead
+# of passing through a meaningless exotic tag.
+#
+# French was in this set and is deliberately out: the session is English and
+# Vietnamese, nothing else. It bought nothing and it cost a real failure --
+# a mangled attempt at a Vietnamese word came back tagged [lang:fr] with its
+# French text intact, passed straight through to the tutor, and had it answer
+# in French mid-lesson. The same audio now takes the forced-Vietnamese second
+# pass, which is what it should always have been.
+ALLOWED_LANGUAGES = {"vi", "en"}
 
 
 def _load_groq_key() -> str:

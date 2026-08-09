@@ -3,6 +3,8 @@ title = "Muốn, ăn, uống"
 [[items]]
 type = "concept"
 name = "muốn"
+kind = "atom"
+gloss = "to want"
 category = "verb"
 language = "vi"
 description = "Động từ: mong có hoặc mong làm điều gì. Thanh sắc — giọng lên. 'Tôi muốn...' Động từ tiếng Việt không bao giờ chia — mọi ngôi đều dùng nguyên một dạng."
@@ -10,6 +12,8 @@ description = "Động từ: mong có hoặc mong làm điều gì. Thanh sắc 
 [[items]]
 type = "concept"
 name = "ăn"
+kind = "atom"
+gloss = "to eat"
 category = "verb"
 language = "vi"
 description = "Động từ: ăn, dùng bữa. Thanh ngang. 'Tôi muốn ăn.' Không chia: anh ăn, chị ăn, em ăn — cùng một chữ 'ăn'."
@@ -17,6 +21,8 @@ description = "Động từ: ăn, dùng bữa. Thanh ngang. 'Tôi muốn ăn.' K
 [[items]]
 type = "concept"
 name = "uống"
+kind = "atom"
+gloss = "to drink"
 category = "verb"
 language = "vi"
 description = "Động từ: uống. Thanh sắc — giọng lên. 'Em muốn uống.'"
@@ -24,6 +30,10 @@ description = "Động từ: uống. Thanh sắc — giọng lên. 'Em muốn u�
 [[items]]
 type = "procedure"
 name = "muốn + [động từ]"
+kind = "construction"
+gloss = "want ___"
+pieces = ["muốn"]
+literal = "want + [verb]"
 category = "construction"
 language = "vi"
 description = "Khung diễn tả ý muốn: 'muốn' cộng thẳng một động từ khác, không cần gì ở giữa, không biến đổi gì. 'Tôi muốn ăn.' 'Anh muốn uống gì?' Dùng được với mọi từ xưng hô và mọi động từ đã biết."
@@ -31,6 +41,8 @@ description = "Khung diễn tả ý muốn: 'muốn' cộng thẳng một độn
 [[items]]
 type = "concept"
 name = "cà phê"
+kind = "atom"
+gloss = "coffee"
 category = "noun"
 language = "vi"
 description = "Danh từ: đồ uống quen thuộc — mượn từ tiếng Pháp 'café', nghe là nhận ra ngay. 'Cà' thanh huyền, 'phê' thanh ngang. 'Tôi muốn uống cà phê.'"
@@ -38,6 +50,8 @@ description = "Danh từ: đồ uống quen thuộc — mượn từ tiếng Ph�
 [[items]]
 type = "concept"
 name = "nước"
+kind = "atom"
+gloss = "water"
 category = "noun"
 language = "vi"
 description = "Danh từ: nước để uống. Thanh sắc — giọng lên, cuối chữ ngắt gọn. 'Chị muốn uống nước?'"
@@ -45,6 +59,8 @@ description = "Danh từ: nước để uống. Thanh sắc — giọng lên, cu
 [[items]]
 type = "concept"
 name = "cơm"
+kind = "atom"
+gloss = "rice"
 category = "noun"
 language = "vi"
 description = "Danh từ: cơm đã nấu chín — trung tâm bữa ăn của người Việt. Thanh ngang. 'Ăn cơm' nhiều khi nghĩa là ăn bữa chính nói chung, không chỉ riêng món cơm. 'Em muốn ăn cơm.'"
@@ -52,6 +68,8 @@ description = "Danh từ: cơm đã nấu chín — trung tâm bữa ăn của n
 [[items]]
 type = "procedure"
 name = "phủ định động từ: không + [động từ]"
+kind = "rule"
+gloss = "negate verb with không"
 category = "rules"
 language = "vi"
 description = "Quy tắc: đặt 'không' ngay trước động từ để phủ định cả câu. 'Tôi không muốn ăn.' 'Anh không uống cà phê.' Đây là việc thứ hai của chữ 'không' đã biết — vừa trả lời một mình được, vừa phủ định động từ được."

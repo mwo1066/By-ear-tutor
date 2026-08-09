@@ -3,6 +3,8 @@ title = "Hỏi và thích"
 [[items]]
 type = "concept"
 name = "có"
+kind = "atom"
+gloss = "have"
 category = "verb"
 language = "vi"
 description = "Động từ: sở hữu hoặc tồn tại. Thanh sắc — giọng lên. 'Tôi có cà phê.' 'Chị có nước.'"
@@ -10,6 +12,10 @@ description = "Động từ: sở hữu hoặc tồn tại. Thanh sắc — gi�
 [[items]]
 type = "procedure"
 name = "câu hỏi có/không: có + [động từ] ... không?"
+kind = "construction"
+gloss = "do ... not?"
+pieces = ["có", "không"]
+literal = "do + [verb] ... not?"
 category = "construction"
 language = "vi"
 description = "Khung câu hỏi có/không: đặt 'có' trước động từ và 'không' ở cuối câu. 'Bạn có muốn ăn không?' 'Chị có uống cà phê không?' Trả lời không cần chữ 'vâng' hay 'có' riêng — lặp lại chính động từ: 'Muốn.' hoặc 'Không muốn.' Toàn bộ bằng từ đã biết."
@@ -17,6 +23,8 @@ description = "Khung câu hỏi có/không: đặt 'có' trước động từ v
 [[items]]
 type = "concept"
 name = "thích"
+kind = "atom"
+gloss = "like"
 category = "verb"
 language = "vi"
 description = "Động từ: thấy hay, thấy ngon, thấy hợp với mình. Thanh sắc — giọng lên, cuối chữ ngắt gọn. 'Tôi thích cà phê.' 'Em có thích cơm không?'"
@@ -24,6 +32,8 @@ description = "Động từ: thấy hay, thấy ngon, thấy hợp với mình. 
 [[items]]
 type = "concept"
 name = "và"
+kind = "atom"
+gloss = "and"
 category = "function_word"
 language = "vi"
 description = "Từ nối: ghép hai thứ với nhau. Thanh huyền — giọng xuống nhẹ. 'Cà phê và nước.' 'Tôi thích ăn và uống.'"
@@ -31,6 +41,8 @@ description = "Từ nối: ghép hai thứ với nhau. Thanh huyền — giọng
 [[items]]
 type = "concept"
 name = "này"
+kind = "atom"
+gloss = "this"
 category = "function_word"
 language = "vi"
 description = "Từ chỉ định, nghĩa 'này/cái này' — và luôn đứng SAU danh từ, không đứng trước như tiếng Anh: 'cơm này', 'cà phê này'. Thanh huyền. 'Tôi thích cơm này.'"
@@ -38,6 +50,8 @@ description = "Từ chỉ định, nghĩa 'này/cái này' — và luôn đứng
 [[items]]
 type = "concept"
 name = "ngon"
+kind = "atom"
+gloss = "delicious"
 category = "adjective"
 language = "vi"
 description = "Tính từ: món ăn hay đồ uống làm mình thấy thích. Thanh ngang. 'Cơm này ngon!' Đứng thẳng sau danh từ hay sau chủ ngữ, không cần thêm gì ở giữa."
@@ -45,6 +59,8 @@ description = "Tính từ: món ăn hay đồ uống làm mình thấy thích. T
 [[items]]
 type = "procedure"
 name = "tính từ không cần 'là'"
+kind = "rule"
+gloss = "adjectives need no 'is'"
 category = "rules"
 language = "vi"
 description = "Quy tắc: tính từ đứng NGAY sau chủ ngữ, không bao giờ dùng 'là' ở giữa. 'Cơm ngon' đúng — 'cơm là ngon' sai. 'Là' chỉ đứng trước danh từ: 'Tôi là Nam' đúng. Khác hẳn tiếng Anh: người mới học hay quen tay thêm 'là' trước tính từ — bỏ được thói quen đó là câu nghe tự nhiên ngay."

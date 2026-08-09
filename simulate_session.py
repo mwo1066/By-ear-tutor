@@ -19,9 +19,7 @@ from pathlib import Path
 
 sys.stdout.reconfigure(encoding="utf-8")
 
-from content import (
-    load_persona_system_prompt, load_roster, load_personal_items, vocab_set,
-)
+from content import load_persona_system_prompt, load_roster, load_personal_items
 from srs import ProgressStore
 from tutor import (
     CONTENT_DIR, STATE_PATH, MODEL_FALLBACKS, QUEUE_SIZE, TOOLS,
@@ -75,7 +73,6 @@ def main(n_exchanges: int) -> None:
 
     queue = [by_name[n] for n in store.select_new(all_names, limit=QUEUE_SIZE)]
     seen = [i for i in roster if not store.is_new(i.name)]
-    vocab = vocab_set(roster)
     lesson = {"item": None, "plan": [], "i": 0, "started": False}
 
     messages = [{"role": "system", "content": load_persona_system_prompt(CONTENT_DIR)}]
@@ -122,7 +119,7 @@ def main(n_exchanges: int) -> None:
         if not learner_asked_something(tagged):
             lesson["i"] += 1
         if current_step(lesson) is None:
-            item = _take_next(queue, seen, vocab)
+            item = _take_next(queue, seen)
             if item is not None:
                 seen.append(item)
             start_item(lesson, item, seen, store)

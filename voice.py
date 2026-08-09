@@ -25,22 +25,21 @@ TEACHER_VOICE = ("vi-VN-NamMinhNeural", "Male", "vi-VN")
 SPEECH_RATE = "-15%"
 
 # Broad Vietnamese-ish diacritic range (Latin Extended-A/B + combining tone
-# marks). NOT Vietnamese-specific on its own -- French shares six of these
-# accented letters (à, â, é, è, ê, ô), so once the tutor speaks French to a
-# French-speaking learner, plain French words like "après"/"être" would
-# false-positive here. Everything else in this range (the extra letters
-# ă/ơ/ư/đ, and any hook-above/tilde/dot-below tone, or acute/grave on i/o/u/y)
-# never occurs in French -- that subset is used as the exclusive signal below.
+# marks). The tutor's own half of the session is English, which carries no
+# diacritics at all, so any accented letter in this range is Vietnamese.
+#
+# This used to carve out the six letters French shares (à, â, é, è, ê, ô),
+# from when the tutor might speak French and "après"/"être" would false
+# positive. That carve-out is gone with French: it was what forced "là" to be
+# recognised by roster lookup instead of by its own accent, so a Vietnamese
+# word not yet in the roster -- one the learner just asked about -- came out
+# of the English voice.
 _VN_BROAD_CHAR = re.compile("[à-ỹĐđ]")
-_FRENCH_SHARED_CHARS = set("àâéèêôÀÂÉÈÊÔ")
 
 
-def _has_exclusive_vn_marker(word: str) -> bool:
-    """True if word contains a diacritic that never appears in French --
-    the reliable signal once the learner's own language might also use
-    accented Latin characters (unlike English, where any diacritic at all
-    used to be a safe signal)."""
-    return any(_VN_BROAD_CHAR.match(ch) and ch not in _FRENCH_SHARED_CHARS for ch in word)
+def _has_vn_marker(word: str) -> bool:
+    """True if the word carries any Vietnamese diacritic."""
+    return any(_VN_BROAD_CHAR.match(ch) for ch in word)
 
 
 # Common Vietnamese words that happen to have NO diacritics at all (bare
@@ -59,16 +58,14 @@ def _load_env() -> dict:
 
 
 def _is_vietnamese_word(word: str, known_vn_words: frozenset[str]) -> bool:
-    """Three signals, strongest first: (1) it's literally a word from our
-    own roster/generated content -- we author every Vietnamese word
-    ourselves, so this is the most reliable check and the only one immune
-    to the French/Vietnamese diacritic overlap; (2) it carries a diacritic
-    that's exclusively Vietnamese (never appears in French); (3) it's one
-    of the known bare-ASCII exceptions."""
+    """Three signals: (1) it carries a Vietnamese diacritic, which in an
+    English-only session is conclusive and works for words the course has
+    not reached yet; (2) it's literally a word from our own roster/generated
+    content; (3) it's one of the known bare-ASCII exceptions."""
     lw = word.lower()
-    if lw in known_vn_words:
+    if _has_vn_marker(word):
         return True
-    return _has_exclusive_vn_marker(word) or lw in _VN_BARE_WORDS
+    return lw in known_vn_words or lw in _VN_BARE_WORDS
 
 
 _TOKEN_RE = re.compile(r"\S+|\s+")

@@ -26,7 +26,7 @@ sys.stdin.reconfigure(encoding="utf-8")
 
 from content import (
     Item, load_persona_system_prompt, load_roster, load_personal_items,
-    add_personal_items, pieces_of, pick_next_index, vocab_set, _tokens, _contains_run,
+    add_personal_items, check_roster, pieces_of, pick_next_index,
 )
 from srs import ProgressStore
 from voice import SpeechPipeline
@@ -129,12 +129,20 @@ TOOLS = [
                 "type": "object",
                 "properties": {
                     "name": {"type": "string", "description": "the Vietnamese word or phrase, correctly spelled"},
+                    "gloss": {
+                        "type": "string",
+                        "description": (
+                            "what it means, in plain English, as short as possible -- this is what a later "
+                            "recall will ask them for, so it must be a natural English word or phrase "
+                            "('I / me', 'to want'), never a grammatical description"
+                        ),
+                    },
                     "description": {
                         "type": "string",
                         "description": "Vietnamese-language notes (meaning, usage), same style as the course's own items",
                     },
                 },
-                "required": ["name", "description"],
+                "required": ["name", "gloss", "description"],
             },
         },
     },
@@ -174,13 +182,38 @@ THEME_GENERATION_TOOL = [
                             "properties": {
                                 "name": {"type": "string", "description": "the Vietnamese word or phrase"},
                                 "item_type": {"type": "string", "enum": ["concept", "procedure"]},
+                                "kind": {
+                                    "type": "string",
+                                    "enum": ["atom", "construction"],
+                                    "description": (
+                                        "'atom' for one thing said as a unit (a multi-word block like 'cà phê' "
+                                        "is still an atom); 'construction' for a sentence assembled out of items "
+                                        "the learner already knows"
+                                    ),
+                                },
+                                "gloss": {
+                                    "type": "string",
+                                    "description": (
+                                        "what it means in plain English, as short as possible -- spoken aloud as "
+                                        "the question a recall asks, so never a grammatical description"
+                                    ),
+                                },
+                                "pieces": {
+                                    "type": "array",
+                                    "items": {"type": "string"},
+                                    "description": "constructions only: exact names of already-known items it is built from, in order",
+                                },
+                                "literal": {
+                                    "type": "string",
+                                    "description": "constructions only: word-by-word English of the Vietnamese order, e.g. 'I name is [name]'",
+                                },
                                 "category": {"type": "string"},
                                 "description": {
                                     "type": "string",
                                     "description": "Vietnamese-language notes: meaning, tone, usage -- same style/language as existing roster items",
                                 },
                             },
-                            "required": ["name", "item_type", "category", "description"],
+                            "required": ["name", "item_type", "kind", "gloss", "category", "description"],
                         },
                     }
                 },
@@ -422,8 +455,11 @@ def generate_theme_items(api_key: str, topic: str, known_items: list[Item], coun
                 "item_type is 'concept' for single words/phrases, 'procedure' for sentence "
                 "patterns; description is written IN VIETNAMESE, names the item's tone, and "
                 "explains meaning/usage the way a teacher's private notes would -- never in "
-                "English or French. Only use words the learner plausibly already knows as "
-                "building blocks for any 'procedure' item. Call add_vocabulary_items."
+                "English. gloss, by contrast, is the plain English meaning, and it is what the "
+                "tutor will read aloud when asking for the word later, so keep it short and "
+                "natural. A 'construction' may only list pieces that appear verbatim in the "
+                "known-items list; if you cannot build it from those, make it an atom instead. "
+                "Call add_vocabulary_items."
             ),
         },
         {
@@ -448,9 +484,17 @@ def generate_theme_items(api_key: str, topic: str, known_items: list[Item], coun
                 entry = json.loads(raw_obj)
             except json.JSONDecodeError:
                 continue
+            known_names = {i.name for i in known_items}
             items.append(Item(
                 name=entry["name"], item_type=entry["item_type"], category=entry["category"],
                 language="vi", description=entry["description"], source="personnel", topic=topic,
+                gloss=entry.get("gloss", ""), kind=entry.get("kind", "atom"),
+                # Dropped rather than trusted: a piece naming something the
+                # course does not teach would later surface as a recall for a
+                # word that has no item, and generation has invented pieces
+                # before ("Rất vui được gặp bạn" out of words never taught).
+                pieces=[p for p in entry.get("pieces", []) if p in known_names],
+                literal=entry.get("literal", ""),
             ))
             print(f"    -> item {len(items)}/{count} ready: {entry['name']}")
         n_extracted = len(complete)
@@ -488,13 +532,31 @@ class Step:
     running, a piece of the recall chain skipped, the lesson teaching one item
     while the sequence sat on another. None of those are possible once a turn
     is a single instruction handed over one at a time.
+
+    A step names BOTH sides of the pair. Handing over only the Vietnamese left
+    the model to supply the English side of its own question, and measured live
+    it as often simply reused the target -- "So how would you say là?", a
+    question that states its answer. `answer_is_target` marks the turns where
+    the Vietnamese must not be uttered at all, because it is what is being
+    asked for.
     """
     kind: str
     target: str | None
     instruction: str
+    answer_is_target: bool = False
 
 
-def build_plan(item: Item, pieces: list[Item], recall_targets: list[str]) -> list[Step]:
+def _ask_for(item: Item) -> str:
+    """How a question refers to the item, from the side the learner must NOT
+    be given. The gloss is the whole point; falling back to the Vietnamese name
+    would reintroduce the self-answering question, so a missing gloss falls
+    back to the item's own notes instead and is reported at startup."""
+    if item.gloss:
+        return f'"{item.gloss}"'
+    return f"the item described as: {item.description[:120]}"
+
+
+def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item]) -> list[Step]:
     """The full turn-by-turn plan for teaching one item.
 
     Mirrors the reference method: a lone new word is introduced and heard, a
@@ -504,7 +566,52 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[str]) -> lis
     """
     plan: list[Step] = []
 
-    if not pieces:
+    if item.kind == "rule":
+        # Never a recall: the name is a description of the language, not
+        # something the learner ever says. Asking "what was tính từ không cần
+        # là?" is nonsense, and the old name-splitting made exactly that
+        # possible by finding real vocabulary inside the description.
+        plan.append(Step(
+            "rule", item.name,
+            f"State this in one plain English sentence, as something they have already been half "
+            f"noticing: {item.gloss or item.description}. Then one question that puts it to work. "
+            f"Nothing else.",
+        ))
+    elif item.kind == "construction":
+        for piece in pieces:
+            plan.append(Step(
+                "recall_piece", piece.name,
+                f"Ask them, in English, for the Vietnamese for {_ask_for(piece)}. One question, then "
+                f"stop. Do not say the Vietnamese word yourself and do not have Minh say it — it is "
+                f"the answer. Do not mention the other pieces.",
+                answer_is_target=True,
+            ))
+        literal = f' Its literal word order is: "{item.literal}".' if item.literal else ""
+        plan.append(Step(
+            "scaffold", item.name,
+            f'They are about to build "{item.gloss}".{literal} Give that literal order out loud in '
+            f"English, word by word, then ask them for the whole sentence. Do not say any Vietnamese "
+            f"and do not assemble it for them.",
+            answer_is_target=True,
+        ))
+        plan.append(Step(
+            "answer", item.name,
+            f'Have Minh say the full sentence twice — a real one with the blank filled in, never the '
+            f'pattern with its placeholder. Then ask for "{item.gloss}" again with one element '
+            f"swapped. One question.",
+        ))
+        for _ in range(N_VARIATIONS - 1):
+            plan.append(Step(
+                "vary", item.name,
+                "Same structure, one element swapped, asked in English as a question. Then stop.",
+                answer_is_target=True,
+            ))
+        plan.append(Step(
+            "rule", item.name,
+            "Name the pattern now, in one plain sentence, as something they just noticed. Then one "
+            "last question.",
+        ))
+    else:
         # Two turns, not one. A single turn meant a word was revealed, heard
         # once and gone -- three of them stacked back to back before anything
         # was combined, which is what made the lesson feel like it was skimming.
@@ -512,50 +619,44 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[str]) -> lis
         # comes straight back with "again, the word for X is ...".
         plan.append(Step(
             "introduce", item.name,
-            f"Introduce the word {item.name}. One sentence of real context only if you have a true "
-            f"fact worth telling, otherwise go straight in. End a sentence on the word itself, have "
-            f"Minh say it twice alone, then ask the learner to say it. Nothing else.",
+            f'Introduce {item.name}. Say in ONE sentence that the Vietnamese for {_ask_for(item)} is '
+            f'{item.name} — the meaning and the word together, ending on the word, so the pair lands '
+            f'as one thing. (One sentence of real context first only if you have a true fact worth '
+            f'telling.) Then give Minh a single line, the word said twice: "{item.name}, '
+            f'{item.name}." Then ask them to say it. Nothing else.',
         ))
         plan.append(Step(
             "settle", item.name,
-            f"Stay on {item.name} one more turn. React in a few words to what they just said, have "
-            f"Minh say it once more, and ask for it again. Do not introduce anything new.",
+            f"Stay on this word one more turn. React in a few words to what they just said, then ask "
+            f"them again for the Vietnamese for {_ask_for(item)}. Asking a second time is deliberate "
+            f"and is not a sign they got it wrong. Do not say the Vietnamese yourself, do not have "
+            f"Minh say it, and do not introduce anything new.",
+            answer_is_target=True,
         ))
-    else:
-        for piece in pieces:
-            plan.append(Step(
-                "recall_piece", piece.name,
-                f"Ask the learner what {piece.name} was. One question, in their own language, then "
-                f"stop. Do not name the other pieces, do not say what they already know.",
-            ))
-        plan.append(Step(
-            "scaffold", item.name,
-            f"Give the literal Vietnamese word order of {item.name}, word by word in the learner's "
-            f"language, then ask them for the whole sentence. Do not assemble it for them.",
-        ))
-        plan.append(Step(
-            "answer", item.name,
-            "Have Minh say the correct full sentence twice. Then ask for the same structure with one "
-            "element swapped. One question.",
-        ))
-        for _ in range(N_VARIATIONS - 1):
-            plan.append(Step(
-                "vary", item.name,
-                "Same structure, one element swapped, asked as a question. Then stop.",
-            ))
-        if item.item_type == "procedure":
-            plan.append(Step(
-                "rule", item.name,
-                "State the pattern now, in one plain sentence, as something they just noticed. Then "
-                "one last question.",
-            ))
 
-    for name in recall_targets[:N_RAPIDFIRE]:
+    for target in recall_targets[:N_RAPIDFIRE]:
         plan.append(Step(
-            "rapidfire", name,
-            f"Bare recall, no context: ask what {name} was, on its own. One question, then stop.",
+            "rapidfire", target.name,
+            f"Bare recall, no context: ask them in English for the Vietnamese for {_ask_for(target)}. "
+            f"One question, then stop. Do not say the Vietnamese word and do not have Minh say it "
+            f"first — that would hand over the answer before the question.",
+            answer_is_target=True,
         ))
     return plan
+
+
+def _leaked_target(text: str, step: Step | None) -> bool:
+    """True if a turn that was asking FOR a word went and said it.
+
+    Detection only -- the reply is streamed and spoken sentence by sentence as
+    it arrives, so by the time a whole turn can be judged it has already been
+    heard. What this buys is knowing it happened: a recall that states its own
+    answer looks exactly like a successful turn in the transcript, and went
+    unnoticed across two whole live sessions.
+    """
+    if step is None or not step.answer_is_target or not step.target:
+        return False
+    return step.target.casefold() in text.casefold()
 
 
 def _lesson_note(lesson: dict) -> str:
@@ -567,7 +668,7 @@ def _lesson_note(lesson: dict) -> str:
     """
     lines = [
         "LESSON STATE — for you only. This is a directive, never a script: do not read any of it "
-        "aloud and do not repeat its wording. Say it your own way, in the learner's language."
+        "aloud and do not repeat its wording. Say it your own way, in English."
     ]
     step = current_step(lesson)
 
@@ -605,7 +706,7 @@ def start_item(lesson: dict, item: Item | None, seen_items: list[Item], store: P
         return
     pieces = pieces_of(item, seen_items)
     store.mark_introduced(item.name)
-    lesson["plan"] = build_plan(item, pieces, _recall_targets(store, item, pieces))
+    lesson["plan"] = build_plan(item, pieces, _recall_targets(store, item, pieces, seen_items))
     kinds = " -> ".join(s.kind for s in lesson["plan"])
     print(f"  -> item: {item.name}  [{len(lesson['plan'])} turns: {kinds}]")
 
@@ -614,7 +715,7 @@ _QUESTION_MARK = re.compile(r"\?\s*$")
 
 
 def learner_asked_something(user_text: str) -> bool:
-    """A real question from the learner, in their own language.
+    """A real question from the learner, in English.
 
     The escape hatch. Without it a plan steamrollers anything the learner says
     that is not the expected answer, which is the failure mode of any scripted
@@ -624,29 +725,37 @@ def learner_asked_something(user_text: str) -> bool:
     return "[lang:vi]" not in user_text and bool(_QUESTION_MARK.search(user_text.strip()))
 
 
-def _recall_targets(store: ProgressStore, item: Item | None, pieces: list[Item]) -> list[str]:
-    """Which already-met words the bare recall slots will ask for.
+def _recall_targets(store: ProgressStore, item: Item | None, pieces: list[Item],
+                    seen_items: list[Item]) -> list[Item]:
+    """Which already-met items the bare recall slots will ask for.
 
     Drawn by level, so the least consolidated word is likeliest and a
     well-drilled one turns up rarely without ever dropping out. The item being
     taught and the pieces its own chain already covers are excluded -- asking
     for a word twice in the same handful of turns wastes a slot.
+
+    Returns items, not names: a recall is asked from the English side, so the
+    slot needs the gloss and not just the Vietnamese. Rules are excluded for
+    the same reason there is no gloss to ask from -- nobody says a rule back.
     """
+    by_name = {i.name: i for i in seen_items}
     exclude = {p.name for p in pieces}
+    exclude |= {i.name for i in seen_items if i.kind == "rule"}
     if item is not None:
         exclude.add(item.name)
-    return store.draw_recalls(N_RAPIDFIRE, exclude=exclude)
+    drawn = store.draw_recalls(N_RAPIDFIRE, exclude=exclude)
+    return [by_name[n] for n in drawn if n in by_name]
 
 
-def _take_next(queue_items: list[Item], seen_items: list[Item], vocab: frozenset[str]) -> Item | None:
+def _take_next(queue_items: list[Item], seen_items: list[Item]) -> Item | None:
     """Pops whichever queued item may safely be taught next, or None if dry."""
     if not queue_items:
         return None
-    return queue_items.pop(pick_next_index(queue_items, seen_items, vocab))
+    return queue_items.pop(pick_next_index(queue_items, seen_items))
 
 
 def _run_turn(api_key, messages, store, roster, queue_items, themes_generated_this_session,
-              seen_items, vocab, lesson) -> bool:
+              seen_items, lesson) -> bool:
     """Runs ONE assistant turn: streams the reply, speaks it, advances the
     lesson if the model signalled it moved on, and handles any tool calls.
     Returns True if tool calls were made, meaning the caller should call this
@@ -699,6 +808,10 @@ def _run_turn(api_key, messages, store, roster, queue_items, themes_generated_th
         voice.say(filler)
         full_text = filler
 
+    if _leaked_target(full_text, current_step(lesson)):
+        print(f"  [diag] !! the answer was given away: this turn asked FOR "
+              f"{current_step(lesson).target!r} and said it")
+
     voice.wait()  # never open the mic while our own voice is still playing
     print(f"  [timing] total (reply + speech): {time.monotonic() - t0:.1f}s")
 
@@ -724,6 +837,13 @@ def _run_turn(api_key, messages, store, roster, queue_items, themes_generated_th
                 category="spontane",
                 language="vi",
                 description=args.get("description", "").strip(),
+                # Captured with the word itself: a spontaneous word joins the
+                # recall pool like any other, and a recall is asked from the
+                # English side, so an item that arrives without a gloss is one
+                # the tutor can only ask for by naming it -- i.e. by giving the
+                # answer away.
+                gloss=args.get("gloss", "").strip(),
+                kind="atom",
                 source="personnel",
             )
             if store.is_new(word.name):
@@ -774,7 +894,7 @@ MAX_CHAINED_TOOL_TURNS = 5
 
 
 def _conversation_loop(api_key, messages, store, roster, queue_items, themes_generated_this_session,
-                       seen_items, vocab, lesson):
+                       seen_items, lesson):
     """The live back-and-forth until interrupted (Ctrl+C). Pulled out of
     run_session so a fatal error here (e.g. the free model staying
     saturated through every retry) can still be caught by the caller and
@@ -815,7 +935,7 @@ def _conversation_loop(api_key, messages, store, roster, queue_items, themes_gen
                     print(f"  [level] {done.target} -> {store.level(done.target)}")
                 lesson["i"] += 1
             if current_step(lesson) is None:
-                item = _take_next(queue_items, seen_items, vocab)
+                item = _take_next(queue_items, seen_items)
                 if item is not None:
                     seen_items.append(item)
                 start_item(lesson, item, seen_items, store)
@@ -824,7 +944,7 @@ def _conversation_loop(api_key, messages, store, roster, queue_items, themes_gen
         messages.append({"role": "user", "content": user_input})
         for _ in range(MAX_CHAINED_TOOL_TURNS):
             had_tool_calls = _run_turn(api_key, messages, store, roster, queue_items,
-                                       themes_generated_this_session, seen_items, vocab, lesson)
+                                       themes_generated_this_session, seen_items, lesson)
             if not had_tool_calls:
                 break  # model gave its final spoken reply for this turn -- back to listening
         turns_done += 1
@@ -851,7 +971,6 @@ def run_session():
     # re-cite, which is where revision belongs in this method.
     queue_items = [by_name[n] for n in store.select_new(all_names, limit=QUEUE_SIZE)]
     seen_items = [i for i in roster if not store.is_new(i.name)]  # everything ever taught, roster order
-    vocab = vocab_set(roster)
     # An empty plan means the opening turn: the tutor greets, and the first
     # item is loaded only once that turn is behind us.
     lesson = {"item": None, "plan": [], "i": 0, "started": False}
@@ -860,6 +979,12 @@ def run_session():
     themes_generated_this_session: set[str] = set()
 
     print(f"--- Reservoir ready: {len(queue_items)} items to teach ---")
+    # Authoring defects, named at startup instead of degrading a lesson
+    # silently: an item with no gloss makes the tutor improvise the meaning
+    # side of its own question, which is how a recall ends up stating its
+    # answer. Run fill_item_metadata.py to fix them.
+    for problem in check_roster(roster):
+        print(f"  [content] {problem}")
 
     # Skip-intro instruction removed -- found live: it got over-applied, the
     # model dropped ALL spoken content, not just the opening speech. Keeping
@@ -871,7 +996,7 @@ def run_session():
 
     try:
         _conversation_loop(api_key, messages, store, roster, queue_items,
-                           themes_generated_this_session, seen_items, vocab, lesson)
+                           themes_generated_this_session, seen_items, lesson)
     finally:
         # Runs even on a fatal crash (e.g. the free model staying saturated
         # through every retry) -- found live: without this, a mid-session

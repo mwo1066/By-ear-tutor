@@ -6,7 +6,9 @@
     "language": "vi",
     "description": "Cụm từ chào hỏi phổ biến khi mới quen. \"Rất\" thanh sắc (giọng lên), \"vui\" thanh hỏi (giọng xuống lên), \"được\" thanh sắc, \"gặp\" thanh sắc, \"bạn\" thanh sắc. Dùng trong ngữ cảnh trang trọng hoặc thân mật đều được. Có thể rút gọn thành \"Vui được gặp bạn\" trong nói chuyện nhanh.",
     "source": "personnel",
-    "topic": "introductions"
+    "topic": "introductions",
+    "kind": "atom",
+    "gloss": "nice to meet you"
   },
   {
     "name": "Tuổi",
@@ -15,7 +17,9 @@
     "language": "vi",
     "description": "Danh từ chỉ số năm sinh, tuổi tác. Thanh hỏi (giọng xuống lên). Thường đi sau số: \"hai mươi tuổi\". Không cần trợ từ \"là\" khi nói tuổi: \"Tôi hai mươi tuổi\" chứ không phải \"Tôi là hai mươi tuổi\". Lưu ý: người Việt thường hỏi tuổi để xác định xưng hô phù hợp.",
     "source": "personnel",
-    "topic": "introductions"
+    "topic": "introductions",
+    "kind": "atom",
+    "gloss": "age"
   },
   {
     "name": "Bạn bao nhiêu tuổi?",
@@ -24,7 +28,9 @@
     "language": "vi",
     "description": "Câu hỏi hỏi tuổi đối phương. \"Bạn\" thanh sắc, \"bao\" thanh ngang, \"nhiêu\" thanh ngang, \"tuổi\" thanh hỏi. \"Bao nhiêu\" = bao + nhiêu, nghĩa là \"mấy\", \"bao nhiêu\". Câu hỏi này khá trực tiếp; trong văn hóa Việt, hỏi tuổi người lớn tuổi hơn có thể coi là thiếu tôn trọng, nhưng giữa bạn bè cùng trang lứa thì bình thường.",
     "source": "personnel",
-    "topic": "introductions"
+    "topic": "introductions",
+    "kind": "atom",
+    "gloss": "how old are you?"
   },
   {
     "name": "Tôi ... tuổi",
@@ -33,7 +39,13 @@
     "language": "vi",
     "description": "Cấu trúc khẳng định tuổi: Chủ ngữ + số + \"tuổi\". Sử dụng \"tôi\" (đã học) làm chủ ngữ. Không dùng \"là\" trước tuổi. Ví dụ: \"Tôi hai mươi lăm tuổi\". Thanh điệu: \"tôi\" ngang, số (tùy số), \"tuổi\" hỏi. Mẫu câu này cũng áp dụng cho người khác: \"Anh ba mươi tuổi\", \"Chị hai mươi tám tuổi\".",
     "source": "personnel",
-    "topic": "introductions"
+    "topic": "introductions",
+    "kind": "construction",
+    "gloss": "I ___ years old",
+    "pieces": [
+      "tôi"
+    ],
+    "literal": "I ___ years old"
   },
   {
     "name": "Đến từ",
@@ -42,7 +54,9 @@
     "language": "vi",
     "description": "Cụm động từ chỉ nơi gốc, quê quán. \"Đến\" thanh sắc (giọng lên), \"từ\" thanh ngang (giọng đều). Nghĩa đen: \"đi đến từ\". Dùng để nói nơi sinh sống hoặc quốc tịch: \"Tôi đến từ Hà Nội\", \"Cô ấy đến từ Pháp\". Trong giới thiệu bản thân, thường dùng sau khi nói tên.",
     "source": "personnel",
-    "topic": "introductions"
+    "topic": "introductions",
+    "kind": "atom",
+    "gloss": "come from"
   },
   {
     "name": "Bạn đến từ đâu?",
@@ -51,7 +65,9 @@
     "language": "vi",
     "description": "Câu hỏi hỏi quê quán/nơi đến. \"Bạn\" sắc, \"đến\" sắc, \"từ\" ngang, \"đâu\" hỏi. \"Đâu\" là từ hỏi chỉ nơi chốn. Câu này phổ biến trong lần gặp đầu tiên. Trả lời thường dùng mẫu \"Tôi đến từ + [địa danh]\".",
     "source": "personnel",
-    "topic": "introductions"
+    "topic": "introductions",
+    "kind": "atom",
+    "gloss": "where are you from?"
   },
   {
     "name": "Tôi đến từ ...",
@@ -60,7 +76,13 @@
     "language": "vi",
     "description": "Cấu trúc nói nơi đến: Chủ ngữ + \"đến từ\" + [địa danh]. Sử dụng \"tôi\" (đã học) và \"đến từ\" (cụm mới). Không cần \"là\". Ví dụ: \"Tôi đến từ Sài Gòn\", \"Tôi đến từ Nhật Bản\". Thanh điệu: \"tôi\" ngang, \"đến\" sắc, \"từ\" ngang, địa danh (tùy từ).",
     "source": "personnel",
-    "topic": "introductions"
+    "topic": "introductions",
+    "kind": "construction",
+    "gloss": "I come from ___",
+    "pieces": [
+      "tôi"
+    ],
+    "literal": "I come from ___"
   },
   {
     "name": "Bạn làm gì?",
@@ -69,7 +91,9 @@
     "language": "vi",
     "description": "Câu hỏi hỏi nghề nghiệp hoặc việc đang làm. \"Bạn\" sắc, \"làm\" ngang, \"gì\" hỏi. \"Làm\" = làm việc, làm nghề. Có thể hiểu là \"Bạn làm nghề gì?\" (hỏi nghề) hoặc \"Bạn đang làm gì?\" (hỏi hành động hiện tại) tùy ngữ cảnh. Trong giới thiệu, thường hiểu là hỏi nghề nghiệp. Trả lời: \"Tôi là giáo viên\", \"Tôi làm kỹ sư\", hoặc \"Tôi đang học\".",
     "source": "personnel",
-    "topic": "introductions"
+    "topic": "introductions",
+    "kind": "atom",
+    "gloss": "what do you do?"
   },
   {
     "name": "Xin chào",
@@ -78,7 +102,9 @@
     "language": "vi",
     "description": "Lời chào trang trọng, dùng trong mọi tình huống. \"Xin\" thanh ngang (giọng bằng), \"chào\" thanh huyền (giọng xuống). Thường dùng khi gặp người lớn tuổi, người quen ít hoặc trong môi trường công sở. Có thể dùng độc lập hoặc đi kèm đại từ xưng hô như \"Xin chào anh/chị/em\".",
     "source": "personnel",
-    "topic": "greetings and introductions"
+    "topic": "greetings and introductions",
+    "kind": "atom",
+    "gloss": "hello (formal)"
   },
   {
     "name": "Chào buổi sáng",
@@ -87,7 +113,9 @@
     "language": "vi",
     "description": "Lời chào theo thời gian buổi sáng. \"Chào\" thanh huyền, \"buổi\" thanh hỏi (giọng xuống lên), \"sáng\" thanh sắc (giọng lên). Dùng từ sớm đến khoảng 10 giờ. Thường dùng giữa người quen, bạn bè, đồng nghiệp.",
     "source": "personnel",
-    "topic": "greetings and introductions"
+    "topic": "greetings and introductions",
+    "kind": "atom",
+    "gloss": "good morning"
   },
   {
     "name": "Chào buổi chiều",
@@ -96,7 +124,9 @@
     "language": "vi",
     "description": "Lời chào buổi chiều. \"Chào\" thanh huyền, \"buổi\" thanh hỏi, \"chiều\" thanh ngang. Dùng từ khoảng 12 giờ trưa đến 5-6 giờ chiều. Phù hợp ngữ cảnh thân mật hoặc công sở.",
     "source": "personnel",
-    "topic": "greetings and introductions"
+    "topic": "greetings and introductions",
+    "kind": "atom",
+    "gloss": "good afternoon"
   },
   {
     "name": "Chào buổi tối",
@@ -105,7 +135,9 @@
     "language": "vi",
     "description": "Lời chào buổi tối. \"Chào\" thanh huyền, \"buổi\" thanh hỏi, \"tối\" thanh nặng (giọng xuống thấp). Dùng sau 6 giờ chiều. Thường dùng khi gặp bạn bè, người quen vào buổi tối.",
     "source": "personnel",
-    "topic": "greetings and introductions"
+    "topic": "greetings and introductions",
+    "kind": "atom",
+    "gloss": "good evening"
   },
   {
     "name": "Tạm biệt",
@@ -114,7 +146,9 @@
     "language": "vi",
     "description": "Lời tạm biệt phổ biến, dùng khi chia tay. \"Tạm\" thanh ngang, \"biệ\"t thanh nặng. Dùng trong cả ngữ cảnh trang trọng và thân mật. Có thể nói \"Tạm biệt anh/chị/em\" để thêm phần xưng hô.",
     "source": "personnel",
-    "topic": "greetings and introductions"
+    "topic": "greetings and introductions",
+    "kind": "atom",
+    "gloss": "goodbye"
   },
   {
     "name": "Hẹn gặp lại",
@@ -123,7 +157,9 @@
     "language": "vi",
     "description": "Cụm từ tạm biệt mang ý hẹn gặp lại. \"Hẹn\" thanh ngang, \"gặp\" thanh sắc, \"lại\" thanh ngang. Dùng khi kết thúc cuộc trò chuyện, hẹn gặp người đó trong tương lai gần. Thường dùng giữa bạn bè, đồng nghiệp.",
     "source": "personnel",
-    "topic": "greetings and introductions"
+    "topic": "greetings and introductions",
+    "kind": "atom",
+    "gloss": "see you again"
   },
   {
     "name": "Bạn có anh chị em không?",
@@ -132,7 +168,17 @@
     "language": "vi",
     "description": "Câu hỏi hỏi về anh chị em. \"Bạn\" thanh sắc, \"có\" thanh ngang, \"anh\" thanh ngang, \"chị\" thanh ngang, \"em\" thanh ngang, \"không\" thanh ngang. Dùng khi muốn biết người đối phương có anh chị em ruột hay không. Trả lời thường dùng \"Tôi có anh/chị/em\" hoặc \"Tôi không có anh chị em\".",
     "source": "personnel",
-    "topic": "greetings and introductions"
+    "topic": "greetings and introductions",
+    "kind": "construction",
+    "gloss": "Do you have siblings?",
+    "pieces": [
+      "có",
+      "anh",
+      "chị",
+      "em",
+      "không"
+    ],
+    "literal": "you have older brother older sister younger sibling not"
   },
   {
     "name": "Tôi có anh chị em",
@@ -141,7 +187,17 @@
     "language": "vi",
     "description": "Câu khẳng định có anh chị em. \"Tôi\" thanh ngang, \"có\" thanh ngang, \"anh\" thanh ngang, \"chị\" thanh ngang, \"em\" thanh ngang. Dùng để trả lời câu hỏi \"Bạn có anh chị em không?\". Có thể thay \"anh/chị/em\" bằng cụ thể: \"anh trai\", \"chị gái\", \"em trai\", \"em gái\" nếu đã học từ chỉ thứ tự.",
     "source": "personnel",
-    "topic": "greetings and introductions"
+    "topic": "greetings and introductions",
+    "kind": "construction",
+    "gloss": "I have siblings",
+    "pieces": [
+      "tôi",
+      "có",
+      "anh",
+      "chị",
+      "em"
+    ],
+    "literal": "I have older brother older sister younger sibling"
   },
   {
     "name": "Khỏe",
@@ -150,7 +206,9 @@
     "language": "vi",
     "description": "Tính từ chỉ trạng thái khỏe mạnh, thường dùng trong chào hỏi 'Bạn khỏe không?'. 'Khỏe' thanh hỏi (giọng xuống lên). Trong câu khẳng định 'Tôi khỏe' thì 'khỏe' giữ nguyên thanh. Tính từ này không cần 'là' khi làm chủ ngữ.",
     "source": "personnel",
-    "topic": "greetings and introductions"
+    "topic": "greetings and introductions",
+    "kind": "atom",
+    "gloss": "healthy"
   },
   {
     "name": "Sống",
@@ -159,7 +217,9 @@
     "language": "vi",
     "description": "Động từ chỉ hành động cư trú, sinh sống tại một nơi. 'Sống' thanh sắc (giọng lên). Dùng trong mẫu câu hỏi 'Bạn sống ở đâu?' và trả lời 'Tôi sống ở [địa điểm]'. Luôn đi kèm giới từ 'ở' trước tên nơi chốn.",
     "source": "personnel",
-    "topic": "greetings and introductions"
+    "topic": "greetings and introductions",
+    "kind": "atom",
+    "gloss": "to live"
   },
   {
     "name": "Ở",
@@ -168,7 +228,9 @@
     "language": "vi",
     "description": "Giới từ chỉ nơi chốn, dùng sau động từ 'sống', 'làm', 'học' để chỉ địa điểm. 'Ở' thanh hỏi (giọng xuống lên). Phát âm ngắn, không nhấn mạnh. Không dùng độc lập, luôn đi với danh từ chỉ địa điểm ngay sau đó.",
     "source": "personnel",
-    "topic": "greetings and introductions"
+    "topic": "greetings and introductions",
+    "kind": "atom",
+    "gloss": "at / in (location)"
   },
   {
     "name": "Người",
@@ -177,7 +239,9 @@
     "language": "vi",
     "description": "Danh từ chỉ con người, cũng dùng để chỉ quốc tịch trong cấu trúc 'người + [tên nước]'. 'Người' thanh hỏi (giọng xuống lên). Ví dụ: 'người Việt', 'người Mỹ'. Xuất hiện trong câu hỏi 'Bạn là người nước nào?'.",
     "source": "personnel",
-    "topic": "greetings and introductions"
+    "topic": "greetings and introductions",
+    "kind": "atom",
+    "gloss": "person / nationality"
   },
   {
     "name": "Chào anh / Chào chị / Chào em",
@@ -186,7 +250,13 @@
     "language": "vi",
     "description": "Mẫu chào hỏi phân biệt theo độ tuổi và giới tính, dùng động từ 'chào' (thanh ngang) kèm đại xưng hô. 'Anh' thanh ngang, 'chị' thanh ngang, 'em' thanh ngang. Dùng khi gặp người lớn hơn (anh, chị) hoặc nhỏ hơn (em). Không thêm 'tôi' trước 'chào'.",
     "source": "personnel",
-    "topic": "greetings and introductions"
+    "topic": "greetings and introductions",
+    "kind": "construction",
+    "gloss": "hello (to male/female/younger)",
+    "pieces": [
+      "chào"
+    ],
+    "literal": "hello + [title]"
   },
   {
     "name": "Cảm ơn bạn",
@@ -195,7 +265,14 @@
     "language": "vi",
     "description": "Mẫu cảm ơn có chỉ định đối tượng. 'Cảm' thanh ngang, 'ơn' thanh ngang, 'bạn' thanh sắc. Dùng sau khi nhận giúp đỡ, quà cade hoặc thông tin. Có thể thay 'bạn' bằng 'anh', 'chị', 'em' tùy người được cảm ơn.",
     "source": "personnel",
-    "topic": "greetings and introductions"
+    "topic": "greetings and introductions",
+    "kind": "construction",
+    "gloss": "thank you",
+    "pieces": [
+      "cảm ơn",
+      "bạn"
+    ],
+    "literal": "thank you"
   },
   {
     "name": "Không có gì",
@@ -204,7 +281,15 @@
     "language": "vi",
     "description": "Mẫu trả lời lịch sự khi được cảm ơn, nghĩa 'không có chi / đừng đề cập'. 'Không' thanh huyền (giọng xuống), 'có' thanh ngang, 'gì' thanh ngang. Ba từ nói liền, ngữ điệu phẳng. Thay thế cho 'Không sao' trong ngữ cảnh trang trọng.",
     "source": "personnel",
-    "topic": "greetings and introductions"
+    "topic": "greetings and introductions",
+    "kind": "construction",
+    "gloss": "you're welcome",
+    "pieces": [
+      "không",
+      "có",
+      "gì"
+    ],
+    "literal": "nothing"
   },
   {
     "name": "Tôi tên là [tên], tôi đến từ [nước]",
@@ -213,7 +298,13 @@
     "language": "vi",
     "description": "Mẫu giới thiệu bản thân kết hợp tên và quê quán, gộp hai mẫu đã học. 'Tôi' thanh ngang, 'tên' thanh ngang, 'là' thanh ngang, 'đến' thanh ngang, 'từ' thanh ngang. Nói liên tục, dừng nhẹ sau tên riêng. Dùng trong gặp gỡ đầu tiên, bối cảnh trang trọng.",
     "source": "personnel",
-    "topic": "greetings and introductions"
+    "topic": "greetings and introductions",
+    "kind": "construction",
+    "gloss": "I am ___, I am from ___",
+    "pieces": [
+      "tôi tên là + [tên riêng]"
+    ],
+    "literal": "I name is [name], I come from [country]"
   },
   {
     "name": "Je suis prêt",
@@ -222,6 +313,8 @@
     "language": "vi",
     "description": "Biểu hiện ‘tôi sẵn sàng’, dùng trong giao tiếp để nói rằng mình đã chuẩn bị xong và sẵn sàng bắt đầu. Giọng điệu trung tính, lịch sự.",
     "source": "personnel",
-    "topic": null
+    "topic": null,
+    "kind": "atom",
+    "gloss": "I am ready"
   }
 ]
