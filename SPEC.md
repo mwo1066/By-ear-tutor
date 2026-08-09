@@ -168,12 +168,6 @@ vient de poser.
 **Où :** les deux — `answered_target` décide, le prompt donne le ton
 **Changer :** `tutor.py` → `ANSWER_MATCH_THRESHOLD` (0.5)
 
-> **Cassé, connu.** `answered_target` reçoit le tour de l'apprenant avec son
-> étiquette `[lang:vi]` encore attachée, et la réduit à `langvi` au lieu de la
-> jeter. Six lettres parasites sont collées devant chaque réponse, donc les
-> bonnes réponses comptent comme ratées. Mesuré : `Đói` pour tôi score 0,33 au
-> lieu de 0,67.
-
 ### 20. Un mot vraiment différent a droit à une seule seconde chance
 Minh le redit, la question est reposée autrement, puis la leçon avance quelle
 que soit la réponse.

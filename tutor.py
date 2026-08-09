@@ -731,6 +731,15 @@ def start_item(lesson: dict, item: Item | None, seen_items: list[Item], store: P
 ANSWER_MATCH_THRESHOLD = 0.5
 
 
+# Every learner turn arrives prefixed with the language the recogniser reported.
+# It has to come off before any comparison: _bare keeps letters and drops
+# everything else, so "[lang:vi]" survived as "langvi" glued to the front of the
+# answer. Six junk letters were enough to sink every correct reply -- "Đói" for
+# tôi scored 0.33 instead of 0.67, and an exact "tôi" landed on 0.50, right at
+# the threshold. A whole live session could not produce a single accepted answer.
+_LANG_TAG = re.compile(r"^\s*\[lang:[a-z-]+\]\s*", re.IGNORECASE)
+
+
 def _bare(text: str) -> str:
     """Letters only, no tone marks -- what a beginner and a recogniser both lose first."""
     lowered = unicodedata.normalize("NFD", text.lower()).replace("đ", "d")
@@ -760,7 +769,7 @@ def answered_target(user_text: str, target: str) -> bool:
     onto the nearest known word, which repaired the mispronunciation the tutor
     is supposed to hear.
     """
-    said, want = _bare(user_text), _bare(target)
+    said, want = _bare(_LANG_TAG.sub("", user_text)), _bare(target)
     if not want:
         return True
     if want in said:
