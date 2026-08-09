@@ -207,7 +207,23 @@ Pour qu'un plan scripté ne puisse pas rouler sur l'apprenant.
 ### 23. L'enregistrement est mains libres
 Démarre à la parole, s'arrête après 1,2 s de silence. Aucune touche, jamais.
 **Où :** code
-**Changer :** `listen.py` → `TRAILING_SILENCE_MS`, `VAD_AGGRESSIVENESS`
+**Changer :** `listen.py` → `TRAILING_SILENCE_MS`
+
+### 23b. Une trame est de la parole si le détecteur ET le volume sont d'accord
+Le seuil de volume se mesure en continu — le 20ᵉ centile des trois dernières
+secondes est le bruit de la pièce, et il faut le dépasser d'un facteur trois.
+**Où :** code — `_speech_threshold`, dans le callback d'enregistrement
+**Pourquoi :** mesuré sur un portable au ventilateur bruyant, `webrtcvad` au
+maximum de sévérité classait **93 % du silence** comme de la parole, contre
+91 % pour un mot prononcé — le silence marquait plus haut que la voix. Le même
+enregistrement se séparait proprement au volume : 286 rms pour la pièce, 1117
+pour le mot, des crêtes à 15× d'écart. Chacun est aveugle à une famille de
+bruit différente : le ventilateur passe le détecteur mais pas le volume, une
+porte qui claque passe le volume mais pas le détecteur.
+**Pourquoi mesuré et non fixe :** un seuil calibré sur une pièce rendrait
+l'app sourde dans une autre. La parole est la minorité bruyante des trames
+récentes, donc un centile bas d'entre elles donne la pièce elle-même.
+**Changer :** `listen.py` → `ENERGY_RATIO`, `ENERGY_ABSOLUTE_MIN`
 
 ### 24. Le silence est rogné avant l'envoi
 La transcription Groq n'a pas de filtre de silence côté serveur, et Whisper

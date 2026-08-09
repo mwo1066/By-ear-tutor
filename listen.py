@@ -27,15 +27,45 @@ SAMPLE_RATE = 16000
 FRAME_MS = 30
 FRAME_SAMPLES = SAMPLE_RATE * FRAME_MS // 1000  # 480 samples/frame at 16kHz/30ms
 
-VAD_AGGRESSIVENESS = 3  # max strictness -- found live: background noise (fan,
-# room echo) was misclassified as speech 10x in one turn, repeatedly resetting
-# the trailing-silence countdown and dragging recordings out to 7-9s+ for a
-# short utterance. aggressiveness=2 was too lenient for this mic/environment.
+VAD_AGGRESSIVENESS = 3            # max strictness; see the note on the gate below
 TRAILING_SILENCE_MS = 1200        # stop after this much silence once speech has started
 MAX_WAIT_FOR_SPEECH_S = 10        # give up if nobody starts talking
 MAX_RECORDING_S = 30              # hard safety cap
 
+# A frame counts as speech only if BOTH the voice detector and the loudness gate
+# agree, because each is blind to a different kind of noise.
+#
+# Measured on a laptop with a loud fan: webrtcvad at its strictest called 93% of
+# SILENCE speech, and 91% of a spoken word -- silence scored higher than the
+# voice. It is built for telephony and steady broadband noise sits inside the
+# band it listens to, so no aggressiveness setting separates them.
+#
+# The same recording separated cleanly by loudness: room 286 rms, spoken word
+# 1117, with peaks 15x apart. So loudness supplies what the detector cannot.
+# The reverse is also true -- a door slam is loud but is not a voice -- which is
+# why this is an AND rather than a replacement.
+#
+# The floor is measured continuously rather than fixed, so the same rule works
+# in a silent room and next to a fan: speech is the loud minority of recent
+# frames, so a low percentile of them is the room itself.
+ENERGY_RATIO = 3.0                # a frame must be this much louder than the room
+ENERGY_FLOOR_PERCENTILE = 20      # of recent frames -- the room, not the voice
+ENERGY_WINDOW_FRAMES = 100        # ~3s of history to measure the room from
+ENERGY_ABSOLUTE_MIN = 120.0       # keeps a very quiet room from arming a hair trigger
+
 _vad = webrtcvad.Vad(VAD_AGGRESSIVENESS)
+
+
+def _frame_energy(chunk: np.ndarray) -> float:
+    return float(np.sqrt(np.mean(chunk.astype(np.float32) ** 2)))
+
+
+def _speech_threshold(recent: list[float]) -> float:
+    """How loud a frame must be, right now, in this room."""
+    if not recent:
+        return ENERGY_ABSOLUTE_MIN
+    floor = float(np.percentile(recent, ENERGY_FLOOR_PERCENTILE))
+    return max(floor * ENERGY_RATIO, ENERGY_ABSOLUTE_MIN)
 
 
 def record_until_silence() -> np.ndarray:
@@ -51,14 +81,26 @@ def record_until_silence() -> np.ndarray:
     speech_frame_count = 0
     silence_reset_count = 0  # how many times noise interrupted a silence streak
     done = False
+    recent_energy: list[float] = []
+    vad_only_count = 0  # frames the detector called speech but the room explains
 
     def callback(indata, frame_count, time_info, status):
-        nonlocal speech_started, consecutive_silence_frames, done, speech_first_detected_at, speech_frame_count, silence_reset_count
+        nonlocal speech_started, consecutive_silence_frames, done, speech_first_detected_at, speech_frame_count, silence_reset_count, vad_only_count
         if done:
             return
         chunk = indata.copy()
         frames.append(chunk)
-        is_speech = _vad.is_speech(chunk.tobytes(), SAMPLE_RATE)
+
+        energy = _frame_energy(chunk)
+        threshold = _speech_threshold(recent_energy)
+        recent_energy.append(energy)
+        del recent_energy[:-ENERGY_WINDOW_FRAMES]
+
+        vad_says = _vad.is_speech(chunk.tobytes(), SAMPLE_RATE)
+        loud_enough = energy >= threshold
+        is_speech = vad_says and loud_enough
+        if vad_says and not loud_enough:
+            vad_only_count += 1
         speech_flags.append(is_speech)
         if is_speech:
             speech_frame_count += 1
@@ -88,7 +130,8 @@ def record_until_silence() -> np.ndarray:
 
     total_frames = len(frames)
     speech_first_str = f"{speech_first_detected_at:.1f}s" if speech_first_detected_at is not None else "never"
-    print(f"  [diag] speech after: {speech_first_str} -- speech frames: {speech_frame_count}/{total_frames} -- noise breaking a silence: {silence_reset_count}x")
+    gated = f" -- room noise gated out: {vad_only_count}" if vad_only_count else ""
+    print(f"  [diag] speech after: {speech_first_str} -- speech frames: {speech_frame_count}/{total_frames} -- noise breaking a silence: {silence_reset_count}x{gated}")
 
     if not frames:
         return np.array([], dtype=np.int16)
