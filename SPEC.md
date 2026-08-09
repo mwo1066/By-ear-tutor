@@ -161,6 +161,16 @@ répété tel quel.
 cours de référence ; « how would you say » apparaît vingt-deux fois
 **Changer :** `persona.toml` → THE CORE MOVE
 
+### 18b. Redemander le même mot se dit court, et marqué comme une reprise
+« Et encore une fois, c'était quoi *I / me* ? » — pas la question complète une
+seconde fois.
+**Où :** code — les consignes de `settle` et de la reprise
+**Pourquoi :** trois fois « What's the Vietnamese word for I or me ? » d'affilée
+sonne comme trois questions différentes, et l'apprenant cherche ce qu'il a raté.
+C'est aussi la signature du cours de référence : « and again, what was ___ ? »
+y revient vingt et une fois.
+**Changer :** `tutor.py` → `build_plan`, `_lesson_note`
+
 ### 19. Une réponse reconnaissable est correcte
 « Toi » pour tôi, un accent manquant, une transcription approximative : tout
 cela est juste. On confirme et on avance. Jamais reposer la question qu'on

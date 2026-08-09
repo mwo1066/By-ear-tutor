@@ -631,9 +631,11 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item]) -> li
         plan.append(Step(
             "settle", item.name,
             f"Stay on this word one more turn. React in a few words to what they just said, then ask "
-            f"them again for the Vietnamese for {_ask_for(item)}. Asking a second time is deliberate "
-            f"and is not a sign they got it wrong. Do not say the Vietnamese yourself, do not have "
-            f"Minh say it, and do not introduce anything new.",
+            f"for it a second time — SHORT, and marked as a repeat: \"and again, what was "
+            f"{_ask_for(item)}?\" Never restate the full question, which sounds like a new one and "
+            f"makes them wonder what they missed. Asking twice is deliberate and is not a sign they "
+            f"got it wrong. Do not say the Vietnamese yourself, do not have Minh say it, and do not "
+            f"introduce anything new.",
             answer_is_target=True,
         ))
 
@@ -693,10 +695,11 @@ def _lesson_note(lesson: dict) -> str:
     lines.append(f"THIS TURN, THIS ONLY: {step.instruction}")
     if lesson.get("retried"):
         lines.append(
-            f"They answered with a different word, so this is a second go at the same question. "
-            f"Do not repeat it word for word and do not tell them they were wrong: have Minh say "
-            f"{step.target} once, then ask again in a different way. Whatever they answer this "
-            f"time, you move on afterwards."
+            f"They answered with a different word, so this is a second go at the SAME question. "
+            f"Have Minh say {step.target} once, then ask again SHORT — \"and again?\", \"so once "
+            f"more?\" Do not restate the whole question and do not rephrase it into a new-sounding "
+            f"one: both make them think you are asking something else. Do not tell them they were "
+            f"wrong. Whatever they answer this time, you move on afterwards."
         )
     return "\n".join(lines)
 
