@@ -979,7 +979,12 @@ def _conversation_loop(api_key, messages, store, roster, queue_items, themes_gen
             print(f"(auto) you: {user_input}")
         else:
             t0 = time.monotonic()
-            user_input = listen_and_transcribe()
+            # Tell the recogniser which Vietnamese word is due, when one is:
+            # auto-detect hears the sound correctly and then writes it with
+            # English spelling ("tên" came back as the digits "10").
+            step = current_step(lesson)
+            expected = step.target if step and step.kind in RECALL_KINDS else None
+            user_input = listen_and_transcribe(expected=expected, matches=answered_target)
             print(f"  [timing] listen+transcribe: {time.monotonic() - t0:.1f}s")
             if not user_input:
                 print("  (nothing heard, listening again)")

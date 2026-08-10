@@ -20,6 +20,7 @@ import tutor
 
 SPOKEN: list[str] = []
 instructions: list[str] = []
+expectations: list = []
 
 
 class FakeVoice:
@@ -41,7 +42,10 @@ def main(NO_INTRO=False) -> int:
         yield ("content", "Ready to dive in?" if turns["n"] == 1 else "In Vietnamese, that's tôi.")
         yield ("tool_calls", [])
 
-    def fake_listen():
+    def fake_listen(expected=None, matches=None):
+        # Signature mirrors the real one on purpose: this test exists to catch
+        # exactly the kind of mismatch that only shows up mid-lesson otherwise.
+        expectations.append(expected)
         if turns["n"] >= 4:
             raise KeyboardInterrupt
         return "[lang:vi] tôi"
@@ -83,7 +87,9 @@ def main(NO_INTRO=False) -> int:
             print("   ", n.splitlines()[-1][:100])
         return 1
 
-    print(f"OK — session completed, {len(SPOKEN)} passages spoken, {len(steps)} distinct steps served")
+    told = [e for e in expectations if e]
+    print(f"OK — session completed, {len(SPOKEN)} passages spoken, {len(steps)} distinct steps served, "
+          f"{len(told)} listen(s) told which word to expect")
     for n in steps:
         print("   ", n.splitlines()[-1][:110])
     return 0

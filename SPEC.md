@@ -231,17 +231,24 @@ invente des phrases entières à partir de quasi-silence.
 **Où :** code — `_trim_to_speech`
 **Changer :** `listen.py` → `TRIM_PADDING_FRAMES`
 
-### 25. Seuls le vietnamien et l'anglais sont acceptés
-Tout le reste est re-transcrit en forçant le vietnamien.
-**Où :** code — `ALLOWED_LANGUAGES`
-**Pourquoi :** une tentative ratée de vietnamien revenait taguée français avec
-du texte français, et le tuteur répondait en français au milieu de la leçon
+### 25. La transcription sait quel mot elle attend
+Quand l'étape en cours demande un rappel, une première passe en détection
+automatique ; si elle ne rend pas le mot attendu, une seconde passe en forçant
+le vietnamien. Une requête de plus uniquement quand la première échoue.
+**Où :** code — `transcribe(expected=..., matches=...)`
+**Pourquoi :** Whisper entend juste et écrit faux. `tên` sonne comme *ten* en
+anglais, et il l'a transcrit **`10`** — le bon son, un texte inutilisable.
+**Changer :** `listen.py` → `transcribe`
 
-> **Cassé, connu.** Une vraie question en anglais mal détectée comme du
-> français est forcée en vietnamien et détruite. « How do you say dog in
-> Vietnamese ? » est devenu « Cái cách nói đáy ở Việt Nam ? » et le tuteur a
-> enseigné le mot pour « le fond ». La longueur est le discriminant gratuit :
-> un ou deux mots, c'est une tentative ; une phrase, c'est une question.
+### 25b. Quand rien n'est attendu, la longueur décide de la langue
+Si la langue détectée sort de {vi, en} et qu'aucun mot n'est attendu : un ou
+deux mots sont une tentative de vocabulaire, on force le vietnamien ; une
+phrase est une question, on force l'anglais.
+**Où :** code — `SENTENCE_WORDS`
+**Pourquoi :** tout forcer en vietnamien a transformé « how do you say dog in
+Vietnamese ? » en « Cái cách nói đáy ở Việt Nam ? », et le tuteur a enseigné le
+mot pour « le fond ».
+**Changer :** `listen.py` → `SENTENCE_WORDS`
 
 ### 26. La transcription n'est jamais réparée
 Ce qui a été dit est ce que le tuteur voit.

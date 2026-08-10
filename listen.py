@@ -262,16 +262,24 @@ def _run_transcribe_groq(wav_bytes: bytes, language: str | None, prompt: str | N
 # local "small" CPU model -- consistent with the rest of the project (Azure
 # for TTS, Groq for the LLM): the priority is the learning experience, not
 # staying 100% local the way memai does. Toggle back to False to compare.
-def transcribe(audio: np.ndarray) -> tuple[str, str]:
+# Beyond this many words, an utterance is a sentence rather than an attempt at
+# a vocabulary item -- almost always a question in the learner's own language.
+SENTENCE_WORDS = 3
+
+
+def transcribe(audio: np.ndarray, expected: str | None = None, matches=None) -> tuple[str, str]:
     """Returns (text, language_code), language_code always in ALLOWED_LANGUAGES.
 
-    Deliberately reports what was actually said, with no correction pass of
-    any kind. A vocabulary hint used to be fed to the decoder to pull mangled
-    attempts onto known words; measurement killed it (four seconds of pure
-    noise came back as "ừ ừ ừ ừ ừ", and it turned a correct "tôi" into "tốt").
-    Snapping the text afterwards was tried too and rejected on purpose: it
-    repairs mispronunciation, which is the very thing the tutor needs to see.
-    Judging how far off an attempt is belongs to the tutor, not here.
+    `expected` is the Vietnamese word the lesson is waiting for, when it is
+    waiting for one, and `matches(text, expected)` decides whether it arrived.
+    Both are passed in rather than imported so this module stays unaware of the
+    tutor.
+
+    Never repairs what was said: a vocabulary hint fed to the decoder made
+    Whisper invent Vietnamese out of pure noise, and snapping the text onto the
+    nearest known word erased the mispronunciation the tutor is meant to hear.
+    Choosing which language to decode in is a different thing -- it changes how
+    the audio is read, not what it is turned into afterwards.
     """
     if audio.size == 0:
         return "", "en"
@@ -280,23 +288,40 @@ def transcribe(audio: np.ndarray) -> tuple[str, str]:
     wav_bytes = _audio_to_wav_bytes(audio)
     text, lang = _run_transcribe_groq(wav_bytes, language=None, prompt=None)
     print(f"  [diag] groq stt pass 1: {time.monotonic() - t0:.1f}s (detected language: {lang})")
+
+    # The lesson is waiting for a specific Vietnamese word, so if auto-detect
+    # did not produce it, ask again for that language explicitly. Found live:
+    # "tên" was heard correctly but written with English spelling, and came out
+    # as the digits "10" -- right sound, unusable text.
+    if expected and matches and not matches(text, expected):
+        second = _forced(wav_bytes, "vi", t0)
+        if matches(second, expected):
+            print(f"  [diag] pass 2 recovered it: {text!r} -> {second!r}")
+            return second, "vi"
+        return text, lang if lang in ALLOWED_LANGUAGES else "vi"
+
     if lang not in ALLOWED_LANGUAGES:
-        # Auto-detect landed on something nonsensical for this context (seen
-        # live: literal Japanese/Korean script from a mangled pronunciation
-        # attempt) -- clamping just the language TAG left the transcribed text
-        # in that foreign script, useless to the tutor. Re-run forcing
-        # Vietnamese phonetics instead of trusting the guess.
-        t1 = time.monotonic()
-        text, _ = _run_transcribe_groq(wav_bytes, language="vi", prompt=None)
-        print(f"  [diag] groq stt pass 2 (forced vi): {time.monotonic() - t1:.1f}s")
-        lang = "vi"
+        # An unexpected language means the decoder was lost. Which way to push
+        # it depends on length: one or two words is an attempt at a vocabulary
+        # item, a whole sentence is a question. Forcing everything to Vietnamese
+        # turned "how do you say dog in Vietnamese?" into "Cái cách nói đáy ở
+        # Việt Nam?", and the tutor taught the word for "bottom".
+        forced = "vi" if len(text.split()) <= SENTENCE_WORDS else "en"
+        return _forced(wav_bytes, forced, time.monotonic()), forced
     return text, lang
 
 
-def listen_and_transcribe() -> str:
+def _forced(wav_bytes: bytes, language: str, since: float) -> str:
+    t = time.monotonic()
+    text, _ = _run_transcribe_groq(wav_bytes, language=language, prompt=None)
+    print(f"  [diag] groq stt pass 2 (forced {language}): {time.monotonic() - t:.1f}s")
+    return text
+
+
+def listen_and_transcribe(expected: str | None = None, matches=None) -> str:
     """Full turn: listen hands-free, transcribe, return a [lang:xx]-tagged string."""
     audio = record_until_silence()
-    text, lang = transcribe(audio)
+    text, lang = transcribe(audio, expected=expected, matches=matches)
     if not text:
         return ""
     return f"[lang:{lang}] {text}"
