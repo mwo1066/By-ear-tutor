@@ -693,6 +693,18 @@ def _lesson_note(lesson: dict) -> str:
     if lesson["item"] is not None:
         lines.append(f"Item being worked: {lesson['item'].name} — {lesson['item'].description}")
     lines.append(f"THIS TURN, THIS ONLY: {step.instruction}")
+    verdict = lesson.get("verdict")
+    if verdict == "correct":
+        lines.append(
+            "Their last answer WAS the word, near enough. Take it, say so in a few words, and get "
+            "on with the instruction above. Never tell them you did not catch it -- you did."
+        )
+    elif verdict == "missed_twice":
+        lines.append(
+            "They have now missed that word twice, which is enough. Give the correct form once, "
+            "have them say it back, and carry on. Do not dwell on it and do not ask again -- it "
+            "comes back later on its own."
+        )
     if lesson.get("retried"):
         lines.append(
             f"They answered with a different word, so this is a second go at the SAME question. "
@@ -997,6 +1009,7 @@ def _conversation_loop(api_key, messages, store, roster, queue_items, themes_gen
         # the tutor greets and teaches in the same breath.
         if turns_done > 0:
             done = current_step(lesson)
+            lesson["verdict"] = None
             if learner_asked_something(user_input):
                 print("  (learner asked a question -- the step is replayed after answering)")
             elif _should_retry(done, user_input, lesson):
@@ -1012,6 +1025,13 @@ def _conversation_loop(api_key, messages, store, roster, queue_items, themes_gen
                 # it asked, instead of being reconstructed afterwards by a
                 # model re-reading the transcript.
                 if done is not None and done.kind in RECALL_KINDS and done.target:
+                    # The code has already decided whether this was right. Pass
+                    # that decision on, or the model judges again from the raw
+                    # transcription and contradicts it -- seen live, three turns
+                    # running where the level went up and the tutor said "I
+                    # didn't catch that" in the same breath.
+                    got_it = answered_target(user_input, done.target)
+                    lesson["verdict"] = "correct" if got_it else "missed_twice"
                     store.record_recall(done.target)
                     print(f"  [level] {done.target} -> {store.level(done.target)}")
                 lesson["retried"] = False

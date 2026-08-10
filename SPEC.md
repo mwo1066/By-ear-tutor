@@ -171,6 +171,16 @@ C'est aussi la signature du cours de référence : « and again, what was ___ ? 
 y revient vingt et une fois.
 **Changer :** `tutor.py` → `build_plan`, `_lesson_note`
 
+### 18c. Le tuteur apprend du code si la réponse était bonne
+Le verdict est calculé par le code, puis transmis au modèle avec la consigne du
+tour suivant : « correct », « raté deux fois », ou rien.
+**Où :** code — `lesson["verdict"]`, lu par `_lesson_note`
+**Pourquoi :** sans ça le modèle rejuge tout seul à partir de la transcription
+brute et contredit le code. Vu en session : trois tours de suite où le niveau
+du mot montait et où le tuteur disait « I didn't catch that » dans le même
+souffle.
+**Changer :** `tutor.py` → `_lesson_note`
+
 ### 19. Une réponse reconnaissable est correcte
 « Toi » pour tôi, un accent manquant, une transcription approximative : tout
 cela est juste. On confirme et on avance. Jamais reposer la question qu'on
