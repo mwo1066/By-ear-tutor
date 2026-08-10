@@ -47,30 +47,35 @@ filler.
 
 ## Open, in rough priority order
 
-**The opening takes 63 seconds.** Twelve sentences before anything happens, and
-it plays again on every test run. The three points should survive in about six
-sentences.
+**The model drifts one turn behind, and it is no longer acceptable.** Decided
+with Meo after a live session: told to introduce "tên", the tutor re-asked
+"tôi" instead; it then introduced "tên" on the following turn, which is the
+step where saying the word is forbidden, so the answer was given away. From the
+learner's seat a Vietnamese word simply appears at random in the middle of a
+drill. This is not the flexibility we were willing to pay for.
 
-**Style.** Meo has notes on how the tutor talks; nothing has been done on this
-yet. This is the next real piece of work — the mechanics are sound now, the
-delivery is not.
+The agreed fix, not yet done: **the code writes the mechanical turns itself**.
+A recall or a rapid-fire is one sentence -- "and again, what was I / me?" --
+that the code can compose and send straight to speech, with no model call. It
+then cannot skip the step, give away the answer, or fall a turn behind. The
+model keeps introductions and reactions, where it earns its place. This also
+halves the requests per lesson, which the 8000 tokens/minute ceiling makes
+worth having on its own.
 
-**Speech synthesis dominates the clock.** A teaching turn is ~16s, of which
-~0.5s is the model. Everything else is Azure. This is the ceiling on a
-tac-au-tac feel, and it is untouched.
+**The opening takes 55 seconds.** Worked around with --no-intro, not fixed. The
+three points should survive in about six sentences.
 
-**`set_session_focus` has never fired.** The learner can ask for a personalised
-topic and four items get generated for it, but no session has ever triggered
-it. The new opening now mentions the option. When it is first tried, expect
-trouble: generation produced whole sentences last time ("Rất vui được gặp
-bạn"), and `pick_next_index` defers a phrase until its words are known, so
-those items may never surface. Generation does not yet know the composition
-rule.
+**Style.** Meo's notes on how the tutor talks, still not started.
 
-**`tutor.py` is 880 lines and does five jobs** — HTTP client, theme generation,
-the turn planner, the lesson note, the session loop. `_run_turn` takes ten
-parameters because session state is scattered across ten variables. Worth
-splitting, but not while the architecture is still settling.
+**Speech synthesis dominates the clock.** A teaching turn is ~10-15s, of which
+~0.5s is the model. Everything else is Azure.
+
+**`set_session_focus` has never fired**, and generation produces whole
+sentences that the ordering rule will defer until their words are taught --
+possibly forever.
+
+**`tutor.py` is ~1000 lines and does five jobs.** Worth splitting once the
+architecture stops moving.
 
 ## Constraints that shape decisions
 
