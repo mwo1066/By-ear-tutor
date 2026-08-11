@@ -133,37 +133,57 @@ pourraient devenir des items à part entière. `bay` mériterait sa place après
 **Statut :** câblé dans `fill_item_metadata.py`, pas encore vérifié sur des
 propositions réelles.
 
-### Respirer — une anecdote courte entre les mots
-*Proposé par Meo.*
+### C'est en variant qu'on gère le rythme
+*Proposé par Meo. C'est la phrase qui compte : la variation n'est pas un remède
+contre l'ennui, c'est l'instrument qui produit le rythme.*
 
-Le vrai sujet n'est pas la variété des formulations, c'est le **rythme**.
-Aujourd'hui, chaque tour scripté se termine par une question :
+Une leçon dont tous les tours ont la même forme n'a pas un rythme monotone —
+elle n'a **pas de rythme**. C'est un métronome. Le rythme naît du contraste : un
+tour long, puis trois courts ; une phrase qui raconte, puis une question sèche.
+
+**Mesuré le 11 août** sur les 56 tours scriptés du cours :
 
 ```
-mot → question → mot → question → mot → question
+ 3 mots  █
+ 7 mots  ███████████████   ← le pic
+ 9 mots  ███████
+12 mots  ███████
+13 mots  ███████
+36 mots  █                 ← le seul hook du roster
 ```
 
-C'est un exercice. Chez Paul Noble la leçon est lente : il raconte, il digresse,
-il revient. L'apprenant respire, et le mot s'accroche à quelque chose au lieu de
-défiler.
+Médiane 9 mots, presque tout entre 7 et 13. Le seul tour qui sort du lot est
+celui qui porte un fait. Le métronome, chiffré.
 
-Ce que ça donnerait : *« le café au Vietnam, c'est… »*, trois phrases, rien à
-répondre, puis on ré-enchaîne.
+**Ce qui doit rester fixe, ce qui doit bouger.** C'est la distinction qui évite
+de tout casser :
 
-**Ce n'est pas le `hook`.** Le hook explique le mot qu'on est en train de
-révéler, et il arrive collé à lui. Ici c'est un tour entier qui ne demande rien.
+- **le signal reste fixe** — la forme de la question. « and again, what was ___ ? »
+  doit être reconnaissable en trois occurrences, sinon l'apprenant redécode
+  l'anglais au lieu d'écouter le vietnamien.
+- **la texture bouge** — la longueur du tour, la présence ou non d'une phrase
+  avant la question, un fait, une digression, trois rappels enchaînés vite puis
+  un seul posé lentement.
 
-**Tiroir :** ni contenu ni prompt — c'est une **étape** de plus dans
-`build_plan`, insérée tous les N items. Le texte, lui, est de la donnée.
+Varier le cadre de la question serait donc une erreur ; varier tout le reste est
+le sujet.
 
-**La mesure qui décide :** quelle proportion des tours du cours de référence
-**demandent** quelque chose, contre ceux qui **racontent** ? Chez nous c'est
-presque 100 % de questions. Si la référence est à 70/30, on sait quoi viser —
-et on saura aussi si trois phrases suffisent ou s'il en faut dix.
+**Ce que ça veut dire concrètement**, et ce n'est pas une seule chose :
 
-**Ce qui joue contre :** chaque tour sans question coûte du temps de synthèse
-sans faire parler l'apprenant, et la règle 3 du prompt dit que l'apprenant doit
-parler au moins autant que le tuteur. Une digression trop longue la viole.
+- un tour qui ne demande rien et raconte (« le café au Vietnam, c'est… »), puis
+  on ré-enchaîne — ce serait une **étape** de plus dans `build_plan`
+- des hooks beaucoup plus fréquents, pour que la longueur des introductions
+  varie d'elle-même
+- des séries de rappels de longueur inégale, au lieu de trois systématiques
+
+**La mesure qui décide :** le profil de longueur des tours du cours de
+référence. Pas « est-ce qu'il digresse » mais « quelle est sa distribution ».
+Si elle est plate comme la nôtre, il n'y a rien à faire. Si elle est étalée, on
+sait de combien.
+
+**Ce qui joue contre :** un tour sans question dépense de la synthèse sans faire
+parler l'apprenant, et la règle 3 dit qu'il doit parler au moins autant que le
+tuteur. La longueur des digressions compte autant que leur fréquence.
 
 **Statut :** à mesurer d'abord. C'est l'idée qui a le plus de chances de changer
 la sensation du cours, et celle qu'il ne faut surtout pas régler à l'aveugle.
@@ -211,6 +231,11 @@ Et sur le vocabulaire lui-même, mesuré sur la liste de fréquence :
 
 - **43 %** des 2000 mots les plus fréquents sont polysyllabiques
 - **1 sur 5** se découpe entièrement en mots présents dans la même liste
+
+Et sur nos propres tours, mesuré le 11 août :
+
+- **56** tours scriptés, longueur médiane **9 mots**, presque tous entre 7 et 13
+- un seul dépasse 17 mots : celui qui porte un `hook`
 
 ---
 
