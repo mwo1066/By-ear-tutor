@@ -16,11 +16,15 @@ from pathlib import Path
 
 sys.stdout.reconfigure(encoding="utf-8")
 
+import content
+import listen
 import tutor
+import voice
 
 SPOKEN: list[str] = []
 instructions: list[str] = []
 expectations: list = []
+scripted: list[tuple[str, str, bool]] = []  # (target, line, is_retry) per turn the code wrote itself
 
 
 class FakeVoice:
@@ -31,10 +35,189 @@ class FakeVoice:
         pass
 
 
+# Lines the tutor really said in a live session, each one heard wrong at the
+# time, kept so that the fix stays fixed. This is the point of writing them
+# down: a fix verified by "run a lesson and listen" is a fix that can quietly
+# stop applying -- which already happened once here, to a vad_filter fix left
+# on a code path nothing called.
+#
+# Add a case when a lesson goes wrong, not a rule. If a new failure needs a new
+# entry in a list somewhere to pass, the list is the problem, not the entry.
+VOICE_CASES = [
+    # 2026-08-10 -- no space around the dash, so "correct—là." was one token and
+    # the whole thing went to the English voice. Minh never said "là".
+    ("That's correct—là.", [("tutor", "That's correct—"), ("teacher", "là.")]),
+    # The same sentence spaced normally always worked; it must keep working.
+    ("In Vietnamese, that's tôi.", [("tutor", "In Vietnamese, that's"), ("teacher", "tôi.")]),
+    # A scripted turn: the target belongs to Minh, the question to the tutor.
+    ("Listen again — tôi. And again?",
+     [("tutor", "Listen again —"), ("teacher", "tôi."), ("tutor", "And again?")]),
+    # An introduction: the meaning is the tutor's, both sayings of the word are
+    # Minh's, and they merge into one clip so he says it twice in a breath.
+    ("In Vietnamese, the word for name is tên. tên. Now you say it.",
+     [("tutor", "In Vietnamese, the word for name is"), ("teacher", "tên. tên."),
+      ("tutor", "Now you say it.")]),
+    # 2026-08-11 -- a frequency import put bare-ASCII Vietnamese words into the
+    # routing vocabulary, and several of them are English words. Minh started
+    # pronouncing "So" and "Do" inside the tutor's own English sentences.
+    ("So how would you say it?", [("tutor", "So how would you say it?")]),
+    ("Do you want a coffee?", [("tutor", "Do you want a coffee?")]),
+    # Digits are nobody's vocabulary but must still be spoken.
+    ("I have 1975 words.", [("tutor", "I have 1975 words.")]),
+]
+
+# 2026-08-10 -- the model cued Minh with a bare "Minh.", which the colon-only
+# label regex missed, so the English voice announced it out loud. The other
+# forms have not been seen yet and are here to prove the rule does not care.
+STAGE_DIRECTIONS = ["Minh.", "Minh", "(Minh)", "Minh --", "  minh  "]
+NOT_STAGE_DIRECTIONS = ["Minh says hello.", "Minh: tôi.", "tôi."]
+
+
+# (target, what was said, should the guard fire). The construction cases are
+# the point: the guard could not fire on one at all until the placeholder was
+# taken out of the comparison, so "Tôi tên là Nam." said on a step that forbids
+# it went unreported through every session logged.
+LEAK_CASES = [
+    ("tôi tên là + [tên riêng]", "Tôi tên là Nam.", True),
+    ("tôi tên là + [tên riêng]", "So how would you say My name is, with a name?", False),
+    ("tôi tên là + [tên riêng]", "Minh: tôi là. How would you say I am ___?", False),
+    ("Tôi ... tuổi", "Tôi hai mươi tuổi.", True),
+    ("tôi", "In Vietnamese that is tôi.", True),
+    ("tôi", "And again — what was I or me?", False),
+]
+
+
+# A construction is STORED as "muốn + [động từ]" and SAID as "muốn". Every line
+# that names a target aloud has to use the spoken form -- the retry and the
+# acknowledgement both did it wrong, one after the other, and Minh recited the
+# placeholder as if it were words.
+SPOKEN_TARGETS = [
+    ("muốn + [động từ]", "muốn"),
+    ("tôi tên là + [tên riêng]", "tôi tên là"),
+    ("Tôi ... tuổi", "Tôi tuổi"),
+    ("thích", "thích"),
+]
+
+
+def check_spoken_targets() -> int:
+    failed = 0
+    for stored, spoken in SPOKEN_TARGETS:
+        got = " ".join(tutor._target_fragments(stored))
+        if got != spoken:
+            print(f"FAIL — {stored!r} would be said as {got!r}, expected {spoken!r}")
+            failed += 1
+    return failed
+
+
+def check_leak_cases() -> int:
+    """A turn that forbids saying the answer, and says it, must be reported."""
+    failed = 0
+    for target, said, expected in LEAK_CASES:
+        step = tutor.Step("vary", target, "", answer_is_target=True)
+        if tutor._leaked_target(said, step) != expected:
+            verb = "missed" if expected else "wrongly flagged"
+            print(f"FAIL — leak guard {verb} {said!r} against target {target!r}")
+            failed += 1
+    return failed
+
+
+# An API refusal either gets retried or does not, and getting that wrong is
+# expensive in both directions. Live: a 400 (truncated tool-call JSON) was
+# retried five times, burning budget on a request that could never succeed, and
+# then crashed the lesson.
+ERROR_CASES = [
+    ({"status_code": 400, "code": "tool_use_failed"}, True),   # our request is wrong
+    ({"status_code": 422}, True),
+    ({"status_code": 429}, False),                             # slow down, then it works
+    ({"status_code": 503}, False),
+    ({"message": "connection reset"}, False),                  # no status: assume transient
+]
+
+
+# (what pass 1 heard, the language it reported, is this the learner talking).
+# The first line is the one that mattered: it was overwritten by a forced
+# Vietnamese second pass, scored as a correct answer, and the lesson carried on.
+TALKING_CASES = [
+    ("No, I'm asking for travel, listen, I don't care what I am me.", "en", True),
+    ("Can we do a lesson about ordering food?", "en", True),
+    ("toi", "en", False),          # an attempt, badly spelled
+    ("Fen Bey.", "en", False),     # an attempt at sân bay
+    ("and Bay", "en", False),
+    ("Tôi tên là Nam", "vi", False),  # Vietnamese: never treated as talking
+]
+
+
+def check_talking_cases() -> int:
+    failed = 0
+    for text, lang, expected in TALKING_CASES:
+        if listen.is_learner_talking(text, lang) != expected:
+            verb = "kept as heard" if expected else "left to the second pass"
+            print(f"FAIL — {text!r} ({lang}) should be {verb}")
+            failed += 1
+    return failed
+
+
+def check_derived_pieces(roster) -> int:
+    """The code must read off a sentence's pieces exactly as a human wrote them.
+
+    No hardcoded expectations here on purpose: the hand-written constructions
+    ARE the corpus, so this cannot drift away from the content the way a copied
+    list would. It is also the whole argument for computing the field instead
+    of asking the model -- which got 8 of its 13 wrong on the same test.
+    """
+    failed = 0
+    for item in roster:
+        if item.kind != "construction" or not item.pieces:
+            continue
+        got = content.derive_pieces(item.name, roster)
+        if got != item.pieces:
+            print(f"FAIL — pieces of {item.name!r}\n      hand-written {item.pieces}\n      derived      {got}")
+            failed += 1
+    return failed
+
+
+def check_error_cases() -> int:
+    failed = 0
+    for error, permanent in ERROR_CASES:
+        if tutor._permanent(error) != permanent:
+            expected = "never retried" if permanent else "retried"
+            print(f"FAIL — {error} should be {expected}")
+            failed += 1
+    return failed
+
+
+def check_voice_cases(vocab) -> int:
+    """Replays the recorded failures. Returns the number that still fail."""
+    failed = 0
+    for text, expected in VOICE_CASES:
+        got = voice.split_by_voice(text, vocab)
+        if got != expected:
+            print(f"FAIL — voice routing for {text!r}\n      expected {expected}\n      got      {got}")
+            failed += 1
+    for text in STAGE_DIRECTIONS:
+        if not voice.is_stage_direction(text):
+            print(f"FAIL — {text!r} is a stage direction and would be spoken aloud")
+            failed += 1
+    for text in NOT_STAGE_DIRECTIONS:
+        if voice.is_stage_direction(text):
+            print(f"FAIL — {text!r} is real speech and would be dropped")
+            failed += 1
+    return failed
+
+
 def main(NO_INTRO=False) -> int:
+    # Offline and instant, so it runs first: no point exercising the lesson
+    # loop if the voices are wrong about who says what.
+    roster = content.load_roster(tutor.CONTENT_DIR)
+    vocab = tutor._vocab_words(roster)
+    if (check_voice_cases(vocab) + check_leak_cases() + check_error_cases()
+            + check_talking_cases() + check_derived_pieces(roster)
+            + check_spoken_targets()):
+        return 1
+
     turns = {"n": 0}
 
-    def fake_stream(api_key, models, messages, tools=None, rounds=5):
+    def fake_stream(api_key, models, messages, tools=None, rounds=5, max_tokens=None):
         """Records the single instruction the state machine hands over each turn,
         so the assertions below can check the plan really advances."""
         turns["n"] += 1
@@ -46,10 +229,29 @@ def main(NO_INTRO=False) -> int:
         # Signature mirrors the real one on purpose: this test exists to catch
         # exactly the kind of mismatch that only shows up mid-lesson otherwise.
         expectations.append(expected)
-        if turns["n"] >= 4:
+        # Counted in turns SPOKEN, not requests made: most of a lesson is
+        # scripted now and never reaches fake_stream, so counting requests
+        # would run the session on for ever.
+        if len(SPOKEN) >= 8:
             raise KeyboardInterrupt
         return "[lang:vi] tôi"
 
+    real_scripted_turn = tutor.scripted_turn
+
+    def watched_scripted_turn(lesson):
+        """Records what the code chose to say for itself, and for which word --
+        the two halves the assertions below need to prove a scripted question
+        never contains its own answer."""
+        line = real_scripted_turn(lesson)
+        if line is not None:
+            step = tutor.current_step(lesson)
+            # Two turns say the target on purpose: an introduction (the word IS
+            # the news) and a retry (Minh gives it before asking again).
+            by_design = bool(lesson.get("retried")) or step.kind == "introduce"
+            scripted.append((step.target, line, by_design))
+        return line
+
+    tutor.scripted_turn = watched_scripted_turn
     tutor.stream_llm_reply = fake_stream
     tutor.listen_and_transcribe = fake_listen
     tutor.SpeechPipeline = lambda *a, **kw: FakeVoice()
@@ -77,21 +279,48 @@ def main(NO_INTRO=False) -> int:
         print("   ", instructions[0].splitlines()[-1][:120])
         return 1
 
+    # No longer required to be non-empty: a run of simple words is fully
+    # scripted now, so a short session can legitimately serve the model nothing
+    # but the opening. What must hold is that WORK was served -- see `served`.
     steps = [n for n in instructions if "THIS TURN, THIS ONLY" in n]
-    if not steps:
-        print("FAIL — no step instruction was ever handed to the model")
+
+    # The mechanical turns are the point of the state machine: if none fired,
+    # the model is back to running the whole cycle and the drift comes with it.
+    if not scripted:
+        print("FAIL — no turn was written by the code; every one went to the model")
         return 1
-    if len(set(steps)) < 2:
-        print("FAIL — the same step was served twice: the plan is not advancing")
-        for n in steps:
-            print("   ", n.splitlines()[-1][:100])
+    # A scripted recall is built from the gloss alone precisely so that it
+    # cannot state its own answer. This is the assertion that keeps it true.
+    # The introduction and the retry are the exceptions, and they declare it.
+    for target, line, by_design in scripted:
+        if by_design or not target:
+            continue
+        if target.casefold() in line.casefold():
+            print(f"FAIL — a scripted turn asking for {target!r} said it: {line!r}")
+            return 1
+    lines = [line for _, line, _ in scripted]
+    if len(lines) > 1 and len(set(lines)) == 1:
+        print(f"FAIL — every scripted turn used the same wording: {lines[0]!r}")
+        return 1
+
+    # Distinct WORK done, from either mouth: the plan has to move.
+    served = set(steps) | set(lines)
+    if len(served) < 2:
+        print("FAIL — the same turn was served twice: the plan is not advancing")
         return 1
 
     told = [e for e in expectations if e]
-    print(f"OK — session completed, {len(SPOKEN)} passages spoken, {len(steps)} distinct steps served, "
-          f"{len(told)} listen(s) told which word to expect")
+    print(f"OK — {len(VOICE_CASES)} voice + "
+          f"{len(STAGE_DIRECTIONS) + len(NOT_STAGE_DIRECTIONS)} stage-direction + "
+          f"{len(LEAK_CASES)} leak + {len(ERROR_CASES)} api-error + "
+          f"{len(TALKING_CASES)} transcription case(s) still pass, "
+          f"pieces re-derived for every hand-written sentence")
+    print(f"OK — session completed, {len(SPOKEN)} passages spoken, {len(steps)} model step(s) served, "
+          f"{len(scripted)} turn(s) written by the code, {len(told)} listen(s) told which word to expect")
     for n in steps:
-        print("   ", n.splitlines()[-1][:110])
+        print("    [model]   ", n.splitlines()[-1][:100])
+    for target, line, _ in scripted:
+        print(f"    [scripted] ({target}) {line}")
     return 0
 
 

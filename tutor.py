@@ -28,9 +28,11 @@ sys.stdin.reconfigure(encoding="utf-8")
 
 from content import (
     Item, load_persona_system_prompt, load_roster, load_personal_items,
-    add_personal_items, check_roster, pieces_of, pick_next_index,
+    add_personal_items, askable, check_roster, derive_pieces, is_teachable,
+    pieces_of, pick_next_index,
 )
 from srs import ProgressStore
+import voice as voice_module
 from voice import SpeechPipeline
 
 # One pipeline for the whole session: its synth/playback threads have to
@@ -82,10 +84,17 @@ def _api_headers(api_key: str) -> dict:
 # decides how many happen "today," since there's no fixed-length today.
 N_THEME_GENERATE = 4
 
-# Reservoir size: how many candidates select_new prepares up front. Only ever
-# revealed one at a time, so this just needs to be large enough that a long
-# session never runs dry -- not a target to hit.
-QUEUE_SIZE = 30
+# Nothing to do with a spoken turn: this one emits a JSON tool call carrying
+# four items, each with a paragraph of Vietnamese notes. Measured on the
+# generation that crashed a live session: ~200 tokens an item plus the JSON
+# frame, against the 500-token speaking ceiling it was inheriting. Truncated
+# JSON is not a degraded result, it is an HTTP 400 -- so this is sized with
+# room rather than trimmed to fit.
+THEME_GENERATION_MAX_TOKENS = 2500
+
+# (The old QUEUE_SIZE reservoir cap lived here. It is gone -- see
+# ProgressStore.select_new for why a buffer size turned into a lid on the
+# course.)
 
 # A turn is three sentences at most, so this is a ceiling against runaway
 # reasoning rather than a real constraint on what gets said.
@@ -200,13 +209,25 @@ THEME_GENERATION_TOOL = [
                                         "the question a recall asks, so never a grammatical description"
                                     ),
                                 },
-                                "pieces": {
-                                    "type": "array",
-                                    "items": {"type": "string"},
-                                    "description": "constructions only: exact names of already-known items it is built from, in order",
-                                },
+                                # `pieces` is deliberately NOT asked for. The
+                                # code reads it off the name against the roster
+                                # (content.derive_pieces), which reproduces all
+                                # five hand-written constructions exactly, while
+                                # the model got 8 of its 13 wrong -- one piece
+                                # for an eight-word sentence, or none at all.
+                                # A field the code can compute is not a field to
+                                # have the model guess.
+                                #
+                                # `literal` stays: word-by-word English of the
+                                # Vietnamese order is a translation, which is
+                                # the model's job and not derivable here.
+                                # Nullable, because it says null on an atom
+                                # rather than leaving the key out, and a
+                                # non-nullable schema turns that into HTTP 400,
+                                # killing the whole batch over a field that did
+                                # not apply.
                                 "literal": {
-                                    "type": "string",
+                                    "type": ["string", "null"],
                                     "description": "constructions only: word-by-word English of the Vietnamese order, e.g. 'I name is [name]'",
                                 },
                                 "category": {"type": "string"},
@@ -291,7 +312,25 @@ _SENTENCE_BOUNDARY = re.compile(r"([.!?])(\s|$)")
 _STREAM_ERRORS = (urllib.error.URLError, TimeoutError, OSError, json.JSONDecodeError, RuntimeError)
 
 
-def stream_llm_reply(api_key: str, models: list[str], messages: list[dict], tools: list[dict] | None = None, rounds: int = 5):
+class PermanentAPIError(RuntimeError):
+    """A refusal that will refuse again. Retrying it only burns budget.
+
+    Found live: theme generation asked for four items on a 500-token ceiling
+    meant for three spoken sentences, so the tool-call JSON came back truncated
+    and Groq answered 400 tool_use_failed. The retry loop treated it like a rate
+    limit and sent the same doomed request five times, then crashed the lesson.
+    A 4xx that is not 429 means the request itself is wrong; only the caller can
+    fix it.
+    """
+
+
+def _permanent(error: dict) -> bool:
+    status = error.get("status_code")
+    return isinstance(status, int) and 400 <= status < 500 and status != 429
+
+
+def stream_llm_reply(api_key: str, models: list[str], messages: list[dict], tools: list[dict] | None = None,
+                     rounds: int = 5, max_tokens: int = None):
     """Streams a reply. Yields ("content", text_delta) chunks as they arrive,
     then a final ("tool_calls", [...]) once the stream ends -- lets the caller
     start speaking the first sentence long before the whole reply has been
@@ -320,12 +359,20 @@ def stream_llm_reply(api_key: str, models: list[str], messages: list[dict], tool
                     # before it says anything, and an unbounded budget lets it
                     # think until it runs out with nothing spoken -- seen live
                     # as finish_reason=length and total silence. A turn here is
-                    # three sentences at most, so this ceiling is generous.
-                    "max_tokens": MAX_TOKENS_PER_TURN,
-                    # Same reason: these turns are one instruction each, there
-                    # is nothing to deliberate about.
-                    "reasoning_effort": "low",
+                    # three sentences at most, so this ceiling is generous --
+                    # but it is a SPEAKING budget, and callers that generate
+                    # structured data instead must raise it (see
+                    # generate_theme_items, which was silently truncated by it).
+                    "max_tokens": max_tokens or MAX_TOKENS_PER_TURN,
                 }
+                # Model-specific, not universal. gpt-oss reasons on a separate
+                # channel and needs this capped; every other model on the same
+                # endpoint rejects the field outright with HTTP 400 -- which is
+                # how the learner in simulate_session.py, a llama, had been
+                # dead since the day this line was added. A parameter that
+                # belongs to one model must be sent to that model only.
+                if "gpt-oss" in model:
+                    body["reasoning_effort"] = "low"
                 if tools:
                     body["tools"] = tools
                 req = urllib.request.Request(
@@ -344,6 +391,8 @@ def stream_llm_reply(api_key: str, models: list[str], messages: list[dict], tool
                             break
                         chunk = json.loads(payload)
                         if "error" in chunk:
+                            if _permanent(chunk["error"]):
+                                raise PermanentAPIError(str(chunk["error"]))
                             raise RuntimeError(str(chunk["error"]))
                         if not chunk.get("choices"):
                             continue  # some providers send metadata-only chunks with an empty choices list
@@ -377,6 +426,20 @@ def stream_llm_reply(api_key: str, models: list[str], messages: list[dict], tool
                                 print("  [diag] !! reply cut off mid-sentence (max_tokens reached)")
                 yield ("tool_calls", [tool_calls_acc[i] for i in sorted(tool_calls_acc)])
                 return
+            except PermanentAPIError:
+                raise  # the request is malformed; five more of it changes nothing
+            except urllib.error.HTTPError as e:
+                # Same rule as _permanent, on the other shape an error arrives
+                # in. Handling only the in-stream chunk let a 400 be retried
+                # five times before crashing -- seen on the very run meant to
+                # exercise this.
+                if 400 <= e.code < 500 and e.code != 429:
+                    raise PermanentAPIError(f"HTTP {e.code}: {e.read().decode('utf-8', 'replace')[:200]}")
+                if got_any:
+                    yield ("tool_calls", [tool_calls_acc[i] for i in sorted(tool_calls_acc)])
+                    return
+                last_error = e
+                print(f"  ({model}: {e})")
             except _STREAM_ERRORS as e:
                 if got_any:
                     print(f"  (stream broke after speech had started ({e}) -- ending the turn without retrying)")
@@ -476,7 +539,9 @@ def generate_theme_items(api_key: str, topic: str, known_items: list[Item], coun
     ]
     items: list[Item] = []
     n_extracted = 0
-    for kind, *payload in stream_llm_reply(api_key, MODEL_FALLBACKS, prompt_messages, tools=THEME_GENERATION_TOOL):
+    for kind, *payload in stream_llm_reply(api_key, MODEL_FALLBACKS, prompt_messages,
+                                           tools=THEME_GENERATION_TOOL,
+                                           max_tokens=THEME_GENERATION_MAX_TOKENS):
         if kind != "tool_call_partial":
             continue
         _idx, args_so_far = payload
@@ -486,17 +551,17 @@ def generate_theme_items(api_key: str, topic: str, known_items: list[Item], coun
                 entry = json.loads(raw_obj)
             except json.JSONDecodeError:
                 continue
-            known_names = {i.name for i in known_items}
             items.append(Item(
                 name=entry["name"], item_type=entry["item_type"], category=entry["category"],
                 language="vi", description=entry["description"], source="personnel", topic=topic,
-                gloss=entry.get("gloss", ""), kind=entry.get("kind", "atom"),
-                # Dropped rather than trusted: a piece naming something the
-                # course does not teach would later surface as a recall for a
-                # word that has no item, and generation has invented pieces
-                # before ("Rất vui được gặp bạn" out of words never taught).
-                pieces=[p for p in entry.get("pieces", []) if p in known_names],
-                literal=entry.get("literal", ""),
+                # `or` rather than a default: the key IS present, carrying null,
+                # so .get(key, default) hands back None and the fields below
+                # would iterate or format it.
+                gloss=entry.get("gloss") or "", kind=entry.get("kind") or "atom",
+                # Read off the name against the roster, never taken from the
+                # model -- see the schema note above, and derive_pieces.
+                pieces=derive_pieces(entry["name"], known_items),
+                literal=entry.get("literal") or "",
             ))
             print(f"    -> item {len(items)}/{count} ready: {entry['name']}")
         n_extracted = len(complete)
@@ -504,15 +569,26 @@ def generate_theme_items(api_key: str, topic: str, known_items: list[Item], coun
 
 
 def _vocab_words(items: list[Item]) -> frozenset[str]:
-    """Every individual word appearing in the current roster's item names --
-    used by voice.py to recognize genuine Vietnamese vocabulary regardless
-    of what language the tutor's own voice happens to be using, since we
-    author every Vietnamese word ourselves (see voice._is_vietnamese_word)."""
+    """Roster words that carry a Vietnamese diacritic, for voice routing.
+
+    ONLY the accented ones. A bare-ASCII Vietnamese word is very often an
+    English word too, and this set decides which voice speaks: measured after a
+    frequency list was imported, the roster contributed so, do, ta, con, ra, da,
+    ai, cao, hay, nay, sao, tin, xe and cha -- and the tutor's own "So how would
+    you say it?" came out with Minh pronouncing "So", which is a random
+    Vietnamese syllable dropped into an English sentence.
+
+    voice.py already treats a diacritic as conclusive, so nothing is lost:
+    accented words are caught either way, and the handful of bare-ASCII
+    Vietnamese words worth routing (anh, em, ngon) stay in the hand-vetted
+    _VN_BARE_WORDS. That list was always explicit that ambiguous words must not
+    join it; a bulk import is not a reason to overrule its author.
+    """
     words: set[str] = set()
     for i in items:
         for w in i.name.split():
             w = w.strip("+[]").lower()
-            if w:
+            if w and voice_module._has_vn_marker(w):
                 words.add(w)
     return frozenset(words)
 
@@ -541,11 +617,18 @@ class Step:
     question that states its answer. `answer_is_target` marks the turns where
     the Vietnamese must not be uttered at all, because it is what is being
     asked for.
+
+    `instruction` is what a model turn is told to do. `ask` is the same
+    meaning side, but as a sentence can actually pronounce it -- set only on
+    the steps the code speaks itself (see scripted_turn), where there is no
+    model in between to smooth "I / me" into something sayable.
     """
     kind: str
     target: str | None
     instruction: str
     answer_is_target: bool = False
+    ask: str = ""
+    hook: str = ""
 
 
 def _ask_for(item: Item) -> str:
@@ -558,7 +641,51 @@ def _ask_for(item: Item) -> str:
     return f"the item described as: {item.description[:120]}"
 
 
-def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item]) -> list[Step]:
+# A gloss is written to be read, and the model used to be the thing that turned
+# it into speech. Now that the code says these words itself there is nothing in
+# between, and Azure reads exactly what it is given: "I / me" comes out as a
+# slash or as nothing at all, "My name is ___" as an underscore.
+_GLOSS_PLACEHOLDER = re.compile(r"_{2,}|\[[^\]]*\]")
+_GLOSS_ELLIPSIS = re.compile(r"\s*\.\.\.\s*")
+
+
+def speakable(gloss: str) -> str:
+    """A gloss as a sentence can pronounce it."""
+    text = _GLOSS_PLACEHOLDER.sub("something", gloss)
+    text = _GLOSS_ELLIPSIS.sub(" ", text)
+    text = " or ".join(part.strip() for part in text.split("/"))
+    return " ".join(text.replace("+", " ").split()).strip(" ?.!,")
+
+
+# Above this many known words, listing them in an instruction costs more than
+# it buys and the risk it guards against has faded anyway: once a learner has a
+# few dozen words, almost any word the model reaches for IS one of them. Below
+# it, the list is short, exact, and load-bearing -- measured at the first
+# construction, where the whole vocabulary is "tôi, tên, là" and asking for a
+# fourth word is the difference between a variation and a dead end.
+MAX_LISTED_KNOWN_WORDS = 12
+
+
+def _known_words_note(known: list[Item]) -> str:
+    """What the learner can actually be asked for, when that list is short.
+
+    Rule 9 keeps a phrase from arriving before its words, but only for whole
+    items. Nothing stopped a TURN from asking for a word never taught -- and
+    measured: given a free hand to swap the person, the model asked for "your
+    name is", i.e. bạn, which the roster teaches one item later.
+    """
+    names = [i.name for i in known if i.kind != "rule"]
+    if not names:
+        return ""
+    if len(names) > MAX_LISTED_KNOWN_WORDS:
+        return " Use only Vietnamese you have already taught them; introduce nothing new here."
+    return (f' The only Vietnamese they know so far is: {", ".join(names)}. Build the variation from '
+            f'those and nothing else — if none of them allows the change, keep the sentence and vary '
+            f'the name instead. Never ask for a word you have not taught: they cannot know it.')
+
+
+def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item],
+               known: list[Item] | None = None) -> list[Step]:
     """The full turn-by-turn plan for teaching one item.
 
     Mirrors the reference method: a lone new word is introduced and heard, a
@@ -576,8 +703,9 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item]) -> li
         plan.append(Step(
             "rule", item.name,
             f"State this in one plain English sentence, as something they have already been half "
-            f"noticing: {item.gloss or item.description}. Then one question that puts it to work. "
-            f"Nothing else.",
+            f"noticing: {item.gloss or item.description}. Then one question that puts it to work."
+            f"{_known_words_note(known or [])} Nothing else. Do not skip the statement: a question "
+            f"alone leaves them with a rule nobody told them.",
         ))
     elif item.kind == "construction":
         for piece in pieces:
@@ -587,6 +715,7 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item]) -> li
                 f"stop. Do not say the Vietnamese word yourself and do not have Minh say it — it is "
                 f"the answer. Do not mention the other pieces.",
                 answer_is_target=True,
+                ask=speakable(piece.gloss),
             ))
         literal = f' Its literal word order is: "{item.literal}".' if item.literal else ""
         plan.append(Step(
@@ -602,10 +731,38 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item]) -> li
             f'pattern with its placeholder. Then ask for "{item.gloss}" again with one element '
             f"swapped. One question.",
         ))
+        # The thinnest instruction in the plan, and the only step that ever
+        # produced a turn with nothing in it: "Minh: tôi là." then a question
+        # about "I am ___", while the item being taught was "my name is ___".
+        #
+        # Read closely, that failure was not noise. Dropping "tên" from "tôi tên
+        # là" to get "tôi là" IS a structural variation -- the model was doing
+        # the right KIND of thing and simply left the sentence it was teaching.
+        # It was never told what may move and what may not, because the old
+        # instruction named neither the sentence, nor the element, nor Minh.
+        #
+        # Which element is swappable is the one thing the code cannot work out:
+        # to know tôi/bạn/anh occupy the same slot it would need a category far
+        # finer than the roster's -- `function_word` also holds "gì" and "chào",
+        # so permuting inside it yields "chào tên là". That knowledge is
+        # Vietnamese, which is exactly what the model has and a table does not.
+        # So this stays a model turn, and the instruction supplies the boundary
+        # rather than the words: what varies, what is frozen, who stays silent.
+        # The shape comes from the item, so the "do not drop a word" rule is
+        # stated against THIS sentence rather than as a general plea. A fixed
+        # example of a wrong variation would be about some other sentence half
+        # the time, which is worse than no example.
+        shape = (f' It keeps the shape "{item.literal}" exactly — the same parts, in that order, '
+                 f'none removed.') if item.literal else " Keep every part of it."
         for _ in range(N_VARIATIONS - 1):
             plan.append(Step(
                 "vary", item.name,
-                "Same structure, one element swapped, asked in English as a question. Then stop.",
+                f'They have just built "{item.gloss}". Ask for it once more with exactly ONE element '
+                f'changed — a different PERSON (I / you / he or she) if the sentence has one, '
+                f'otherwise a different word in the blank.{shape}{_known_words_note(known or [])} '
+                f'Drop a part and it silently becomes a different sentence, which is the one thing '
+                f'this turn must not do. One question, in English, then stop. Say no Vietnamese and do '
+                f'not have Minh speak — the Vietnamese sentence is the answer you are asking them for.',
                 answer_is_target=True,
             ))
         plan.append(Step(
@@ -627,6 +784,8 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item]) -> li
             f'telling.) Then give Minh a single line containing the word ONCE: "{item.name}." '
             f'By then they have heard it twice, at the end of your sentence and from Minh, which is '
             f'enough. Then ask them to say it. Nothing else.',
+            ask=speakable(item.gloss),
+            hook=item.hook,
         ))
         plan.append(Step(
             "settle", item.name,
@@ -637,6 +796,7 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item]) -> li
             f"got it wrong. Do not say the Vietnamese yourself, do not have Minh say it, and do not "
             f"introduce anything new.",
             answer_is_target=True,
+            ask=speakable(item.gloss),
         ))
 
     for target in recall_targets[:N_RAPIDFIRE]:
@@ -646,12 +806,177 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item]) -> li
             f"One question, then stop. Do not say the Vietnamese word and do not have Minh say it "
             f"first — that would hand over the answer before the question.",
             answer_is_target=True,
+            ask=speakable(target.gloss),
         ))
     return plan
 
 
+# Steps that ask the learner to produce a word we can check against.
+RECALL_KINDS = ("recall_piece", "rapidfire", "settle")
+
+# ...and those are exactly the turns the code now writes itself, word for word,
+# with no model call. A recall is one sentence whose two halves the code already
+# holds -- the meaning to ask from and the word not to utter -- so handing it to
+# a model bought nothing and cost the one thing that kept going wrong: measured
+# live, the model ran a turn behind, re-asking the previous word when told to
+# introduce the next, then introducing that word on the step where saying it is
+# forbidden. A sentence composed here cannot skip its step, cannot give away its
+# answer, and cannot fall behind. It also halves the requests per lesson, which
+# the 8000 tokens/minute ceiling makes worth having on its own.
+#
+# What stays with the model: introductions, the scaffold, the variations, the
+# rule -- the turns that need something invented -- and ANY turn where the
+# learner said something to us rather than answering (see learner_spoke_freely).
+# That escape hatch is why the instruction text on these steps is still live and
+# must be kept in step with the wording below.
+# `introduce` joins them, and NOT because it was mechanical enough to be worth
+# the tokens -- because it broke. Seen live: told to introduce "tên", the model
+# said "I didn't catch that", had Minh say the word, and asked for it. The
+# sentence giving the word its MEANING was never spoken. A first exposure to a
+# word without its meaning is not a lesson, and no amount of instruction makes
+# that guaranteed.
+#
+# What was supposedly being bought with that turn: one optional sentence of
+# real context, "only if you have a true fact worth telling". Across every
+# session logged, it fired zero times. We were paying the guarantee for an
+# ornament that was never delivered.
+#
+# NOT the same list as RECALL_KINDS on purpose: an introduction asks the
+# learner to echo a brand-new word, which is not a recall -- nothing is scored,
+# no level moves, and the recogniser is not told to expect it.
+SCRIPTED_KINDS = RECALL_KINDS + ("introduce",)
+
+
+# A repeat has to SOUND like a repeat: three goes at "What's the Vietnamese word
+# for I or me?" in a row read as three different questions and send the learner
+# hunting for what they missed. This is the reference course's own signature --
+# "and again, what was ___?" appears twenty-one times in it.
+_REPEAT_ASK = (
+    "And again — what was {ask}?",
+    "Once more — what was {ask}?",
+    "And {ask} — what was that?",
+    "So, {ask}?",
+)
+# A one-word gloss needs a frame saying it is a WORD being quoted. Measured in
+# a simulated lesson: "So, this?", "So, have?" and "what was and?" all landed in
+# fourteen turns, and none of them reads as a question. A content word survives
+# the terse form ("So, coffee?") because it names a thing; a function word does
+# not. Still shorter than the full question, which is what rule 18b is really
+# guarding against -- three identical long questions in a row.
+_REPEAT_ASK_SHORT = (
+    "And again — what was the word for {ask}?",
+    "Once more — the word for {ask}?",
+    "And {ask} — what was the word?",
+    "So, the word for {ask}?",
+)
+_ACK_CORRECT = ("That's it.", "Yes, that's it.", "Good.", "Exactly.", "That's the one.")
+_RETRY_ASK = ("And again?", "So once more?", "Again?")
+
+# The meaning and the word in one breath, ending ON the word so the pair lands
+# as one thing -- which also hands it to Minh's voice, since a Vietnamese word
+# at the end of an English sentence is where the voice switch belongs (SPEC 3).
+# The word then repeats immediately: written as two sentences, but both are
+# Vietnamese, so they merge into a single run and Minh says it twice in one
+# clip. The learner hears it twice before being asked for anything.
+_INTRODUCE = (
+    "In Vietnamese, the word for {ask} is {name}. {name}. Now you say it.",
+    "The Vietnamese for {ask} is {name}. {name}. Your turn — say it.",
+    "Here's the word for {ask}: {name}. {name}. Now you try it.",
+)
+
+
+def _pick(lesson: dict, slot: str, options: tuple[str, ...]) -> str:
+    """One of the wordings, never the one used last time in this slot.
+
+    Plain random choice repeats itself about a fifth of the time, and two
+    identical sentences back to back is precisely the tic the varied wording
+    exists to avoid.
+    """
+    last = lesson.setdefault("phrasing", {}).get(slot)
+    chosen = random.choice([o for o in options if o != last] or list(options))
+    lesson["phrasing"][slot] = chosen
+    return chosen
+
+
+def _acknowledgement(lesson: dict, step: Step) -> str:
+    """How the scripted turn opens: what the code already decided about the
+    answer it just heard, said in a few words.
+
+    The code alone knows this verdict (answered_target computed it), so a
+    scripted turn is the one place it can be voiced without the model second-
+    guessing the transcription -- the contradiction seen live, where a word's
+    level went up while the tutor said "I didn't catch that".
+    """
+    verdict = lesson.get("verdict")
+    if verdict == "correct":
+        return _pick(lesson, "ack", _ACK_CORRECT)
+    missed = lesson.get("verdict_target")
+    # Never name the word this very turn is about to ask for: the recall pool
+    # can draw the word the previous step just missed, and "It was tôi. And
+    # again, what was I or me?" is the answer handed over before the question.
+    if verdict == "missed_twice" and missed and missed != step.target:
+        # The SPOKEN form, same as the retry line. Fixed there first and missed
+        # here, so "It was muốn + [động từ]." went out and Minh -- who takes any
+        # accented word -- recited "muốn động từ", which is not a phrase.
+        return f"It was {' '.join(_target_fragments(missed)) or missed}."
+    return ""
+
+
+def scripted_turn(lesson: dict) -> str | None:
+    """The exact words for this turn, or None if the model has to speak it.
+
+    Everything here is built from the item's own gloss, never from its
+    Vietnamese name, so a scripted question cannot state its own answer.
+    """
+    step = current_step(lesson)
+    if step is None or step.kind not in SCRIPTED_KINDS or not step.ask or not step.target:
+        return None
+    if lesson.get("retried"):
+        # A second go at the same question. Minh says the word, then it is
+        # asked again short -- the shape the prompt used to ask for, with the
+        # known flaw it always had: the answer is spoken just before the
+        # question (see SPEC 20). Now it is one line here rather than a
+        # paragraph the model interprets, so fixing it is a one-line change.
+        # The SPOKEN form of the target, not its authoring name: a construction
+        # is stored as "tôi tên là + [tên riêng]", and Minh cannot say "plus
+        # bracket tên riêng". The same fragments the leak guard compares.
+        spoken = " ".join(_target_fragments(step.target)) or step.target
+        return f"Listen again — {spoken}. " + _pick(lesson, "retry", _RETRY_ASK)
+    if step.kind == "introduce":
+        # The one scripted turn that SAYS the target rather than asking for it.
+        body = _pick(lesson, "intro", _INTRODUCE).format(ask=step.ask, name=step.target)
+        # A hook goes in FRONT: the fact earns the word, then the word lands.
+        # For "phở" or "cà phê" the template alone is circular -- it tells a
+        # learner who already knows the thing that the Vietnamese for it is the
+        # word they are about to hear.
+        if step.hook:
+            body = f"{step.hook} {body}"
+    else:
+        forms = _REPEAT_ASK_SHORT if len(step.ask.split()) == 1 else _REPEAT_ASK
+        body = _pick(lesson, "ask", forms).format(ask=step.ask)
+    lead = _acknowledgement(lesson, step)
+    return f"{lead} {body}".strip()
+
+
+# A construction's name carries its hole: "tôi tên là + [tên riêng]". Nobody
+# ever SAYS "plus bracket tên riêng", so a plain substring test against that
+# name can never match anything spoken -- which is why the guard below reported
+# nothing across every session: on a construction it could not fire at all. The
+# full answer said aloud on a step that forbids it, "Tôi tên là Nam.", went
+# through untouched. A protection that looks like one and is not -- exactly the
+# shape this project has been bitten by before.
+# So a target is reduced to the fragments actually pronounced, and all of them
+# have to be present for it to count as given away.
+_PLACEHOLDER = re.compile(r"\+?\s*\[[^\]]*\]|_{2,}|\.\.\.")
+
+
+def _target_fragments(target: str) -> list[str]:
+    """The parts of a target that are really said, holes removed."""
+    return [f for f in (p.strip(" +,.") for p in _PLACEHOLDER.split(target)) if f]
+
+
 def _leaked_target(text: str, step: Step | None) -> bool:
-    """True if a turn that was asking FOR a word went and said it.
+    """True if a turn that was asking FOR something went and said it.
 
     Detection only -- the reply is streamed and spoken sentence by sentence as
     it arrives, so by the time a whole turn can be judged it has already been
@@ -661,7 +986,9 @@ def _leaked_target(text: str, step: Step | None) -> bool:
     """
     if step is None or not step.answer_is_target or not step.target:
         return False
-    return step.target.casefold() in text.casefold()
+    said = text.casefold()
+    fragments = _target_fragments(step.target)
+    return bool(fragments) and all(f.casefold() in said for f in fragments)
 
 
 def _lesson_note(lesson: dict) -> str:
@@ -676,6 +1003,49 @@ def _lesson_note(lesson: dict) -> str:
         "aloud and do not repeat its wording. Say it your own way, in English."
     ]
     step = current_step(lesson)
+
+    announce = lesson.pop("announce_topic", None)
+    if announce:
+        # Said once, on the turn right after the items land. Without it the
+        # learner asks for a subject, hears "Alright, let's continue", and the
+        # new words simply start appearing -- so the thing they asked for looks
+        # like it was ignored. Consumed on read: an announcement repeated is
+        # worse than none.
+        topic, covers = announce
+        # The glosses, not just a count. Given only "4 new things" the model
+        # invented the list -- live, it promised a menu, a dish name, the bill
+        # and a way to thank the server, when what had actually been generated
+        # was "pho", "to order" and two sentence patterns. It had no way to
+        # know; the code did.
+        listing = "; ".join(g for g in covers if g) or "a few new things"
+        lines.append(
+            f"THEY ASKED FOR THIS SUBJECT AND YOU HAVE IT: tell them, in one or two warm sentences, "
+            f"that you have put together a short personal thread on {topic} that runs alongside the "
+            f"course, and that it starts right now. What it actually covers, in English: {listing}. "
+            f"Say only that — never a fuller or better-sounding list, and no Vietnamese words. Then go "
+            f"straight into the instruction below, in the same turn."
+        )
+
+    if lesson.get("answer_only"):
+        # They spoke to us, so this turn is theirs and the teaching step is not
+        # shown at all. It is replayed next turn regardless, so nothing is lost
+        # by waiting -- and everything is lost by not waiting: measured live,
+        # the learner opened with "Hello, how are you?", the tutor replied "how
+        # about you?" AND asked the lesson question in the same breath, then
+        # scored the answer to its own social question as a failed attempt at
+        # the Vietnamese word.
+        #
+        # The persona used to ask for this in prose ("deal with their question
+        # first, then do your instruction anyway"), which contradicted its own
+        # rule 2 ("your turn ends at your question, never ask two"). A rule the
+        # code can enforce does not belong in a prompt that argues with itself.
+        lines.append(
+            "THEY SPOKE TO YOU, they did not answer a question. Reply to what they actually said, "
+            "briefly and warmly, and STOP. Teach nothing this turn, ask nothing about Vietnamese, "
+            "and do not say you failed to understand them — you understood them. The lesson picks "
+            "up by itself on your next turn."
+        )
+        return "\n".join(lines)
 
     if step is None:
         # An empty plan means opposite things at the two ends of a session --
@@ -731,7 +1101,9 @@ def start_item(lesson: dict, item: Item | None, seen_items: list[Item], store: P
         return
     pieces = pieces_of(item, seen_items)
     store.mark_introduced(item.name)
-    lesson["plan"] = build_plan(item, pieces, _recall_targets(store, item, pieces, seen_items))
+    # seen_items minus the item itself: what the learner can be asked for now.
+    known = [i for i in seen_items if i.name != item.name]
+    lesson["plan"] = build_plan(item, pieces, _recall_targets(store, item, pieces, seen_items), known)
     kinds = " -> ".join(s.kind for s in lesson["plan"])
     print(f"  -> item: {item.name}  [{len(lesson['plan'])} turns: {kinds}]")
 
@@ -759,10 +1131,6 @@ def _bare(text: str) -> str:
     """Letters only, no tone marks -- what a beginner and a recogniser both lose first."""
     lowered = unicodedata.normalize("NFD", text.lower()).replace("đ", "d")
     return "".join(c for c in lowered if c.isalpha())
-
-
-# Steps that ask the learner to produce a word we can check against.
-RECALL_KINDS = ("recall_piece", "rapidfire", "settle")
 
 
 def _should_retry(step, user_text: str, lesson: dict) -> bool:
@@ -806,6 +1174,30 @@ def learner_asked_something(user_text: str) -> bool:
     return "[lang:vi]" not in user_text and bool(_QUESTION_MARK.search(user_text.strip()))
 
 
+# Above this many English words, the learner was talking to us rather than
+# attempting a word. Answers are one or two words -- and a real attempt at
+# Vietnamese arrives tagged [lang:vi] anyway, because the recogniser is told
+# which word is due. Set low on purpose: the cost of being wrong one way is a
+# model call we did not need, and the other way is a robot asking its next
+# question over someone who just said "I don't know".
+FREE_SPEECH_WORDS = 3
+
+
+def learner_spoke_freely(user_text: str) -> bool:
+    """They said something that wants an answer, not the word that was asked.
+
+    A scripted turn can only ask its question; it cannot react to anything. So
+    whenever this fires the turn goes to the model, mechanical step or not --
+    which is also the only way the remaining tools can still be called, since
+    every one of them fires on something the learner said.
+    """
+    if "[lang:vi]" in user_text:
+        return False
+    if learner_asked_something(user_text):
+        return True
+    return len(_LANG_TAG.sub("", user_text).split()) >= FREE_SPEECH_WORDS
+
+
 def _recall_targets(store: ProgressStore, item: Item | None, pieces: list[Item],
                     seen_items: list[Item]) -> list[Item]:
     """Which already-met items the bare recall slots will ask for.
@@ -824,7 +1216,25 @@ def _recall_targets(store: ProgressStore, item: Item | None, pieces: list[Item],
     exclude |= {i.name for i in seen_items if i.kind == "rule"}
     if item is not None:
         exclude.add(item.name)
-    drawn = store.draw_recalls(N_RAPIDFIRE, exclude=exclude)
+
+    # A requested subject is worked, not sprinkled. While the item being taught
+    # belongs to a theme the learner asked for, its recalls come from that theme
+    # only. Found live: asked for a food lesson, the learner got "phở" and then
+    # two recall turns on "I / me" and "name" -- the only other words that
+    # existed. Correct spaced repetition, and it read as being ignored.
+    # Fewer on-topic recalls beat three off-topic ones; the main course resumes
+    # on its own once the theme's items run out.
+    # A target has to be ASKABLE. Its gloss is read aloud as the whole question,
+    # so a grammar formula becomes one live: measured, a rapidfire drew the item
+    # whose gloss is "do ... not?" and asked "and again -- what was do not?".
+    # Nothing the learner can answer, and the retry would have offered them the
+    # authoring label "câu hỏi có/không: ..." to repeat.
+    exclude |= {i.name for i in seen_items if not askable(i)}
+
+    only = None
+    if item is not None and item.topic:
+        only = {i.name for i in seen_items if i.topic == item.topic}
+    drawn = store.draw_recalls(N_RAPIDFIRE, exclude=exclude, only=only)
     return [by_name[n] for n in drawn if n in by_name]
 
 
@@ -889,6 +1299,9 @@ def _run_turn(api_key, messages, store, roster, queue_items, themes_generated_th
         voice.say(filler)
         full_text = filler
 
+    # Only model turns are checked: a scripted turn is built from the gloss and
+    # cannot contain its own target, except on the retry line, where saying it
+    # is the instruction.
     if _leaked_target(full_text, current_step(lesson)):
         print(f"  [diag] !! the answer was given away: this turn asked FOR "
               f"{current_step(lesson).target!r} and said it")
@@ -940,12 +1353,22 @@ def _run_turn(api_key, messages, store, roster, queue_items, themes_generated_th
                 themes_generated_this_session.add(topic.lower())
                 print(f"  (generating items for '{topic}' -- this can take a while...)")
                 t_theme = time.monotonic()
-                new_items = generate_theme_items(api_key, topic, roster, N_THEME_GENERATE)
+                try:
+                    new_items = generate_theme_items(api_key, topic, roster, N_THEME_GENERATE)
+                except (RuntimeError, urllib.error.URLError, OSError, json.JSONDecodeError) as e:
+                    # A side feature must never end the lesson. Found live the
+                    # first time set_session_focus ever fired: generation 400'd,
+                    # the exception climbed out of the tool handler, and a
+                    # session that was otherwise fine died on its second turn.
+                    # The learner keeps their lesson; the theme is simply lost.
+                    print(f"  (theme generation failed, lesson continues: {e})")
+                    new_items = []
                 print(f"  [timing] theme generation: {time.monotonic() - t_theme:.1f}s")
                 if new_items:
                     add_personal_items(CONTENT_DIR, new_items)
                     roster.extend(new_items)
                     queue_items[:0] = new_items  # jump the queue: requested content comes next
+                    lesson["announce_topic"] = (topic, [i.gloss for i in new_items])
                     print(f"  (theme '{topic}': {len(new_items)} items generated, moved to the front of the queue)")
         elif fn["name"] == "deprioritize_item":
             if args.get("name"):
@@ -965,6 +1388,21 @@ def _run_turn(api_key, messages, store, roster, queue_items, themes_generated_th
         })
 
     return bool(tool_calls_final)
+
+
+def _speak_scripted_turn(messages: list[dict], line: str) -> None:
+    """Says a turn the code wrote itself. No request, no stream, no tools.
+
+    The line still joins the history: the next model turn has to read a
+    conversation that actually happened, or it sees the learner answering a
+    question nobody asked.
+    """
+    t0 = time.monotonic()
+    print(f"tutor: {line}  [scripted]")
+    voice.say(line)
+    voice.wait()  # never open the mic while our own voice is still playing
+    print(f"  [timing] total (speech only, no model call): {time.monotonic() - t0:.1f}s")
+    messages.append({"role": "assistant", "content": line})
 
 
 # Safety cap on consecutive tool-only turns (no new user input in between).
@@ -1010,8 +1448,11 @@ def _conversation_loop(api_key, messages, store, roster, queue_items, themes_gen
         if turns_done > 0:
             done = current_step(lesson)
             lesson["verdict"] = None
+            lesson["verdict_target"] = None
+            lesson["answer_only"] = False
             if learner_asked_something(user_input):
-                print("  (learner asked a question -- the step is replayed after answering)")
+                lesson["answer_only"] = True
+                print("  (learner asked a question -- this turn answers it, the step waits)")
             elif _should_retry(done, user_input, lesson):
                 # They answered a different word entirely. Worth one more go --
                 # the plan used to advance regardless, so the "wrong word, Minh
@@ -1032,6 +1473,7 @@ def _conversation_loop(api_key, messages, store, roster, queue_items, themes_gen
                     # didn't catch that" in the same breath.
                     got_it = answered_target(user_input, done.target)
                     lesson["verdict"] = "correct" if got_it else "missed_twice"
+                    lesson["verdict_target"] = done.target
                     store.record_recall(done.target)
                     print(f"  [level] {done.target} -> {store.level(done.target)}")
                 lesson["retried"] = False
@@ -1044,11 +1486,29 @@ def _conversation_loop(api_key, messages, store, roster, queue_items, themes_gen
                 store.save()  # progress survives a crash without waiting for the end
 
         messages.append({"role": "user", "content": user_input})
-        for _ in range(MAX_CHAINED_TOOL_TURNS):
-            had_tool_calls = _run_turn(api_key, messages, store, roster, queue_items,
-                                       themes_generated_this_session, seen_items, lesson)
-            if not had_tool_calls:
-                break  # model gave its final spoken reply for this turn -- back to listening
+
+        # The OPENING SPEECH belongs to the model -- but only that, and it is
+        # recognised by having no plan, not by being turn zero. Blanket-
+        # excluding turn zero handed the first teaching turn of every
+        # --no-intro session to the model, and measured live it produced both
+        # faults the script exists to prevent: a stage direction read aloud
+        # ("Minh, please say the word.") and a question stating its own answer
+        # ("So how would you say thích?").
+        # turns_done > 0 because the opening "Hi, I'm ready." is written by this
+        # loop, not said by anyone -- and at three words it tripped the
+        # free-speech test, handing the first teaching turn back to the model
+        # and undoing the fix above.
+        line = None
+        if lesson["plan"] and not (turns_done > 0 and learner_spoke_freely(user_input)):
+            line = scripted_turn(lesson)
+        if line is not None:
+            _speak_scripted_turn(messages, line)
+        else:
+            for _ in range(MAX_CHAINED_TOOL_TURNS):
+                had_tool_calls = _run_turn(api_key, messages, store, roster, queue_items,
+                                           themes_generated_this_session, seen_items, lesson)
+                if not had_tool_calls:
+                    break  # model gave its final spoken reply for this turn -- back to listening
         turns_done += 1
 
 
@@ -1079,11 +1539,14 @@ def run_session(fresh: bool = False, no_intro: bool = False):
     # Forward sequence is NEW items in roster order only. Due reviews are not
     # drawn as items -- they ride along in the lesson note as the pieces to
     # re-cite, which is where revision belongs in this method.
-    queue_items = [by_name[n] for n in store.select_new(all_names, limit=QUEUE_SIZE)]
+    # Unteachable items are kept in the roster but never queued: an imported
+    # word with no gloss yet is real vocabulary, just not a lesson.
+    queue_items = [by_name[n] for n in store.select_new(all_names) if is_teachable(by_name[n])]
     seen_items = [i for i in roster if not store.is_new(i.name)]  # everything ever taught, roster order
     # An empty plan means the opening turn: the tutor greets, and the first
     # item is loaded only once that turn is behind us.
-    lesson = {"item": None, "plan": [], "i": 0, "started": False, "retried": False}
+    lesson = {"item": None, "plan": [], "i": 0, "started": False, "retried": False,
+              "verdict": None, "verdict_target": None, "phrasing": {}, "answer_only": False}
     global voice
     voice = SpeechPipeline(_vocab_words(roster))
     themes_generated_this_session: set[str] = set()
@@ -1093,7 +1556,15 @@ def run_session(fresh: bool = False, no_intro: bool = False):
     # silently: an item with no gloss makes the tutor improvise the meaning
     # side of its own question, which is how a recall ends up stating its
     # answer. Run fill_item_metadata.py to fix them.
-    for problem in check_roster(roster):
+    # Summarised, not listed. A bulk import legitimately lands hundreds of items
+    # with no gloss yet, and one line each buried every other startup message
+    # under the same sentence repeated -- which is how a report stops being read.
+    problems = check_roster(roster)
+    awaiting = [p.split(":")[0] for p in problems if "no gloss" in p]
+    if awaiting:
+        print(f"  [content] {len(awaiting)} item(s) awaiting a gloss, held out of lessons "
+              f"({', '.join(awaiting[:4])}…) — run fill_item_metadata.py")
+    for problem in (p for p in problems if "no gloss" not in p):
         print(f"  [content] {problem}")
 
     if no_intro:

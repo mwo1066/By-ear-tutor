@@ -43,6 +43,7 @@ type = "concept"
 name = "cà phê"
 kind = "atom"
 gloss = "coffee"
+hook = "Vietnam is the second biggest coffee grower in the world, and the word came straight from French — you will almost recognise it."
 category = "noun"
 language = "vi"
 description = "Danh từ: đồ uống quen thuộc — mượn từ tiếng Pháp 'café', nghe là nhận ra ngay. 'Cà' thanh huyền, 'phê' thanh ngang. 'Tôi muốn uống cà phê.'"
@@ -73,3 +74,76 @@ gloss = "negate verb with không"
 category = "rules"
 language = "vi"
 description = "Quy tắc: đặt 'không' ngay trước động từ để phủ định cả câu. 'Tôi không muốn ăn.' 'Anh không uống cà phê.' Đây là việc thứ hai của chữ 'không' đã biết — vừa trả lời một mình được, vừa phủ định động từ được."
+
+# Règles rattachées à ce fichier : elles arrivent après les mots
+# qu'elles décrivent, jamais groupées en bloc de théorie.
+
+[[items]]
+type = "procedure"
+name = "trật tự câu: chủ ngữ – động từ – tân ngữ"
+kind = "rule"
+gloss = "the word order is the same as English: who, does, what"
+category = "rules"
+language = "vi"
+description = "Quy tắc: trật tự cơ bản giống tiếng Anh — 'Tôi uống cà phê' đúng thứ tự 'I drink coffee'. Đây là chỗ dựa an toàn cho người mới: khi chưa chắc, cứ xếp như tiếng Anh thì thường đúng."
+pieces = ["tôi", "uống", "cà phê"]
+
+[[items]]
+type = "procedure"
+name = "sở hữu: danh từ + của + người"
+kind = "rule"
+gloss = "to say whose something is, the owner goes last"
+category = "rules"
+language = "vi"
+description = "Quy tắc: cái được sở hữu đứng trước, người sở hữu đứng sau, nối bằng 'của'. 'Cà phê của tôi' — cà phê của tôi. Ngược thứ tự tiếng Anh 'my coffee'. Trong nói chuyện thân mật, 'của' hay được lược bỏ: 'tên tôi'."
+pieces = ["cà phê", "tôi"]
+
+[[items]]
+type = "procedure"
+name = "thì: đã / đang / sẽ, đều không bắt buộc"
+kind = "rule"
+gloss = "three little words mark past, now and future — and you can leave them out"
+category = "rules"
+language = "vi"
+description = "Quy tắc: 'đã' cho việc đã xong, 'đang' cho việc đang diễn ra, 'sẽ' cho việc sắp tới. Đặt ngay trước động từ: 'Tôi đã ăn', 'Tôi đang ăn', 'Tôi sẽ ăn'. Cả ba đều KHÔNG bắt buộc — người Việt bỏ chúng suốt khi ngữ cảnh đã rõ, nhất là khi trong câu đã có 'hôm qua', 'ngày mai'."
+pieces = ["ăn"]
+
+[[items]]
+type = "procedure"
+name = "cũng đứng trước động từ"
+kind = "rule"
+gloss = "'also' sits right before the action"
+category = "rules"
+language = "vi"
+description = "Quy tắc: 'cũng' đứng ngay trước động từ hoặc tính từ. 'Tôi cũng muốn ăn.' 'Cà phê cũng ngon.' Vị trí cố định, không đứng cuối câu như 'too' trong tiếng Anh."
+pieces = ["tôi", "muốn"]
+
+[[items]]
+type = "procedure"
+name = "rồi: việc đã xong"
+kind = "rule"
+gloss = "one word at the end says it's already done"
+category = "rules"
+language = "vi"
+description = "Quy tắc: 'rồi' đặt cuối câu để nói việc đã hoàn tất. 'Tôi ăn rồi' — tôi ăn xong rồi. Rất hay dùng, thường thay hẳn cho 'đã'. Trong nói chuyện hằng ngày, 'rồi' gặp nhiều hơn 'đã' nhiều lần."
+pieces = ["ăn"]
+
+[[items]]
+type = "procedure"
+name = "chưa: chưa xong, và cũng để hỏi"
+kind = "rule"
+gloss = "the word for 'not yet' also turns a sentence into a question"
+category = "rules"
+language = "vi"
+description = "Quy tắc: 'chưa' trước động từ nghĩa là chưa làm — 'Tôi chưa ăn.' Cũng chính 'chưa' đặt cuối câu thành câu hỏi — 'Bạn ăn chưa?' nghĩa là 'bạn ăn chưa?'. Hai việc, một chữ, giống hệt cách 'không' vừa phủ định vừa hỏi."
+pieces = ["ăn"]
+
+[[items]]
+type = "procedure"
+name = "lược bỏ chủ ngữ khi đã rõ"
+kind = "rule"
+gloss = "when it's obvious who you mean, you just drop the word"
+category = "rules"
+language = "vi"
+description = "Quy tắc: bỏ chủ ngữ khi ngữ cảnh đã rõ. Hỏi 'Bạn ăn chưa?' thì trả lời 'Ăn rồi' là đủ, không cần 'tôi'. Câu đầy đủ không sai, nhưng nghe cứng. Người mới học nên biết sớm để hiểu người bản xứ nói."
+pieces = ["ăn"]

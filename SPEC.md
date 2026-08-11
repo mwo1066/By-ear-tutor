@@ -20,20 +20,36 @@ le code, c'est ce qui a produit un marqueur que plus rien n'émettait.
 ## Les deux voix
 
 ### 1. Deux locuteurs, aiguillés par la langue
-Le tuteur parle la langue de l'apprenant, Minh uniquement le vietnamien. La
+Le tuteur parle la langue de l'apprenant, Minh uniquement le vietnamien.
+ La
 voix entendue est décidée par la langue dans laquelle chaque phrase est écrite
 — le modèle ne pose aucune étiquette.
-**Où :** code — `voice.split_by_voice` découpe mot par mot
-**Changer :** `voice.py` → `TUTOR_VOICE`, `TEACHER_VOICE`
+**Où :** code — `voice.split_by_voice` découpe **mot par mot**, jamais par
+morceau entre deux espaces
+**Pourquoi mot par mot :** cette ligne du SPEC était déjà juste, le code ne
+l'était pas. Il découpait sur les espaces, puis classait un morceau entier
+d'après sa première suite de lettres. Le modèle a écrit « That's correct—là. »
+sans espace autour du tiret : un seul morceau, classé sur « correct », donc la
+voix anglaise a prononcé « là ». La ponctuation n'est plus un séparateur qu'il
+faut prévoir — elle suit simplement le mot qui la précède, ce qui vaut pour le
+tiret, la barre oblique, les parenthèses et celles qu'on n'a pas vues.
+**Changer :** `voice.py` → `TUTOR_VOICE`, `TEACHER_VOICE`, `_WORD_SPLIT_RE`
 
 ### 2. Les didascalies et le markdown sont supprimés
 « Minh: » écrit comme une étiquette, ou `**gras**`, n'atteint jamais les
-haut-parleurs.
-**Où :** les deux — le prompt l'interdit, `voice._strip_markdown` le retire
-quand même
+haut-parleurs. Et **une ligne qui ne contient rien d'autre qu'un nom de
+locuteur n'est pas prononcée du tout**, quelle que soit la ponctuation autour.
+**Où :** les deux — le prompt l'interdit, `voice._strip_markdown` et
+`voice.is_stage_direction` le retirent quand même
 **Pourquoi les deux :** le code empêche que ce soit *entendu*, seul le prompt
 empêche le modèle de *penser* en listes à puces, ce qui aplatit la pédagogie
-**Changer :** `voice.py` → `_SPEAKER_LABEL`, `_MARKDOWN_CHARS`
+**Pourquoi « rien d'autre que le nom » :** l'ancienne règle exigeait un
+deux-points. Le modèle a écrit « Minh: tôi. » une séance, « Minh. » la
+suivante — la voix anglaise a annoncé « Minh » avant chaque réplique du prof,
+deux fois. Ajouter le point corrigeait cette séance et pas la prochaine
+(« Minh — », « (Minh) »). La liste des ponctuations est ouverte ; la liste des
+**noms** est fermée, il y a deux voix.
+**Changer :** `voice.py` → `_SPEAKER_NAMES`, `_SPEAKER_LABEL`, `_MARKDOWN_CHARS`
 
 ### 3. Un mot vietnamien dans une phrase du tuteur se place à la fin
 Chaque changement de voix coûte un aller-retour de synthèse : un seul par
@@ -53,6 +69,40 @@ qu'une étape
 **Pourquoi :** le modèle n'a aucune mémoire entre les tours. À qui on demande
 de retenir où il en est, il dérive à chaque fois.
 **Changer :** `tutor.py` → `build_plan`
+
+### 4b. Les tours mécaniques sont écrits par le code, sans appel au modèle
+Un rappel — `recall_piece`, `rapidfire`, `settle` — est une phrase dont le code
+tient déjà les deux moitiés : le sens à partir duquel demander, et le mot qu'il
+ne faut surtout pas dire. Elle est composée ici et envoyée directement à la
+synthèse. Le modèle garde les introductions, l'échafaudage, les variations et
+la règle : ce qu'il faut inventer.
+**Où :** code — `scripted_turn` compose, `_speak_scripted_turn` prononce
+**Pourquoi :** le modèle avait un tour de retard. Séance réelle : consigne
+d'introduire « tên », il redemande « tôi » ; il introduit « tên » au tour
+suivant, celui où dire le mot est interdit — la réponse donnée avant la
+question, et un mot vietnamien qui surgit au hasard au milieu d'un exercice.
+Une phrase composée ici ne peut ni sauter son étape, ni donner sa réponse, ni
+prendre du retard. Elle divise aussi par deux le nombre de requêtes par leçon.
+**Garantie :** la question est bâtie à partir du seul `gloss`, jamais du nom
+vietnamien — un rappel scripté ne peut donc pas contenir sa propre réponse.
+`smoke_test.py` le vérifie à chaque exécution.
+**Coût assumé :** on perd la réaction à ce que l'apprenant vient de dire. Ce
+qu'il en reste est le verdict du code (18c), placé en tête de la phrase.
+**Changer :** `tutor.py` → `SCRIPTED_KINDS`, `_REPEAT_ASK`, `_ACK_CORRECT`
+
+### 4c. Un apprenant qui parle vraiment rend la main au modèle
+Une question, ou plus de deux mots d'anglais : le tour repart au modèle, même
+si l'étape était mécanique. Une phrase scriptée ne sait que poser sa question.
+**Où :** code — `learner_spoke_freely`
+**Pourquoi :** c'est aussi le seul chemin qui reste aux outils (29) — tous se
+déclenchent sur quelque chose que l'apprenant a dit.
+**Changer :** `tutor.py` → `FREE_SPEECH_WORDS` (3)
+
+### 4d. Le tour d'ouverture appartient toujours au modèle
+Quoi qu'en dise le plan. Avec `--no-intro` un item est déjà chargé, et sa
+première étape ouvrirait la séance par une question sèche à quelqu'un qui vient
+de dire bonjour.
+**Où :** code — `_conversation_loop`, `turns_done > 0`
 
 ### 5. Un tour se termine à sa question
 Une question, puis le silence. Jamais répondre à sa propre question.
@@ -95,8 +145,13 @@ aucun n'avait été enseigné
 les deux sens — « cà phê » passait pour un assemblage, une règle de grammaire
 pour une phrase. Et sans gloss, « demande ce qu'était là » sortait en « so how
 would you say là ? » : une question qui donne sa réponse.
+**Le `gloss` est maintenant prononcé tel quel** sur les tours scriptés (4b), sans
+modèle entre lui et la synthèse : `speakable` traduit ce qui s'écrit mais ne se
+dit pas — « I / me » → « I or me », « My name is ___ » → « My name is
+something ». Et `check_roster` refuse qu'un item porte son propre nom
+vietnamien dans son gloss, ce qui rendrait la réponse au moment de la question.
 **Changer :** les fichiers d'items ; `fill_item_metadata.py` remplit les champs
-manquants
+manquants ; `tutor.py` → `speakable`
 
 ### 11. Un mot nouveau a deux tours
 `introduce` puis `settle` — révélé et entendu, puis on réagit et on redemande.
@@ -105,17 +160,73 @@ manquants
 minute et aucun ne se posait
 **Changer :** `tutor.py` → `build_plan`
 
+### 11b. Un mot n'est jamais révélé sans son sens dans la même phrase
+« In Vietnamese, the word for *name* is **tên**. » — le sens et le mot d'un
+souffle, la phrase se termine sur le mot (donc Minh le dit), il est répété, puis
+on demande de le dire.
+**Où :** code — `_INTRODUCE`, composé par `scripted_turn`
+**Pourquoi :** c'était une consigne, et elle a lâché. Séance réelle : chargé
+d'introduire « tên », le modèle a dit « I didn't catch that », fait dire le mot
+par Minh, puis demandé le mot. **La phrase qui donne le sens n'a jamais été
+prononcée.** Un premier contact avec un mot sans son sens n'est pas une leçon.
+**Ce qu'on perd :** la phrase de contexte optionnelle (« seulement si tu as un
+vrai fait à raconter »). Elle n'a été produite **zéro fois** sur toutes les
+séances enregistrées — on payait la garantie du tour pour un ornement jamais
+livré.
+**Changer :** `tutor.py` → `_INTRODUCE`
+
 ### 12. Une construction déroule toute la chaîne
 Un rappel par pièce, un par tour, puis l'ordre littéral, puis la réponse, puis
 les variations, puis la règle énoncée en dernier.
 **Où :** code — `build_plan`
 **Changer :** `tutor.py` → `build_plan`, `N_VARIATIONS`
 
+Les étoiles marquent les tours que le code écrit lui-même (4b) ; les autres
+partent au modèle.
+
 ```
-atome         introduce -> settle -> rapidfire x3
-construction  recall_piece (un par piece) -> scaffold -> answer
-              -> vary x2 -> rule -> rapidfire x3
+atome         introduce* -> settle* -> rapidfire* x3      (entièrement scripté)
+construction  recall_piece* (un par piece) -> scaffold -> answer
+              -> vary x2 -> rule -> rapidfire* x3
 ```
+
+Un mot simple ne passe donc plus par le modèle du tout. Il garde la chaîne de
+construction — échafaudage, variations, règle — et tout tour où l'apprenant
+parle vraiment (4c).
+
+### 12b. Un tour qui demande une réponse et la donne est signalé
+Détection seulement : la réponse est streamée et parlée au fil de l'eau, donc
+quand on peut juger, c'est déjà entendu. Ce qu'on gagne, c'est de le savoir.
+**Où :** code — `_leaked_target`, sur les tours du modèle uniquement
+**Le placeholder était le trou dans le garde-fou :** la cible d'une
+construction est `tôi tên là + [tên riêng]`, et personne ne prononce jamais
+« plus crochet tên riêng ». La comparaison littérale ne pouvait donc **jamais**
+correspondre — le garde-fou n'a pas pu se déclencher une seule fois sur une
+construction depuis qu'il existe, et « Tôi tên là Nam. » dit sur une étape qui
+l'interdit est passé sans un mot dans les logs. On compare maintenant les
+fragments réellement prononcés, tous requis.
+**Changer :** `tutor.py` → `_PLACEHOLDER`, `_target_fragments`
+
+### 12c. Une variation change la personne, pas seulement le mot du trou
+« tôi tên là Nam » → « bạn tên là… ». Échanger le prénom ne teste rien ;
+changer la personne teste si le motif a été compris.
+**Où :** prompt — l'instruction de `vary`, construite par `build_plan` à partir
+du `gloss` et du `literal` de l'item
+**Pourquoi ça reste au modèle :** pour échanger `tôi` contre `bạn`, le code
+devrait savoir que ces deux-là occupent la même place. `pieces` ne le dit pas,
+et la catégorie non plus — `function_word` contient aussi « gì » et « chào », on
+y tirerait « chào tên là ». Cette connaissance-là est du vietnamien : c'est ce
+que le modèle a et qu'une table n'a pas. L'inverse exact des rappels, où le code
+savait tout et le modèle dérivait.
+**Ce que l'instruction fournit :** le périmètre, pas les mots — la phrase
+(`gloss`), sa forme figée (`literal`), ce qui a le droit de bouger, et le
+silence de Minh.
+**Pourquoi elle a été réécrite :** l'ancienne disait « same structure, one
+element swapped » et rien d'autre. Séance réelle : le modèle a retiré « tên » de
+« tôi tên là » pour produire « tôi là », puis a interrogé sur « I am ___ ». Ce
+n'était pas du bruit — c'était la bonne *sorte* de variation, sur une autre
+phrase que celle enseignée. Rien ne lui avait dit ce qui devait rester.
+**Changer :** `tutor.py` → `build_plan`, branche `vary`
 
 ### 13. La règle est nommée après que le motif a été produit, jamais avant
 **Où :** le code place l'étape en dernier ; le prompt dit comment la formuler
@@ -162,19 +273,20 @@ cours de référence ; « how would you say » apparaît vingt-deux fois
 **Changer :** `persona.toml` → THE CORE MOVE
 
 ### 18b. Redemander le même mot se dit court, et marqué comme une reprise
-« Et encore une fois, c'était quoi *I / me* ? » — pas la question complète une
-seconde fois.
-**Où :** code — les consignes de `settle` et de la reprise
+« Et encore une fois, c'était quoi *I or me* ? » — pas la question complète une
+seconde fois. Quatre formulations tournent, jamais deux fois la même d'affilée.
+**Où :** code — `_REPEAT_ASK`, phrase composée par `scripted_turn` (4b)
 **Pourquoi :** trois fois « What's the Vietnamese word for I or me ? » d'affilée
 sonne comme trois questions différentes, et l'apprenant cherche ce qu'il a raté.
 C'est aussi la signature du cours de référence : « and again, what was ___ ? »
 y revient vingt et une fois.
-**Changer :** `tutor.py` → `build_plan`, `_lesson_note`
+**Changer :** `tutor.py` → `_REPEAT_ASK`, `_pick`
 
 ### 18c. Le tuteur apprend du code si la réponse était bonne
 Le verdict est calculé par le code, puis transmis au modèle avec la consigne du
 tour suivant : « correct », « raté deux fois », ou rien.
-**Où :** code — `lesson["verdict"]`, lu par `_lesson_note`
+**Où :** code — `lesson["verdict"]`, lu par `_lesson_note` (tour du modèle) ou
+par `_acknowledgement` (tour scripté, où il devient les premiers mots dits)
 **Pourquoi :** sans ça le modèle rejuge tout seul à partir de la transcription
 brute et contredit le code. Vu en session : trois tours de suite où le niveau
 du mot montait et où le tuteur disait « I didn't catch that » dans le même
@@ -189,16 +301,17 @@ vient de poser.
 **Changer :** `tutor.py` → `ANSWER_MATCH_THRESHOLD` (0.5)
 
 ### 20. Un mot vraiment différent a droit à une seule seconde chance
-Minh le redit, la question est reposée autrement, puis la leçon avance quelle
-que soit la réponse.
-**Où :** le code décide (`_should_retry`), le prompt formule
-**Changer :** `tutor.py` → `_should_retry`
+Minh le redit, la question est reposée court, puis la leçon avance quelle que
+soit la réponse.
+**Où :** code de bout en bout — `_should_retry` décide, `scripted_turn` écrit
+la phrase (« Listen again — tôi. And again? »)
+**Changer :** `tutor.py` → `_should_retry`, `_RETRY_ASK`
 
 > **Faible, connu.** La reprise fait dire le mot par Minh puis le redemande :
-> la réponse est donnée avant la question. Un garde-fou dans le code le repère
-> et l'écrit dans les logs, mais la consigne demande toujours ça. La bonne
-> forme serait plutôt « c'était tôi, répète après Minh » — assumer le raté au
-> lieu de mettre en scène une question.
+> la réponse est donnée avant la question. La bonne forme serait plutôt
+> « c'était tôi, répète après Minh » — assumer le raté au lieu de mettre en
+> scène une question. C'était une consigne que le modèle interprétait ; c'est
+> maintenant une seule ligne de code, donc une seule ligne à changer.
 
 ### 21. Tout vietnamien correct compte, pas seulement la formulation de l'item
 « tên tôi là Nam » n'est pas corrigé en « tôi tên là Nam ».
@@ -241,6 +354,20 @@ invente des phrases entières à partir de quasi-silence.
 **Où :** code — `_trim_to_speech`
 **Changer :** `listen.py` → `TRIM_PADDING_FRAMES`
 
+### 24b. En dessous de cinq trames de parole, rien n'est envoyé du tout
+Rogner ne suffit pas : le padding construit une fenêtre de 630 ms autour d'une
+seule trame, et une trame isolée n'est pas un mot. On rend une transcription
+vide, la boucle réécoute sans consommer l'étape.
+**Où :** code — `MIN_SPEECH_FRAMES`, dans `record_until_silence`
+**Pourquoi :** Whisper ne rend pas le vide sur du silence, il invente. Vu en
+séance à 1 trame sur 126 : « ありがとうございました » — l'hallucination la plus
+courante de Whisper, apprise sur des fins de vidéos YouTube muettes. Le tuteur
+l'a comptée comme un mot raté et a monté le niveau.
+**Le seuil est mesuré :** une vraie réponse d'un mot donne 13 trames et plus
+(« tôi » → 13/70, transcrit « Tua »). Cinq trames font 150 ms — loin sous
+n'importe quelle syllabe, loin au-dessus du bruit qui hallucine.
+**Changer :** `listen.py` → `MIN_SPEECH_FRAMES`
+
 ### 25. La transcription sait quel mot elle attend
 Quand l'étape en cours demande un rappel, une première passe en détection
 automatique ; si elle ne rend pas le mot attendu, une seconde passe en forçant
@@ -248,7 +375,30 @@ le vietnamien. Une requête de plus uniquement quand la première échoue.
 **Où :** code — `transcribe(expected=..., matches=...)`
 **Pourquoi :** Whisper entend juste et écrit faux. `tên` sonne comme *ten* en
 anglais, et il l'a transcrit **`10`** — le bon son, un texte inutilisable.
-**Changer :** `listen.py` → `transcribe`
+**Si la seconde passe ne rend pas le mot non plus**, on garde le texte de la
+première — sauf si elle avait décodé dans une langue hors {vi, en}, auquel cas
+c'est la passe forcée qu'on garde. Sinon le tag ment sur son propre texte : vu
+en séance, une tentative de « tôi » arrivée en japonais sous une étiquette
+`[lang:vi]`.
+
+> **Et la seconde passe ne part JAMAIS sur une phrase anglaise.** La règle 25b
+> s'applique aussi ici : plus de trois mots en anglais assuré, c'est l'apprenant
+> qui nous parle, pas une tentative de mot. On garde ce qu'il a dit.
+>
+> **Pourquoi :** le pire échec produit par ce système. Étape attendant « tôi »,
+> l'apprenant dit en anglais clair *« No, I'm asking for travel, listen, I don't
+> care what I am me. »* Ça ne contient pas « tôi », donc passe forcée en
+> vietnamien, qui rend *« Không, tôi đang chờ đề lý… »* — du vietnamien inventé
+> qui contient « tôi » par hasard. Le seul test de récupération étant « est-ce
+> que le mot attendu est dedans », l'invention a été acceptée, comptée comme
+> bonne réponse, niveau monté, leçon avancée. L'apprenant protestait et s'est
+> fait répondre « Exactly. »
+>
+> Se tromper dans l'autre sens est bon marché : une longue tentative
+> vietnamienne prise pour de l'anglais est comptée ratée et redemandée. Se
+> tromper dans ce sens-là **écrase ce que l'apprenant a réellement dit.**
+
+**Changer :** `listen.py` → `is_learner_talking`, `transcribe`
 
 ### 25b. Quand rien n'est attendu, la longueur décide de la langue
 Si la langue détectée sort de {vi, en} et qu'aucun mot n'est attendu : un ou
@@ -289,14 +439,28 @@ today »
 
 ## La prononciation
 
-### 28. La prononciation n'est pas enseignée, les tons ne sont pas mentionnés
-Écouter Minh et copier. Aucun nom de ton, aucun conseil d'articulation, aucune
-description de son.
-**Où :** prompt — PRONUNCIATION
+### 28. Le tuteur ne juge jamais comment l'apprenant sonne
+Aucun verdict sur un son : ni sur un ton, ni sur une voyelle, ni sur rien de ce
+qui a été dit. On réagit à **quel mot** c'était, jamais à comment il sonnait.
+**Où :** prompt — NEVER JUDGE HOW THEY SOUND
 **Pourquoi :** le tuteur n'entend jamais l'apprenant, seulement une
 transcription approximative — tout verdict est une devinette, et il en
 inventait de fausses (« tên » glosé « le a de bed »)
-**Changer :** `persona.toml` → PRONUNCIATION
+**Changer :** `persona.toml` → NEVER JUDGE HOW THEY SOUND
+
+### 28b. Les tons SONT enseignés, comme n'importe quel item
+Six règles ancrées sur des mots déjà connus (`06_thanh_dieu.toml`) : le signe
+existe, il porte la hauteur, et son dessin est celui de la voix.
+**Où :** contenu — les règles ; le prompt autorise seulement
+**Historique :** le prompt interdisait *« ne nomme jamais un ton, n'explique
+jamais que le vietnamien a des tons »*. C'était un échafaudage temporaire, posé
+quand aucun contenu n'existait — pas une position pédagogique. Il est tombé avec
+l'arrivée des règles, et l'esquive qui allait avec (« ça viendra plus tard »)
+aussi : elle serait devenue un mensonge.
+**Ce qui n'a pas bougé :** 28. Enseigner un ton et diagnostiquer un ton sont
+deux choses ; seule la seconde est interdite, et elle l'est pour une raison qui
+tient toujours.
+**Changer :** `content/vietnamese/06_thanh_dieu.toml`
 
 ---
 
@@ -308,11 +472,44 @@ inventait de fausses (« tên » glosé « le a de bed »)
 `deprioritize_item` (il demande d'abandonner quelque chose — enterré au niveau
 12, jamais supprimé).
 **Où :** le code exécute, le prompt décide quand
+**Portée :** uniquement sur les tours que le modèle écrit. Un tour scripté (4b)
+ne passe par aucun modèle, donc par aucun outil — sans conséquence, puisque les
+trois se déclenchent sur une demande explicite de l'apprenant, et que parler
+rend justement la main au modèle (4c).
 **Changer :** `tutor.py` → `TOOLS`
 
-> **Jamais déclenché.** `set_session_focus` n'a tourné dans aucune session. Et
-> la génération produit des phrases entières, que la règle 9 repoussera jusqu'à
-> ce que leurs mots soient enseignés — peut-être indéfiniment.
+### 29b. Un outil qui échoue ne termine jamais la leçon
+La génération de thème est encapsulée : si elle casse, on l'écrit dans les logs
+et la séance continue sans le thème.
+**Où :** code — le `try` autour de `generate_theme_items`
+**Pourquoi :** la toute première fois que `set_session_focus` s'est déclenché,
+la génération a rendu un 400, l'exception est remontée hors du gestionnaire
+d'outil, et une séance par ailleurs saine est morte à son deuxième tour.
+**Changer :** `tutor.py` → `_run_turn`
+
+### 29c. La génération de thème n'est pas un tour parlé
+Elle émet du JSON, pas de la parole, et a son propre plafond de jetons.
+**Où :** code — `THEME_GENERATION_MAX_TOKENS` (2500) contre
+`MAX_TOKENS_PER_TURN` (500)
+**Pourquoi :** elle héritait du plafond des trois phrases parlées. Quatre items
+avec leurs notes en vietnamien font quatre fois ça, le JSON sortait tronqué, et
+Groq répondait 400 « tool_use_failed ». Une troncature n'est pas un résultat
+dégradé, c'est un refus.
+**Et le schéma accepte `null`** sur `pieces` et `literal` : ils sont documentés
+« constructions uniquement », donc sur un atome le modèle écrit `null` — ce
+qu'un schéma non-nullable transformait en 400, perdant le lot entier pour un
+champ qui ne s'appliquait pas.
+
+### 29d. Un refus définitif n'est pas réessayé
+Un 4xx qui n'est pas 429 veut dire que la requête est fausse ; la répéter ne
+peut pas aider.
+**Où :** code — `PermanentAPIError`, `_permanent`
+**Pourquoi :** le 400 ci-dessus a été renvoyé cinq fois avant de planter,
+brûlant cinq fois le budget sur une requête qui ne pouvait pas aboutir.
+**Changer :** `tutor.py` → `_permanent`
+
+> **La génération produit des phrases entières**, que la règle 9 repoussera
+> jusqu'à ce que leurs mots soient enseignés — peut-être indéfiniment.
 
 ---
 
@@ -329,6 +526,7 @@ internes dans les noms d'outils, l'une déclenche des outils sans rien dire
 ### 31. Le budget est de 8000 tokens par minute
 Mesuré, pas documenté. À ~3000 tokens la requête, cela fait environ deux
 requêtes et demie par minute — c'est pour ça que le prompt système reste petit.
+Depuis 4b, environ la moitié des tours n'envoie plus rien du tout.
 **Où :** le palier gratuit de Groq
 **Changer :** payer, ou réduire `persona.toml`
 

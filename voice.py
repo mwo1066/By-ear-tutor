@@ -68,7 +68,18 @@ def _is_vietnamese_word(word: str, known_vn_words: frozenset[str]) -> bool:
     return lw in known_vn_words or lw in _VN_BARE_WORDS
 
 
-_TOKEN_RE = re.compile(r"\S+|\s+")
+# The voice is decided per WORD, never per whitespace-separated token. Found
+# live: the model wrote "That's correct—là." with no space around the dash, so
+# "correct—là." arrived as ONE token; the classifier looks at the first run of
+# letters it finds, saw "correct", and sent the whole token -- the Vietnamese
+# word with it -- to the English voice. Minh never spoke, and a tonal word was
+# read aloud by the one voice that cannot say it.
+#
+# Splitting on the words themselves makes the punctuation irrelevant instead of
+# dangerous: it simply rides along with the run before it. That covers the em
+# dash, the slash, brackets, and every other glue character without naming any
+# of them -- the previous shape needed a new one noticed per session.
+_WORD_SPLIT_RE = re.compile(r"([a-zà-ỹđ]+)", re.IGNORECASE)
 
 
 def split_by_voice(text: str, known_vn_words: frozenset[str] = frozenset()) -> list[tuple[str, str]]:
@@ -84,19 +95,30 @@ def split_by_voice(text: str, known_vn_words: frozenset[str] = frozenset()) -> l
     known_vn_words should be every word appearing in the current roster's
     item names, so genuine Vietnamese vocabulary is recognized regardless of
     what language the tutor's own voice happens to be using this session."""
-    tokens = _TOKEN_RE.findall(text.strip())
+    # re.split with a capturing group alternates: even indices are the gaps
+    # between words (spaces, punctuation), odd indices are the words themselves.
+    parts = _WORD_SPLIT_RE.split(text.strip())
     runs: list[tuple[str, str]] = []
-    for tok in tokens:
-        if tok.isspace():
-            if runs:
-                runs[-1] = (runs[-1][0], runs[-1][1] + tok)
+    pending = ""  # punctuation seen before any word -- joins whichever run opens
+    for i, part in enumerate(parts):
+        if not part:
             continue
-        match = _WORD_RE.search(tok)
-        key = "teacher" if match and _is_vietnamese_word(match.group(), known_vn_words) else "tutor"
+        if i % 2 == 0:  # a gap: it belongs to the run it follows
+            if runs:
+                runs[-1] = (runs[-1][0], runs[-1][1] + part)
+            else:
+                pending += part
+            continue
+        key = "teacher" if _is_vietnamese_word(part, known_vn_words) else "tutor"
         if runs and runs[-1][0] == key:
-            runs[-1] = (key, runs[-1][1] + tok)
+            runs[-1] = (key, runs[-1][1] + part)
         else:
-            runs.append((key, tok))
+            runs.append((key, pending + part))
+            pending = ""
+    if not runs and pending.strip():
+        # No letters at all -- digits, or punctuation on its own. Still the
+        # tutor's to say: dropping it would silently swallow "1975".
+        return [("tutor", pending.strip())]
     return [(key, chunk.strip()) for key, chunk in runs if chunk.strip()]
 
 
@@ -108,12 +130,76 @@ _MARKDOWN_CHARS = re.compile(r"[*_#`~]")
 # says don't, the model does it anyway, so strip it rather than argue.
 _SPEAKER_LABEL = re.compile(r"^\s*(minh|tutor|teacher|tuteur|prof)\s*:\s*", re.IGNORECASE)
 
+# The regex above only catches the name used as a PREFIX, and only with a
+# colon. Cueing Minh is a stage direction the model writes however it likes:
+# "Minh: tôi." one session, a bare "Minh." the next -- which slipped straight
+# through, so the English voice announced "Minh" before each of the teacher's
+# lines, twice in one lesson.
+#
+# Adding the full stop to the regex would fix that session and not the next
+# one ("Minh —", "(Minh)"). The list of punctuation is open and grows every
+# time; "the line is nothing but a name" is a rule that cannot grow, because
+# the cast is closed at two voices. That is the whole difference.
+_SPEAKER_NAMES = frozenset({"minh", "tutor", "teacher", "tuteur", "prof"})
+
+
+def is_stage_direction(text: str) -> bool:
+    """True if the line carries nothing but a speaker's name."""
+    letters = "".join(c if c.isalpha() else " " for c in text.lower())
+    return " ".join(letters.split()) in _SPEAKER_NAMES
+
 
 def _strip_markdown(text: str) -> str:
     """Defensive backstop: the model keeps writing **word** despite being
     told not to, twice now -- stop relying on the prompt and just strip it
     before anything reaches TTS, so a literal asterisk never gets spoken."""
     return _SPEAKER_LABEL.sub("", _MARKDOWN_CHARS.sub("", text))
+
+
+# ---------------------------------------------------------------------------
+# Two properties of anything about to be spoken, checked in the one place every
+# line passes through. Not more entries in a list of known-bad strings: the same
+# two CLASSES of fault have each been fixed twice this project, at a different
+# call site each time, because the fix was applied where the bug was noticed
+# rather than where speech leaves.
+# ---------------------------------------------------------------------------
+
+# Authoring notation: "+ [động từ]", "[tên riêng]", "___". A stored item name
+# carries it; speech never should. Seen twice, and heard both times -- the retry
+# line said "Listen again — tôi tên là + [tên riêng]" and the acknowledgement
+# said "It was muốn + [động từ]", which Minh recited as "muốn động từ".
+_AUTHORING_NOTATION = re.compile(r"\s*\+?\s*\[[^\]]*\]|_{2,}")
+
+
+def _strip_authoring_notation(text: str) -> str:
+    """Removes what belongs to the content files and not to a sentence.
+
+    Repaired rather than merely reported, because the repair is exact: a
+    placeholder is never speech under any circumstance. The log line is what
+    makes the real bug visible upstream.
+    """
+    cleaned = _AUTHORING_NOTATION.sub("", text)
+    if cleaned != text:
+        print(f"  (authoring notation stripped before speech: {text!r})")
+    return " ".join(cleaned.split())
+
+
+def _warn_if_english_reaches_minh(text: str, known_vn_words: frozenset[str]) -> None:
+    """Minh should never be handed a word with no Vietnamese in it.
+
+    Every teacher run ought to carry a diacritic, or be one of the few vetted
+    bare-ASCII words. When a frequency list was imported, the routing vocabulary
+    silently gained so/do/ta/con/ra, and the tutor's own "So how would you say
+    it?" came out with Minh pronouncing "So" -- a random Vietnamese syllable in
+    the middle of an English sentence. Reported, not repaired: the fix belongs
+    in whatever fed that vocabulary, and guessing here would hide it.
+    """
+    for key, chunk in split_by_voice(text, known_vn_words):
+        if key != "teacher":
+            continue
+        words = _WORD_RE.findall(chunk)
+        if words and not any(_has_vn_marker(w) or w.lower() in _VN_BARE_WORDS for w in words):
+            print(f"  [diag] !! Minh was handed {chunk!r}, which carries no Vietnamese")
 
 
 _TTS_ERRORS = (urllib.error.URLError, TimeoutError, OSError)
@@ -227,6 +313,13 @@ class SpeechPipeline:
         Submitting to the pool starts synthesis at once, so by the time the
         playback thread reaches a clip its audio is usually already in hand.
         """
+        text = _strip_authoring_notation(text)
+        _warn_if_english_reaches_minh(text, self._known_vn_words)
+        if is_stage_direction(text):
+            # Dropped here rather than sent as an empty string: no Azure round
+            # trip, and the log says plainly that the model wrote one.
+            print(f"  (stage direction, not spoken: {text!r})")
+            return
         for voice_key, chunk in split_by_voice(text, self._known_vn_words):
             self._to_play.put(self._pool.submit(synthesize, chunk, voice_key))
 

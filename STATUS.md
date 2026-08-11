@@ -1,6 +1,6 @@
 # Where the project stands
 
-Last updated after the session that moved the teaching cycle into code.
+Last updated after the session that moved the mechanical turns into code.
 `README.md` explains what the project is and how to run it; this file is the
 working state — what holds, what is still open, and why certain things are the
 way they are.
@@ -16,6 +16,9 @@ A full lesson runs end to end by voice. Measured on real sessions:
   scaffold, the answer, variations, the rule named last
 - recall targets are drawn by level, so a fresh word comes back constantly and
   a drilled one rarely, without ever dropping out
+- a simple word runs end to end without the model: the introduction, the second
+  ask, the rapid-fire are all sentences the code writes and speaks itself, so a
+  word is never revealed without the meaning in the same breath
 - progress is written as the session goes, so a crash costs nothing
 
 `python smoke_test.py` runs all of that with the network unplugged in about a
@@ -35,32 +38,79 @@ the code can know, the code decides:
 
 | decided in code | left to the model |
 | --- | --- |
-| which item comes next, and that a phrase never precedes its words | the wording, the warmth |
+| which item comes next, and that a phrase never precedes its words | how a word is introduced, and the warmth of it |
 | what this turn is for — one instruction at a time | the hook, if there is a real fact to tell |
-| which word a recall asks for | reacting to what the learner just said |
-| when an item is finished | judging whether an answer was close enough |
+| which word a recall asks for, and the exact sentence that asks it | the scaffold, the variations, how a rule is put |
+| when an item is finished, and whether an answer counted | replying to anything the learner says that is not an answer |
 
 The same reasoning removed the `next_item` tool: a tool call cost a whole extra
 request before the model could speak again, about six seconds of dead air per
 word, and a third of all requests produced nothing but a "let's continue"
 filler.
 
+Taken to its conclusion, it also removed the model from the recall turns
+entirely. It had been drifting a turn behind: told to introduce "tên" it
+re-asked "tôi", then introduced "tên" on the step where saying the word is
+forbidden, handing over the answer. A recall is one sentence whose two halves
+the code already holds -- the meaning to ask from, and the word not to utter --
+so it is composed here and sent straight to speech. It cannot skip a step, give
+away an answer, or fall behind. Roughly half the turns of a lesson now cost no
+request at all.
+
+What was traded for it: the model no longer reacts to what the learner just
+said on those turns. What survives is the verdict the code computed anyway,
+spoken as the first few words ("That's it." / "It was tên.").
+
+The introduction followed, and for a blunter reason. The note handed over said
+in as many words: their answer was right, never tell them you did not catch it.
+The model opened with "I didn't catch that", then had Minh say the new word and
+asked for it — the sentence carrying its MEANING was never spoken. A word
+appearing with nothing attached to it is not a lesson, and there is no wording
+of an instruction that makes it certain. The one thing that turn was buying, an
+optional line of real context, had fired zero times in every session logged.
+
 ## Open, in rough priority order
 
-**The model drifts one turn behind, and it is no longer acceptable.** Decided
-with Meo after a live session: told to introduce "tên", the tutor re-asked
-"tôi" instead; it then introduced "tên" on the following turn, which is the
-step where saying the word is forbidden, so the answer was given away. From the
-learner's seat a Vietnamese word simply appears at random in the middle of a
-drill. This is not the flexibility we were willing to pay for.
+**A variation is bounded by a word list, which stops scaling somewhere.** The
+`vary` instruction names what the learner already knows, so the model cannot ask
+for a word never taught -- measured: without it, the model asked for "your name
+is", i.e. bạn, which the roster teaches one item later. The list is only sent
+below `MAX_LISTED_KNOWN_WORDS`; above it the instruction just says "nothing new",
+which is a hope, not a guarantee.
 
-The agreed fix, not yet done: **the code writes the mechanical turns itself**.
-A recall or a rapid-fire is one sentence -- "and again, what was I / me?" --
-that the code can compose and send straight to speech, with no model call. It
-then cannot skip the step, give away the answer, or fall a turn behind. The
-model keeps introductions and reactions, where it earns its place. This also
-halves the requests per lesson, which the 8000 tokens/minute ceiling makes
-worth having on its own.
+The replacement, when it matters: send a DRAW instead of a list -- eight words
+pulled from what they know, weighted by level, the same `draw_recalls` the
+recalls already use. Bounded at any course size, always taught, and the
+variation then recycles vocabulary that is due, which is what the method wants
+anyway. Not worth doing at 55 items; the moment for it is the same moment the
+word base grows.
+
+**`vary` has been given a real instruction, and that is a test, not a fix.** It
+was the thinnest step in the plan -- "same structure, one element swapped" and
+nothing else -- and the only one that produced a turn with nothing in it. It now
+names the sentence, the frozen shape, what may change (the person), and that
+Minh stays silent. Deliberately NOT scripted: knowing that tôi/bạn/anh share a
+slot is Vietnamese, which the model has and the roster does not encode. Watch
+one session. If the empty turn comes back, script it -- and it will be because
+asking properly was tried first, not skipped.
+
+**Nothing knows the learner's name**, or anything else about them. Constructions
+like "my name is ___" are at their best filled with something true. The model
+reaches for this on its own today ("using your own name..."), which works;
+storing it only becomes necessary if the code starts writing those sentences.
+
+**Categories are free text and already inconsistent** at 55 items: `greeting`
+and `greetings`, `introduction` and `introductions`, `rules` duplicating the
+`kind` field, and "Je suis prêt" filed under `phrase`. Nothing depends on them
+yet. Anything that later fills a hole by type will, and closing the set costs a
+pass over 55 items now against 1000 later.
+
+**Four construction glosses are grammar labels, not English**: `not be +
+[noun]`, `want ___`, `do ... not?`, `negate verb with không`. Spec rule 10 says
+a gloss is read aloud and is never a grammatical description; `check_roster`
+only checks that it is non-empty. The tutor is currently instructed to announce
+"they are about to build not be plus noun". Not reached in any session yet --
+these constructions sit 3rd, 4th and 5th in the roster.
 
 **The opening takes 55 seconds.** Worked around with --no-intro, not fixed. The
 three points should survive in about six sentences.
@@ -68,13 +118,22 @@ three points should survive in about six sentences.
 **Style.** Meo's notes on how the tutor talks, still not started.
 
 **Speech synthesis dominates the clock.** A teaching turn is ~10-15s, of which
-~0.5s is the model. Everything else is Azure.
+~0.5s is the model. Everything else is Azure — and on a scripted turn it is
+now the only thing on the clock at all.
 
-**`set_session_focus` has never fired**, and generation produces whole
-sentences that the ordering rule will defer until their words are taught --
-possibly forever.
+**`set_session_focus` has now fired once, and it killed the session.** Asked for
+a food-ordering lesson, it generated on the 500-token budget meant for three
+spoken sentences, so the JSON came back truncated, Groq answered 400, the retry
+loop sent the same doomed request five times, and the exception climbed out of
+the tool handler and ended the lesson on its second turn. Four bugs in one line
+of causation, all four fixed: its own token budget, a nullable schema for the
+construction-only fields, no retry on a 4xx, and a lesson that survives a broken
+tool. Generation now returns four usable items in 1.4s.
 
-**`tutor.py` is ~1000 lines and does five jobs.** Worth splitting once the
+Still true underneath: generation produces whole sentences that the ordering
+rule will defer until their words are taught -- possibly forever.
+
+**`tutor.py` is ~1300 lines and does five jobs.** Worth splitting once the
 architecture stops moving.
 
 ## Constraints that shape decisions
@@ -97,7 +156,10 @@ entirely; the instruction is listen to Minh and copy him.
 
 **The microphone environment is noisy** and this is accepted, not fixed. The
 VAD flags 60-75% of frames as speech and recordings run several seconds long
-for a one-second answer.
+for a one-second answer. What is no longer accepted is a turn where almost
+nothing was said: under five speech frames nothing is uploaded, because Whisper
+answers silence with an invented sentence rather than an empty one, and the
+lesson scored it as a missed word.
 
 ## Things that turned out to be traps
 
@@ -112,6 +174,29 @@ Whisper path has since been deleted for exactly that reason.
 the code no longer emitted, and told the model to handle a third-language tag
 that the code clamps before it ever arrives. Delete the rule and the mechanism
 together or neither.
+
+**A fix that adds to a list will need adding to again.** The test that tells
+the two apart: does the fix add a NUMBER, or an ENTRY? A number converges --
+there is one value, you tune it once (`MIN_SPEECH_FRAMES`, `ENERGY_RATIO`,
+`ANSWER_MATCH_THRESHOLD`). An entry does not: `_VN_BARE_WORDS`, the punctuation
+a speaker label may end with, the "Wrong: … / Right: …" pairs in the persona
+prompt. Those are blacklists, and a blacklist's contract is "everything, minus
+what we happened to notice" -- it cannot finish.
+
+Where a list is unavoidable, close it. "A line that is nothing but a speaker's
+name" cannot grow, because the cast is two voices; "a name followed by one of
+these signs" grew every session. Same bug, one shape ends.
+
+Worth watching as a number: the count of Wrong/Right pairs in `persona.toml`.
+If it climbs, instances are being fixed where a class was available.
+
+**A recovery whose success test is too weak will accept garbage.** The second
+transcription pass was kept whenever it contained the expected word -- so a
+forced-Vietnamese hallucination that happened to contain "tôi" replaced a clear
+English sentence from the learner, and was scored as a correct answer. The test
+proved the wrong thing: "the word is in there" is not "this is what they said".
+Whenever a fallback overwrites a primary result, ask what would make the
+overwrite obviously wrong, and test for that too.
 
 **A silent no-op is worse than an error.** Three separate fixes this session
 were written as bulk string replacements whose patterns no longer matched.

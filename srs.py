@@ -93,23 +93,43 @@ class ProgressStore:
         """The learner asked to stop working on this. Buried, never deleted."""
         self._states.setdefault(name, ItemState(name=name)).level = DEPRIORITIZED_LEVEL
 
-    def select_new(self, all_item_names: list[str], limit: int = 30) -> list[str]:
-        """The forward sequence: never-introduced items in ROSTER ORDER.
+    def select_new(self, all_item_names: list[str], limit: int | None = None) -> list[str]:
+        """The forward sequence: EVERY never-introduced item, in ROSTER ORDER.
 
         Roster order is a composed progression -- words first, then the
         construction that assembles them -- so nothing here reorders it.
-        """
-        return [n for n in all_item_names if self.is_new(n)][:limit]
 
-    def draw_recalls(self, count: int, exclude: set[str] | None = None) -> list[str]:
+        There used to be a cap of 30 here, sized as a buffer so that a long
+        session could not run dry. It was never meant as a boundary on the
+        course, and it silently became one: hand-written items come first in
+        roster order and there are exactly 30 of them, so the window ended
+        precisely where they ended. Every item ever generated from a learner's
+        own request sat outside it -- 41 of them, invisible, reachable only by
+        asking for the same theme again in the same session.
+
+        Nothing was bought by the cap: filtering 2000 names takes 0.1ms, and
+        the queue is only ever read one item at a time.
+        """
+        new = [n for n in all_item_names if self.is_new(n)]
+        return new[:limit] if limit else new
+
+    def draw_recalls(self, count: int, exclude: set[str] | None = None,
+                     only: set[str] | None = None) -> list[str]:
         """Words for the bare recall slots, drawn by level without repeats.
 
         Weighted rather than sorted: a strict "least consolidated first" would
         replay the same handful in the same order every time, which a learner
         notices and starts answering from rhythm instead of memory.
+
+        `only` narrows the pool to a subject. Fewer words come back than there
+        are slots, and that is the intended outcome: a lesson the learner asked
+        for should drill what they asked for, and padding the rest with
+        unrelated vocabulary is what made a food lesson keep asking "what was I
+        / me". Returning a short list simply gives that item fewer recall turns.
         """
         exclude = exclude or set()
-        pool = [s for s in self._states.values() if s.name not in exclude]
+        pool = [s for s in self._states.values()
+                if s.name not in exclude and (only is None or s.name in only)]
         picked: list[str] = []
         while pool and len(picked) < count:
             weights = [weight(s.level) for s in pool]

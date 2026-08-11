@@ -65,3 +65,16 @@ literal = "not be + [noun]"
 category = "construction"
 language = "vi"
 description = "Khung phủ định của 'là': thêm 'không phải' vào trước. 'Tôi không phải là Nam.' 'Em không phải là Linh.' Dùng 'không' đã biết, cộng 'phải' — cặp 'không phải' luôn đi liền nhau trước 'là'."
+
+# Règles rattachées à ce fichier : elles arrivent après les mots
+# qu'elles décrivent, jamais groupées en bloc de théorie.
+
+[[items]]
+type = "procedure"
+name = "xưng hô đổi theo từng cặp người nói"
+kind = "rule"
+gloss = "the word you use for 'you' changes with who you're talking to"
+category = "rules"
+language = "vi"
+description = "Quy tắc: từ xưng hô không cố định theo người, mà theo QUAN HỆ giữa hai người đang nói. Cùng một người vừa là 'anh' với người ít tuổi hơn, vừa là 'em' với người lớn tuổi hơn. Đây là điều lạ nhất với người châu Âu: 'I' và 'you' trong tiếng Việt thay đổi liên tục trong cùng một ngày."
+pieces = ["anh", "chị", "em"]

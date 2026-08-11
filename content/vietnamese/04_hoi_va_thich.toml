@@ -64,3 +64,46 @@ gloss = "adjectives need no 'is'"
 category = "rules"
 language = "vi"
 description = "Quy tắc: tính từ đứng NGAY sau chủ ngữ, không bao giờ dùng 'là' ở giữa. 'Cơm ngon' đúng — 'cơm là ngon' sai. 'Là' chỉ đứng trước danh từ: 'Tôi là Nam' đúng. Khác hẳn tiếng Anh: người mới học hay quen tay thêm 'là' trước tính từ — bỏ được thói quen đó là câu nghe tự nhiên ngay."
+
+# Règles rattachées à ce fichier : elles arrivent après les mots
+# qu'elles décrivent, jamais groupées en bloc de théorie.
+
+[[items]]
+type = "procedure"
+name = "tính từ đứng sau danh từ"
+kind = "rule"
+gloss = "the describing word comes after the thing, not before"
+category = "rules"
+language = "vi"
+description = "Quy tắc: tính từ đi SAU danh từ. 'Cà phê ngon' — cà phê ngon, không phải 'ngon cà phê'. Ngược hẳn tiếng Anh. Đây là một trong hai chỗ mà trật tự khác tiếng Anh, nên nói rõ một lần rồi cho luyện ngay."
+pieces = ["cà phê", "ngon"]
+
+[[items]]
+type = "procedure"
+name = "câu hỏi có/không"
+kind = "rule"
+gloss = "to ask a yes-or-no question, you wrap the sentence"
+category = "rules"
+language = "vi"
+description = "Quy tắc: đặt 'có' trước động từ và 'không' ở cuối câu. 'Bạn có muốn ăn không?' Không đảo trật tự câu như tiếng Anh, không thêm trợ động từ. Trả lời: 'có' hoặc 'không' — đúng hai chữ vừa dùng."
+pieces = ["có", "không"]
+
+[[items]]
+type = "procedure"
+name = "rất trước, lắm sau"
+kind = "rule"
+gloss = "there are two ways to say 'very', one before the word and one after"
+category = "rules"
+language = "vi"
+description = "Quy tắc: 'rất' đứng TRƯỚC tính từ, 'lắm' đứng SAU. 'Rất ngon' và 'ngon lắm' cùng nghĩa; 'ngon lắm' nghe thân mật và thường gặp hơn trong nói chuyện. Đừng dùng cả hai một lúc."
+pieces = ["ngon"]
+
+[[items]]
+type = "procedure"
+name = "so sánh: tính từ + hơn"
+kind = "rule"
+gloss = "to compare, you add one word after the description"
+category = "rules"
+language = "vi"
+description = "Quy tắc: thêm 'hơn' ngay sau tính từ. 'Cà phê ngon hơn' — ngon hơn. Không đổi hình thức tính từ như 'good → better'. Muốn nói hơn cái gì thì đặt cái đó sau: 'ngon hơn nước'."
+pieces = ["ngon"]

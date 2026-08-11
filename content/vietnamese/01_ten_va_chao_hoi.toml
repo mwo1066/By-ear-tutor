@@ -75,3 +75,81 @@ gloss = "hello"
 category = "function_word"
 language = "vi"
 description = "Lời chào — dùng cả khi gặp nhau và khi tạm biệt. Thanh huyền — giọng xuống. Nói 'chào' một mình hơi cộc; tự nhiên hơn khi ghép với đại từ: 'Chào bạn!' Dạng lịch sự, trang trọng hơn: 'Xin chào.'"
+
+# Règles rattachées à ce fichier : elles arrivent après les mots
+# qu'elles décrivent, jamais groupées en bloc de théorie.
+
+[[items]]
+type = "procedure"
+name = "động từ không chia"
+kind = "rule"
+gloss = "verbs never change, whoever is doing the action"
+category = "rules"
+language = "vi"
+description = "Quy tắc: động từ tiếng Việt giữ nguyên một hình thức duy nhất. 'Tôi ăn', 'bạn ăn', 'anh ấy ăn' — cùng một chữ 'ăn'. Không chia theo ngôi, không chia theo số. Đây là điều nên nói sớm với người mới học: nó xoá đi phần khó nhất của tiếng Pháp hay tiếng Tây Ban Nha."
+
+[[items]]
+type = "procedure"
+name = "không có giống, không có mạo từ"
+kind = "rule"
+gloss = "no genders, and no word for 'a' or 'the'"
+category = "rules"
+language = "vi"
+description = "Quy tắc: danh từ không có giống đực/cái, và không có mạo từ. 'Cà phê' vừa là 'coffee', vừa là 'a coffee', vừa là 'the coffee' — ngữ cảnh quyết định. Người học tiếng Pháp thường mất nhiều tháng cho phần này; ở đây không có gì để học."
+
+[[items]]
+type = "procedure"
+name = "từ để hỏi đứng nguyên chỗ"
+kind = "rule"
+gloss = "question words stay where the answer would be"
+category = "rules"
+language = "vi"
+description = "Quy tắc: từ để hỏi giữ đúng vị trí của câu trả lời, không nhảy lên đầu câu như tiếng Anh. 'Bạn tên là gì?' — chữ 'gì' đứng đúng chỗ mà cái tên sẽ đứng. 'Bạn ăn gì?' cũng vậy. Người học tiếng Anh hay muốn đảo lên đầu; không cần."
+pieces = ["gì"]
+
+[[items]]
+type = "procedure"
+name = "danh từ không đổi khi nhiều"
+kind = "rule"
+gloss = "words don't change in the plural — you add a word instead"
+category = "rules"
+language = "vi"
+description = "Quy tắc: danh từ giữ nguyên dù một hay nhiều. Muốn nói rõ số nhiều thì thêm 'các' (tất cả, toàn bộ) hoặc 'những' (một số trong đó) đứng trước. Không có đuôi '-s' như tiếng Anh."
+
+[[items]]
+type = "procedure"
+name = "loại từ: số + loại từ + danh từ"
+kind = "rule"
+gloss = "counting needs a small helper word between the number and the thing"
+category = "rules"
+language = "vi"
+description = "Quy tắc: khi đếm, chen một loại từ vào giữa số và danh từ. 'Hai con chó' — hai + con + chó. Loại từ chọn theo loại vật: 'con' cho động vật, 'cái' cho đồ vật, 'người' cho người. Người mới học dùng sai loại từ vẫn được hiểu, nên đừng để nó chặn việc nói."
+
+[[items]]
+type = "procedure"
+name = "được đứng sau động từ: làm được"
+kind = "rule"
+gloss = "to say you can do something, the word goes after the action"
+category = "rules"
+language = "vi"
+description = "Quy tắc: 'được' đứng SAU động từ để nói làm được, có khả năng. 'Tôi nói được tiếng Việt.' Khác tiếng Anh, nơi 'can' đứng trước. 'Được' cũng đứng một mình để nói 'ok, được thôi'."
+
+[[items]]
+type = "procedure"
+name = "ạ: một chữ làm câu lịch sự"
+kind = "rule"
+gloss = "one small word at the end makes anything polite"
+category = "rules"
+language = "vi"
+description = "Quy tắc: thêm 'ạ' ở cuối câu khi nói với người lớn tuổi hoặc trong hoàn cảnh trang trọng. 'Chào anh ạ.' 'Cảm ơn ạ.' Không đổi nghĩa, chỉ đổi thái độ — và người Việt để ý điều này ngay."
+pieces = ["chào"]
+
+[[items]]
+type = "procedure"
+name = "thanh điệu: nghe và bắt chước"
+kind = "rule"
+gloss = "the same sounds said at a different pitch are different words — so copy the pitch, not just the sounds"
+category = "rules"
+language = "vi"
+description = "Quy tắc duy nhất về thanh điệu trong khoá học chỉ bằng giọng nói. Tiếng Việt dùng độ cao giọng để phân biệt từ: cùng một chuỗi âm, đổi độ cao là đổi hẳn nghĩa. Người học KHÔNG nhìn thấy chữ viết ở đây, nên đừng mô tả dấu — sáu cái dấu chỉ có ích khi có chữ trước mắt. Điều cần nói: khi nghe Minh, nghe cả độ cao, không chỉ các âm. Không bao giờ nhận xét về thanh điệu của người học: tuteur không nghe được họ."
+pieces = ["tôi", "là"]

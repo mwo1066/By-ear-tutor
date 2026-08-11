@@ -22,8 +22,9 @@ sys.stdout.reconfigure(encoding="utf-8")
 from content import load_persona_system_prompt, load_roster, load_personal_items
 from srs import ProgressStore
 from tutor import (
-    CONTENT_DIR, STATE_PATH, MODEL_FALLBACKS, QUEUE_SIZE, TOOLS,
-    _lesson_note, _take_next, current_step, learner_asked_something, start_item,
+    CONTENT_DIR, STATE_PATH, MODEL_FALLBACKS, TOOLS,
+    _lesson_note, _take_next, current_step, learner_asked_something,
+    learner_spoke_freely, scripted_turn, start_item,
     load_api_key, stream_llm_reply,
 )
 
@@ -71,48 +72,41 @@ def main(n_exchanges: int) -> None:
     all_names = [i.name for i in roster]
     by_name = {i.name: i for i in roster}
 
-    queue = [by_name[n] for n in store.select_new(all_names, limit=QUEUE_SIZE)]
+    queue = [by_name[n] for n in store.select_new(all_names)]
     seen = [i for i in roster if not store.is_new(i.name)]
-    lesson = {"item": None, "plan": [], "i": 0, "started": False}
+    # Same shape as the real lesson dict. Still an approximation in one place:
+    # nothing here computes a verdict or a retry, so a scripted line printed by
+    # the simulator carries its question but not the "that's it" in front of it.
+    lesson = {"item": None, "plan": [], "i": 0, "started": False, "retried": False,
+              "verdict": None, "verdict_target": None, "phrasing": {}}
 
     messages = [{"role": "system", "content": load_persona_system_prompt(CONTENT_DIR)}]
     messages.append({"role": "user", "content": "[lang:en] Hi, I'm ready."})
     transcript = ["ELEVE: Hi, I'm ready."]
     print("ELEVE : Hi, I'm ready.\n")
+    last_learner_turn = "[lang:en] Hi, I'm ready."
 
     for exchange in range(n_exchanges):
-        # One exchange = the tutor talking until it stops asking for tools,
-        # then the learner answering. Mirrors _run_turn's chaining.
-        for _ in range(5):
-            text, tool_calls = "", []
-            note = _lesson_note(lesson)
-            for kind, *payload in stream_llm_reply(
-                api_key, MODEL_FALLBACKS, messages + [{"role": "system", "content": note}], tools=TOOLS
-            ):
-                if kind == "content":
-                    text += payload[0]
-                elif kind == "tool_calls":
-                    tool_calls = payload[0]
-            spoken = text.strip()
-            if spoken:
-                print(f"TUTEUR : {spoken}\n")
-                transcript.append(f"TUTEUR: {spoken}")
-            messages.append({
-                "role": "assistant",
-                "content": text or None,
-                **({"tool_calls": tool_calls} if tool_calls else {}),
-            })
-            if not tool_calls:
-                break
-            for call in tool_calls:
-                messages.append({"role": "tool", "tool_call_id": call["id"], "content": "ok"})
-            time.sleep(SECONDS_BETWEEN_TURNS)
+        # A mechanical turn is written by the code and never reaches a model.
+        # Reproduced here rather than skipped: a simulator that sent every
+        # recall to the model would be rehearsing a lesson the real loop no
+        # longer runs, which is the whole thing this file exists to avoid.
+        line = None
+        if exchange > 0 and not learner_spoke_freely(last_learner_turn):
+            line = scripted_turn(lesson)
+        if line is not None:
+            print(f"TUTEUR : {line}   [ecrit par le code]\n")
+            transcript.append(f"TUTEUR: {line}")
+            messages.append({"role": "assistant", "content": line})
+        else:
+            _tutor_turns(api_key, messages, transcript, lesson)
 
         reply = learner_reply(api_key, transcript)
         print(f"ELEVE : {reply}\n")
         transcript.append(f"ELEVE: {reply}")
         tagged = f"[lang:{_lang_tag(reply)}] {reply}"
         messages.append({"role": "user", "content": tagged})
+        last_learner_turn = tagged
 
         # Same plan bookkeeping as the real loop, so a transcript from here
         # reflects a real lesson rather than a parallel version of one.
@@ -123,6 +117,35 @@ def main(n_exchanges: int) -> None:
             if item is not None:
                 seen.append(item)
             start_item(lesson, item, seen, store)
+        time.sleep(SECONDS_BETWEEN_TURNS)
+
+
+def _tutor_turns(api_key: str, messages: list[dict], transcript: list[str], lesson: dict) -> None:
+    """The tutor talking until it stops asking for tools. Mirrors _run_turn's
+    chaining -- only reached on the turns the model still writes."""
+    for _ in range(5):
+        text, tool_calls = "", []
+        note = _lesson_note(lesson)
+        for kind, *payload in stream_llm_reply(
+            api_key, MODEL_FALLBACKS, messages + [{"role": "system", "content": note}], tools=TOOLS
+        ):
+            if kind == "content":
+                text += payload[0]
+            elif kind == "tool_calls":
+                tool_calls = payload[0]
+        spoken = text.strip()
+        if spoken:
+            print(f"TUTEUR : {spoken}\n")
+            transcript.append(f"TUTEUR: {spoken}")
+        messages.append({
+            "role": "assistant",
+            "content": text or None,
+            **({"tool_calls": tool_calls} if tool_calls else {}),
+        })
+        if not tool_calls:
+            break
+        for call in tool_calls:
+            messages.append({"role": "tool", "tool_call_id": call["id"], "content": "ok"})
         time.sleep(SECONDS_BETWEEN_TURNS)
 
 

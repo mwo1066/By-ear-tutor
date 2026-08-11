@@ -25,7 +25,9 @@ from pathlib import Path
 
 sys.stdout.reconfigure(encoding="utf-8")
 
-from content import KINDS, PERSONAL_ITEMS_FILENAME
+from content import (
+    KINDS, PERSONAL_ITEMS_FILENAME, derive_pieces, load_personal_items, load_roster,
+)
 from tutor import CONTENT_DIR, call_llm, load_api_key
 
 FILL_TOOL = [
@@ -53,13 +55,23 @@ FILL_TOOL = [
                                         "'to want', 'my name is ___'."
                                     ),
                                 },
-                                "pieces": {
-                                    "type": "array",
-                                    "items": {"type": "string"},
+                                # No `pieces` here: repair_pieces computes it
+                                # from the name before this pass runs, and asking
+                                # again only invites a worse answer -- seen in
+                                # the same dry run, the model offered ["không"]
+                                # where the code had read ["bạn", "không"].
+                                "hook": {
+                                    "type": "string",
                                     "description": (
-                                        "constructions only: the exact names of the already-listed items this "
-                                        "sentence is assembled from, in the order they are spoken. Empty for "
-                                        "atoms and rules."
+                                        "ONE true sentence of context in English, spoken just before the "
+                                        "word is revealed -- or an empty string, which is the normal answer. "
+                                        "Write one only where the plain template would be circular or flat: "
+                                        "a word the learner already knows in English (phở, cà phê), a place "
+                                        "name that means something (Hà Nội, 'inside the river'), a word whose "
+                                        "origin explains its shape. It is read aloud, so keep it to one "
+                                        "sentence and make it concrete. NEVER guess: if you are not certain "
+                                        "the fact is true, return an empty string. An invented etymology is "
+                                        "worse than no hook at all."
                                     ),
                                 },
                                 "literal": {
@@ -95,9 +107,9 @@ INSTRUCTIONS = (
     "gloss is spoken aloud to the learner as the question. Write the meaning, not the grammar: "
     "'I / me', not 'first person pronoun'. For a construction with a placeholder, keep the "
     "placeholder in English: 'my name is ___'.\n\n"
-    "pieces must be names copied EXACTLY from the list, and only items that appear EARLIER in it -- "
-    "a sentence can only be built from what has already been taught. If a construction needs a word "
-    "the course never teaches on its own, leave that word out of pieces.\n\n"
+    "hook is almost always empty. Write one only when the item is a word the learner already "
+    "knows in English, or a name that means something, or has an origin worth a sentence -- and only "
+    "when you are certain it is true. A wrong fact spoken aloud is worse than a plain introduction.\n\n"
     "Some names carry an authoring label before a colon ('phủ định động từ: không + [động từ]'). "
     "The label is not spoken; gloss and literal describe what follows it.\n\n"
     "Call set_item_metadata once, with an entry for every item you were given."
@@ -110,7 +122,9 @@ def _needs_fill(raw: dict) -> bool:
     item with no kind always counts as incomplete."""
     if "kind" not in raw or not raw.get("gloss"):
         return True
-    if raw["kind"] == "construction" and (not raw.get("pieces") or not raw.get("literal")):
+    # `pieces` is deliberately not checked here: repair_pieces derives it
+    # offline just above, so a construction missing it is not a model's job.
+    if raw["kind"] == "construction" and not raw.get("literal"):
         return True
     return False
 
@@ -171,15 +185,17 @@ def _ask_batch(api_key: str, targets: list[dict], all_names: list[str]) -> dict[
 
 
 def _clean(entry: dict, known_names: set[str]) -> dict:
-    """Keeps only what belongs on this kind of item, and drops pieces that name
-    something the course does not actually teach -- a piece pointing at nothing
-    would surface later as a recall for a word that has no item."""
+    """Keeps only what belongs on this kind of item.
+
+    `pieces` is not among them -- repair_pieces owns that field now, and letting
+    this pass write it too would undo the derivation with a worse guess.
+    """
     kind = entry.get("kind", "atom")
     if kind not in KINDS:
         kind = "atom"
-    fields = {"kind": kind, "gloss": entry.get("gloss", "").strip()}
+    fields = {"kind": kind, "gloss": entry.get("gloss", "").strip(),
+              "hook": (entry.get("hook") or "").strip()}
     if kind == "construction":
-        fields["pieces"] = [p for p in entry.get("pieces", []) if p in known_names]
         fields["literal"] = entry.get("literal", "").strip()
     return fields
 
@@ -265,6 +281,38 @@ def fill_json(path: Path, api_key: str, all_names: list[str], write: bool) -> in
     return len(targets)
 
 
+def repair_pieces(personal: Path, roster: list, write: bool) -> int:
+    """Recomputes `pieces` on every generated construction, offline.
+
+    Runs before anything else and costs no request: pieces are read off the
+    name against the roster, never asked of a model. That is the whole point --
+    measured on this file, the model got 8 of its 13 constructions wrong, one
+    declaring a single piece for an eight-word sentence and one declaring none.
+
+    Only the generated file is touched. Hand-written TOML stays authoritative:
+    derive_pieces reproduces all five of its constructions exactly, so there is
+    nothing to repair there and no reason to let code overwrite an author.
+    """
+    if not personal.exists():
+        return 0
+    entries = json.loads(personal.read_text(encoding="utf-8"))
+    changed = 0
+    for entry in entries:
+        if entry.get("kind") != "construction":
+            continue
+        derived = derive_pieces(entry["name"], roster)
+        if derived != entry.get("pieces"):
+            print(f"  {entry['name']}")
+            print(f"     was  {entry.get('pieces')}")
+            print(f"     now  {derived}")
+            entry["pieces"] = derived
+            changed += 1
+    if changed and write:
+        personal.write_text(json.dumps(entries, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"{personal.name}: {changed} construction(s) re-derived")
+    return changed
+
+
 def main() -> int:
     write = "--write" in sys.argv
     api_key = load_api_key()
@@ -280,7 +328,11 @@ def main() -> int:
     if personal.exists():
         all_names += [e["name"] for e in json.loads(personal.read_text(encoding="utf-8"))]
 
-    total = sum(fill_toml(path, api_key, all_names, write) for path in lesson_files)
+    # Offline and free, so it goes first and always: no point paying a model to
+    # annotate items whose structural field is wrong.
+    total = repair_pieces(personal, load_roster(CONTENT_DIR) + load_personal_items(CONTENT_DIR), write)
+
+    total += sum(fill_toml(path, api_key, all_names, write) for path in lesson_files)
     if personal.exists():
         total += fill_json(personal, api_key, all_names, write)
 

@@ -135,6 +135,13 @@ def record_until_silence() -> np.ndarray:
 
     if not frames:
         return np.array([], dtype=np.int16)
+    # An empty return is a supported outcome all the way up: transcribe returns
+    # "", listen_and_transcribe returns "", and the lesson loop simply listens
+    # again without consuming the step.
+    if speech_frame_count < MIN_SPEECH_FRAMES:
+        print(f"  [diag] too little speech to transcribe: {speech_frame_count} frame(s) "
+              f"-- nothing sent, Whisper would have invented a sentence")
+        return np.array([], dtype=np.int16)
     return _trim_to_speech(frames, speech_flags)
 
 
@@ -146,6 +153,20 @@ def record_until_silence() -> np.ndarray:
 # at aggressiveness 0-2 any realistic noise floor reads as speech and nothing
 # gets trimmed at all.
 TRIM_PADDING_FRAMES = 300 // FRAME_MS
+
+# Below this many speech frames there is nothing to transcribe, and sending it
+# anyway is worse than sending nothing: Whisper does not return empty on
+# silence, it invents. Found live at 1 speech frame out of 126 -- the padding
+# alone built a 0.6s window around it, which came back as
+# "ありがとうございました", Whisper's single most common hallucination
+# (a YouTube sign-off learned over silent outros). The tutor then scored it as
+# a missed word and bumped the level.
+#
+# Five frames is 150ms. Measured on this microphone, a real one-word answer
+# lands at 13+ frames ("tôi" -> 13/70, transcribed "Tua"), so this sits well
+# under any genuine syllable and well over the noise that produces a
+# hallucination. Raise it first if invented words keep arriving.
+MIN_SPEECH_FRAMES = 5
 
 
 def _trim_to_speech(frames: list[np.ndarray], speech_flags: list[bool]) -> np.ndarray:
@@ -208,6 +229,19 @@ def _audio_to_wav_bytes(audio: np.ndarray) -> bytes:
 
 _GROQ_LANG_NAME_TO_CODE = {"english": "en", "french": "fr", "vietnamese": "vi"}
 
+# The full model, not the turbo one. Turbo buys speed with accuracy, and the
+# speed is worth nothing here: transcription takes ~0.3s inside a turn that
+# runs 4-15s, almost all of it speech synthesis. So the trade was paying
+# accuracy for about 3% of a turn -- on the hardest input this system sees, a
+# one-second clip of a beginner's Vietnamese through a noisy room.
+#
+# What that cost, measured on one live session: "The", "T", "D", "E.",
+# "HACTION", "Geksen" -- and "D" scoring 0.67 against "đi", so a single letter
+# was recorded as a correct answer and pushed the word down the review odds.
+# Every verdict the tutor gives rests on this, so it is the wrong place to be
+# saving a third of a second.
+STT_MODEL = "whisper-large-v3"
+
 
 def _run_transcribe_groq(wav_bytes: bytes, language: str | None, prompt: str | None):
     """Same shape as _run_transcribe, but offloads the compute to Groq's own
@@ -216,7 +250,7 @@ def _run_transcribe_groq(wav_bytes: bytes, language: str | None, prompt: str | N
     is the best learning experience, not staying 100% local like memai."""
     boundary = uuid.uuid4().hex
     parts = []
-    fields = {"model": "whisper-large-v3-turbo", "response_format": "verbose_json", "temperature": "0"}
+    fields = {"model": STT_MODEL, "response_format": "verbose_json", "temperature": "0"}
     if language:
         fields["language"] = language
     if prompt:
@@ -267,6 +301,27 @@ def _run_transcribe_groq(wav_bytes: bytes, language: str | None, prompt: str | N
 SENTENCE_WORDS = 3
 
 
+def is_learner_talking(text: str, lang: str) -> bool:
+    """A confident English sentence: they are addressing the tutor, not
+    attempting the Vietnamese word the lesson is waiting for.
+
+    Guards the worst failure this system has produced. Live, on a step
+    expecting "tôi": the learner said, in clear English, "No, I'm asking for
+    travel, listen, I don't care what I am me." That does not contain "tôi", so
+    a forced-Vietnamese second pass ran and returned
+    "Không, tôi đang chờ đề lý, nghe, tôi không quanh gì tôi là." -- invented
+    Vietnamese that happens to contain "tôi". The recovery test is only "does
+    it contain the expected word", so the invention was accepted, scored as a
+    correct answer, and the lesson moved on. The learner was objecting and was
+    told "Exactly."
+
+    Getting this wrong the other way is cheap: a long Vietnamese attempt heard
+    as English is marked missed and asked again. Getting it wrong this way
+    overwrites what the learner actually said.
+    """
+    return lang == "en" and len(text.split()) > SENTENCE_WORDS
+
+
 def transcribe(audio: np.ndarray, expected: str | None = None, matches=None) -> tuple[str, str]:
     """Returns (text, language_code), language_code always in ALLOWED_LANGUAGES.
 
@@ -294,11 +349,28 @@ def transcribe(audio: np.ndarray, expected: str | None = None, matches=None) -> 
     # "tên" was heard correctly but written with English spelling, and came out
     # as the digits "10" -- right sound, unusable text.
     if expected and matches and not matches(text, expected):
+        if is_learner_talking(text, lang):
+            # They are speaking to the tutor, not attempting the word. Forcing
+            # this into Vietnamese does not recover anything -- it destroys the
+            # only true record of what was said.
+            print(f"  [diag] a sentence in English, not an attempt at {expected!r} -- kept as heard")
+            return text, "en"
         second = _forced(wav_bytes, "vi", t0)
         if matches(second, expected):
             print(f"  [diag] pass 2 recovered it: {text!r} -> {second!r}")
             return second, "vi"
-        return text, lang if lang in ALLOWED_LANGUAGES else "vi"
+        if lang in ALLOWED_LANGUAGES:
+            return text, lang
+        # Pass 1 decoded into a language this session does not have, so its text
+        # is not a reading of what was said -- it is the decoder lost. The
+        # forced-Vietnamese pass at least read the audio as the language it was
+        # meant to be, so it is the one kept, exactly as the no-expected branch
+        # below already does. Keeping pass 1 here instead put Japanese text
+        # behind a [lang:vi] tag: an attempt at "tôi" arrived as
+        # "ありがとうございました" wearing a Vietnamese label.
+        # Still not repairing anything -- choosing the decode language changes
+        # how the audio is READ, never what the text is turned into afterwards.
+        return second, "vi"
 
     if lang not in ALLOWED_LANGUAGES:
         # An unexpected language means the decoder was lost. Which way to push
