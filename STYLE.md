@@ -174,7 +174,12 @@ le sujet.
   on ré-enchaîne — ce serait une **étape** de plus dans `build_plan`
 - des hooks beaucoup plus fréquents, pour que la longueur des introductions
   varie d'elle-même
-- des séries de rappels de longueur inégale, au lieu de trois systématiques
+- ~~des séries de rappels de longueur inégale, au lieu de trois systématiques~~
+  **fait** le 11 août : `rapidfire_count` tire de 1 à 5 autour de la moyenne 3
+  mesurée, et le nombre suit ce que le tour vient de faire — 1 après une
+  construction qui a déjà fait réciter ses pièces, 4 après une règle où
+  l'apprenant n'a rien dit. Le premier des trois leviers, et le seul qui ne
+  demandait aucun contenu à écrire.
 
 **La mesure qui décide :** le profil de longueur des tours du cours de
 référence. Pas « est-ce qu'il digresse » mais « quelle est sa distribution ».

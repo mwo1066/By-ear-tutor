@@ -593,10 +593,37 @@ def _vocab_words(items: list[Item]) -> frozenset[str]:
     return frozenset(words)
 
 
-# How many isolated recalls close out an item's plan. Three, because that is
-# roughly the density measured in the reference course: across its teaching
-# stretch, learner-facing recall questions land at about three per new item.
+# How many isolated recalls close out an item's plan. Three is the density
+# measured in the reference course -- across its teaching stretch, learner-facing
+# recall questions land at about three per new item -- so it stays the MEAN, and
+# what varies is the spread around it.
+#
+# Fixed at exactly three, every simple word cost the same five turns, and an
+# attentive learner learns the cadence: after the second recall there is one
+# left. They start answering to the rhythm instead of the question. draw_recalls
+# already refuses to be predictable about WHICH words come back; the same
+# argument had never been applied to HOW MANY.
+#
+# And the count is motivated rather than random. A construction has just made
+# them re-say every one of its pieces, so the reviewing is done -- piling three
+# more on top is repetition without purpose. A lone word reviewed nothing, and a
+# rule had them say nothing at all, so those are where the recalls belong.
 N_RAPIDFIRE = 3
+
+
+def rapidfire_count(item: Item, pieces: list[Item]) -> int:
+    """How many bare recalls this item's plan ends with.
+
+    Never a fixed number, never a random one either: a base that follows what
+    the turn just did, plus one step of spread so the cadence cannot be learned.
+    """
+    if item.kind == "construction":
+        base = 1 if pieces else 2      # its chain already re-asked every piece
+    elif item.kind == "rule":
+        base = 4                       # nothing was said back; this is the practice
+    else:
+        base = 3
+    return max(1, base + random.choice((-1, 0, 0, 1)))
 N_VARIATIONS = 3
 
 
@@ -799,7 +826,7 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item],
             ask=speakable(item.gloss),
         ))
 
-    for target in recall_targets[:N_RAPIDFIRE]:
+    for target in recall_targets:
         plan.append(Step(
             "rapidfire", target.name,
             f"Bare recall, no context: ask them in English for the Vietnamese for {_ask_for(target)}. "
@@ -1101,9 +1128,11 @@ def start_item(lesson: dict, item: Item | None, seen_items: list[Item], store: P
         return
     pieces = pieces_of(item, seen_items)
     store.mark_introduced(item.name)
+    count = rapidfire_count(item, pieces)
     # seen_items minus the item itself: what the learner can be asked for now.
     known = [i for i in seen_items if i.name != item.name]
-    lesson["plan"] = build_plan(item, pieces, _recall_targets(store, item, pieces, seen_items), known)
+    lesson["plan"] = build_plan(
+        item, pieces, _recall_targets(store, item, pieces, seen_items, count), known)
     kinds = " -> ".join(s.kind for s in lesson["plan"])
     print(f"  -> item: {item.name}  [{len(lesson['plan'])} turns: {kinds}]")
 
@@ -1199,7 +1228,7 @@ def learner_spoke_freely(user_text: str) -> bool:
 
 
 def _recall_targets(store: ProgressStore, item: Item | None, pieces: list[Item],
-                    seen_items: list[Item]) -> list[Item]:
+                    seen_items: list[Item], count: int = N_RAPIDFIRE) -> list[Item]:
     """Which already-met items the bare recall slots will ask for.
 
     Drawn by level, so the least consolidated word is likeliest and a
@@ -1234,7 +1263,7 @@ def _recall_targets(store: ProgressStore, item: Item | None, pieces: list[Item],
     only = None
     if item is not None and item.topic:
         only = {i.name for i in seen_items if i.topic == item.topic}
-    drawn = store.draw_recalls(N_RAPIDFIRE, exclude=exclude, only=only)
+    drawn = store.draw_recalls(count, exclude=exclude, only=only)
     return [by_name[n] for n in drawn if n in by_name]
 
 

@@ -255,10 +255,24 @@ Un mot raté a besoin de plus d'exposition, ce qu'un niveau bas organise déjà.
 **Où :** code — `record_recall` ne fait qu'incrémenter
 **Changer :** `srs.py` → `record_recall`
 
-### 17. Trois rappels isolés closent chaque item
+### 17. Des rappels isolés closent chaque item — en nombre variable
 Tirés par niveau, en excluant l'item qu'on vient d'enseigner et ses pièces.
-**Où :** code
-**Changer :** `tutor.py` → `N_RAPIDFIRE`, `_recall_targets`
+Leur **nombre** varie de 1 à 5, autour de la moyenne 3 mesurée sur le cours de
+référence.
+**Où :** code — `rapidfire_count`
+**Pourquoi variable :** fixé à trois, chaque mot simple coûtait exactement cinq
+tours, et un apprenant attentif apprend la cadence — après le deuxième rappel il
+en reste un. Il répond au rythme et non à la question. `draw_recalls` refuse
+déjà d'être prévisible sur QUELS mots reviennent ; le même argument n'avait
+jamais été appliqué à COMBIEN.
+**Pourquoi motivé et non aléatoire :** une construction vient de faire redire
+chacune de ses pièces, donc la révision est faite — en empiler trois de plus est
+de la répétition sans objet (1 à 2). Un mot isolé n'a rien révisé (3). Une règle
+n'a rien fait dire du tout, c'est là que la pratique doit aller (4).
+**Ce que ça ne change PAS :** combien de fois un mot donné est révisé. Les
+rappels d'un item portent sur d'AUTRES mots — l'item en cours est exclu. Un mot
+revient par le plan des items suivants, tiré par niveau, indéfiniment (14).
+**Changer :** `tutor.py` → `rapidfire_count`, `N_RAPIDFIRE` (la moyenne)
 
 ---
 
