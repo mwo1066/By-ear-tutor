@@ -133,6 +133,41 @@ pourraient devenir des items à part entière. `bay` mériterait sa place après
 **Statut :** câblé dans `fill_item_metadata.py`, pas encore vérifié sur des
 propositions réelles.
 
+### Respirer — une anecdote courte entre les mots
+*Proposé par Meo.*
+
+Le vrai sujet n'est pas la variété des formulations, c'est le **rythme**.
+Aujourd'hui, chaque tour scripté se termine par une question :
+
+```
+mot → question → mot → question → mot → question
+```
+
+C'est un exercice. Chez Paul Noble la leçon est lente : il raconte, il digresse,
+il revient. L'apprenant respire, et le mot s'accroche à quelque chose au lieu de
+défiler.
+
+Ce que ça donnerait : *« le café au Vietnam, c'est… »*, trois phrases, rien à
+répondre, puis on ré-enchaîne.
+
+**Ce n'est pas le `hook`.** Le hook explique le mot qu'on est en train de
+révéler, et il arrive collé à lui. Ici c'est un tour entier qui ne demande rien.
+
+**Tiroir :** ni contenu ni prompt — c'est une **étape** de plus dans
+`build_plan`, insérée tous les N items. Le texte, lui, est de la donnée.
+
+**La mesure qui décide :** quelle proportion des tours du cours de référence
+**demandent** quelque chose, contre ceux qui **racontent** ? Chez nous c'est
+presque 100 % de questions. Si la référence est à 70/30, on sait quoi viser —
+et on saura aussi si trois phrases suffisent ou s'il en faut dix.
+
+**Ce qui joue contre :** chaque tour sans question coûte du temps de synthèse
+sans faire parler l'apprenant, et la règle 3 du prompt dit que l'apprenant doit
+parler au moins autant que le tuteur. Une digression trop longue la viole.
+
+**Statut :** à mesurer d'abord. C'est l'idée qui a le plus de chances de changer
+la sensation du cours, et celle qu'il ne faut surtout pas régler à l'aveugle.
+
 ### Ne pas féliciter à chaque fois
 *Observé pendant les séances du 11 août.*
 
