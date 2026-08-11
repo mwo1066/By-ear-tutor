@@ -59,6 +59,42 @@ répète le mot après une bonne réponse, ou est-ce qu'il enchaîne ?
 
 **Statut :** à essayer.
 
+### Décomposer un nom connu, pour en enseigner deux d'un coup
+*Proposé par Meo.*
+
+Quand un mot connu se découpe en mots qui existent, le dire. En chinois, Beijing
+= nord + capitale. En vietnamien on a exactement les mêmes, parce qu'une grande
+part du vocabulaire est composée :
+
+```
+sân bay     = sân (cour, terrain) + bay (voler)      un terrain où l'on vole
+Hà Nội      = hà (fleuve) + nội (dedans)             dedans le fleuve
+bánh mì     = bánh (galette) + mì (blé)
+máy bay     = máy (machine) + bay (voler)
+```
+
+L'apprenant croit apprendre un mot, il en range deux — et le second lui reste
+parce qu'il l'a rencontré dans quelque chose qu'il connaissait déjà.
+
+**Tiroir :** un champ sur l'item → c'est exactement le `hook`, mais sa meilleure
+forme. À écrire dans la consigne de la passe d'annotation, pas à laisser au
+hasard.
+
+**La condition qui compte :** les deux morceaux doivent être de vrais mots. Une
+étymologie inventée prononcée à voix haute est pire que pas de hook du tout, et
+un modèle en fabrique volontiers. La consigne dit déjà « ne devine jamais » ;
+pour une décomposition il faut en plus que chaque partie soit vérifiable.
+
+**Limite honnête :** ça marche sur les composés sino-vietnamiens, pas sur tout.
+`phở` ne se décompose pas. C'est un type de hook, applicable là où il s'applique
+— pas une règle à forcer partout.
+
+**Piste, pas encore creusée :** si les morceaux sont de vrais mots, ils
+pourraient devenir des items à part entière. `bay` mériterait sa place après
+`sân bay`.
+
+**Statut :** à câbler dans `fill_item_metadata.py`.
+
 ### Ne pas féliciter à chaque fois
 *Observé pendant les séances du 11 août.*
 
