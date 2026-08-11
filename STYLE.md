@@ -85,15 +85,53 @@ hasard.
 un modèle en fabrique volontiers. La consigne dit déjà « ne devine jamais » ;
 pour une décomposition il faut en plus que chaque partie soit vérifiable.
 
+**Combien de mots sont concernés — mesuré le 11 août** sur les 2000 mots
+importés par fréquence :
+
+```
+2000  mots
+ 874  composés de plusieurs syllabes                        43 %
+ 382  se découpent ENTIÈREMENT en mots eux-mêmes présents   1 mot sur 5
+```
+
+Ce n'est donc pas une curiosité à sortir trois fois dans le cours. Un mot sur
+cinq peut s'enseigner comme ça, avec du vocabulaire que le cours contient déjà.
+
+```
+làm việc  = làm (faire) + việc (travail)     travailler
+bắt đầu   = bắt (saisir) + đầu (tête)        commencer
+xây dựng  = xây (bâtir) + dựng (dresser)     construire
+Việt Nam  = Việt + Nam (sud)
+```
+
+**Et deux pièges que la même mesure a sortis.**
+
+*Les fausses décompositions.* `bao giờ` (quand) se découpe mécaniquement en
+`bao` (sac) + `giờ` (heure). Ça ne veut rien dire : c'est un autre morphème qui
+s'écrit pareil. Un découpage automatique en produit, et rien dans les données ne
+les distingue des vraies.
+
+*Le sens des morceaux ne se lit pas dans le Wiktionary.* `thông tin` =
+information ; Wiktionary donne `thông` = « river ». Le sens utile ici est 通,
+« faire passer » — donc « faire passer une nouvelle ». Même défaut que `là` →
+« fine silk » : le premier sens listé est l'archaïque.
+
+**Donc : la structure est fréquente et vaut le coup, mais elle ne s'automatise
+pas.** Le modèle doit juger chaque décomposition sous la contrainte « ne devine
+jamais », et la qualité dépend du même travail que les glosses. Un découpage
+mécanique produirait « sac-heure » à voix haute.
+
 **Limite honnête :** ça marche sur les composés sino-vietnamiens, pas sur tout.
 `phở` ne se décompose pas. C'est un type de hook, applicable là où il s'applique
 — pas une règle à forcer partout.
 
 **Piste, pas encore creusée :** si les morceaux sont de vrais mots, ils
 pourraient devenir des items à part entière. `bay` mériterait sa place après
-`sân bay`.
+`sân bay` — l'apprenant le rencontrerait deux fois, une fois caché dans
+« aéroport », une fois pour lui-même.
 
-**Statut :** à câbler dans `fill_item_metadata.py`.
+**Statut :** câblé dans `fill_item_metadata.py`, pas encore vérifié sur des
+propositions réelles.
 
 ### Ne pas féliciter à chaque fois
 *Observé pendant les séances du 11 août.*
@@ -133,6 +171,11 @@ remesurer :
 - questions de rappel : environ **3 par mot nouveau** → `N_RAPIDFIRE`
 - rien n'est jamais « acquis » puis retiré ; un mot revient de moins en moins
   → `srs.weight`, `DECAY`
+
+Et sur le vocabulaire lui-même, mesuré sur la liste de fréquence :
+
+- **43 %** des 2000 mots les plus fréquents sont polysyllabiques
+- **1 sur 5** se découpe entièrement en mots présents dans la même liste
 
 ---
 
