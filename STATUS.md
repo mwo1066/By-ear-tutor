@@ -115,7 +115,7 @@ these constructions sit 3rd, 4th and 5th in the roster.
 **The opening takes 55 seconds.** Worked around with --no-intro, not fixed. The
 three points should survive in about six sentences.
 
-**Style.** Meo's notes on how the tutor talks, still not started.
+**Style.** `STYLE.md` is the notebook: ideas land there and leave through one of three drawers -- a field on an item, a wording in code, or the prompt as a last resort -- with a test in front of each (how often does it occur in the reference course?). It is read by nobody at runtime, deliberately. Meo's notes still to come.
 
 **Speech synthesis dominates the clock.** A teaching turn is ~10-15s, of which
 ~0.5s is the model. Everything else is Azure — and on a scripted turn it is

@@ -1,0 +1,106 @@
+# Comment le tuteur parle — carnet d'idées
+
+**Ce fichier n'est lu par personne à l'exécution.** Ni le tuteur, ni le code, ni
+le modèle. C'est un carnet : les idées atterrissent ici, et chacune en sort par
+un des trois tiroirs ci-dessous, ou n'en sort pas.
+
+Une liste de style que l'IA consulterait pendant la leçon serait le prompt avec
+des étapes en plus — elle grossirait, se contredirait, et le modèle en
+ignorerait une partie. C'est exactement ce qu'on a passé une journée à défaire.
+
+---
+
+## Les trois tiroirs
+
+| l'idée porte sur… | elle va… | exemples déjà en place |
+| --- | --- | --- |
+| **un mot précis** | un champ sur l'item | `hook` (« Vietnam is the second biggest coffee grower… ») |
+| **un geste qui revient** | une formulation en code | `_REPEAT_ASK`, `_ACK_CORRECT`, `_INTRODUCE` |
+| **la manière d'être** | le prompt, en dernier recours et à la place d'autre chose | THE CORE MOVE, THREE RULES |
+
+## Le test avant d'ouvrir un tiroir
+
+**Combien de fois ça apparaît dans le cours de référence ?**
+
+C'est ce qui a rendu le mouvement central solide : *« repeat after me »* zéro
+fois en vingt-cinq minutes, *« how would you say »* vingt-deux fois. Pareil pour
+*« and again, what was ___ ? »*, vingt et une occurrences — devenu `_REPEAT_ASK`.
+
+Une idée qu'on ne peut pas compter dans la référence est une préférence. Une
+préférence ne va dans aucun tiroir tant qu'elle n'a pas été mesurée. On peut
+quand même l'essayer — mais alors on le sait, et on regarde ce que ça donne.
+
+---
+
+## Idées en attente
+
+### Redire le mot juste après la réponse de l'apprenant
+*Proposé par Meo.*
+
+Après un rappel, l'apprenant répond, le tuteur confirme — et Minh redit le mot.
+L'apprenant vient de le produire, il l'entend correct dans la seconde qui suit :
+c'est le seul moment où la comparaison est immédiate.
+
+**Tiroir :** geste qui revient → une formulation en code, dans
+`_acknowledgement`. « That's it — tôi. » au lieu de « That's it. »
+
+**Ce qui joue pour :** c'est la seule aide à la prononciation que ce cours peut
+donner honnêtement. Le tuteur n'entend jamais l'apprenant (SPEC 28), donc il ne
+peut pas corriger — mais il peut redonner le modèle. Et le mot vietnamien en fin
+de phrase du tuteur est exactement la place que SPEC 3 lui réserve, donc un seul
+changement de voix, pas deux.
+
+**Ce qui joue contre :** un changement de voix coûte un aller-retour de
+synthèse. Et il faut le garde-fou qui existe déjà pour `missed_twice` — si la
+question suivante porte sur le même mot, le redire, c'est donner la réponse.
+
+**Pas encore mesuré** dans le cours de référence. À compter : est-ce qu'il
+répète le mot après une bonne réponse, ou est-ce qu'il enchaîne ?
+
+**Statut :** à essayer.
+
+### Ne pas féliciter à chaque fois
+*Observé pendant les séances du 11 août.*
+
+`_ACK_CORRECT` place « That's it. / Exactly. / Good. » devant presque chaque
+question. Sur une série de rappels ça fait quatre félicitations en quatre tours,
+et ça finit par ne plus rien vouloir dire.
+
+**Tiroir :** formulation en code — une chaîne vide dans le tirage, pour que
+l'accusé de réception saute parfois.
+
+**Statut :** à mesurer d'abord. Le cours de référence confirme-t-il chaque
+bonne réponse, ou seulement les difficiles ?
+
+### Le silence après la question
+*Observé.*
+
+La règle 2 du prompt dit que le tour s'arrête à la question. Elle tient. Mais
+rien ne dit combien de temps on laisse. Aujourd'hui le micro s'ouvre dès que la
+synthèse a fini de jouer.
+
+**Tiroir :** ni prompt ni contenu — c'est `listen.py`.
+
+**Statut :** pas un problème de style, rangé ici par erreur. À déplacer si ça
+devient un vrai sujet.
+
+---
+
+## Déjà mesuré dans le cours de référence
+
+Les faits qui ont servi jusqu'ici, gardés ensemble pour qu'on n'ait pas à les
+remesurer :
+
+- « repeat after me » : **0** fois en vingt-cinq minutes
+- « how would you say ___ ? » : **22** fois → THE CORE MOVE
+- « and again, what was ___ ? » : **21** fois → `_REPEAT_ASK`
+- questions de rappel : environ **3 par mot nouveau** → `N_RAPIDFIRE`
+- rien n'est jamais « acquis » puis retiré ; un mot revient de moins en moins
+  → `srs.weight`, `DECAY`
+
+---
+
+## Les notes de Meo
+
+Attendues, pas encore intégrées. Quand elles arrivent : note par note, quel
+tiroir — et lesquelles ne survivent pas au test.
