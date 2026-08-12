@@ -724,6 +724,13 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item],
     plan: list[Step] = []
 
     if item.kind == "rule":
+        # Said once, at the first rule of the course. Every rule would make it a
+        # tic -- the same objection the notebook raises about praising each turn
+        # -- and the point lands better as a door opened than as a refrain.
+        first_rule = not any(i.kind == "rule" for i in (known or []))
+        invite = (" This is the first rule of the course, so add one short line telling them they "
+                  "can ask you to say any rule again, any time, and that forgetting one is normal. "
+                  "Say it once and never repeat it.") if first_rule else ""
         # Never a recall: the name is a description of the language, not
         # something the learner ever says. Asking "what was tính từ không cần
         # là?" is nonsense, and the old name-splitting made exactly that
@@ -738,7 +745,7 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item],
             f"this rule is about — never a new sentence, never longer, never two ideas joined. "
             f"ASK IT IN ENGLISH. Naming the Vietnamese sentence you want back is stating the "
             f"answer: say \"how would you say my name is Nam, to Minh?\", never \"how would you "
-            f"say em tên là Nam?\"."
+            f"say em tên là Nam?\".{invite}"
             f"{_known_words_note(known or [])} Nothing else. Do not skip the statement: a question "
             f"alone leaves them with a rule nobody told them.",
         ))
@@ -830,7 +837,7 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item],
             f"this rule is about — never a new sentence, never longer, never two ideas joined. "
             f"ASK IT IN ENGLISH. Naming the Vietnamese sentence you want back is stating the "
             f"answer: say \"how would you say my name is Nam, to Minh?\", never \"how would you "
-            f"say em tên là Nam?\"."
+            f"say em tên là Nam?\".{invite}"
             f"{_known_words_note(known or [])} Nothing else. Do not skip the statement: a question "
             f"alone leaves them with a rule nobody told them.",
         ))
