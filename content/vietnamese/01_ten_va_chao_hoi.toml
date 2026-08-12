@@ -10,6 +10,16 @@ language = "vi"
 description = "Đại từ ngôi thứ nhất, trung lập và luôn đúng ngữ pháp. Thanh ngang — giọng đều, không lên không xuống. Lưu ý: 'tôi' hơi trang trọng và xa cách; trong nói chuyện thân mật, người Việt thường xưng hô theo vai vế gia đình thay vì 'tôi'. Dùng 'tôi' khi mới học, khi trang trọng, hoặc khi chưa biết xưng hô thế nào cho đúng."
 
 [[items]]
+type = "procedure"
+name = "xưng hô thay đổi theo người đối diện"
+kind = "rule"
+gloss = "Vietnamese swaps the word for 'I' depending on who you are talking to — you will meet those soon, and tôi is always safe in the meantime"
+category = "rules"
+language = "vi"
+description = "Quy tắc à dire TÔT, ngay sau 'tôi'. Người học vừa nhận 'tôi' như thể nó tương đương với 'I' trong tiếng Anh — nó không phải. Tiếng Việt đổi từ xưng hô theo quan hệ giữa hai người nói: cùng một người vừa là 'anh', vừa là 'em', tuỳ đối diện là ai. KHÔNG dạy bảng chọn ở đây — các từ đó chưa được dạy. Chỉ nói ba điều: điều này tồn tại, các từ sẽ đến sớm, và 'tôi' không bao giờ sai trong lúc chờ. Mục đích là để người học không xây thói quen 'tôi = I' rồi phải défaire sau."
+pieces = ["tôi"]
+
+[[items]]
 type = "concept"
 name = "tên"
 kind = "atom"

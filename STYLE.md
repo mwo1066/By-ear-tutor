@@ -234,6 +234,22 @@ tu t'appelles ? ». Il pose la question pour de vrai et garde la réponse. L'âg
 a son item aussi (`Tôi ... tuổi`). Le cours contient donc déjà les questions qui
 remplissent son propre profil.
 
+**La preuve, tombée en séance le 11 août.** Meo demande : « est-ce que je peux
+dire *Anh tên là* si je m'adresse à un mec plus vieux ? » Le tuteur n'a pas su
+répondre ; la question est arrivée ici.
+
+La réponse est non — face à un homme plus âgé, lui c'est `anh` et vous c'est
+`em`. Et dans le log, Meo avait déjà tenté « An... An... An ten la... » : il
+substituait le pronom tout seul, dans le mauvais sens. **La question à laquelle
+le cours ne sait pas répondre est exactement celle que le profil rendrait
+triviale.**
+
+**Fait le 11 août, en attendant le profil :** une règle en position 2, juste
+après `tôi` — *« le vietnamien change le mot pour "je" selon à qui on parle ;
+vous les verrez bientôt, et tôi ne sera jamais faux en attendant »*. Elle ne
+donne aucun tableau (les mots n'existent pas encore), elle empêche seulement de
+construire l'habitude « tôi = I » qu'il faudra défaire à l'item 11.
+
 **Statut :** à faire. C'est probablement la personnalisation la plus rentable de
 toute la langue — le système d'adresse est ce qui distingue quelqu'un qui parle
 vietnamien de quelqu'un qui récite du vietnamien.
