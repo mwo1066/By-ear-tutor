@@ -44,6 +44,35 @@ SECONDS_PER_TURN = 15
 ACCURACY = 0.8
 
 
+def run_until(match, seed: int = 7):
+    """Advances until the NEXT item due satisfies `match`, then stops.
+
+    `match` takes an Item, so a caller can stop on a kind, on a name, or on
+    anything else the sequencing produces. The sequencing is the real one, so
+    what gets written is a place the tutor could actually be standing.
+    """
+    random.seed(seed)
+    roster = load_roster(CONTENT_DIR) + load_personal_items(CONTENT_DIR)
+    store = ProgressStore(None)
+    queue = [i for i in roster if is_teachable(i)]
+    seen: list = []
+    taught: list[str] = []
+    while queue:
+        nxt = queue[pick_next_index(queue, seen)]
+        if match(nxt) and taught:
+            return store, taught, nxt
+        item = queue.pop(pick_next_index(queue, seen))
+        seen.append(item)
+        store.mark_introduced(item.name)
+        taught.append(item.name)
+        pieces = pieces_of(item, seen)
+        for step in build_plan(item, pieces,
+                               _recall_targets(store, item, pieces, seen), seen):
+            if step.kind in ("recall_piece", "rapidfire", "settle") and step.target:
+                store.record_recall(step.target)
+    return store, taught, None
+
+
 def run_until_kind(kind: str, seed: int = 7):
     """Advances until the NEXT item due is of this kind, then stops.
 
@@ -107,6 +136,25 @@ def run(turns: int, seed: int = 7) -> ProgressStore:
 def main() -> int:
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     write = "--write" in sys.argv
+
+    def report(store, taught, nxt) -> int:
+        kind = nxt.kind if nxt else "?"
+        print(f"{len(taught)} item(s) taught, and the next one due is a {kind}:\n")
+        print(f"    {nxt.name}")
+        print(f"    « {nxt.gloss} »\n")
+        print("last five taught:", ", ".join(taught[-5:]))
+        if not write:
+            print(f"\nNothing written. Re-run with --write to save to {STATE_PATH.name}.")
+            return 0
+        store.path = STATE_PATH
+        store.save()
+        print(f"\nWrote {STATE_PATH}")
+        print("Now run:  python tutor.py --no-intro     (WITHOUT --fresh)")
+        return 0
+
+    wanted = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--until=")), None)
+    if wanted:
+        return report(*run_until(lambda i: wanted.lower() in i.name.lower()))
 
     for kind in ("rule", "construction"):
         if f"--next-{kind}" in sys.argv:

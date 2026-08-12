@@ -121,6 +121,26 @@ pas.** Le modèle doit juger chaque décomposition sous la contrainte « ne devi
 jamais », et la qualité dépend du même travail que les glosses. Un découpage
 mécanique produirait « sac-heure » à voix haute.
 
+**Vérifié en ligne le 11 août — et ça découvre une faille.** `Hà Nội` = 河內,
+`hà` fleuve + `nội` dedans, la ville étant enserrée par le fleuve Rouge et la
+Tô Lịch. Le fait est juste.
+
+Mais `hà` et `nội` sont des morphèmes **liés** : le mot courant pour fleuve est
+`sông`, pour dedans c'est `trong`. Donc Hà Nội est une belle anecdote et
+**n'enseigne aucun mot utilisable**. Alors que `sân bay` = `sân` (cour) + `bay`
+(voler), deux mots **libres**, employables seuls.
+
+**La mesure de « 1 sur 5 » compte les deux cas ensemble, donc elle est
+optimiste.** Figurer dans une liste de fréquence ne veut pas dire être un mot
+libre *dans ce composé-là* : c'est exactement le cas `thông tin`, où `thông`
+sort du dictionnaire en « river » alors qu'il porte ici 通, « faire passer ».
+
+Deux usages distincts, à ne pas confondre :
+- **morphèmes libres** (`sân bay`, `làm việc`, `bắt đầu`) → enseignent un
+  deuxième mot, c'est l'idée d'origine
+- **morphèmes liés** (`Hà Nội`, `thế giới`, `tổ chức`) → une anecdote qui aide
+  la mémoire, mais pas de vocabulaire en plus
+
 **Limite honnête :** ça marche sur les composés sino-vietnamiens, pas sur tout.
 `phở` ne se décompose pas. C'est un type de hook, applicable là où il s'applique
 — pas une règle à forcer partout.

@@ -50,6 +50,43 @@ description = "Khung câu giới thiệu tên: 'tôi tên là' cộng tên riên
 
 [[items]]
 type = "concept"
+name = "anh"
+kind = "atom"
+gloss = "address for an older male"
+category = "function_word"
+language = "vi"
+description = "Từ xưng hô với đàn ông bằng tuổi hoặc hơn tuổi mình một chút — nghĩa gốc là 'anh trai'. Thanh ngang. Dùng cho cả người nói lẫn người nghe tùy vai: người lớn tuổi hơn tự xưng 'anh'; người nghe lớn tuổi hơn được gọi là 'anh'. 'Chào anh! Anh tên là gì?'"
+
+[[items]]
+type = "concept"
+name = "chị"
+kind = "atom"
+gloss = "address for an older female"
+category = "function_word"
+language = "vi"
+description = "Từ xưng hô với phụ nữ bằng tuổi hoặc hơn tuổi mình một chút — nghĩa gốc là 'chị gái'. Thanh nặng — thấp, ngắt gọn. 'Chào chị! Chị tên là gì?'"
+
+[[items]]
+type = "concept"
+name = "em"
+kind = "atom"
+gloss = "address for a younger person"
+category = "function_word"
+language = "vi"
+description = "Từ xưng hô với người ít tuổi hơn mình, nam hay nữ đều được — nghĩa gốc là 'em'. Thanh ngang. Người ít tuổi tự xưng 'em' khi nói với anh, chị. 'Chào em! Em tên là gì?'"
+
+[[items]]
+type = "procedure"
+name = "cách chọn từ xưng hô"
+kind = "rule"
+gloss = "you have been saying tôi for I, and Vietnamese people hardly ever say it in real life; which word you use depends on who is in front of you, so with Minh — the Vietnamese voice, a man older than you — you are em and he is anh, while your tutor is a woman and would never be anh; keep tôi for strangers, for formal moments, and whenever you are not sure"
+category = "rules"
+language = "vi"
+description = "Quy tắc chọn từ xưng hô theo tuổi và giới tính của người đối diện so với mình. Cùng một người có thể là 'anh' với người này và 'em' với người kia — xưng hô đổi theo từng cặp người nói chuyện. Người mới học chọn sai không ai giận, nhưng chọn đúng nghe ấm và tự nhiên hơn nhiều so với 'tôi' — 'tôi' đúng ngữ pháp nhưng lạnh."
+steps = ["đàn ông hơn tuổi mình → anh", "phụ nữ hơn tuổi mình → chị", "người ít tuổi hơn mình → em", "chưa chắc, hoặc trang trọng → bạn / tôi"]
+
+[[items]]
+type = "concept"
 name = "bạn"
 kind = "atom"
 gloss = "you"

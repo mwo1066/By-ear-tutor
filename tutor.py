@@ -656,6 +656,7 @@ class Step:
     answer_is_target: bool = False
     ask: str = ""
     hook: str = ""
+    literal: str = ""
 
 
 def _ask_for(item: Item) -> str:
@@ -729,8 +730,15 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item],
         # possible by finding real vocabulary inside the description.
         plan.append(Step(
             "rule", item.name,
-            f"State this in one plain English sentence, as something they have already been half "
-            f"noticing: {item.gloss or item.description}. Then one question that puts it to work."
+            f"Say this, in your own words and in order, as something they have already been half "
+            f"noticing: {item.gloss or item.description}. This is the turn where you TELL rather "
+            f"than ask, so two or three sentences are right here — start from what they have "
+            f"already been doing, then the surprise, then what to do about it. Then ONE question "
+            f"that puts it to work on a sentence they have ALREADY built, changed in the one way "
+            f"this rule is about — never a new sentence, never longer, never two ideas joined. "
+            f"ASK IT IN ENGLISH. Naming the Vietnamese sentence you want back is stating the "
+            f"answer: say \"how would you say my name is Nam, to Minh?\", never \"how would you "
+            f"say em tên là Nam?\"."
             f"{_known_words_note(known or [])} Nothing else. Do not skip the statement: a question "
             f"alone leaves them with a rule nobody told them.",
         ))
@@ -751,12 +759,108 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item],
             f"English, word by word, then ask them for the whole sentence. Do not say any Vietnamese "
             f"and do not assemble it for them.",
             answer_is_target=True,
+            ask=speakable(item.gloss),
+            literal=item.literal,
         ))
         plan.append(Step(
             "answer", item.name,
             f'Have Minh say the full sentence twice — a real one with the blank filled in, never the '
-            f'pattern with its placeholder. Then ask for "{item.gloss}" again with one element '
-            f"swapped. One question.",
+            f'pattern with its placeholder. Then ask for "{item.gloss}" again'
+            + (' for a DIFFERENT PERSON, not a different name — a name in the blank is not a '
+               'variation.' if has_person_slot(item) else ' with one element swapped.')
+            + " One question.",
+        ))
+        # The thinnest instruction in the plan, and the only step that ever
+        # produced a turn with nothing in it: "Minh: tôi là." then a question
+        # about "I am ___", while the item being taught was "my name is ___".
+        #
+        # Read closely, that failure was not noise. Dropping "tên" from "tôi tên
+        # là" to get "tôi là" IS a structural variation -- the model was doing
+        # the right KIND of thing and simply left the sentence it was teaching.
+        # It was never told what may move and what may not, because the old
+        # instruction named neither the sentence, nor the element, nor Minh.
+        #
+        # Which element is swappable is the one thing the code cannot work out:
+        # to know tôi/bạn/anh occupy the same slot it would need a category far
+        # finer than the roster's -- `function_word` also holds "gì" and "chào",
+        # so permuting inside it yields "chào tên là". That knowledge is
+        # Vietnamese, which is exactly what the model has and a table does not.
+        # So this stays a model turn, and the instruction supplies the boundary
+        # rather than the words: what varies, what is frozen, who stays silent.
+        # The shape comes from the item, so the "do not drop a word" rule is
+        # stated against THIS sentence rather than as a general plea. A fixed
+        # example of a wrong variation would be about some other sentence half
+        # the time, which is worse than no example.
+        # TWO instructions, chosen by the sentence -- not one with conditionals
+        # bolted on. The single version grew to 192 words with its most
+        # important clause at word 59, and offered "otherwise a different word
+        # in the blank" as an escape. Live, the model took the escape twice:
+        # "My name is Lan", then "My name is Mai". It permuted given names,
+        # which are not vocabulary and teach nothing, while the pronoun -- the
+        # only interesting thing in that sentence -- never moved.
+        rows = "; ".join(address_situations(known or []))
+        if has_person_slot(item) and rows:
+            vary_instruction = (
+                f'Vary WHO they are speaking to. Name the situation out loud — "now you are '
+                f'talking to someone younger" — and ask for "{item.gloss}" again for that person. '
+                f'The person word is the ONLY thing that changes: everything else in the sentence '
+                f'stays, and a name in the blank is NOT a variation. The course teaches these and '
+                f'only these: {rows}. One question, in English, then stop. Say no Vietnamese and do '
+                f'not have Minh speak — the sentence is what you are asking them for.'
+            )
+        else:
+            shape = (f' It keeps the shape "{item.literal}" exactly — the same parts, in that '
+                     f'order, none removed.') if item.literal else " Keep every part of it."
+            vary_instruction = (
+                f'They have just built "{item.gloss}". Ask for it once more with exactly ONE '
+                f'element changed.{shape}{_known_words_note(known or [])} Drop a part and it '
+                f'silently becomes a different sentence, which is the one thing this turn must not '
+                f'do. One question, in English, then stop. Say no Vietnamese and do not have Minh '
+                f'speak — the Vietnamese sentence is the answer you are asking them for.'
+            )
+        for _ in range(N_VARIATIONS - 1):
+            plan.append(Step("vary", item.name, vary_instruction, answer_is_target=True))
+        plan.append(Step(
+            "rule", item.name,
+            f"Say this, in your own words and in order, as something they have already been half "
+            f"noticing: {item.gloss or item.description}. This is the turn where you TELL rather "
+            f"than ask, so two or three sentences are right here — start from what they have "
+            f"already been doing, then the surprise, then what to do about it. Then ONE question "
+            f"that puts it to work on a sentence they have ALREADY built, changed in the one way "
+            f"this rule is about — never a new sentence, never longer, never two ideas joined. "
+            f"ASK IT IN ENGLISH. Naming the Vietnamese sentence you want back is stating the "
+            f"answer: say \"how would you say my name is Nam, to Minh?\", never \"how would you "
+            f"say em tên là Nam?\"."
+            f"{_known_words_note(known or [])} Nothing else. Do not skip the statement: a question "
+            f"alone leaves them with a rule nobody told them.",
+        ))
+    elif item.kind == "construction":
+        for piece in pieces:
+            plan.append(Step(
+                "recall_piece", piece.name,
+                f"Ask them, in English, for the Vietnamese for {_ask_for(piece)}. One question, then "
+                f"stop. Do not say the Vietnamese word yourself and do not have Minh say it — it is "
+                f"the answer. Do not mention the other pieces.",
+                answer_is_target=True,
+                ask=speakable(piece.gloss),
+            ))
+        literal = f' Its literal word order is: "{item.literal}".' if item.literal else ""
+        plan.append(Step(
+            "scaffold", item.name,
+            f'They are about to build "{item.gloss}".{literal} Give that literal order out loud in '
+            f"English, word by word, then ask them for the whole sentence. Do not say any Vietnamese "
+            f"and do not assemble it for them.",
+            answer_is_target=True,
+            ask=speakable(item.gloss),
+            literal=item.literal,
+        ))
+        plan.append(Step(
+            "answer", item.name,
+            f'Have Minh say the full sentence twice — a real one with the blank filled in, never the '
+            f'pattern with its placeholder. Then ask for "{item.gloss}" again'
+            + (' for a DIFFERENT PERSON, not a different name — a name in the blank is not a '
+               'variation.' if has_person_slot(item) else ' with one element swapped.')
+            + " One question.",
         ))
         # The thinnest instruction in the plan, and the only step that ever
         # produced a turn with nothing in it: "Minh: tôi là." then a question
@@ -885,7 +989,12 @@ RECALL_KINDS = ("recall_piece", "rapidfire", "settle")
 # NOT the same list as RECALL_KINDS on purpose: an introduction asks the
 # learner to echo a brand-new word, which is not a recall -- nothing is scored,
 # no level moves, and the recogniser is not told to expect it.
-SCRIPTED_KINDS = RECALL_KINDS + ("introduce",)
+# `scaffold` joins them for the same reason `introduce` did: it broke, and the
+# code holds both halves. Its whole job is to say the literal English order and
+# ask for the Vietnamese -- and live it said the Vietnamese: "can you say the
+# full sentence tôi tên là ...", which is the answer, on the one step that
+# forbids it. Its instruction had said "do not say any Vietnamese" all along.
+SCRIPTED_KINDS = RECALL_KINDS + ("introduce", "scaffold")
 
 
 # A repeat has to SOUND like a repeat: three goes at "What's the Vietnamese word
@@ -922,6 +1031,13 @@ _RETRY_ASK = ("And again?", "So once more?", "Again?")
 # The word then repeats immediately: written as two sentences, but both are
 # Vietnamese, so they merge into a single run and Minh says it twice in one
 # clip. The learner hears it twice before being asked for anything.
+# The literal order, then the ask. Nothing Vietnamese can appear: both halves
+# are English, so this turn cannot state its own answer by construction.
+_SCAFFOLD = (
+    "Word for word, that is: {literal}. So how would you say {ask}?",
+    "In Vietnamese the order is: {literal}. Now — {ask}?",
+    "Literally, it goes: {literal}. Give me the whole thing — {ask}?",
+)
 _INTRODUCE = (
     "In Vietnamese, the word for {ask} is {name}. {name}. Now you say it.",
     "The Vietnamese for {ask} is {name}. {name}. Your turn — say it.",
@@ -991,7 +1107,12 @@ def scripted_turn(lesson: dict) -> str | None:
         # bracket tên riêng". The same fragments the leak guard compares.
         spoken = " ".join(_target_fragments(step.target)) or step.target
         return f"Listen again — {spoken}. " + _pick(lesson, "retry", _RETRY_ASK)
-    if step.kind == "introduce":
+    if step.kind == "scaffold":
+        if not step.literal:
+            return None          # nothing to scaffold with; the model still has a go
+        body = _pick(lesson, "scaffold", _SCAFFOLD).format(
+            literal=speakable(step.literal), ask=step.ask)
+    elif step.kind == "introduce":
         # The one scripted turn that SAYS the target rather than asking for it.
         body = _pick(lesson, "intro", _INTRODUCE).format(ask=step.ask, name=step.target)
         # A hook goes in FRONT: the fact earns the word, then the word lands.
@@ -1052,6 +1173,20 @@ def _lesson_note(lesson: dict) -> str:
         "aloud and do not repeat its wording. Say it your own way, in English."
     ]
     step = current_step(lesson)
+
+    if lesson.pop("react_only", False):
+        # The turn before was written by the model, so only the model knows what
+        # it asked. Without this the learner attempted a sentence and the lesson
+        # answered with an unrelated recall -- measured: they said "An ten la
+        # nam" after being asked to apply the address rule, and heard nothing
+        # back. The code cannot judge these steps; it can at least hand them
+        # back to whoever set them.
+        lines.append(
+            "THEY JUST ANSWERED THE QUESTION YOU ASKED. React to what they actually produced — say "
+            "whether it landed, give the correct form once if it did not, and STOP. Ask nothing, "
+            "teach nothing new, move nothing on. The lesson continues by itself next turn."
+        )
+        return "\n".join(lines)
 
     if lesson.pop("gave_up", False):
         step = current_step(lesson)
@@ -1551,6 +1686,7 @@ def _conversation_loop(api_key, messages, store, roster, queue_items, themes_gen
             lesson["verdict"] = None
             lesson["verdict_target"] = None
             lesson["answer_only"] = False
+            lesson["react_only"] = False
             if learner_gave_up(user_input):
                 # Not a question, so the step is still consumed -- but this turn
                 # belongs to them: they asked, in as many words, to be told.
@@ -1583,6 +1719,10 @@ def _conversation_loop(api_key, messages, store, roster, queue_items, themes_gen
                     store.record_recall(done.target)
                     print(f"  [level] {done.target} -> {store.level(done.target)}")
                 lesson["retried"] = False
+                # A step the MODEL wrote asked something only it can mark. Give
+                # it the next turn to react, before the plan moves on.
+                if done is not None and done.kind not in SCRIPTED_KINDS:
+                    lesson["react_only"] = True
                 lesson["i"] += 1
             if current_step(lesson) is None:
                 item = _take_next(queue_items, seen_items)
@@ -1605,7 +1745,8 @@ def _conversation_loop(api_key, messages, store, roster, queue_items, themes_gen
         # free-speech test, handing the first teaching turn back to the model
         # and undoing the fix above.
         line = None
-        if lesson["plan"] and not (turns_done > 0 and learner_spoke_freely(user_input)):
+        if lesson["plan"] and not lesson.get("react_only") and not (
+                turns_done > 0 and learner_spoke_freely(user_input)):
             line = scripted_turn(lesson)
         if line is not None:
             _speak_scripted_turn(messages, line)
