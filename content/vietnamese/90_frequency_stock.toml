@@ -338,17 +338,6 @@ description = ""
 
 [[items]]
 type = "concept"
-name = "sao"
-kind = "atom"
-gloss = ""
-category = "adjective, adverb, noun, verb"
-language = "vi"
-frequency_rank = 58
-senses = ["why", "how", "what; what is it; what now", "whatever"]
-description = ""
-
-[[items]]
-type = "concept"
 name = "nào"
 kind = "atom"
 gloss = ""
@@ -1467,17 +1456,6 @@ category = "adverb, verb"
 language = "vi"
 frequency_rank = 177
 senses = ["not to have to do something", "to recover from, or be cured of", "to avoid; to shun; to escape; to evade; to keep away from; to refrain from; to save", "to leave ; to separate ; to cut off"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "xin"
-kind = "atom"
-gloss = ""
-category = "verb"
-language = "vi"
-frequency_rank = 178
-senses = ["to ask for; to beg for; to request", "to humbly ask to do something"]
 description = ""
 
 [[items]]
@@ -2622,17 +2600,6 @@ category = "noun"
 language = "vi"
 frequency_rank = 286
 senses = ["product"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "thế nào"
-kind = "atom"
-gloss = ""
-category = "adverb"
-language = "vi"
-frequency_rank = 287
-senses = ["how; what; in what manner; in what way"]
 description = ""
 
 [[items]]

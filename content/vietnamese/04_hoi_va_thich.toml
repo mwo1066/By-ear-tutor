@@ -314,3 +314,85 @@ gloss = "yesterday"
 category = "noun"
 language = "vi"
 description = "Từ chỉ thời gian quá khứ. 'Hôm qua tôi ăn' đủ rõ, không cần 'đã'."
+
+[[items]]
+type = "concept"
+name = "sáu"
+kind = "atom"
+gloss = "six"
+category = "numeral"
+language = "vi"
+description = "Số 6."
+
+[[items]]
+type = "concept"
+name = "bảy"
+kind = "atom"
+gloss = "seven"
+category = "numeral"
+language = "vi"
+description = "Số 7."
+
+[[items]]
+type = "concept"
+name = "tám"
+kind = "atom"
+gloss = "eight"
+category = "numeral"
+language = "vi"
+description = "Số 8."
+
+[[items]]
+type = "concept"
+name = "chín"
+kind = "atom"
+gloss = "nine"
+category = "numeral"
+language = "vi"
+description = "Số 9. Cũng nghĩa là 'chín' (đồ ăn đã nấu xong) — hai nghĩa, một chữ."
+
+[[items]]
+type = "concept"
+name = "dạ"
+kind = "atom"
+gloss = "yes, respectfully"
+category = "function_word"
+language = "vi"
+description = "Đặt ở ĐẦU câu. Không hẳn là 'vâng': nó là tiếng đáp lễ phép, dùng với người lớn tuổi, người lạ, người phục vụ, thầy cô — và dùng rộng hơn 'yes' trong tiếng Anh rất nhiều. Người nước ngoài nói được 'dạ' đúng lúc là nghe khác hẳn ngay lập tức."
+
+[[items]]
+type = "concept"
+name = "xin"
+kind = "atom"
+gloss = "please, may I"
+category = "verb"
+language = "vi"
+description = "Nghĩa gốc là 'xin phép', dùng như 'please'. Ghép với 'cho' thành lời xin đồ lịch sự: 'xin cho tôi...'. Cũng nằm trong 'xin chào' và 'xin lỗi' mà người học đã biết."
+
+[[items]]
+type = "concept"
+name = "sao"
+kind = "atom"
+gloss = "for what reason"
+category = "function_word"
+language = "vi"
+description = "Từ để hỏi lý do. Như mọi từ để hỏi, nó đứng đúng chỗ của câu trả lời, không nhảy lên đầu câu: 'Sao bạn không ăn?'"
+
+[[items]]
+type = "concept"
+name = "thế nào"
+kind = "atom"
+gloss = "in what way"
+category = "function_word"
+language = "vi"
+description = "Từ để hỏi cách thức, đứng ở CUỐI câu: 'Cái này thế nào?'. Hoàn thiện bộ từ để hỏi mà người học đã có: gì, đâu, ai, bao nhiêu, sao."
+
+[[items]]
+type = "procedure"
+name = "lịch sự nằm trong từ xưng hô, không phải trong giọng"
+kind = "rule"
+gloss = "politeness here is not a tone of voice — it is the person-word you pick, plus two small words"
+category = "rules"
+language = "vi"
+description = "Quy tắc buộc lại ba thứ đã học rời rạc. Trong tiếng Anh, lịch sự nằm ở giọng và ở 'please'. Trong tiếng Việt nó nằm ở CHỖ KHÁC: chọn đúng từ xưng hô đã là lịch sự rồi — đó là phần lớn công việc. Còn lại chỉ hai chữ nhỏ: 'dạ' ở đầu, 'ạ' ở cuối. Người học đã có cả ba mảnh; đây là lúc nói rằng chúng là một hệ thống."
+pieces = ["anh", "chị", "em", "dạ", "ạ"]
