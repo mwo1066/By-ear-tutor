@@ -28,8 +28,8 @@ sys.stdin.reconfigure(encoding="utf-8")
 
 from content import (
     Item, load_persona_system_prompt, load_roster, load_personal_items,
-    add_personal_items, askable, check_roster, derive_pieces, is_teachable,
-    pieces_of, pick_next_index,
+    add_personal_items, address_situations, askable, check_roster, derive_pieces,
+    has_person_slot, is_teachable, pieces_of, pick_next_index,
 )
 from srs import ProgressStore
 import voice as voice_module
@@ -781,12 +781,26 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item],
         # the time, which is worse than no example.
         shape = (f' It keeps the shape "{item.literal}" exactly — the same parts, in that order, '
                  f'none removed.') if item.literal else " Keep every part of it."
+        # When the sentence carries a person, the variation is not "swap a word"
+        # -- it is "say it to someone else", and the course already holds the
+        # four situations that answer it. Named rather than left open: without
+        # an anchor the model reached for "your name is", i.e. bạn, one item
+        # before the course teaches it.
+        person = ""
+        if has_person_slot(item):
+            rows = "; ".join(address_situations(known or []))
+            if rows:
+                person = (f' This sentence has a PERSON in it, so vary WHO they are speaking to and '
+                          f'name the situation out loud — "now you are talking to someone younger". '
+                          f'The course teaches these and only these: {rows}. Use a word from that '
+                          f'list, never another one.')
         for _ in range(N_VARIATIONS - 1):
             plan.append(Step(
                 "vary", item.name,
                 f'They have just built "{item.gloss}". Ask for it once more with exactly ONE element '
                 f'changed — a different PERSON (I / you / he or she) if the sentence has one, '
-                f'otherwise a different word in the blank.{shape}{_known_words_note(known or [])} '
+                f'otherwise a different word in the blank.{shape}{person}'
+                f'{_known_words_note(known or [])} '
                 f'Drop a part and it silently becomes a different sentence, which is the one thing '
                 f'this turn must not do. One question, in English, then stop. Say no Vietnamese and do '
                 f'not have Minh speak — the Vietnamese sentence is the answer you are asking them for.',

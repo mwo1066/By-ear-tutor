@@ -55,6 +55,12 @@ class Item:
     # one exactly zero times. Written offline it can be checked before anyone
     # hears it, which matters: an invented etymology is worse than none.
     hook: str = ""
+    # A rule may carry the situations it covers, one per line, as data rather
+    # than buried in its Vietnamese notes. The address rule has had four of
+    # them since it was written -- man older than you, woman older than you,
+    # someone younger, unsure -- and nothing read them: the field was not loaded
+    # at all. A table nobody can reach is a table that gets re-invented.
+    steps: list[str] = field(default_factory=list)
     source: str = "roster"  # "roster" (curated TOML) or "personnel" (LLM-generated live)
     topic: str | None = None  # theme this item was generated for, if any -- lets a whole theme be deprioritized at once
 
@@ -78,6 +84,7 @@ def load_roster(content_dir: Path) -> list[Item]:
                 pieces=list(raw.get("pieces", [])),
                 literal=raw.get("literal", ""),
                 hook=raw.get("hook", ""),
+                steps=list(raw.get("steps", [])),
             ))
     return items
 
@@ -184,6 +191,31 @@ def derive_pieces(name: str, known: list[Item]) -> list[str]:
         taken.append((at, at + len(needle) - 1))
         found.append((at, item.name))
     return [n for _, n in sorted(found)]
+
+
+# The words that fill a person slot. A list, and a closed one: a beginner course
+# needs these five, and the rest of the system (cô, chú, bác, ông, bà) belongs to
+# a level this course does not reach. If it starts growing, it has become a
+# category and should be declared on the items instead.
+ADDRESS_TERMS = {"tôi", "bạn", "anh", "chị", "em"}
+
+
+def address_situations(items: list[Item]) -> list[str]:
+    """The rows of the address table, read off whichever rule declares them.
+
+    Found by content rather than by name: a rule that carries `steps` mentioning
+    an address term IS the address rule. Hard-coding the item name would break
+    the moment the content is reorganised, which it was twice today.
+    """
+    for i in items:
+        if i.kind == "rule" and i.steps and any(t in " ".join(i.steps) for t in ADDRESS_TERMS):
+            return i.steps
+    return []
+
+
+def has_person_slot(item: Item) -> bool:
+    """Whether this sentence contains a word that changes with who you address."""
+    return bool(set(item.pieces) & ADDRESS_TERMS)
 
 
 def is_teachable(item: Item) -> bool:

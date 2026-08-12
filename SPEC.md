@@ -244,6 +244,21 @@ n'était pas du bruit — c'était la bonne *sorte* de variation, sur une autre
 phrase que celle enseignée. Rien ne lui avait dit ce qui devait rester.
 **Changer :** `tutor.py` → `build_plan`, branche `vary`
 
+### 12d. Une phrase qui contient une personne se fait varier PAR interlocuteur
+`tôi tên là` et `bạn tên là gì?` portent un terme d'adresse. Leur variation
+n'est pas « échange un mot » mais « dis-le à quelqu'un d'autre », et l'étape
+nomme la situation à voix haute.
+**Où :** code — `has_person_slot` détecte, `address_situations` fournit les
+quatre lignes, l'instruction de `vary` les transmet
+**La table était déjà dans le contenu** : la règle `cách chọn từ xưng hô` porte
+ses quatre situations dans un champ `steps` que `Item` **ne chargeait pas**. La
+donnée existait, personne ne pouvait la lire — donc le modèle réinventait, et il
+a proposé « your name is » (donc `bạn`) un item avant que le cours l'enseigne.
+**Trouvée par le contenu, pas par le nom :** est la règle d'adresse celle qui
+porte des `steps` mentionnant un terme d'adresse. Coder le nom de l'item aurait
+cassé au premier remaniement du contenu — il y en a eu deux aujourd'hui.
+**Changer :** `content.py` → `ADDRESS_TERMS`, le champ `steps` des items
+
 ### 13. La règle est nommée après que le motif a été produit, jamais avant
 **Où :** le code place l'étape en dernier ; le prompt dit comment la formuler
 **Changer :** `tutor.py` → `build_plan`
