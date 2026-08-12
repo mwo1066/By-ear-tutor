@@ -938,14 +938,19 @@ def _acknowledgement(lesson: dict, step: Step) -> str:
     if verdict == "correct":
         return _pick(lesson, "ack", _ACK_CORRECT)
     missed = lesson.get("verdict_target")
-    # Never name the word this very turn is about to ask for: the recall pool
-    # can draw the word the previous step just missed, and "It was tôi. And
-    # again, what was I or me?" is the answer handed over before the question.
-    if verdict == "missed_twice" and missed and missed != step.target:
+    if verdict == "missed_twice" and missed:
         # The SPOKEN form, same as the retry line. Fixed there first and missed
         # here, so "It was muốn + [động từ]." went out and Minh -- who takes any
         # accented word -- recited "muốn động từ", which is not a phrase.
-        return f"It was {' '.join(_target_fragments(missed)) or missed}."
+        said = f"It was {' '.join(_target_fragments(missed)) or missed}."
+        # And never when the answer to THIS turn is hiding inside it. Comparing
+        # the two names for equality was not enough: the missed item was
+        # "bạn tên là gì?" and the question coming was for "bạn", so the
+        # acknowledgement handed the answer over a sentence before it was asked.
+        # The leak guard already knows how to see that, so it is asked rather
+        # than a second rule written beside it.
+        if not _leaked_target(said, step):
+            return said
     return ""
 
 
@@ -1030,6 +1035,15 @@ def _lesson_note(lesson: dict) -> str:
         "aloud and do not repeat its wording. Say it your own way, in English."
     ]
     step = current_step(lesson)
+
+    if lesson.pop("gave_up", False):
+        step = current_step(lesson)
+        lines.append(
+            "THEY SAID THEY DO NOT KNOW. Give them the answer to what you just asked, plainly and "
+            "without making it a lesson — say it, have Minh say the Vietnamese once, and tell them "
+            "it comes back later. Do not ask them to produce it again this turn, and do not act "
+            "disappointed. Then do the instruction below."
+        )
 
     announce = lesson.pop("announce_topic", None)
     if announce:
@@ -1211,6 +1225,25 @@ def learner_asked_something(user_text: str) -> bool:
 # question over someone who just said "I don't know".
 FREE_SPEECH_WORDS = 3
 
+# Saying so is not an attempt, and it is short. "I forgot" is two words, so it
+# fell under the threshold above and the lesson carried on as if nothing had
+# been said -- on a step the MODEL wrote, where the code cannot know what was
+# asked and so cannot give the word back itself.
+#
+# This is a list, and lists are the shape this project distrusts. It is kept
+# because it is closed by something outside the code: there are only so many
+# ways a person says they do not know, and it does not grow when a model
+# invents a new phrasing. If it starts growing, that is the signal to find the
+# property instead.
+_GAVE_UP = re.compile(
+    r"\b(i (forgot|don'?t know|can'?t remember|have no idea)|no idea|dunno|"
+    r"forgot|pass|skip( it)?|help)\b", re.IGNORECASE)
+
+
+def learner_gave_up(user_text: str) -> bool:
+    """They said they do not know. That always deserves an answer."""
+    return "[lang:vi]" not in user_text and bool(_GAVE_UP.search(user_text))
+
 
 def learner_spoke_freely(user_text: str) -> bool:
     """They said something that wants an answer, not the word that was asked.
@@ -1222,7 +1255,7 @@ def learner_spoke_freely(user_text: str) -> bool:
     """
     if "[lang:vi]" in user_text:
         return False
-    if learner_asked_something(user_text):
+    if learner_asked_something(user_text) or learner_gave_up(user_text):
         return True
     return len(_LANG_TAG.sub("", user_text).split()) >= FREE_SPEECH_WORDS
 
@@ -1479,6 +1512,11 @@ def _conversation_loop(api_key, messages, store, roster, queue_items, themes_gen
             lesson["verdict"] = None
             lesson["verdict_target"] = None
             lesson["answer_only"] = False
+            if learner_gave_up(user_input):
+                # Not a question, so the step is still consumed -- but this turn
+                # belongs to them: they asked, in as many words, to be told.
+                lesson["gave_up"] = True
+                print("  (learner said they don't know -- the answer is given before moving on)")
             if learner_asked_something(user_input):
                 lesson["answer_only"] = True
                 print("  (learner asked a question -- this turn answers it, the step waits)")

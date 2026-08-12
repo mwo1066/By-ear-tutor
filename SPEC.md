@@ -90,6 +90,22 @@ vietnamien — un rappel scripté ne peut donc pas contenir sa propre réponse.
 qu'il en reste est le verdict du code (18c), placé en tête de la phrase.
 **Changer :** `tutor.py` → `SCRIPTED_KINDS`, `_REPEAT_ASK`, `_ACK_CORRECT`
 
+### 4b-bis. Dire « j'ai oublié » donne toujours droit à la réponse
+« I forgot », « no idea », « dunno » — le tour repart au modèle, qui donne le
+mot, le fait redire par Minh une fois, et dit qu'il reviendra plus tard.
+**Où :** code — `learner_gave_up`
+**Pourquoi :** sur une étape de rappel, la reprise donnait déjà le mot. Mais sur
+une étape écrite par le MODÈLE (règle, échafaudage, variation), le code ne sait
+pas ce qui a été demandé, donc il ne peut ni juger ni redonner. Séance réelle :
+« I forgot » fait deux mots, sous le seuil de 4c, donc la leçon a enchaîné comme
+si rien n'avait été dit.
+**Assumé :** c'est une liste, et ce projet se méfie des listes. Elle est gardée
+parce qu'elle est fermée par autre chose que le code — il n'y a qu'un nombre
+fini de façons de dire qu'on ne sait pas, et elle ne grandit pas quand un modèle
+invente une tournure. Si elle se met à grandir, c'est le signal qu'il faut
+trouver la propriété à la place.
+**Changer :** `tutor.py` → `_GAVE_UP`
+
 ### 4c. Un apprenant qui parle vraiment rend la main au modèle
 Une question, ou plus de deux mots d'anglais : le tour repart au modèle, même
 si l'étape était mécanique. Une phrase scriptée ne sait que poser sa question.
