@@ -41,17 +41,6 @@ description = ""
 
 [[items]]
 type = "concept"
-name = "phải"
-kind = "atom"
-gloss = ""
-category = "adjective, particle, verb"
-language = "vi"
-frequency_rank = 19
-senses = ["right", "correct", "obverse", "must, have to, should"]
-description = ""
-
-[[items]]
-type = "concept"
 name = "những"
 kind = "atom"
 gloss = ""
@@ -70,28 +59,6 @@ category = "conjunction, verb"
 language = "vi"
 frequency_rank = 23
 senses = ["to place; to set", "to let; to leave", "in order to, so that"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "cô"
-kind = "atom"
-gloss = ""
-category = "noun, pronoun"
-language = "vi"
-frequency_rank = 24
-senses = ["a paternal aunt", "Short for cô giáo", "I/me, your paternal aunt", "I/me, a woman who's slightly younger than either of your parents"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "làm"
-kind = "atom"
-gloss = ""
-category = "preposition, verb"
-language = "vi"
-frequency_rank = 25
-senses = ["to do", "to make", "to work", "to bear the responsibilities of"]
 description = ""
 
 [[items]]
@@ -118,28 +85,6 @@ description = ""
 
 [[items]]
 type = "concept"
-name = "ông"
-kind = "atom"
-gloss = ""
-category = "classifier, noun, pronoun"
-language = "vi"
-frequency_rank = 31
-senses = ["John Doe"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "đến"
-kind = "atom"
-gloss = ""
-category = "preposition, verb"
-language = "vi"
-frequency_rank = 32
-senses = ["to arrive, to come", "to"]
-description = ""
-
-[[items]]
-type = "concept"
 name = "khi"
 kind = "atom"
 gloss = ""
@@ -151,17 +96,6 @@ description = ""
 
 [[items]]
 type = "concept"
-name = "ra"
-kind = "atom"
-gloss = ""
-category = "noun, verb"
-language = "vi"
-frequency_rank = 34
-senses = ["to go out, to leave", "to go northwards in Vietnam", "to be released, to be published, to be out, to come out", "to become, to turn into"]
-description = ""
-
-[[items]]
-type = "concept"
 name = "lại"
 kind = "atom"
 gloss = ""
@@ -169,17 +103,6 @@ category = "adverb, verb"
 language = "vi"
 frequency_rank = 35
 senses = ["once more, indicates an action or state is resumed", "again", "on the other hand, meanwhile", "indicates a return to some original state"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "về"
-kind = "atom"
-gloss = ""
-category = "noun, preposition, verb"
-language = "vi"
-frequency_rank = 36
-senses = ["to come back or go back", "about; on", "into", "a thick layer"]
 description = ""
 
 [[items]]
@@ -202,28 +125,6 @@ category = "classifier, noun, pronoun"
 language = "vi"
 frequency_rank = 39
 senses = ["heroic", "a hero"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "có thể"
-kind = "atom"
-gloss = ""
-category = "adverb"
-language = "vi"
-frequency_rank = 42
-senses = ["possibly"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "vào"
-kind = "atom"
-gloss = ""
-category = "particle, preposition, verb"
-language = "vi"
-frequency_rank = 43
-senses = ["to enter", "to go southwards in Vietnam", "to become a member of; to join", "to join in, to participate in"]
 description = ""
 
 [[items]]
@@ -294,17 +195,6 @@ description = ""
 
 [[items]]
 type = "concept"
-name = "ấy"
-kind = "atom"
-gloss = ""
-category = "determiner, particle, pronoun"
-language = "vi"
-frequency_rank = 52
-senses = ["that; those", "sentence-ending intensifying particle", "you, my buddy/gal"]
-description = ""
-
-[[items]]
-type = "concept"
 name = "chỉ"
 kind = "atom"
 gloss = ""
@@ -360,17 +250,6 @@ description = ""
 
 [[items]]
 type = "concept"
-name = "mình"
-kind = "atom"
-gloss = ""
-category = "adverb, noun, pronoun"
-language = "vi"
-frequency_rank = 62
-senses = ["a torso", "a body", "I/me", "oneself"]
-description = ""
-
-[[items]]
-type = "concept"
 name = "họ"
 kind = "atom"
 gloss = ""
@@ -400,17 +279,6 @@ category = "adverb, particle"
 language = "vi"
 frequency_rank = 67
 senses = ["so, thus", "intensifying sentence-final particle"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "thấy"
-kind = "atom"
-gloss = ""
-category = "verb"
-language = "vi"
-frequency_rank = 68
-senses = ["to succeed in gathering information through the senses", "to form a sensation, feeling or opinion based on what you've already felt or known"]
 description = ""
 
 [[items]]
@@ -470,17 +338,6 @@ description = ""
 
 [[items]]
 type = "concept"
-name = "lên"
-kind = "atom"
-gloss = ""
-category = "adverb, verb"
-language = "vi"
-frequency_rank = 76
-senses = ["to go up, come up, rise", "to be or reach a certain age", "to get on", "to go to"]
-description = ""
-
-[[items]]
-type = "concept"
 name = "sau"
 kind = "atom"
 gloss = ""
@@ -521,17 +378,6 @@ category = "preposition, verb"
 language = "vi"
 frequency_rank = 81
 senses = ["to follow", "to accompany, come with, follow", "to obey", "to believe in, follow"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "nên"
-kind = "atom"
-gloss = ""
-category = "conjunction, verb"
-language = "vi"
-frequency_rank = 82
-senses = ["to develop into; to change into", "should; ought to", "therefore; so"]
 description = ""
 
 [[items]]
@@ -778,17 +624,6 @@ description = ""
 
 [[items]]
 type = "concept"
-name = "nghe"
-kind = "atom"
-gloss = ""
-category = "particle, verb"
-language = "vi"
-frequency_rank = 106
-senses = ["to hear", "to listen", "to obey", "to sound"]
-description = ""
-
-[[items]]
-type = "concept"
 name = "qua"
 kind = "atom"
 gloss = ""
@@ -818,17 +653,6 @@ category = "interjection, noun, pronoun"
 language = "vi"
 frequency_rank = 109
 senses = ["a mother", "I/me, your mother", "you, my mother", "you, a female who I'm thinking is being stupid"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "tìm"
-kind = "atom"
-gloss = ""
-category = "verb"
-language = "vi"
-frequency_rank = 110
-senses = ["to search, to seek, to look for", "to find"]
 description = ""
 
 [[items]]
@@ -895,17 +719,6 @@ category = "adverb, verb"
 language = "vi"
 frequency_rank = 116
 senses = ["very, excessively", "to exceed"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "bà"
-kind = "atom"
-gloss = ""
-category = "noun, pronoun"
-language = "vi"
-frequency_rank = 117
-senses = ["Jane Doe"]
 description = ""
 
 [[items]]
@@ -987,17 +800,6 @@ description = ""
 
 [[items]]
 type = "concept"
-name = "giúp"
-kind = "atom"
-gloss = ""
-category = "verb"
-language = "vi"
-frequency_rank = 127
-senses = ["to help; to aid", "to do instead of, to do for"]
-description = ""
-
-[[items]]
-type = "concept"
 name = "tớ"
 kind = "atom"
 gloss = ""
@@ -1064,17 +866,6 @@ description = ""
 
 [[items]]
 type = "concept"
-name = "gặp"
-kind = "atom"
-gloss = ""
-category = "verb"
-language = "vi"
-frequency_rank = 134
-senses = ["to meet, to see"]
-description = ""
-
-[[items]]
-type = "concept"
 name = "bằng"
 kind = "atom"
 gloss = ""
@@ -1119,17 +910,6 @@ description = ""
 
 [[items]]
 type = "concept"
-name = "lấy"
-kind = "atom"
-gloss = ""
-category = "verb"
-language = "vi"
-frequency_rank = 139
-senses = ["to take, to seize", "to receive, to obtain, to accept", "to wed, to marry", "to charge"]
-description = ""
-
-[[items]]
-type = "concept"
 name = "đều"
 kind = "atom"
 gloss = ""
@@ -1137,17 +917,6 @@ category = "adjective, adverb"
 language = "vi"
 frequency_rank = 140
 senses = ["equal in size or dimension", "constant", "equilateral", "in a constant rhythm"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "cháu"
-kind = "atom"
-gloss = ""
-category = "noun, pronoun"
-language = "vi"
-frequency_rank = 141
-senses = ["a grandchild, a nephew or a niece", "I/me, your nephew, niece or grandchild", "I/me, someone who's not your child and who's a lot younger than you", "you, my nephew, niece or grandchild"]
 description = ""
 
 [[items]]
@@ -1515,17 +1284,6 @@ description = ""
 
 [[items]]
 type = "concept"
-name = "học"
-kind = "atom"
-gloss = ""
-category = "suffix, verb"
-language = "vi"
-frequency_rank = 184
-senses = ["to study; to learn", "-logy; -graphy"]
-description = ""
-
-[[items]]
-type = "concept"
 name = "vừa"
 kind = "atom"
 gloss = ""
@@ -1555,17 +1313,6 @@ category = "adjective, noun"
 language = "vi"
 frequency_rank = 188
 senses = ["a school", "a field or range, be it physical or conceptual", "long"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "xuống"
-kind = "atom"
-gloss = ""
-category = "adverb, verb"
-language = "vi"
-frequency_rank = 189
-senses = ["to go downwards; to descend", "to get off", "to go to", "to be in decline"]
 description = ""
 
 [[items]]
@@ -1669,17 +1416,6 @@ description = ""
 
 [[items]]
 type = "concept"
-name = "hỏi"
-kind = "atom"
-gloss = ""
-category = "verb"
-language = "vi"
-frequency_rank = 199
-senses = ["to ask"]
-description = ""
-
-[[items]]
-type = "concept"
 name = "bỏ"
 kind = "atom"
 gloss = ""
@@ -1764,17 +1500,6 @@ category = "noun"
 language = "vi"
 frequency_rank = 208
 senses = ["an immediate family; a household"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "nhớ"
-kind = "atom"
-gloss = ""
-category = "verb"
-language = "vi"
-frequency_rank = 209
-senses = ["to remember", "to miss"]
 description = ""
 
 [[items]]
@@ -2010,17 +1735,6 @@ description = ""
 
 [[items]]
 type = "concept"
-name = "đẹp"
-kind = "atom"
-gloss = ""
-category = "adjective"
-language = "vi"
-frequency_rank = 231
-senses = ["pleasant to look at; good-looking", "nice"]
-description = ""
-
-[[items]]
-type = "concept"
 name = "câu"
 kind = "atom"
 gloss = ""
@@ -2094,28 +1808,6 @@ category = "preposition"
 language = "vi"
 frequency_rank = 238
 senses = ["in the middle; in the center; amidst; between; among"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "chơi"
-kind = "atom"
-gloss = ""
-category = "verb"
-language = "vi"
-frequency_rank = 239
-senses = ["to play ; to have fun", "to hang out; to spend time idly"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "mua"
-kind = "atom"
-gloss = ""
-category = "noun, verb"
-language = "vi"
-frequency_rank = 240
-senses = ["to buy; to purchase", "to bribe; to square", "to bring upon oneself; to court", "melastoma"]
 description = ""
 
 [[items]]
@@ -2259,17 +1951,6 @@ category = "verb"
 language = "vi"
 frequency_rank = 255
 senses = ["to cause ; to make"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "bán"
-kind = "atom"
-gloss = ""
-category = "prefix, verb"
-language = "vi"
-frequency_rank = 256
-senses = ["half-, semi-, hemi-", "to sell"]
 description = ""
 
 [[items]]
@@ -2439,17 +2120,6 @@ description = ""
 
 [[items]]
 type = "concept"
-name = "chú"
-kind = "atom"
-gloss = ""
-category = "classifier, noun, pronoun"
-language = "vi"
-frequency_rank = 272
-senses = ["a paternal uncle, father's younger brother", "a maternal uncle-in-law, mother's sister's husband", "a paternal uncle-in-law, father's sister's husband", "a man who's presumably slightly younger than your parents"]
-description = ""
-
-[[items]]
-type = "concept"
 name = "thông tin"
 kind = "atom"
 gloss = ""
@@ -2479,17 +2149,6 @@ category = "noun"
 language = "vi"
 frequency_rank = 275
 senses = ["machine", "engine", "internal combustion engine", "phone, mobile phone"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "ơi"
-kind = "atom"
-gloss = ""
-category = "particle"
-language = "vi"
-frequency_rank = 276
-senses = ["suffixes someone's name or kinship title, used to call for their attention; compare vâng and dạ", "yes, what is it?; compare vâng and dạ"]
 description = ""
 
 [[items]]
@@ -2765,39 +2424,6 @@ category = "verb"
 language = "vi"
 frequency_rank = 303
 senses = ["to tell"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "chờ"
-kind = "atom"
-gloss = ""
-category = "noun, verb"
-language = "vi"
-frequency_rank = 304
-senses = ["to wait ; to await"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "ngủ"
-kind = "atom"
-gloss = ""
-category = "noun, verb"
-language = "vi"
-frequency_rank = 305
-senses = ["to sleep"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "viết"
-kind = "atom"
-gloss = ""
-category = "noun, verb"
-language = "vi"
-frequency_rank = 306
-senses = ["to write", "non-chalk handheld writing instrument"]
 description = ""
 
 [[items]]
@@ -3814,17 +3440,6 @@ description = ""
 
 [[items]]
 type = "concept"
-name = "đọc"
-kind = "atom"
-gloss = ""
-category = "verb"
-language = "vi"
-frequency_rank = 402
-senses = ["to read, to pronounce"]
-description = ""
-
-[[items]]
-type = "concept"
 name = "khó khăn"
 kind = "atom"
 gloss = ""
@@ -4074,17 +3689,6 @@ category = "verb"
 language = "vi"
 frequency_rank = 425
 senses = ["to feel"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "quên"
-kind = "atom"
-gloss = ""
-category = "verb"
-language = "vi"
-frequency_rank = 426
-senses = ["to forget"]
 description = ""
 
 [[items]]
@@ -8808,17 +8412,6 @@ description = ""
 
 [[items]]
 type = "concept"
-name = "buồn"
-kind = "atom"
-gloss = ""
-category = "adjective, verb"
-language = "vi"
-frequency_rank = 863
-senses = ["sad", "ticklish", "to have a strong need to do something", "to feel an itch ; to feel like"]
-description = ""
-
-[[items]]
-type = "concept"
 name = "hợp tác"
 kind = "atom"
 gloss = ""
@@ -13226,17 +12819,6 @@ category = "adjective"
 language = "vi"
 frequency_rank = 1270
 senses = ["weak, feeble"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "đói"
-kind = "atom"
-gloss = ""
-category = "adjective"
-language = "vi"
-frequency_rank = 1271
-senses = ["hungry"]
 description = ""
 
 [[items]]
@@ -19683,17 +19265,6 @@ category = "adverb"
 language = "vi"
 frequency_rank = 1859
 senses = ["just; recently; newly"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "mệt"
-kind = "atom"
-gloss = ""
-category = "adjective"
-language = "vi"
-frequency_rank = 1860
-senses = ["tired, fatigued, weary"]
 description = ""
 
 [[items]]

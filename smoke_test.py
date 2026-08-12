@@ -200,12 +200,19 @@ def check_derived_pieces(roster) -> int:
     ARE the corpus, so this cannot drift away from the content the way a copied
     list would. It is also the whole argument for computing the field instead
     of asking the model -- which got 8 of its 13 wrong on the same test.
+
+    Each construction is derived against the items declared BEFORE it, never the
+    whole roster, because that is all the live loop ever has: a piece is a
+    prerequisite, and a word introduced later in the course cannot be one. The
+    whole roster made a homograph look like a defect -- "phải" the modal, added
+    far later, sits inside the early "không phải là" without being the same word
+    in any sense the learner needs.
     """
     failed = 0
-    for item in roster:
+    for n, item in enumerate(roster):
         if item.kind != "construction" or not item.pieces:
             continue
-        got = content.derive_pieces(item.name, roster)
+        got = content.derive_pieces(item.name, roster[:n])
         if got != item.pieces:
             print(f"FAIL — pieces of {item.name!r}\n      hand-written {item.pieces}\n      derived      {got}")
             failed += 1

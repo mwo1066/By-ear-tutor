@@ -1,0 +1,130 @@
+title = "Nói về người khác, và làm được việc"
+
+[[items]]
+type = "concept"
+name = "ấy"
+kind = "atom"
+gloss = "that one"
+category = "function_word"
+language = "vi"
+description = "Đặt SAU từ xưng hô để nói VỀ người đó thay vì nói VỚI họ: 'anh ấy' = anh ta, 'chị ấy' = chị ta. Không có nó thì cả khoá học chỉ nói được 'tôi' và 'bạn' — không kể được chuyện về ai. Thanh sắc — giọng lên."
+
+[[items]]
+type = "concept"
+name = "ơi"
+kind = "atom"
+gloss = "hey, when you call someone"
+category = "function_word"
+language = "vi"
+description = "Đặt SAU từ xưng hô để gọi ai đó: 'Anh ơi!', 'Chị ơi!'. Đây là cách gọi người phục vụ, người bán hàng, người quen ở xa. Không có nó thì không gọi được ai. Thanh ngang — giọng đều, không lên không xuống."
+
+[[items]]
+type = "concept"
+name = "phải"
+kind = "atom"
+gloss = "must, have to"
+category = "verb"
+language = "vi"
+description = "Đứng TRƯỚC động từ. 'Em phải đi.' Cùng chỗ với 'muốn' và 'cần', nên dạy liền sau chúng. Thanh hỏi — giọng võng xuống rồi lên."
+
+[[items]]
+type = "concept"
+name = "có thể"
+kind = "atom"
+gloss = "to be able to"
+category = "verb"
+language = "vi"
+description = "Đứng TRƯỚC động từ: 'Em có thể đi.' Khác 'được', đứng sau động từ. Hai cách nói 'có thể' với hai vị trí ngược nhau — chỗ người học hay lẫn. Thanh sắc — giọng lên. Thanh hỏi — giọng võng xuống rồi lên."
+
+[[items]]
+type = "concept"
+name = "nên"
+kind = "atom"
+gloss = "should"
+category = "verb"
+language = "vi"
+description = "Đứng TRƯỚC động từ. 'Anh nên ngủ.' Nhẹ hơn 'phải', dùng để khuyên. Thanh ngang — giọng đều, không lên không xuống."
+
+[[items]]
+type = "concept"
+name = "cô"
+kind = "atom"
+gloss = "address for a woman your parents' age"
+category = "function_word"
+language = "vi"
+description = "Từ xưng hô với phụ nữ trạc tuổi cha mẹ mình, hoặc cô giáo. Mình tự xưng là 'cháu'. Thanh ngang — giọng đều, không lên không xuống."
+
+[[items]]
+type = "concept"
+name = "chú"
+kind = "atom"
+gloss = "address for a man your parents' age"
+category = "function_word"
+language = "vi"
+description = "Từ xưng hô với đàn ông trạc tuổi cha mẹ mình. Mình tự xưng là 'cháu'. Thanh sắc — giọng lên."
+
+[[items]]
+type = "concept"
+name = "ông"
+kind = "atom"
+gloss = "address for an elderly man"
+category = "function_word"
+language = "vi"
+description = "Nghĩa gốc là 'ông nội/ngoại'. Dùng với người rất lớn tuổi, hoặc trang trọng. Mình xưng 'cháu'. Thanh ngang — giọng đều, không lên không xuống."
+
+[[items]]
+type = "concept"
+name = "bà"
+kind = "atom"
+gloss = "address for an elderly woman"
+category = "function_word"
+language = "vi"
+description = "Nghĩa gốc là 'bà nội/ngoại'. Dùng với phụ nữ rất lớn tuổi. Mình xưng 'cháu'. Thanh huyền — giọng xuống."
+
+[[items]]
+type = "concept"
+name = "cháu"
+kind = "atom"
+gloss = "how you call yourself to someone much older"
+category = "function_word"
+language = "vi"
+description = "Tự xưng khi nói với cô, chú, bác, ông, bà. Cặp với tất cả các từ đó. Thanh sắc — giọng lên."
+
+[[items]]
+type = "concept"
+name = "mình"
+kind = "atom"
+gloss = "a soft way to say I"
+category = "function_word"
+language = "vi"
+description = "Tự xưng thân mật giữa bạn bè cùng tuổi, mềm hơn 'tôi' rất nhiều. Thanh huyền — giọng xuống."
+
+[[items]]
+type = "procedure"
+name = "nói VỀ ai đó: xưng hô + ấy"
+kind = "rule"
+gloss = "to talk ABOUT someone, you add one word after the person-word"
+category = "rules"
+language = "vi"
+description = "Quy tắc mở ra ngôi thứ ba. 'Anh ấy' = anh ta, 'chị ấy' = chị ta, 'cô ấy' = cô ta. Cùng những từ xưng hô đã học, thêm 'ấy' là chuyển từ NÓI VỚI sang NÓI VỀ. Trước quy tắc này, người học chỉ nói được về mình và người đối diện."
+pieces = ["ấy", "anh", "chị"]
+
+[[items]]
+type = "procedure"
+name = "gọi ai đó: xưng hô + ơi"
+kind = "rule"
+gloss = "to call out to someone, you add one word after the person-word"
+category = "rules"
+language = "vi"
+description = "Quy tắc gọi người. 'Anh ơi!', 'Chị ơi!' — gọi người phục vụ, người bán hàng, người ở xa. Cùng cấu trúc với 'ấy' nhưng khác việc: 'ấy' để nói về, 'ơi' để gọi."
+pieces = ["ơi", "anh", "chị"]
+
+[[items]]
+type = "procedure"
+name = "phải / có thể / nên đứng trước động từ"
+kind = "rule"
+gloss = "must, can and should all sit before the action — unlike 'được', which sits after"
+category = "rules"
+language = "vi"
+description = "Ba từ tình thái cùng một chỗ: ngay trước động từ, giống 'muốn' và 'cần' đã học. Điều đáng nói là 'có thể' đứng TRƯỚC còn 'được' đứng SAU, mà cả hai đều dịch là 'can' — đó là chỗ người học lẫn nhiều nhất."
+pieces = ["phải", "có thể", "nên", "được"]

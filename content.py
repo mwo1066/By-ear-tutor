@@ -177,7 +177,16 @@ def derive_pieces(name: str, known: list[Item]) -> list[str]:
     unusable -- one for eight words, or none at all. `pieces` is what makes a
     sentence teachable (one recall per piece, and never before its words are
     taught), so a wrong one is not a cosmetic defect.
+
+    A name may carry a Vietnamese label before a colon -- "câu hỏi có/không:
+    có + [động từ] ... không?" -- and that label is ABOUT the sentence, not part
+    of it. Only the template counts. This stayed invisible while the roster was
+    small and broke the moment a label word ("hỏi", to ask) became a real item:
+    the construction acquired a piece it does not contain. Everything left of
+    the colon goes.
     """
+    if ": " in name:
+        name = name.split(": ", 1)[1]
     haystack = f" {_PIECE_PLACEHOLDER.sub(' ', name).lower()} "
     haystack = " " + " ".join(haystack.split()) + " "
     found: list[tuple[int, str]] = []

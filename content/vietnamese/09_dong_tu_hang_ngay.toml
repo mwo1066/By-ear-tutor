@@ -1,0 +1,262 @@
+title = "Động từ và tính từ hằng ngày"
+
+[[items]]
+type = "concept"
+name = "mệt"
+kind = "atom"
+gloss = "tired"
+category = "adjective"
+language = "vi"
+description = "Tính từ. 'Em mệt.' Không cần 'là' ở giữa — đây là mẫu câu C của mọi tính từ. Thanh nặng — giọng nặng, ngắt gọn."
+
+[[items]]
+type = "concept"
+name = "đói"
+kind = "atom"
+gloss = "hungry"
+category = "adjective"
+language = "vi"
+description = "Tính từ. 'Em đói.' Rất hay dùng, và ghép thẳng với 'muốn ăn'. Thanh sắc — giọng lên."
+
+[[items]]
+type = "concept"
+name = "buồn"
+kind = "atom"
+gloss = "sad"
+category = "adjective"
+language = "vi"
+description = "Tính từ. Cũng nghĩa là 'chán'. Thanh huyền — giọng xuống."
+
+[[items]]
+type = "concept"
+name = "đẹp"
+kind = "atom"
+gloss = "beautiful"
+category = "adjective"
+language = "vi"
+description = "Tính từ. 'Nhà đẹp.' Đứng SAU danh từ, như mọi tính từ. Thanh nặng — giọng nặng, ngắt gọn."
+
+[[items]]
+type = "concept"
+name = "đi"
+kind = "atom"
+gloss = "to go"
+category = "verb"
+language = "vi"
+description = "Động từ chuyển động cơ bản nhất, và là động từ hay dùng nhất trong tiếng Việt nói. 'Em đi.' Ghép được với mọi từ chỉ hướng đã học: 'đi về', 'đi ra', 'đi lên'. Thanh ngang — giọng đều."
+
+[[items]]
+type = "concept"
+name = "về"
+kind = "atom"
+gloss = "to go home, to return"
+category = "verb"
+language = "vi"
+description = "Động từ chuyển động. 'Em về.' Thanh huyền — giọng xuống."
+
+[[items]]
+type = "concept"
+name = "đến"
+kind = "atom"
+gloss = "to come, to arrive"
+category = "verb"
+language = "vi"
+description = "Động từ chuyển động, cũng dùng làm giới từ chỉ đích. Thanh sắc — giọng lên."
+
+[[items]]
+type = "concept"
+name = "ra"
+kind = "atom"
+gloss = "to go out"
+category = "verb"
+language = "vi"
+description = "Động từ chuyển động, ra phía ngoài. Thanh ngang — giọng đều, không lên không xuống."
+
+[[items]]
+type = "concept"
+name = "vào"
+kind = "atom"
+gloss = "to go in"
+category = "verb"
+language = "vi"
+description = "Động từ chuyển động, vào phía trong. Thanh huyền — giọng xuống."
+
+[[items]]
+type = "concept"
+name = "lên"
+kind = "atom"
+gloss = "to go up"
+category = "verb"
+language = "vi"
+description = "Động từ chuyển động, lên trên. Cũng dùng cho lên xe. Thanh ngang — giọng đều, không lên không xuống."
+
+[[items]]
+type = "concept"
+name = "xuống"
+kind = "atom"
+gloss = "to go down"
+category = "verb"
+language = "vi"
+description = "Động từ chuyển động, xuống dưới. Cũng dùng cho xuống xe. Thanh sắc — giọng lên."
+
+[[items]]
+type = "concept"
+name = "ngủ"
+kind = "atom"
+gloss = "to sleep"
+category = "verb"
+language = "vi"
+description = "Động từ. 'Em ngủ.' Ghép với 'cần' và 'muốn' ngay được. Thanh hỏi — giọng võng xuống rồi lên."
+
+[[items]]
+type = "concept"
+name = "làm"
+kind = "atom"
+gloss = "to do, to work"
+category = "verb"
+language = "vi"
+description = "Động từ. 'Anh làm gì?' — câu hỏi nghề nghiệp hay gặp nhất. Thanh huyền — giọng xuống."
+
+[[items]]
+type = "concept"
+name = "học"
+kind = "atom"
+gloss = "to study"
+category = "verb"
+language = "vi"
+description = "Động từ. 'Em học tiếng Việt.' Thanh nặng — giọng nặng, ngắt gọn."
+
+[[items]]
+type = "concept"
+name = "chơi"
+kind = "atom"
+gloss = "to play, to hang out"
+category = "verb"
+language = "vi"
+description = "Động từ. Cũng nghĩa là đi chơi với bạn. Thanh ngang — giọng đều, không lên không xuống."
+
+[[items]]
+type = "concept"
+name = "hỏi"
+kind = "atom"
+gloss = "to ask"
+category = "verb"
+language = "vi"
+description = "Động từ. Cặp với 'trả lời'. Thanh hỏi — giọng võng xuống rồi lên."
+
+[[items]]
+type = "concept"
+name = "nghe"
+kind = "atom"
+gloss = "to listen"
+category = "verb"
+language = "vi"
+description = "Động từ. Cũng nghĩa là nghe thấy. Thanh ngang — giọng đều, không lên không xuống."
+
+[[items]]
+type = "concept"
+name = "đọc"
+kind = "atom"
+gloss = "to read"
+category = "verb"
+language = "vi"
+description = "Động từ. Thanh nặng — giọng nặng, ngắt gọn."
+
+[[items]]
+type = "concept"
+name = "viết"
+kind = "atom"
+gloss = "to write"
+category = "verb"
+language = "vi"
+description = "Động từ. Thanh sắc — giọng lên."
+
+[[items]]
+type = "concept"
+name = "nhớ"
+kind = "atom"
+gloss = "to remember, to miss"
+category = "verb"
+language = "vi"
+description = "Động từ. Hai nghĩa: nhớ ra, và nhớ ai đó. Thanh sắc — giọng lên."
+
+[[items]]
+type = "concept"
+name = "quên"
+kind = "atom"
+gloss = "to forget"
+category = "verb"
+language = "vi"
+description = "Động từ. Ngược với 'nhớ'. Thanh ngang — giọng đều, không lên không xuống."
+
+[[items]]
+type = "concept"
+name = "thấy"
+kind = "atom"
+gloss = "to see, to feel"
+category = "verb"
+language = "vi"
+description = "Động từ. 'Em thấy...' mở đầu mọi câu nêu ý kiến. Thanh sắc — giọng lên."
+
+[[items]]
+type = "concept"
+name = "gặp"
+kind = "atom"
+gloss = "to meet"
+category = "verb"
+language = "vi"
+description = "Động từ. 'Rất vui được gặp bạn.' Thanh nặng — giọng nặng, ngắt gọn."
+
+[[items]]
+type = "concept"
+name = "giúp"
+kind = "atom"
+gloss = "to help"
+category = "verb"
+language = "vi"
+description = "Động từ. 'Anh giúp em được không?' — câu cầu cứu cơ bản. Thanh sắc — giọng lên."
+
+[[items]]
+type = "concept"
+name = "chờ"
+kind = "atom"
+gloss = "to wait"
+category = "verb"
+language = "vi"
+description = "Động từ. 'Chờ một chút.' Thanh huyền — giọng xuống."
+
+[[items]]
+type = "concept"
+name = "tìm"
+kind = "atom"
+gloss = "to look for"
+category = "verb"
+language = "vi"
+description = "Động từ. 'Em tìm khách sạn.' Thanh huyền — giọng xuống."
+
+[[items]]
+type = "concept"
+name = "mua"
+kind = "atom"
+gloss = "to buy"
+category = "verb"
+language = "vi"
+description = "Động từ. Ghép thẳng với 'bao nhiêu' và 'tiền'. Thanh ngang — giọng đều, không lên không xuống."
+
+[[items]]
+type = "concept"
+name = "bán"
+kind = "atom"
+gloss = "to sell"
+category = "verb"
+language = "vi"
+description = "Động từ. Ngược với 'mua'. Thanh sắc — giọng lên."
+
+[[items]]
+type = "concept"
+name = "lấy"
+kind = "atom"
+gloss = "to take"
+category = "verb"
+language = "vi"
+description = "Động từ. Cũng dùng khi gọi món: 'Em lấy cái này.' Thanh sắc — giọng lên."

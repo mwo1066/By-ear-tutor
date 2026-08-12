@@ -113,12 +113,12 @@ description = "Danh từ: cơm đã nấu chín — trung tâm bữa ăn của n
 
 [[items]]
 type = "procedure"
-name = "phủ định động từ: không + [động từ]"
+name = "phủ định: không + [động từ hoặc tính từ]"
 kind = "rule"
-gloss = "negate verb with không"
+gloss = "to say NOT, one word goes in front — of an action or of a describing word alike"
 category = "rules"
 language = "vi"
-description = "Quy tắc: đặt 'không' ngay trước động từ để phủ định cả câu. 'Tôi không muốn ăn.' 'Anh không uống cà phê.' Đây là việc thứ hai của chữ 'không' đã biết — vừa trả lời một mình được, vừa phủ định động từ được."
+description = "Quy tắc: đặt 'không' ngay trước động từ ĐỂ phủ định cả câu — 'Tôi không muốn ăn.', 'Anh không uống cà phê.' Và trước tính từ y hệt, không đổi gì cả: 'Em không mệt.', 'Cơm này không ngon.' Một chữ, một chỗ, cho cả hai loại từ — chỗ này tiếng Việt dễ hơn tiếng Anh rất nhiều, vì tiếng Anh phải đổi giữa 'don't' và 'am not'. Đây cũng là việc thứ hai của chữ 'không' đã biết: vừa trả lời một mình được, vừa phủ định được."
 
 # Règles rattachées à ce fichier : elles arrivent après les mots
 # qu'elles décrivent, jamais groupées en bloc de théorie.
