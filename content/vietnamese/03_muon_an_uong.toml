@@ -141,7 +141,7 @@ gloss = "to say whose something is, the owner goes last"
 category = "rules"
 language = "vi"
 description = "Quy tắc: cái được sở hữu đứng trước, người sở hữu đứng sau, nối bằng 'của'. 'Cà phê của tôi' — cà phê của tôi. Ngược thứ tự tiếng Anh 'my coffee'. Trong nói chuyện thân mật, 'của' hay được lược bỏ: 'tên tôi'."
-pieces = ["cà phê", "tôi"]
+pieces = ["của", "cà phê", "tôi"]
 
 [[items]]
 type = "procedure"
@@ -151,7 +151,7 @@ gloss = "three little words mark past, now and future — and you can leave them
 category = "rules"
 language = "vi"
 description = "Quy tắc: 'đã' cho việc đã xong, 'đang' cho việc đang diễn ra, 'sẽ' cho việc sắp tới. Đặt ngay trước động từ: 'Tôi đã ăn', 'Tôi đang ăn', 'Tôi sẽ ăn'. Cả ba đều KHÔNG bắt buộc — người Việt bỏ chúng suốt khi ngữ cảnh đã rõ, nhất là khi trong câu đã có 'hôm qua', 'ngày mai'."
-pieces = ["ăn"]
+pieces = ["đã", "đang", "sẽ", "ăn"]
 
 [[items]]
 type = "procedure"
@@ -161,7 +161,7 @@ gloss = "'also' sits right before the action"
 category = "rules"
 language = "vi"
 description = "Quy tắc: 'cũng' đứng ngay trước động từ hoặc tính từ. 'Tôi cũng muốn ăn.' 'Cà phê cũng ngon.' Vị trí cố định, không đứng cuối câu như 'too' trong tiếng Anh."
-pieces = ["tôi", "muốn"]
+pieces = ["cũng", "muốn"]
 
 [[items]]
 type = "procedure"
@@ -171,7 +171,7 @@ gloss = "one word at the end says it's already done"
 category = "rules"
 language = "vi"
 description = "Quy tắc: 'rồi' đặt cuối câu để nói việc đã hoàn tất. 'Tôi ăn rồi' — tôi ăn xong rồi. Rất hay dùng, thường thay hẳn cho 'đã'. Trong nói chuyện hằng ngày, 'rồi' gặp nhiều hơn 'đã' nhiều lần."
-pieces = ["ăn"]
+pieces = ["rồi", "ăn"]
 
 [[items]]
 type = "procedure"
@@ -181,7 +181,7 @@ gloss = "the word for 'not yet' also turns a sentence into a question"
 category = "rules"
 language = "vi"
 description = "Quy tắc: 'chưa' trước động từ nghĩa là chưa làm — 'Tôi chưa ăn.' Cũng chính 'chưa' đặt cuối câu thành câu hỏi — 'Bạn ăn chưa?' nghĩa là 'bạn ăn chưa?'. Hai việc, một chữ, giống hệt cách 'không' vừa phủ định vừa hỏi."
-pieces = ["ăn"]
+pieces = ["chưa", "ăn"]
 
 [[items]]
 type = "procedure"

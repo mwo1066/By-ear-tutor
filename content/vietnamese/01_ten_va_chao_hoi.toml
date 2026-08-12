@@ -134,6 +134,7 @@ gloss = "verbs never change, whoever is doing the action"
 category = "rules"
 language = "vi"
 description = "Quy tắc: động từ tiếng Việt giữ nguyên một hình thức duy nhất. 'Tôi ăn', 'bạn ăn', 'anh ấy ăn' — cùng một chữ 'ăn'. Không chia theo ngôi, không chia theo số. Đây là điều nên nói sớm với người mới học: nó xoá đi phần khó nhất của tiếng Pháp hay tiếng Tây Ban Nha."
+pieces = ["muốn", "ăn"]
 
 [[items]]
 type = "procedure"
@@ -162,6 +163,7 @@ gloss = "words don't change in the plural — you add a word instead"
 category = "rules"
 language = "vi"
 description = "Quy tắc: danh từ giữ nguyên dù một hay nhiều. Muốn nói rõ số nhiều thì thêm 'các' (tất cả, toàn bộ) hoặc 'những' (một số trong đó) đứng trước. Không có đuôi '-s' như tiếng Anh."
+pieces = ["các"]
 
 [[items]]
 type = "procedure"
@@ -171,6 +173,7 @@ gloss = "counting needs a small helper word between the number and the thing"
 category = "rules"
 language = "vi"
 description = "Quy tắc: khi đếm, chen một loại từ vào giữa số và danh từ. 'Hai con chó' — hai + con + chó. Loại từ chọn theo loại vật: 'con' cho động vật, 'cái' cho đồ vật, 'người' cho người. Người mới học dùng sai loại từ vẫn được hiểu, nên đừng để nó chặn việc nói."
+pieces = ["hai", "cái"]
 
 [[items]]
 type = "procedure"
@@ -189,7 +192,7 @@ gloss = "one small word at the end makes anything polite"
 category = "rules"
 language = "vi"
 description = "Quy tắc: thêm 'ạ' ở cuối câu khi nói với người lớn tuổi hoặc trong hoàn cảnh trang trọng. 'Chào anh ạ.' 'Cảm ơn ạ.' Không đổi nghĩa, chỉ đổi thái độ — và người Việt để ý điều này ngay."
-pieces = ["chào"]
+pieces = ["ạ", "cảm ơn"]
 
 [[items]]
 type = "procedure"

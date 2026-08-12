@@ -1,0 +1,55 @@
+title = "Số đếm"
+
+[[items]]
+type = "concept"
+name = "một"
+kind = "atom"
+gloss = "one"
+category = "numeral"
+language = "vi"
+description = "Số 1. Không có trong danh sách tần suất nào vì văn bản viết dùng chữ số, nên phải viết tay. Cũng dùng như 'một cái' — một thứ gì đó."
+
+[[items]]
+type = "concept"
+name = "hai"
+kind = "atom"
+gloss = "two"
+category = "numeral"
+language = "vi"
+description = "Số 2. Đi cùng loại từ khi đếm vật: 'hai con chó', không phải 'hai chó'."
+
+[[items]]
+type = "concept"
+name = "ba"
+kind = "atom"
+gloss = "three"
+category = "numeral"
+language = "vi"
+description = "Số 3. Cùng chữ này còn nghĩa là 'bố' ở miền Nam — ngữ cảnh phân biệt, không cần nói với người mới học."
+
+[[items]]
+type = "concept"
+name = "bốn"
+kind = "atom"
+gloss = "four"
+category = "numeral"
+language = "vi"
+description = "Số 4."
+
+[[items]]
+type = "concept"
+name = "năm"
+kind = "atom"
+gloss = "five"
+category = "numeral"
+language = "vi"
+description = "Số 5. Cũng nghĩa là 'năm' (đơn vị thời gian) — hai nghĩa, một chữ, rất hay gặp cả hai."
+
+[[items]]
+type = "concept"
+name = "mười"
+kind = "atom"
+gloss = "ten"
+category = "numeral"
+language = "vi"
+description = "Số 10. Từ 11 đến 19 ghép thẳng: 'mười một', 'mười hai'. Biết 1-10 là biết đếm tới 99 với vài quy tắc ghép."

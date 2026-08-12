@@ -8,28 +8,6 @@ title = "Vocabulaire par fréquence"
 
 [[items]]
 type = "concept"
-name = "của"
-kind = "atom"
-gloss = ""
-category = "noun, preposition"
-language = "vi"
-frequency_rank = 5
-senses = ["property; belongings", "given kind of food", "such trash; such a good-for-nothing", "of"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "cho"
-kind = "atom"
-gloss = ""
-category = "particle, preposition, verb"
-language = "vi"
-frequency_rank = 10
-senses = ["to give", "to let; to make; to cause", "to let; to allow; to permit", "to put; to add"]
-description = ""
-
-[[items]]
-type = "concept"
 name = "đó"
 kind = "atom"
 gloss = ""
@@ -37,17 +15,6 @@ category = "noun, particle, pronoun"
 language = "vi"
 frequency_rank = 12
 senses = ["that place over there", "that person/thing over there", "that idea/notion I/we've just described/discussed", "emphasizes a quality that the listener may not have known; you see?; I'm telling you"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "các"
-kind = "atom"
-gloss = ""
-category = "determiner, verb"
-language = "vi"
-frequency_rank = 13
-senses = ["Plural marker", "cell phone's card", "to pay the difference, to give in compensation"]
 description = ""
 
 [[items]]
@@ -228,17 +195,6 @@ description = ""
 
 [[items]]
 type = "concept"
-name = "cũng"
-kind = "atom"
-gloss = ""
-category = "adverb"
-language = "vi"
-frequency_rank = 38
-senses = ["also; too"]
-description = ""
-
-[[items]]
-type = "concept"
 name = "con"
 kind = "atom"
 gloss = ""
@@ -323,17 +279,6 @@ category = "noun, particle"
 language = "vi"
 frequency_rank = 49
 senses = ["the prime time in terms of physical development", "a tense", "as for ..., it is/does/will", "in that case, then ...; well, then"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "cái"
-kind = "atom"
-gloss = ""
-category = "adjective, classifier, noun"
-language = "vi"
-frequency_rank = 50
-senses = ["Initialism of thành phố"]
 description = ""
 
 [[items]]
@@ -444,28 +389,6 @@ category = "adjective, noun"
 language = "vi"
 frequency_rank = 63
 senses = ["family name; surname", "extended family", "family", "being a cousin"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "năm"
-kind = "atom"
-gloss = ""
-category = "noun, numeral"
-language = "vi"
-frequency_rank = 64
-senses = ["five", "a year"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "hơn"
-kind = "atom"
-gloss = ""
-category = "adjective, adverb"
-language = "vi"
-frequency_rank = 65
-senses = ["than", "more, more than", "to be more than, to be better than"]
 description = ""
 
 [[items]]
@@ -1346,17 +1269,6 @@ category = "noun"
 language = "vi"
 frequency_rank = 152
 senses = ["month", "menstruation; period"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "lắm"
-kind = "atom"
-gloss = ""
-category = "adverb, determiner"
-language = "vi"
-frequency_rank = 154
-senses = ["many, much; a lot", "very"]
 description = ""
 
 [[items]]
@@ -3451,17 +3363,6 @@ description = ""
 
 [[items]]
 type = "concept"
-name = "hôm nay"
-kind = "atom"
-gloss = ""
-category = "adverb"
-language = "vi"
-frequency_rank = 356
-senses = ["today"]
-description = ""
-
-[[items]]
-type = "concept"
 name = "xong"
 kind = "atom"
 gloss = ""
@@ -3887,17 +3788,6 @@ category = "interjection, verb"
 language = "vi"
 frequency_rank = 395
 senses = ["to look, watch , observe, read, etc", "[Look at yourself!] What the heck are you doin'?"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "ạ"
-kind = "atom"
-gloss = ""
-category = "particle, verb"
-language = "vi"
-frequency_rank = 396
-senses = ["a particle at the end of the sentence to express formal politeness, especially to seniors", "to use the particle ạ when speaking to someone"]
 description = ""
 
 [[items]]
@@ -9512,17 +9402,6 @@ description = ""
 
 [[items]]
 type = "concept"
-name = "ngày mai"
-kind = "atom"
-gloss = ""
-category = "adverb"
-language = "vi"
-frequency_rank = 914
-senses = ["tomorrow", "the future"]
-description = ""
-
-[[items]]
-type = "concept"
 name = "truyền thống"
 kind = "atom"
 gloss = ""
@@ -12900,17 +12779,6 @@ description = ""
 
 [[items]]
 type = "concept"
-name = "hôm qua"
-kind = "atom"
-gloss = ""
-category = "noun"
-language = "vi"
-frequency_rank = 1225
-senses = ["yesterday"]
-description = ""
-
-[[items]]
-type = "concept"
 name = "quỹ"
 kind = "atom"
 gloss = ""
@@ -15272,17 +15140,6 @@ category = "noun"
 language = "vi"
 frequency_rank = 1441
 senses = ["sign, signal"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "ba"
-kind = "atom"
-gloss = ""
-category = "adjective, determiner, noun, numeral"
-language = "vi"
-frequency_rank = 1443
-senses = ["father", "wave; ripple", "three", "secondborn"]
 description = ""
 
 [[items]]

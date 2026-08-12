@@ -96,7 +96,7 @@ gloss = "there are two ways to say 'very', one before the word and one after"
 category = "rules"
 language = "vi"
 description = "Quy tắc: 'rất' đứng TRƯỚC tính từ, 'lắm' đứng SAU. 'Rất ngon' và 'ngon lắm' cùng nghĩa; 'ngon lắm' nghe thân mật và thường gặp hơn trong nói chuyện. Đừng dùng cả hai một lúc."
-pieces = ["ngon"]
+pieces = ["rất", "lắm", "ngon"]
 
 [[items]]
 type = "procedure"
@@ -106,7 +106,7 @@ gloss = "to compare, you add one word after the description"
 category = "rules"
 language = "vi"
 description = "Quy tắc: thêm 'hơn' ngay sau tính từ. 'Cà phê ngon hơn' — ngon hơn. Không đổi hình thức tính từ như 'good → better'. Muốn nói hơn cái gì thì đặt cái đó sau: 'ngon hơn nước'."
-pieces = ["ngon"]
+pieces = ["hơn", "ngon"]
 
 [[items]]
 type = "concept"
@@ -215,3 +215,102 @@ gloss = "money"
 category = "noun"
 language = "vi"
 description = "Danh từ. Đi cùng 'bao nhiêu' cho mọi việc mua bán. Người mới học cần nó trước hầu hết danh từ khác vì nó xuất hiện trong mọi cuộc trao đổi ngoài đường."
+
+[[items]]
+type = "concept"
+name = "của"
+kind = "atom"
+gloss = "belonging to"
+category = "function_word"
+language = "vi"
+description = "Nối vật với người sở hữu, và người sở hữu đứng SAU: 'cà phê của tôi'. Ngược thứ tự tiếng Anh. Trong nói chuyện thân mật hay được lược bỏ: 'tên tôi'."
+
+[[items]]
+type = "concept"
+name = "cũng"
+kind = "atom"
+gloss = "also"
+category = "function_word"
+language = "vi"
+description = "Đứng NGAY TRƯỚC động từ hoặc tính từ, không đứng cuối câu như 'too' trong tiếng Anh. 'Tôi cũng muốn ăn.'"
+
+[[items]]
+type = "concept"
+name = "hơn"
+kind = "atom"
+gloss = "more than"
+category = "function_word"
+language = "vi"
+description = "Đứng NGAY SAU tính từ để so sánh: 'ngon hơn'. Tính từ không đổi hình thức như 'good → better'."
+
+[[items]]
+type = "concept"
+name = "lắm"
+kind = "atom"
+gloss = "a lot, very"
+category = "function_word"
+language = "vi"
+description = "Đứng SAU tính từ: 'ngon lắm'. Cùng nghĩa với 'rất' đứng trước, nhưng nghe thân mật hơn và gặp nhiều hơn khi nói. Không dùng cả hai một lúc."
+
+[[items]]
+type = "concept"
+name = "cái"
+kind = "atom"
+gloss = "the counting word for things"
+category = "function_word"
+language = "vi"
+description = "Loại từ dùng cho đồ vật, chen giữa số và danh từ: 'hai cái bàn'. Với động vật thì dùng 'con'. Người mới học chọn sai loại từ vẫn được hiểu — đừng để nó chặn việc nói."
+
+[[items]]
+type = "concept"
+name = "các"
+kind = "atom"
+gloss = "the word that makes things plural"
+category = "function_word"
+language = "vi"
+description = "Đặt TRƯỚC danh từ để chỉ số nhiều: 'các bạn'. Danh từ tự nó không đổi. 'Những' cũng làm việc này nhưng chỉ một phần trong nhóm."
+
+[[items]]
+type = "concept"
+name = "ạ"
+kind = "atom"
+gloss = "the polite word at the end"
+category = "function_word"
+language = "vi"
+description = "Thêm ở CUỐI câu khi nói với người lớn tuổi hoặc trong hoàn cảnh trang trọng. 'Cảm ơn ạ.' Không đổi nghĩa, chỉ đổi thái độ — và người Việt để ý ngay."
+
+[[items]]
+type = "concept"
+name = "cho"
+kind = "atom"
+gloss = "to give"
+category = "verb"
+language = "vi"
+description = "Động từ 'đưa cho'. Mở ra cấu trúc xin đồ quan trọng nhất khi đi du lịch: 'cho tôi...' — đưa tôi. Lịch sự hơn nếu thêm 'ạ' ở cuối."
+
+[[items]]
+type = "concept"
+name = "hôm nay"
+kind = "atom"
+gloss = "today"
+category = "noun"
+language = "vi"
+description = "Từ chỉ thời gian. Quan trọng vì tiếng Việt bỏ 'đã/sẽ' khi trong câu đã có từ chỉ thời gian — nên biết những từ này là điều kiện để bỏ được các từ kia."
+
+[[items]]
+type = "concept"
+name = "ngày mai"
+kind = "atom"
+gloss = "tomorrow"
+category = "noun"
+language = "vi"
+description = "Từ chỉ thời gian tương lai. 'Ngày mai tôi ăn' đủ rõ, không cần 'sẽ'."
+
+[[items]]
+type = "concept"
+name = "hôm qua"
+kind = "atom"
+gloss = "yesterday"
+category = "noun"
+language = "vi"
+description = "Từ chỉ thời gian quá khứ. 'Hôm qua tôi ăn' đủ rõ, không cần 'đã'."
