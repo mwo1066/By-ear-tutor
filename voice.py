@@ -115,6 +115,27 @@ def split_by_voice(text: str, known_vn_words: frozenset[str] = frozenset()) -> l
         else:
             runs.append((key, pending + part))
             pending = ""
+    # A capitalised unaccented word that CONTINUES a Vietnamese run, with no
+    # sentence break in between, is a proper name inside that sentence. "Em tên
+    # là Nam." was coming out as Minh saying "Em tên là" and the English voice
+    # finishing with "Nam", mid-phrase.
+    #
+    # A property rather than a list of names: proper nouns carry no diacritics
+    # and there is no end to them, so _VN_BARE_WORDS could never cover them --
+    # and filling it with ambiguous bare words is exactly what made Minh
+    # pronounce "So" and "Do" earlier today. Capitalisation and adjacency are
+    # what actually distinguish a name here, and a sentence break ends the claim:
+    # "... is tên. Now you say it." keeps "Now" with the tutor.
+    merged: list[tuple[str, str]] = []
+    for key, chunk in runs:
+        if (merged and merged[-1][0] == "teacher" and key == "tutor"
+                and not any(c in merged[-1][1] for c in ".!?")
+                and len(chunk.split()) == 1 and chunk.strip(" .,!?").istitle()):
+            merged[-1] = ("teacher", merged[-1][1] + chunk)
+            continue
+        merged.append((key, chunk))
+    runs = merged
+
     if not runs and pending.strip():
         # No letters at all -- digits, or punctuation on its own. Still the
         # tutor's to say: dropping it would silently swallow "1975".

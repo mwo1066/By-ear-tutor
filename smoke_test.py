@@ -62,6 +62,16 @@ VOICE_CASES = [
     # pronouncing "So" and "Do" inside the tutor's own English sentences.
     ("So how would you say it?", [("tutor", "So how would you say it?")]),
     ("Do you want a coffee?", [("tutor", "Do you want a coffee?")]),
+    # 2026-08-11 -- a proper name has no diacritics, so it fell back to the
+    # English voice in the middle of Minh's own sentence: "Em tên là" then
+    # "Nam." in a woman's English accent.
+    ("The natural way is Em tên là Nam.",
+     [("tutor", "The natural way is"), ("teacher", "Em tên là Nam.")]),
+    ("Tôi tên là Nam.", [("teacher", "Tôi tên là Nam.")]),
+    # …and the same shape must NOT swallow the next sentence's first word.
+    ("In Vietnamese, the word for name is tên. Now you say it.",
+     [("tutor", "In Vietnamese, the word for name is"), ("teacher", "tên."),
+      ("tutor", "Now you say it.")]),
     # Digits are nobody's vocabulary but must still be spoken.
     ("I have 1975 words.", [("tutor", "I have 1975 words.")]),
 ]
