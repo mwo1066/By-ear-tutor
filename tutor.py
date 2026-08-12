@@ -1081,10 +1081,12 @@ def _lesson_note(lesson: dict) -> str:
         # rule 2 ("your turn ends at your question, never ask two"). A rule the
         # code can enforce does not belong in a prompt that argues with itself.
         lines.append(
-            "THEY SPOKE TO YOU, they did not answer a question. Reply to what they actually said, "
-            "briefly and warmly, and STOP. Teach nothing this turn, ask nothing about Vietnamese, "
-            "and do not say you failed to understand them — you understood them. The lesson picks "
-            "up by itself on your next turn."
+            "THEY SPOKE TO YOU, they did not answer a question. Reply to what they actually said "
+            "and STOP. If it was a real question about Vietnamese, ANSWER IT PROPERLY — that is "
+            "the one thing they asked you for, and a deflection is worse than a long answer. If it "
+            "was small talk, a sentence is plenty. Either way: do not move the lesson on, do not "
+            "ask them to say anything, and never tell them you did not understand — you did. The "
+            "lesson picks up by itself on your next turn."
         )
         return "\n".join(lines)
 

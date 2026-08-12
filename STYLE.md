@@ -193,6 +193,51 @@ tuteur. La longueur des digressions compte autant que leur fréquence.
 **Statut :** à mesurer d'abord. C'est l'idée qui a le plus de chances de changer
 la sensation du cours, et celle qu'il ne faut surtout pas régler à l'aveugle.
 
+### Demander qui est l'apprenant, pour lui enseigner SES pronoms
+*Proposé par Meo.*
+
+En vietnamien, le mot pour « je » dépend de qui parle à qui. Meo s'adressant à
+sa copine dit `anh` pour « je » et `em` pour « tu ». Ce ne sont pas des
+variantes exotiques : c'est ce qu'il dira tous les jours.
+
+Le cours enseigne aujourd'hui `tôi`, et sa propre fiche dit pourquoi c'est
+tiède :
+
+> *« 'tôi' đúng ngữ pháp nhưng lạnh »* — grammaticalement juste, mais froid.
+
+Puis il enseigne `anh`/`chị`/`em` dans l'abstrait, comme une règle à connaître.
+Si le cours savait qui vous êtes, ce ne serait plus une règle — ce serait **vos**
+mots.
+
+**Ce que ça débloque, et ce n'est pas qu'un mot :**
+
+- « je » devient `anh` ou `em` selon l'interlocuteur, au lieu du `tôi` neutre
+- la règle `cách chọn từ xưng hô` cesse d'être un tableau à mémoriser et devient
+  « pour vous, avec quelqu'un de plus jeune, vous êtes `anh` »
+- les phrases deviennent vraies : « tôi tên là Mathias » au lieu d'un prénom
+  inventé
+
+**Tiroir :** aucun des trois — c'est un **profil d'apprenant**, une donnée
+persistante qui n'existe pas encore. `state.json` ne connaît que des niveaux par
+mot. STATUS le signale déjà pour le nom ; l'âge et le genre sont le même champ.
+
+**Ce qu'il faut, au minimum :** une tranche d'âge et un genre. C'est ce qui
+détermine si vous êtes `anh`, `chị` ou `em` face à quelqu'un.
+
+**La limite honnête :** le système d'adresse dépend des DEUX personnes. Savoir
+qui vous êtes est nécessaire, pas suffisant — il faut aussi savoir à qui vous
+parlez. Mais le cours peut dire « avec quelqu'un de plus jeune, vous êtes
+`anh` », ce qui est infiniment plus concret que la règle générale.
+
+**Comment le demander :** le cours enseigne déjà `bạn tên là gì?` — « comment
+tu t'appelles ? ». Il pose la question pour de vrai et garde la réponse. L'âge
+a son item aussi (`Tôi ... tuổi`). Le cours contient donc déjà les questions qui
+remplissent son propre profil.
+
+**Statut :** à faire. C'est probablement la personnalisation la plus rentable de
+toute la langue — le système d'adresse est ce qui distingue quelqu'un qui parle
+vietnamien de quelqu'un qui récite du vietnamien.
+
 ### Ne pas féliciter à chaque fois
 *Observé pendant les séances du 11 août.*
 
