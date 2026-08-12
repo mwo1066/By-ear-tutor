@@ -147,6 +147,32 @@ TALKING_CASES = [
 ]
 
 
+# (what was heard, the target, should it count). Every one of these came out of
+# a real session. A recogniser feeding a beginner through a noisy microphone is
+# the normal case, so the bar is generous on purpose -- but not so generous that
+# a single letter, or one shared letter out of two, records a word as known.
+ANSWER_CASES = [
+    ("Dạ", "là", False),        # one shared letter out of two: was accepted, level went to 7
+    ("D", "đi", False),         # a single letter is not a word
+    ("Đôi", "tôi", True),       # two of three: a real recognition
+    ("toi", "tôi", True),
+    ("Thôi", "tôi", True),
+    ("Chí", "chị", True),
+    ("moon", "muốn", True),
+    ("Tết", "thích", False),
+]
+
+
+def check_answer_cases() -> int:
+    failed = 0
+    for said, target, expected in ANSWER_CASES:
+        if tutor.answered_target(f"[lang:vi] {said}", target) != expected:
+            verb = "counted" if expected else "refused"
+            print(f"FAIL — {said!r} against {target!r} should be {verb}")
+            failed += 1
+    return failed
+
+
 def check_talking_cases() -> int:
     failed = 0
     for text, lang, expected in TALKING_CASES:
@@ -212,7 +238,7 @@ def main(NO_INTRO=False) -> int:
     vocab = tutor._vocab_words(roster)
     if (check_voice_cases(vocab) + check_leak_cases() + check_error_cases()
             + check_talking_cases() + check_derived_pieces(roster)
-            + check_spoken_targets()):
+            + check_spoken_targets() + check_answer_cases()):
         return 1
 
     turns = {"n": 0}
@@ -313,7 +339,7 @@ def main(NO_INTRO=False) -> int:
     print(f"OK — {len(VOICE_CASES)} voice + "
           f"{len(STAGE_DIRECTIONS) + len(NOT_STAGE_DIRECTIONS)} stage-direction + "
           f"{len(LEAK_CASES)} leak + {len(ERROR_CASES)} api-error + "
-          f"{len(TALKING_CASES)} transcription case(s) still pass, "
+          f"{len(TALKING_CASES)} transcription + {len(ANSWER_CASES)} answer case(s) still pass, "
           f"pieces re-derived for every hand-written sentence")
     print(f"OK — session completed, {len(SPOKEN)} passages spoken, {len(steps)} model step(s) served, "
           f"{len(scripted)} turn(s) written by the code, {len(told)} listen(s) told which word to expect")

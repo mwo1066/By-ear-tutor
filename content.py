@@ -102,6 +102,12 @@ def check_roster(items: list[Item]) -> list[str]:
         # English gloss would quietly undo that.
         if i.kind != "rule" and i.gloss and i.name.lower() in i.gloss.lower():
             problems.append(f"{i.name}: its own name appears in its gloss {i.gloss!r} — the recall would give the answer away")
+        # A gloss that IS an English question word collides with the frame the
+        # question is asked in: "And what — what was the word?" reads as two
+        # questions. One item hit this; the frequency import will bring who,
+        # why, how and where along behind it.
+        if i.gloss.strip().lower() in {"what", "who", "where", "when", "why", "how", "which"}:
+            problems.append(f"{i.name}: gloss {i.gloss!r} is a question word — it collides with the question asked around it")
         if i.kind == "construction" and not i.pieces:
             problems.append(f"{i.name}: construction with no pieces listed")
         for p in i.pieces:

@@ -893,9 +893,12 @@ _REPEAT_ASK = (
 _REPEAT_ASK_SHORT = (
     "And again — what was the word for {ask}?",
     "Once more — the word for {ask}?",
-    "And {ask} — what was the word?",
     "So, the word for {ask}?",
 )
+# The inverted form, "And {ask} — what was the word?", is gone. It was the
+# weakest of the four and it broke outright on a gloss that is itself a question
+# word: "And what — what was the word?" reads as two questions and neither can
+# be answered.
 _ACK_CORRECT = ("That's it.", "Yes, that's it.", "Good.", "Exactly.", "That's the one.")
 _RETRY_ASK = ("And again?", "So once more?", "Again?")
 
@@ -1189,6 +1192,19 @@ def _should_retry(step, user_text: str, lesson: dict) -> bool:
     return not answered_target(user_text, step.target)
 
 
+# Below this many letters, a target needs a closer match. difflib is coarse on
+# short strings: against a two-letter word, sharing ONE letter scores exactly
+# 0.50 and clears the threshold. Live, "Dạ" was accepted as "là" and pushed it
+# to level 7 -- the learner had said something else entirely and the word was
+# recorded as consolidated.
+SHORT_TARGET_LETTERS = 3
+# Placed in the gap, not at its edge. Measured on the two cases that matter:
+# "Dạ" against "là" scores 0.50 and must fail; "Đôi" against "tôi" scores 0.667
+# and must pass -- it is a real recognition, two of three letters. 0.67 rejected
+# it by a hair.
+SHORT_TARGET_THRESHOLD = 0.60
+
+
 def answered_target(user_text: str, target: str) -> bool:
     """Whether the learner's turn contains the word that was asked for.
 
@@ -1202,7 +1218,14 @@ def answered_target(user_text: str, target: str) -> bool:
         return True
     if want in said:
         return True
-    return difflib.SequenceMatcher(None, said, want).ratio() >= ANSWER_MATCH_THRESHOLD
+    # A single letter is not a word, whatever it scores. "D" against "đi" rates
+    # 0.67 -- the same as a genuine "Đôi" for "tôi" -- because one of two letters
+    # matched. Live, that recorded a word as said when the recogniser had heard
+    # a fragment.
+    if len(said) < 2 <= len(want):
+        return False
+    floor = SHORT_TARGET_THRESHOLD if len(want) <= SHORT_TARGET_LETTERS else ANSWER_MATCH_THRESHOLD
+    return difflib.SequenceMatcher(None, said, want).ratio() >= floor
 
 
 _QUESTION_MARK = re.compile(r"\?\s*$")

@@ -323,6 +323,19 @@ du mot montait et où le tuteur disait « I didn't catch that » dans le même
 souffle.
 **Changer :** `tutor.py` → `_lesson_note`
 
+### 19b. Une seule lettre, ou une seule lettre commune, ne suffit pas
+En dessous de trois lettres, la cible exige une correspondance plus serrée
+(0,60), et une réponse d'un seul caractère est refusée quel que soit son score.
+**Où :** code — `SHORT_TARGET_LETTERS`, `SHORT_TARGET_THRESHOLD`
+**Pourquoi :** `difflib` est grossier sur les chaînes courtes. Face à un mot de
+deux lettres, en partager UNE score exactement 0,50 et franchit le seuil. Vu en
+séance : « Dạ » accepté pour « là », niveau poussé à 7 — l'apprenant avait dit
+autre chose et le mot a été enregistré comme consolidé. Et « D » valait « đi »,
+au même score qu'un vrai « Đôi » pour « tôi ».
+**Le seuil est placé dans l'écart, pas à son bord :** 0,50 doit échouer, 0,667
+doit passer. 0,67 refusait « Đôi » d'un cheveu.
+**Changer :** `tutor.py` → `SHORT_TARGET_THRESHOLD`
+
 ### 19. Une réponse reconnaissable est correcte
 « Toi » pour tôi, un accent manquant, une transcription approximative : tout
 cela est juste. On confirme et on avance. Jamais reposer la question qu'on
