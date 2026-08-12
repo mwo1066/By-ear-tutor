@@ -274,6 +274,65 @@ construire l'habitude « tôi = I » qu'il faudra défaire à l'item 11.
 toute la langue — le système d'adresse est ce qui distingue quelqu'un qui parle
 vietnamien de quelqu'un qui récite du vietnamien.
 
+### Les mots qu'on reconnaît déjà — la couche française
+*Proposé par Meo.*
+
+Y a-t-il des mots vietnamiens qu'un anglophone reconnaît ? **Oui, mais pas par
+l'anglais : par le français.** La colonisation a laissé une couche d'emprunts,
+et une partie d'entre eux passe aussi en anglais.
+
+Vérifié en ligne le 11 août ([Vietcetera], [Saigoneer], [Berlitz]) :
+
+```
+cà phê    ← café          reconnaissable en anglais aussi
+xà lách   ← salade        salad
+xiếc      ← cirque        circus
+cà rem    ← crème         cream
+pa tê     ← pâté          l'anglais l'emploie tel quel
+ga tô     ← gâteau
+ti vi     ← TV            emprunt direct à l'anglais
+```
+
+Et ceux qui ne marchent **que** pour un francophone :
+
+```
+xà phòng  ← savon      bơ  ← beurre      phô mát ← fromage
+ga        ← gare       ốp la ← œuf au plat
+```
+
+**Deux d'entre eux sont déjà dans votre roster** : `cà phê` et `ga`.
+
+**Tiroir :** un champ sur l'item → c'est le `hook`, troisième forme après le
+fait et la décomposition.
+
+**⚠ Ça contredit une règle du prompt**, et la contradiction est instructive :
+
+> *« Vietnamese shares almost no vocabulary with English, so **never invite
+> cognate guesses**. »*
+
+Cette règle a raison sur le fond — un apprenant ne peut **pas deviner**, et un
+modèle laissé libre inventerait des faux amis. Mais elle interdit aussi de
+signaler un emprunt réel quand il y en a un.
+
+La résolution est celle de tout le reste : **ne pas laisser le modèle
+improviser, mettre l'emprunt vérifié dans le `hook`.** Interdire les devinettes
+et fournir les faits sont deux choses différentes. Si on câble ça, la règle du
+prompt doit être reformulée en même temps — sinon elle se battra contre les
+hooks, comme le prompt s'est battu contre les tons.
+
+**Et ça dépend de la langue de l'apprenant, pas de celle du cours.** La liste
+est bien plus riche pour un francophone — et Meo l'est. Le cours se donne en
+anglais, donc aujourd'hui on ne peut viser que l'intersection. Connaître la
+langue maternelle de l'apprenant débloquerait la couche entière : encore une
+chose que le profil rendrait possible.
+
+**Statut :** à câbler avec les hooks, en reformulant la règle du prompt le même
+jour.
+
+[Vietcetera]: https://vietcetera.com/en/cocottes-curated-guide-to-french-loanwords-in-vietnamese
+[Saigoneer]: https://saigoneer.com/saigon-culture/1160-words-loaned-by-the-french-borrowed-by-the-vietnamese
+[Berlitz]: https://berlitzvietnamonline.com/blogs/news/french-words-in-everyday-vietnamese
+
 ### Ne pas féliciter à chaque fois
 *Observé pendant les séances du 11 août.*
 
