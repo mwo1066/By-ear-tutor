@@ -28,6 +28,51 @@ language = "vi"
 description = "Động từ: uống. Thanh sắc — giọng lên. 'Em muốn uống.'"
 
 [[items]]
+type = "concept"
+name = "đã"
+kind = "atom"
+gloss = "did, in the past"
+category = "verb"
+language = "vi"
+description = "Từ đánh dấu việc đã xong, đặt NGAY TRƯỚC động từ. 'Tôi ăn cơm' thành 'Tôi đã ăn cơm'. Không bắt buộc: người Việt bỏ nó suốt khi câu đã có 'hôm qua' hoặc khi ngữ cảnh đã rõ. Dạy nó vì người học không thể nói về quá khứ nếu không có nó."
+
+[[items]]
+type = "concept"
+name = "đang"
+kind = "atom"
+gloss = "right now, in the middle of"
+category = "verb"
+language = "vi"
+description = "Từ đánh dấu việc đang diễn ra, đặt NGAY TRƯỚC động từ. 'Tôi đang ăn cơm' — tôi đang ăn ngay lúc này. Cùng vị trí với 'đã' và 'sẽ', nên dạy ba cái liền nhau: chỉ chữ ở giữa đổi."
+
+[[items]]
+type = "concept"
+name = "sẽ"
+kind = "atom"
+gloss = "will"
+category = "verb"
+language = "vi"
+description = "Từ đánh dấu tương lai, đặt NGAY TRƯỚC động từ. 'Tôi sẽ ăn cơm'. Cũng không bắt buộc — 'ngày mai' một mình là đủ. Ba từ đã/đang/sẽ chiếm cùng một chỗ, đó là điều dễ nhất trong hệ thống thì của tiếng Việt."
+
+[[items]]
+type = "concept"
+name = "rồi"
+kind = "atom"
+gloss = "already"
+category = "verb"
+language = "vi"
+description = "Khác ba từ kia: 'rồi' đứng ở CUỐI câu, không đứng trước động từ. 'Tôi ăn cơm rồi' — tôi ăn xong rồi. Trong nói chuyện hằng ngày, 'rồi' gặp nhiều hơn 'đã' rất nhiều, nên nó đáng dạy sớm."
+
+[[items]]
+type = "concept"
+name = "chưa"
+kind = "atom"
+gloss = "not yet"
+category = "verb"
+language = "vi"
+description = "Hai việc, một chữ. Trước động từ: chưa làm — 'Tôi chưa ăn'. Cuối câu: thành câu hỏi — 'Bạn ăn chưa?' nghĩa là 'bạn ăn chưa?'. Cặp với 'rồi': hỏi bằng 'chưa', trả lời bằng 'rồi'."
+
+[[items]]
 type = "procedure"
 name = "muốn + [động từ]"
 kind = "construction"

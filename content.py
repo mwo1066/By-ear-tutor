@@ -98,6 +98,15 @@ def check_roster(items: list[Item]) -> list[str]:
     """
     known = {i.name for i in items}
     problems = []
+    # Two items with the same name is silent damage: the loader reads files in
+    # filename order, so the LAST one wins -- a hand-written word with a gloss
+    # was being shadowed by its own entry in the frequency stock, which has
+    # none, and the word simply stopped being teachable.
+    seen_names: set[str] = set()
+    for i in items:
+        if i.name in seen_names:
+            problems.append(f"{i.name}: defined twice — the later file silently wins")
+        seen_names.add(i.name)
     for i in items:
         if i.kind not in KINDS:
             problems.append(f"{i.name}: unknown kind {i.kind!r}")

@@ -107,3 +107,111 @@ category = "rules"
 language = "vi"
 description = "Quy tắc: thêm 'hơn' ngay sau tính từ. 'Cà phê ngon hơn' — ngon hơn. Không đổi hình thức tính từ như 'good → better'. Muốn nói hơn cái gì thì đặt cái đó sau: 'ngon hơn nước'."
 pieces = ["ngon"]
+
+[[items]]
+type = "concept"
+name = "hiểu"
+kind = "atom"
+gloss = "to understand"
+category = "verb"
+language = "vi"
+description = "Động từ. 'Tôi không hiểu' là câu sống còn của người mới học — nói được câu đó là đã mở được cuộc nói chuyện thay vì bỏ chạy. Dạy sớm, ngay sau 'không'."
+
+[[items]]
+type = "concept"
+name = "biết"
+kind = "atom"
+gloss = "to know"
+category = "verb"
+language = "vi"
+description = "Động từ. Cặp với 'hiểu': 'tôi không biết' khi thiếu thông tin, 'tôi không hiểu' khi không nghe kịp. Cũng dùng cho khả năng: 'tôi biết nói tiếng Việt'."
+
+[[items]]
+type = "concept"
+name = "nói"
+kind = "atom"
+gloss = "to speak"
+category = "verb"
+language = "vi"
+description = "Động từ. Mở ra câu hỏi quan trọng nhất khi đi du lịch: hỏi người đối diện có nói được tiếng của mình không. Đi cùng tên ngôn ngữ: 'nói tiếng Anh'."
+
+[[items]]
+type = "concept"
+name = "ở"
+kind = "atom"
+gloss = "at, in"
+category = "function_word"
+language = "vi"
+description = "Giới từ chỉ nơi chốn, đứng trước địa điểm. 'Tôi ở Hà Nội.' Ghép thẳng với 'đâu' thành câu hỏi hay dùng nhất khi đi lại: '... ở đâu?'."
+
+[[items]]
+type = "concept"
+name = "đâu"
+kind = "atom"
+gloss = "what place"
+category = "function_word"
+language = "vi"
+description = "Từ để hỏi nơi chốn, đứng ở CUỐI câu như mọi từ để hỏi khác. 'Khách sạn ở đâu?' Đây là câu hỏi mà người đi du lịch dùng nhiều nhất."
+
+[[items]]
+type = "concept"
+name = "bao nhiêu"
+kind = "atom"
+gloss = "how much"
+category = "function_word"
+language = "vi"
+description = "Từ để hỏi số lượng hoặc giá, đứng cuối câu. 'Cái này bao nhiêu?' Không có nó thì không mua được gì — nên nó đi trước cả các con số."
+
+[[items]]
+type = "concept"
+name = "được"
+kind = "atom"
+gloss = "can, okay"
+category = "verb"
+language = "vi"
+description = "Đứng SAU động từ để nói làm được: 'tôi nói được'. Đứng một mình nghĩa là 'được thôi, ok'. Rất hay gặp, và vị trí sau động từ là chỗ người học hay đặt sai vì tiếng Anh đặt 'can' ở trước."
+
+[[items]]
+type = "concept"
+name = "ai"
+kind = "atom"
+gloss = "what person"
+category = "function_word"
+language = "vi"
+description = "Từ để hỏi người, đứng đúng chỗ của câu trả lời. 'Ai ăn cơm?' hoặc 'Bạn là ai?'. Cùng họ với 'gì' và 'đâu'."
+
+[[items]]
+type = "concept"
+name = "rất"
+kind = "atom"
+gloss = "very"
+category = "function_word"
+language = "vi"
+description = "Đứng TRƯỚC tính từ. 'Rất ngon.' Có một cách khác là 'lắm' đứng sau — 'ngon lắm' — nghe thân mật hơn và hay gặp hơn trong nói chuyện."
+
+[[items]]
+type = "concept"
+name = "nhưng"
+kind = "atom"
+gloss = "but"
+category = "function_word"
+language = "vi"
+description = "Liên từ nối hai câu, đứng giữa. Cùng với 'và', đây là hai từ cho phép nói một câu dài hơn một ý — bước đầu để không chỉ trả lời bằng từng mẩu."
+
+[[items]]
+type = "concept"
+name = "cần"
+kind = "atom"
+gloss = "to need"
+category = "verb"
+language = "vi"
+description = "Động từ, dùng giống 'muốn' nhưng mạnh hơn và ít khách sáo hơn khi nhờ vả. 'Tôi cần...' Ghép thẳng với danh từ hoặc động từ."
+
+[[items]]
+type = "concept"
+name = "tiền"
+kind = "atom"
+gloss = "money"
+category = "noun"
+language = "vi"
+description = "Danh từ. Đi cùng 'bao nhiêu' cho mọi việc mua bán. Người mới học cần nó trước hầu hết danh từ khác vì nó xuất hiện trong mọi cuộc trao đổi ngoài đường."

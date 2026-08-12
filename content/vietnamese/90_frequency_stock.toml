@@ -19,28 +19,6 @@ description = ""
 
 [[items]]
 type = "concept"
-name = "được"
-kind = "atom"
-gloss = ""
-category = "interjection, particle, verb"
-language = "vi"
-frequency_rank = 8
-senses = ["to gain, to win", "to obtain, to get", "to be ; to benefit from", "may; must"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "đã"
-kind = "atom"
-gloss = ""
-category = "particle, verb"
-language = "vi"
-frequency_rank = 9
-senses = ["having completed this action, perfect aspect", "having reached this state", "indicates an action has been initiated", "irrealis, used in a statement that did not come about due to a condition not being met"]
-description = ""
-
-[[items]]
-type = "concept"
 name = "cho"
 kind = "atom"
 gloss = ""
@@ -48,17 +26,6 @@ category = "particle, preposition, verb"
 language = "vi"
 frequency_rank = 10
 senses = ["to give", "to let; to make; to cause", "to let; to allow; to permit", "to put; to add"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "sẽ"
-kind = "atom"
-gloss = ""
-category = "particle"
-language = "vi"
-frequency_rank = 11
-senses = ["marks the future tense", "marks a desire or a hypothetical"]
 description = ""
 
 [[items]]
@@ -162,17 +129,6 @@ description = ""
 
 [[items]]
 type = "concept"
-name = "rồi"
-kind = "atom"
-gloss = ""
-category = "adjective, adverb, interjection, particle, verb"
-language = "vi"
-frequency_rank = 26
-senses = ["already", "then; afterwards", "to finish", "last ; that just passed"]
-description = ""
-
-[[items]]
-type = "concept"
 name = "ta"
 kind = "atom"
 gloss = ""
@@ -191,17 +147,6 @@ category = "particle, pronoun"
 language = "vi"
 frequency_rank = 28
 senses = ["this place here", "this thing/person", "emphasizes the very thing or person here", "forms a question expressing uncertainty or doubt"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "biết"
-kind = "atom"
-gloss = ""
-category = "verb"
-language = "vi"
-frequency_rank = 30
-senses = ["to know; to be aware of", "to learn about; to realize", "to know how to; to be able to", "to have a taste for"]
 description = ""
 
 [[items]]
@@ -305,28 +250,6 @@ description = ""
 
 [[items]]
 type = "concept"
-name = "nhưng"
-kind = "atom"
-gloss = ""
-category = "conjunction"
-language = "vi"
-frequency_rank = 40
-senses = ["but; yet"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "nói"
-kind = "atom"
-gloss = ""
-category = "verb"
-language = "vi"
-frequency_rank = 41
-senses = ["to speak, to talk, to say, to tell"]
-description = ""
-
-[[items]]
-type = "concept"
 name = "có thể"
 kind = "atom"
 gloss = ""
@@ -356,17 +279,6 @@ category = "conjunction, particle"
 language = "vi"
 frequency_rank = 44
 senses = ["but; however; nevertheless", "where", "which, whom, that", "Final affirmative particle, indicating emphasis or contrast"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "đang"
-kind = "atom"
-gloss = ""
-category = "particle"
-language = "vi"
-frequency_rank = 45
-senses = ["marks the continuous, imperfect aspect of an action or state"]
 description = ""
 
 [[items]]
@@ -488,17 +400,6 @@ category = "adjective, adverb, noun, verb"
 language = "vi"
 frequency_rank = 58
 senses = ["why", "how", "what; what is it; what now", "whatever"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "rất"
-kind = "atom"
-gloss = ""
-category = "adverb"
-language = "vi"
-frequency_rank = 59
-senses = ["very"]
 description = ""
 
 [[items]]
@@ -635,28 +536,6 @@ description = ""
 
 [[items]]
 type = "concept"
-name = "cần"
-kind = "atom"
-gloss = ""
-category = "noun, verb"
-language = "vi"
-frequency_rank = 72
-senses = ["to need", "water parsnip", "pole; rod", "Short for cần sa"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "đâu"
-kind = "atom"
-gloss = ""
-category = "adverb, particle"
-language = "vi"
-frequency_rank = 73
-senses = ["where", "from wherever", "no; not", "reinforces negation"]
-description = ""
-
-[[items]]
-type = "concept"
 name = "nhà"
 kind = "atom"
 gloss = ""
@@ -723,17 +602,6 @@ description = ""
 
 [[items]]
 type = "concept"
-name = "ai"
-kind = "atom"
-gloss = ""
-category = "pronoun"
-language = "vi"
-frequency_rank = 80
-senses = ["who", "whoever", "someone else", "one, a person"]
-description = ""
-
-[[items]]
-type = "concept"
 name = "theo"
 kind = "atom"
 gloss = ""
@@ -774,17 +642,6 @@ category = "prefix"
 language = "vi"
 frequency_rank = 84
 senses = ["weeping and gnashing the teeth"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "chưa"
-kind = "atom"
-gloss = ""
-category = "particle"
-language = "vi"
-frequency_rank = 85
-senses = ["not yet", "yet"]
 description = ""
 
 [[items]]
@@ -1493,17 +1350,6 @@ description = ""
 
 [[items]]
 type = "concept"
-name = "tiền"
-kind = "atom"
-gloss = ""
-category = "noun, prefix"
-language = "vi"
-frequency_rank = 153
-senses = ["money", "pre-", "early"]
-description = ""
-
-[[items]]
-type = "concept"
 name = "lắm"
 kind = "atom"
 gloss = ""
@@ -1588,17 +1434,6 @@ category = "adjective, adverb, preposition"
 language = "vi"
 frequency_rank = 163
 senses = ["outside", "out", "in/at", "in"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "hiểu"
-kind = "atom"
-gloss = ""
-category = "verb"
-language = "vi"
-frequency_rank = 165
-senses = ["to understand, to know"]
 description = ""
 
 [[items]]
@@ -5361,17 +5196,6 @@ category = "noun"
 language = "vi"
 frequency_rank = 515
 senses = ["foundation; base; basis", "enterprise; organ; office premises"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "bao nhiêu"
-kind = "atom"
-gloss = ""
-category = "pronoun"
-language = "vi"
-frequency_rank = 516
-senses = ["how many?", "how much?"]
 description = ""
 
 [[items]]
@@ -11191,17 +11015,6 @@ category = "noun"
 language = "vi"
 frequency_rank = 1051
 senses = ["back"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "Được"
-kind = "atom"
-gloss = ""
-category = "proper noun"
-language = "vi"
-frequency_rank = 1052
-senses = ["to gain, to win", "to obtain, to get", "to be ; to benefit from", "may; must"]
 description = ""
 
 [[items]]
