@@ -333,6 +333,53 @@ jour.
 [Saigoneer]: https://saigoneer.com/saigon-culture/1160-words-loaned-by-the-french-borrowed-by-the-vietnamese
 [Berlitz]: https://berlitzvietnamonline.com/blogs/news/french-words-in-everyday-vietnamese
 
+### Dire de temps en temps ce qu'on sait déjà dire
+*Observé pendant les séances du 11 août.*
+
+Le cours ne fait **jamais** l'inventaire. Mot, question, mot, question — et à
+aucun moment quelqu'un dit *« vous avez maintenant treize mots, et avec ça vous
+savez déjà dire votre nom, demander celui des autres, et dire que quelque chose
+n'est pas quelque chose »*.
+
+C'est la signature la plus citée de la méthode de référence, et elle est
+totalement absente ici.
+
+**Ce n'est pas de la flatterie, c'est un fait.** Le code le calcule exactement,
+sans rien inventer — vérifié le 11 août :
+
+```
+après  5 items :  3 mots, et vous savez dire « my name is ___ »
+après 12 items :  8 mots, plus « what is your name? »
+après 20 items : 13 mots, 3 phrases — et vous avez déjà tout
+                 pour « want ___ », qui n'a pas encore été enseignée
+```
+
+Cette dernière ligne est la plus intéressante : le code sait quelles phrases
+sont **déjà déblocables** parce que toutes leurs pièces sont apprises. Dire
+« vous avez déjà tout ce qu'il faut pour la suivante » est une promesse tenue
+d'avance.
+
+**Tiroir :** une **étape** dans `build_plan`, insérée tous les N items — le
+même véhicule que la digression du carnet, et le même argument de rythme : un
+tour long qui raconte, entre des rappels courts.
+
+**Ce qui joue pour :** c'est le seul retour d'ensemble que l'apprenant puisse
+recevoir. Aujourd'hui il n'a que « That's it » au tour par tour, qui ne dit rien
+de la trajectoire. Et un cours par la voix n'a aucun tableau de bord — pas
+d'écran, pas de barre de progression : s'il ne le dit pas, personne ne le sait.
+
+**Ce qui joue contre :** la même chose que pour la digression — un tour sans
+question dépense de la synthèse sans faire parler l'apprenant. Et à 2000 mots
+l'inventaire devient absurde : il faudra compter plutôt qu'énumérer, ou ne citer
+que ce qui vient d'être débloqué.
+
+**La mesure qui décide :** à quelle fréquence le cours de référence fait-il cet
+inventaire ? Toutes les cinq minutes, à chaque fin de section, une seule fois ?
+Et cite-t-il les phrases ou seulement le nombre ?
+
+**Statut :** à mesurer. C'est la moins chère des trois idées de rythme — le
+calcul existe, il n'y a rien à écrire comme contenu.
+
 ### Ne pas féliciter à chaque fois
 *Observé pendant les séances du 11 août.*
 
