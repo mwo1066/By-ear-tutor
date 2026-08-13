@@ -143,6 +143,33 @@ def load_personal_items(content_dir: Path) -> list[Item]:
     return [Item(**entry) for entry in raw]
 
 
+def load_course(content_dir: Path) -> list[Item]:
+    """Everything teachable, curated first, with no name taught twice.
+
+    `add_personal_items` refuses a name the roster already has, but only at the
+    moment it is written -- it cannot defend against the roster GROWING later
+    onto a name a live session already claimed. That happened to "đi" and "xin
+    lỗi": generated in an earlier session, then hand-written into the roster.
+
+    A duplicate is not a cosmetic defect. `unknown_pieces` matches pieces by
+    name, so the personal copy satisfies a rule's prerequisite while the roster
+    copy is still queued -- and the rule gets taught before the word it is made
+    of, which is the ONE guarantee the sequencing exists to make. Measured on
+    the roster: the composition rule landed at 152 with its own piece "đi" not
+    due until 182.
+
+    Curated wins: it carries the hand-written description and gloss, where the
+    personal copy is whatever the model produced mid-lesson.
+
+    Every caller that needs the whole course must use this rather than
+    concatenating the two loaders, which is what let the collision through in
+    seven separate places.
+    """
+    roster = load_roster(content_dir)
+    claimed = {i.name for i in roster}
+    return roster + [i for i in load_personal_items(content_dir) if i.name not in claimed]
+
+
 def save_personal_items(content_dir: Path, items: list[Item]) -> None:
     path = content_dir / PERSONAL_ITEMS_FILENAME
     path.write_text(

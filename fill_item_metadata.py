@@ -25,7 +25,7 @@ from pathlib import Path
 
 sys.stdout.reconfigure(encoding="utf-8")
 
-from content import (
+from content import (load_course, 
     KINDS, PERSONAL_ITEMS_FILENAME, derive_pieces, load_personal_items, load_roster,
 )
 from tutor import CONTENT_DIR, call_llm, load_api_key
@@ -335,7 +335,7 @@ def main() -> int:
 
     # Offline and free, so it goes first and always: no point paying a model to
     # annotate items whose structural field is wrong.
-    total = repair_pieces(personal, load_roster(CONTENT_DIR) + load_personal_items(CONTENT_DIR), write)
+    total = repair_pieces(personal, load_course(CONTENT_DIR), write)
 
     total += sum(fill_toml(path, api_key, all_names, write) for path in lesson_files)
     if personal.exists():

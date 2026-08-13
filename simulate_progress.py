@@ -28,7 +28,7 @@ from collections import Counter
 
 sys.stdout.reconfigure(encoding="utf-8")
 
-from content import is_teachable, load_personal_items, load_roster, pick_next_index, pieces_of
+from content import load_course, is_teachable, load_personal_items, load_roster, pick_next_index, pieces_of
 from srs import ProgressStore
 from tutor import CONTENT_DIR, STATE_PATH, _recall_targets, build_plan
 
@@ -52,7 +52,7 @@ def run_until(match, seed: int = 7):
     what gets written is a place the tutor could actually be standing.
     """
     random.seed(seed)
-    roster = load_roster(CONTENT_DIR) + load_personal_items(CONTENT_DIR)
+    roster = load_course(CONTENT_DIR)
     store = ProgressStore(None)
     queue = [i for i in roster if is_teachable(i)]
     seen: list = []
@@ -81,7 +81,7 @@ def run_until_kind(kind: str, seed: int = 7):
     place the tutor could actually be standing.
     """
     random.seed(seed)
-    roster = load_roster(CONTENT_DIR) + load_personal_items(CONTENT_DIR)
+    roster = load_course(CONTENT_DIR)
     store = ProgressStore(None)
     queue = [i for i in roster if is_teachable(i)]
     seen: list = []
@@ -105,7 +105,7 @@ def run_until_kind(kind: str, seed: int = 7):
 
 def run(turns: int, seed: int = 7) -> ProgressStore:
     random.seed(seed)
-    roster = load_roster(CONTENT_DIR) + load_personal_items(CONTENT_DIR)
+    roster = load_course(CONTENT_DIR)
     store = ProgressStore(None)  # in memory; written only if asked
     queue = [i for i in roster if is_teachable(i)]
     seen: list = []

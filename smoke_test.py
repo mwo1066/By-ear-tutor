@@ -11,6 +11,7 @@ Not a test of behaviour -- it asserts the machine turns over, nothing more.
 
 Run: python smoke_test.py
 """
+import random
 import sys
 from pathlib import Path
 
@@ -248,6 +249,41 @@ def check_voice_cases(vocab) -> int:
     return failed
 
 
+def check_prerequisite_order() -> int:
+    """Nothing may be taught before the words it is made of -- run over the
+    WHOLE course, not a sample.
+
+    This is the one guarantee the sequencing exists to provide, and the only
+    one the prompt could never make on its own. It broke silently: "đi" existed
+    both in the roster and in the personal items, so a rule's prerequisite was
+    satisfied by the personal copy while the roster copy was still queued, and
+    the composition rule came out at 152 with its own piece not due until 182.
+    Nothing failed, nothing printed -- the lesson would simply have taught a
+    rule about a word the learner had never heard.
+
+    Replays the real sequencing to the end rather than checking the declared
+    fields, because the fields were all correct; it was the ORDER they produced
+    that was wrong.
+    """
+    random.seed(7)
+    queue = [i for i in content.load_course(tutor.CONTENT_DIR) if content.is_teachable(i)]
+    seen: list = []
+    order = []
+    while queue:
+        item = queue.pop(content.pick_next_index(queue, seen))
+        seen.append(item)
+        order.append(item)
+    at = {i.name: n for n, i in enumerate(order)}
+    failed = 0
+    for n, item in enumerate(order):
+        late = [p for p in item.pieces if at.get(p, -1) > n]
+        if late:
+            print(f"FAIL — {item.name!r} is taught at {n} but needs "
+                  + ", ".join(f"{p!r} (taught at {at[p]})" for p in late))
+            failed += 1
+    return failed
+
+
 def main(NO_INTRO=False) -> int:
     # Offline and instant, so it runs first: no point exercising the lesson
     # loop if the voices are wrong about who says what.
@@ -255,7 +291,8 @@ def main(NO_INTRO=False) -> int:
     vocab = tutor._vocab_words(roster)
     if (check_voice_cases(vocab) + check_leak_cases() + check_error_cases()
             + check_talking_cases() + check_derived_pieces(roster)
-            + check_spoken_targets() + check_answer_cases()):
+            + check_spoken_targets() + check_answer_cases()
+            + check_prerequisite_order()):
         return 1
 
     turns = {"n": 0}

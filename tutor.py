@@ -26,7 +26,7 @@ from pathlib import Path
 sys.stdout.reconfigure(encoding="utf-8")
 sys.stdin.reconfigure(encoding="utf-8")
 
-from content import (
+from content import (load_course, 
     Item, load_persona_system_prompt, load_roster, load_personal_items,
     add_personal_items, address_situations, askable, check_roster, derive_pieces,
     has_person_slot, is_teachable, pieces_of, pick_next_index,
@@ -1784,7 +1784,7 @@ def run_session(fresh: bool = False, no_intro: bool = False):
     # brand-new session on "Rất vui được gặp bạn", a five-word phrase whose
     # words had never been taught. pick_next_index guards this properly now;
     # the order here just stops the guard from having to fight the queue.
-    roster = load_roster(CONTENT_DIR) + load_personal_items(CONTENT_DIR)
+    roster = load_course(CONTENT_DIR)
     store = ProgressStore(None if fresh else STATE_PATH)
 
     today = date.today()

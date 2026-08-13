@@ -19,7 +19,7 @@ from pathlib import Path
 
 sys.stdout.reconfigure(encoding="utf-8")
 
-from content import load_persona_system_prompt, load_roster, load_personal_items
+from content import load_course, load_persona_system_prompt, load_roster, load_personal_items
 from srs import ProgressStore
 from tutor import (
     CONTENT_DIR, STATE_PATH, MODEL_FALLBACKS, TOOLS,
@@ -67,7 +67,7 @@ def learner_reply(api_key: str, transcript: list[str]) -> str:
 
 def main(n_exchanges: int) -> None:
     api_key = load_api_key()
-    roster = load_roster(CONTENT_DIR) + load_personal_items(CONTENT_DIR)
+    roster = load_course(CONTENT_DIR)
     store = ProgressStore(STATE_PATH)  # read-only: save() is never called
     all_names = [i.name for i in roster]
     by_name = {i.name: i for i in roster}
