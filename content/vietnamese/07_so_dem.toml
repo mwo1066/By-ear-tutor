@@ -53,3 +53,77 @@ gloss = "ten"
 category = "numeral"
 language = "vi"
 description = "Số 10. Từ 11 đến 19 ghép thẳng: 'mười một', 'mười hai'. Biết 1-10 là biết đếm tới 99 với vài quy tắc ghép."
+
+[[items]]
+type = "concept"
+name = "mươi"
+kind = "atom"
+gloss = "the tens word, from twenty upward"
+category = "numeral"
+language = "vi"
+description = "Từ chỉ hàng chục từ 20 trở lên: 'hai mươi' (20), 'ba mươi' (30). Khác 'mười' (10) đúng một dấu — mười có dấu huyền, mươi không có. Nghe thì gần như một, mà là hai từ. Khi nói nhanh người Việt bỏ luôn: 'năm mốt' thay vì 'năm mươi mốt' (51). Thanh ngang — giọng đều."
+
+[[items]]
+type = "concept"
+name = "trăm"
+kind = "atom"
+gloss = "hundred"
+category = "numeral"
+language = "vi"
+description = "Số 100: 'một trăm'. Đứng sau số đếm như mọi hàng: 'hai trăm' (200), 'ba trăm' (300). Thanh ngang — giọng đều."
+
+[[items]]
+type = "concept"
+name = "nghìn"
+kind = "atom"
+gloss = "thousand"
+category = "numeral"
+language = "vi"
+description = "Số 1000: 'một nghìn'. Trong Nam nói 'ngàn', ngoài Bắc nói 'nghìn', hai từ như nhau. Đây là hàng quan trọng nhất khi mua bán: giá tiền ở Việt Nam đếm bằng nghìn — 'hai mươi lăm nghìn' là 25 000 đồng. Thanh huyền — giọng xuống."
+
+[[items]]
+type = "concept"
+name = "mốt"
+kind = "atom"
+gloss = "the 1 at the end of 21, 31, 41…"
+category = "numeral"
+language = "vi"
+description = "Chữ 'một' đổi thành 'mốt' khi đứng CUỐI từ 21 trở lên: 'hai mươi mốt' (21), 'ba mươi mốt' (31). Riêng 11 vẫn là 'mười một', không đổi. Thanh sắc — giọng lên."
+
+[[items]]
+type = "concept"
+name = "lăm"
+kind = "atom"
+gloss = "the 5 at the end of 15, 25, 35…"
+category = "numeral"
+language = "vi"
+description = "Chữ 'năm' đổi thành 'lăm' khi đứng CUỐI, kể cả ở 15: 'mười lăm' (15), 'hai mươi lăm' (25). Lý do rất thật: 'năm' còn nghĩa là năm tháng, nên 'mười năm năm' sẽ không ai hiểu là 15 năm. Thanh ngang — giọng đều."
+
+[[items]]
+type = "concept"
+name = "tư"
+kind = "atom"
+gloss = "the 4 at the end of 24, 34, 44…"
+category = "numeral"
+language = "vi"
+description = "Chữ 'bốn' có thể đổi thành 'tư' khi đứng CUỐI từ 24 trở lên: 'hai mươi tư' hoặc 'hai mươi bốn', cả hai đều đúng. Riêng 14 luôn là 'mười bốn'. Đây là chữ dễ nhất trong ba chữ đổi, vì không bắt buộc. Thanh ngang — giọng đều."
+
+[[items]]
+type = "procedure"
+name = "đếm từ 11 đến 99"
+kind = "rule"
+gloss = "past ten you stack two words you already know — but the word for ten changes shape on the way"
+category = "rules"
+language = "vi"
+description = "Quy tắc: từ 11 đến 19 là 'mười' cộng chữ số — mười một, mười hai, mười ba. Từ 20 trở lên đảo lại: chữ số đứng trước, rồi 'mươi', rồi chữ số cuối — 'hai mươi ba' (23), 'chín mươi bảy' (97). Chỗ bẫy là 'mười' thành 'mươi' khi có số đứng trước: 10 là mười, 20 là hai MƯƠI. Một dấu thanh, hai từ khác nhau. Biết mười chữ số là đếm được tới 99 — không có chữ nào mới."
+pieces = ["mười", "mươi", "hai", "ba"]
+
+[[items]]
+type = "procedure"
+name = "ba chữ đổi khi đứng cuối: mốt, lăm, tư"
+kind = "rule"
+gloss = "three digits change their name when they land at the end of a number"
+category = "rules"
+language = "vi"
+description = "Quy tắc: ba chữ số đổi tên khi đứng CUỐI một số lớn hơn 20. 'một' thành 'mốt' — hai mươi mốt (21). 'năm' thành 'lăm' — hai mươi lăm (25). 'bốn' có thể thành 'tư' — hai mươi tư hay hai mươi bốn, cả hai đều được. Hai ngoại lệ đáng nhớ: 11 vẫn 'mười một' và 14 vẫn 'mười bốn', nhưng 15 thì ĐÃ đổi rồi — 'mười lăm'. Nói sai vẫn được hiểu, nhưng nói đúng là nghe ra người có học tiếng."
+pieces = ["mốt", "lăm", "tư", "một", "năm", "bốn"]
