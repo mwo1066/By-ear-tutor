@@ -573,6 +573,72 @@ référence propre**, et c'est ce qu'on a de plus fiable.
 **Statut :** à essayer au temps 3 d'abord, c'est celui qui apporte le plus et
 qui se calcule entièrement.
 
+### Le second sens d'un homophone, à la seconde rencontre
+*Proposé par Meo, 13 août.*
+
+`nam` 男 « masculin » et `nam` 南 « sud » : deux mots d'origine différente
+tombés sur la même syllabe. Pas « orange » le fruit et la couleur — plutôt
+« ver / vert / verre ». Le vietnamien en est plein, parce que l'inventaire de
+syllabes est petit et que les emprunts chinois se sont empilés dessus.
+
+À ne pas confondre avec les jumeaux de ton : `ba` et `bà` ne sonnent pas
+pareil, un natif ne les confond jamais, c'est un obstacle d'oreille étrangère.
+Un homophone est ambigu **pour tout le monde**, et se résout par le contexte.
+
+**Quand le dire : à la seconde rencontre, jamais à l'introduction.** Même règle
+que pour les jumeaux de ton, et pour une raison qui n'est pas une préférence —
+**le gloss EST la question du rappel**, lu à voix haute par `speakable(gloss)`.
+Deux sens dans un gloss donnent « le mot pour sud… ou masculin ? », une question
+sans réponse unique. Le second sens est donc un aparté, pas une définition.
+
+À l'introduction c'est une charge doublée sur un mot qu'on ne tient pas encore.
+Au retour, c'est un cadeau : un son déjà acquis, un deuxième mot rangé.
+
+**La contrainte que ça révèle, et elle est structurelle.** Tout le code indexe
+les items **par leur nom** : les prérequis, le SRS, les pièces des
+constructions, la déduplication de `load_course`. Donc un homophone ne peut
+jamais être deux items — ils s'écraseraient ou seraient signalés en doublon.
+
+C'est forcément **un item plus une note**. Et donc **le SRS ne suivra jamais que
+l'un des deux sens** : le second sera dit, entendu, et jamais redemandé. Écrit
+ici pour qu'on ne se demande pas dans un mois pourquoi il ne revient pas.
+
+**Tiroir :** un champ sur l'item, dit par une formulation en code au retour.
+
+**Le piège des données.** Le second sens ne s'automatise pas : Wiktionary donne
+`là` = « fine silk » et `tôi` = « esclave », ses premiers sens sont les
+archaïques. Même passe d'annotation que les glosses, même consigne « ne devine
+jamais ».
+
+**Pas chiffrable avec ce qu'on a.** Chaque mot ne figure qu'une fois dans la
+liste, donc `nam` masculin et `nam` sud sont un seul item pour le code. Les
+paires de casse trouvées le 13 août (`Nam`/`nam`, `Bắc`/`bắc`, `Tết`/`tết`) ne
+sont que la partie où l'orthographe trahit la différence. Compter les vrais
+demanderait un dictionnaire de sens.
+
+**Statut :** à écrire dans la consigne d'annotation, pas à câbler.
+
+---
+
+## Ce que les trois idées de Meo ont en commun
+
+Elles sont arrivées séparément le 13 août et ce sont la même :
+
+| | on paie… | on encaisse… |
+| --- | --- | --- |
+| **composition** | à l'atome (`đi`) | au composé (`đi học`) |
+| **jumeau de ton** | au premier mot (`ba`) | au second (`bà`) |
+| **homophone** | au premier sens (`nam` sud) | au retour (`nam` masculin) |
+
+**La deuxième rencontre est celle qui rapporte.** La première pose une brique
+qui ne paie pas encore ; c'est en revenant dessus qu'on récolte, et sans rien
+avoir à mémoriser de neuf.
+
+Ce qui donne un test commun, plus utile que trois règles séparées : *pour cette
+idée, qu'est-ce qui est posé la première fois, et qu'est-ce qui est encaissé la
+seconde ?* Si la réponse est « tout, tout de suite », ce n'est pas de cette
+famille — et il faut se demander si ça double la charge au lieu de la répartir.
+
 ---
 
 # Ce que le cours enseigne — brouillon d'objectifs
