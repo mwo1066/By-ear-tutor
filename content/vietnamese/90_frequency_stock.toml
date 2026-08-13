@@ -19,28 +19,6 @@ description = ""
 
 [[items]]
 type = "concept"
-name = "trong"
-kind = "atom"
-gloss = ""
-category = "adjective, preposition"
-language = "vi"
-frequency_rank = 15
-senses = ["clear and thus presumably clean", "translucent or transparent", "in; inside; within", "within"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "với"
-kind = "atom"
-gloss = ""
-category = "noun, particle, preposition, verb"
-language = "vi"
-frequency_rank = 16
-senses = ["to reach", "a stretch of the hand", "or nhân ) to or by", "bù , song song , vuông góc , etc.) to"]
-description = ""
-
-[[items]]
-type = "concept"
 name = "những"
 kind = "atom"
 gloss = ""
@@ -118,17 +96,6 @@ description = ""
 
 [[items]]
 type = "concept"
-name = "con"
-kind = "atom"
-gloss = ""
-category = "classifier, noun, pronoun"
-language = "vi"
-frequency_rank = 39
-senses = ["heroic", "a hero"]
-description = ""
-
-[[items]]
-type = "concept"
 name = "mà"
 kind = "atom"
 gloss = ""
@@ -158,17 +125,6 @@ category = "noun, pronoun"
 language = "vi"
 frequency_rank = 47
 senses = ["a maternal uncle", "a young male master", "a younger male stranger", "a father"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "còn"
-kind = "atom"
-gloss = ""
-category = "adverb, verb"
-language = "vi"
-frequency_rank = 48
-senses = ["to remain; to be left; to still have or exist", "to be alive", "yet; still"]
 description = ""
 
 [[items]]
@@ -235,17 +191,6 @@ category = "adverb, determiner, particle"
 language = "vi"
 frequency_rank = 60
 senses = ["which", "come on; come on now", "not"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "trên"
-kind = "atom"
-gloss = ""
-category = "adjective, preposition"
-language = "vi"
-frequency_rank = 61
-senses = ["upper", "higher, superior", "on"]
 description = ""
 
 [[items]]
@@ -415,28 +360,6 @@ description = ""
 
 [[items]]
 type = "concept"
-name = "vì"
-kind = "atom"
-gloss = ""
-category = "classifier, conjunction, preposition"
-language = "vi"
-frequency_rank = 87
-senses = ["why", "how", "what; what is it; what now", "whatever"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "nữa"
-kind = "atom"
-gloss = ""
-category = "adverb, interjection"
-language = "vi"
-frequency_rank = 88
-senses = ["more, further", "longer", "encore!"]
-description = ""
-
-[[items]]
-type = "concept"
 name = "đấy"
 kind = "atom"
 gloss = ""
@@ -554,17 +477,6 @@ category = "adjective, adverb, conjunction"
 language = "vi"
 frequency_rank = 99
 senses = ["to know; to get to know; to learn", "to have a habit of", "good, as in useful, inventive, interesting or entertaining; compare tốt", "well"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "nhất"
-kind = "atom"
-gloss = ""
-category = "adverb, interjection, numeral"
-language = "vi"
-frequency_rank = 100
-senses = ["first", "the most in", "at the top of one's priority", "in the first position"]
 description = ""
 
 [[items]]
@@ -741,17 +653,6 @@ category = "adjective, adverb"
 language = "vi"
 frequency_rank = 120
 senses = ["impossibly", "impossible"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "đừng"
-kind = "atom"
-gloss = ""
-category = "verb"
-language = "vi"
-frequency_rank = 121
-senses = ["do not; don't"]
 description = ""
 
 [[items]]
@@ -1317,17 +1218,6 @@ description = ""
 
 [[items]]
 type = "concept"
-name = "chiếc"
-kind = "atom"
-gloss = ""
-category = "classifier"
-language = "vi"
-frequency_rank = 190
-senses = ["Initialism of ti-vi"]
-description = ""
-
-[[items]]
-type = "concept"
 name = "cứ"
 kind = "atom"
 gloss = ""
@@ -1746,17 +1636,6 @@ description = ""
 
 [[items]]
 type = "concept"
-name = "dưới"
-kind = "atom"
-gloss = ""
-category = "preposition"
-language = "vi"
-frequency_rank = 233
-senses = ["under, below"]
-description = ""
-
-[[items]]
-type = "concept"
 name = "thằng"
 kind = "atom"
 gloss = ""
@@ -1808,17 +1687,6 @@ category = "preposition"
 language = "vi"
 frequency_rank = 238
 senses = ["in the middle; in the center; amidst; between; among"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "vâng"
-kind = "atom"
-gloss = ""
-category = "interjection, verb"
-language = "vi"
-frequency_rank = 241
-senses = ["to obey ; to listen to; to comply with", "yes"]
 description = ""
 
 [[items]]
@@ -4932,17 +4800,6 @@ category = "noun"
 language = "vi"
 frequency_rank = 541
 senses = ["a bank"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "quả"
-kind = "atom"
-gloss = ""
-category = "adverb, classifier, noun"
-language = "vi"
-frequency_rank = 542
-senses = ["a kind of Indian mulberry"]
 description = ""
 
 [[items]]

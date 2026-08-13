@@ -173,7 +173,7 @@ gloss = "counting needs a small helper word between the number and the thing"
 category = "rules"
 language = "vi"
 description = "Quy tắc: khi đếm, chen một loại từ vào giữa số và danh từ. 'Hai con chó' — hai + con + chó. Loại từ chọn theo loại vật: 'con' cho động vật, 'cái' cho đồ vật, 'người' cho người. Người mới học dùng sai loại từ vẫn được hiểu, nên đừng để nó chặn việc nói."
-pieces = ["hai", "cái"]
+pieces = ["hai", "cái", "con", "người"]
 
 [[items]]
 type = "procedure"

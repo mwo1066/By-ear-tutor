@@ -1,0 +1,165 @@
+title = "Chỗ, lý do, và trả lời cho tự nhiên"
+
+[[items]]
+type = "concept"
+name = "con"
+kind = "atom"
+gloss = "helper word for animals"
+category = "function_word"
+language = "vi"
+description = "Loại từ dùng cho động vật, chen giữa số và danh từ: 'hai con chó', 'một con cá'. Cũng có nghĩa là đứa con. Quy tắc loại từ đã học nhắc đến chữ này — giờ mới có thật. Thanh ngang — giọng đều."
+
+[[items]]
+type = "concept"
+name = "người"
+kind = "atom"
+gloss = "person"
+category = "noun"
+language = "vi"
+description = "Vừa là danh từ 'người', vừa là loại từ dùng cho người: 'hai người bạn'. Một trong những danh từ hay dùng nhất. Thanh huyền — giọng xuống."
+
+[[items]]
+type = "concept"
+name = "quả"
+kind = "atom"
+gloss = "helper word for fruit and round things"
+category = "function_word"
+language = "vi"
+description = "Loại từ cho trái cây và vật tròn: 'hai quả chuối'. Trong Nam nói 'trái'. Thanh hỏi — giọng võng xuống rồi lên."
+
+[[items]]
+type = "concept"
+name = "chiếc"
+kind = "atom"
+gloss = "helper word for vehicles and single objects"
+category = "function_word"
+language = "vi"
+description = "Loại từ cho xe cộ và vật lẻ: 'một chiếc xe'. Dùng khi nói về một cái riêng lẻ. Thanh sắc — giọng lên."
+
+[[items]]
+type = "concept"
+name = "đừng"
+kind = "atom"
+gloss = "don't do it"
+category = "verb"
+language = "vi"
+description = "Đặt trước động từ để CẤM hoặc can: 'Đừng đi.', 'Đừng lo.' Khác 'không' — 'không đi' là KHÔNG đi, còn 'đừng đi' là XIN ĐỪNG đi. Chỗ này người học lẫn rất nhiều: một chữ để kể, một chữ để ngăn. Thanh huyền — giọng xuống."
+
+[[items]]
+type = "concept"
+name = "nhất"
+kind = "atom"
+gloss = "the most"
+category = "function_word"
+language = "vi"
+description = "Đặt SAU tính từ để nói nhất: 'ngon nhất', 'đẹp nhất'. Cùng chỗ với 'hơn' đã học — 'hơn' để so hai thứ, 'nhất' để đứng đầu tất cả. Thanh sắc — giọng lên."
+
+[[items]]
+type = "concept"
+name = "vì"
+kind = "atom"
+gloss = "because"
+category = "function_word"
+language = "vi"
+description = "Từ nối lý do: 'Em không đi vì em mệt.' Mở ra việc GIẢI THÍCH, không chỉ kể. Thanh huyền — giọng xuống."
+
+[[items]]
+type = "concept"
+name = "còn"
+kind = "atom"
+gloss = "and what about"
+category = "function_word"
+language = "vi"
+description = "Chuyển lượt nói: 'Em khoẻ. Còn anh?' Đây là chữ giữ cho câu chuyện qua lại, không để người kia im. Thanh huyền — giọng xuống."
+
+[[items]]
+type = "concept"
+name = "nữa"
+kind = "atom"
+gloss = "more, again"
+category = "function_word"
+language = "vi"
+description = "Đặt cuối câu: 'Một cái nữa.', 'Nói lại nữa đi.' Cũng dùng để xin thêm khi ăn uống. Thanh ngã — giọng gãy."
+
+[[items]]
+type = "concept"
+name = "trong"
+kind = "atom"
+gloss = "inside"
+category = "function_word"
+language = "vi"
+description = "Chỉ nơi chốn: ở phía trong. 'Trong nhà.' Đi cùng 'ở': 'Em ở trong nhà.' Thanh ngang — giọng đều."
+
+[[items]]
+type = "concept"
+name = "trên"
+kind = "atom"
+gloss = "on top of"
+category = "function_word"
+language = "vi"
+description = "Chỉ nơi chốn: ở phía trên. 'Trên bàn.' Thanh ngang — giọng đều."
+
+[[items]]
+type = "concept"
+name = "dưới"
+kind = "atom"
+gloss = "underneath"
+category = "function_word"
+language = "vi"
+description = "Chỉ nơi chốn: ở phía dưới. 'Dưới ghế.' Thanh sắc — giọng lên."
+
+[[items]]
+type = "concept"
+name = "với"
+kind = "atom"
+gloss = "with"
+category = "function_word"
+language = "vi"
+description = "Đi cùng ai: 'Em đi với anh.' Rất hay dùng, và ghép thẳng với mọi từ xưng hô đã học. Thanh sắc — giọng lên."
+
+[[items]]
+type = "concept"
+name = "vâng"
+kind = "atom"
+gloss = "yes, politely"
+category = "function_word"
+language = "vi"
+description = "Tiếng thưa vâng ngoài Bắc, giống 'dạ' trong Nam đã học. Dùng để đáp lại người lớn tuổi hơn. Thanh ngang — giọng đều."
+
+[[items]]
+type = "concept"
+name = "xin lỗi"
+kind = "atom"
+gloss = "sorry"
+category = "verb"
+language = "vi"
+description = "Câu xin lỗi, và cũng là cách mở lời với người lạ: 'Xin lỗi, cho hỏi...' Dùng chữ 'xin' đã biết. Thanh ngã — giọng gãy."
+
+[[items]]
+type = "concept"
+name = "không sao"
+kind = "atom"
+gloss = "no problem"
+category = "verb"
+language = "vi"
+description = "Câu đáp lại lời xin lỗi hoặc lời cảm ơn: 'Không sao.' Nghĩa đen là không có chuyện gì. Dùng hai chữ đã biết. Thanh ngang — giọng đều."
+
+[[items]]
+type = "procedure"
+name = "trả lời: lặp lại động từ"
+kind = "rule"
+gloss = "to answer a yes-or-no question you repeat the action word, not a word for yes"
+category = "rules"
+language = "vi"
+description = "Quy tắc: câu hỏi 'có...không?' KHÔNG trả lời bằng một chữ 'vâng' hay 'có' riêng — trả lời bằng chính động từ trong câu hỏi. 'Bạn có muốn ăn không?' → 'Muốn.' hoặc 'Không muốn.' 'Anh có đi không?' → 'Đi.' Đây là phản xạ lộ người mới học nhanh nhất: ai trả lời 'yes' kiểu tiếng Anh là nghe ra ngay. Và nó dễ hơn, vì không phải nhớ chữ nào mới cả."
+pieces = ["có", "không", "muốn"]
+
+[[items]]
+type = "procedure"
+name = "nơi chốn: ở + trong / trên / dưới"
+kind = "rule"
+gloss = "to say where something is, one word marks the place and a second says which side"
+category = "rules"
+language = "vi"
+description = "Quy tắc: 'ở' đánh dấu nơi chốn, rồi 'trong', 'trên', 'dưới' nói rõ phía nào. 'Em ở trong nhà.' 'Cà phê ở trên bàn.' Trật tự cố định, không đảo. Chỉ 'ở' một mình cũng đủ khi không cần rõ: 'Em ở Hà Nội.'"
+pieces = ["ở", "trong", "trên", "dưới"]
