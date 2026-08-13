@@ -500,3 +500,70 @@ Et sur nos propres tours, mesuré le 11 août :
 
 Attendues, pas encore intégrées. Quand elles arrivent : note par note, quel
 tiroir — et lesquelles ne survivent pas au test.
+
+
+---
+
+# Ce que le cours enseigne — brouillon d'objectifs
+
+*Proposé par Meo, 13 août. À corriger : barrer, déplacer, ajouter.*
+
+**Autre sujet que le reste du fichier.** Le carnet ci-dessus dit comment le
+tuteur PARLE ; ceci dit ce que le cours ENSEIGNE. Rangé ici parce que ce n'est
+qu'une idée — rien dans le code ne le lit, aucun champ n'existe pour ça. Si ça
+prend, ça sort dans son propre fichier.
+
+## À quoi ça sert
+
+À une seule question, posée à chaque item : **« quel objectif en a besoin ? »**
+
+- aucun objectif → c'est un mot niche, il reste au stock
+- un objectif l'attend → il entre, et on sait à quel moment
+- un objectif n'a aucun item → c'est le vrai travail restant, pas mon inventaire
+
+Et surtout : **18 lignes se relisent, 200 items non.** C'est ce qui permet de
+contrôler les choix de contenu sans lire le roster.
+
+## Les 18
+
+Ordre = ordre d'enseignement. `✓` acquis, `✗` manquant.
+
+| # | savoir faire | ce qu'il faut |
+| --- | --- | --- |
+| 1 | **dire qui je suis** | ✓ tôi, tên, là, gì |
+| 2 | **choisir comment m'adresser à quelqu'un** | ✓ anh, chị, em, bạn, cô, chú, ông, bà, cháu, mình + les règles de xưng hô |
+| 3 | **saluer, remercier, m'excuser** | ✓ chào, cảm ơn, xin lỗi, không sao, dạ, vâng, ạ |
+| 4 | **dire ce que je veux et ne veux pas** | ✓ muốn, cần, thích, không |
+| 5 | **poser une question fermée et y répondre** | ✓ có…không?, chưa? + la réponse en écho |
+| 6 | **commander à manger et à boire** | ✓ ăn, uống, cơm, cà phê, nước, ngon, này &nbsp;·&nbsp; ✗ de quoi nommer un plat |
+| 7 | **demander un prix, comprendre la réponse** | ✓ bao nhiêu, tiền, mua, bán &nbsp;·&nbsp; ✗ **les nombres au-delà de 10** (mươi, lăm, mốt, tư, trăm, nghìn) |
+| 8 | **dire où je suis et où je vais** | ✓ ở, đi, về, ra, vào, lên, xuống, đến, trong, trên, dưới &nbsp;·&nbsp; ✗ la règle des verbes en série, les lieux (nhà, đường, khách sạn) |
+| 9 | **parler de quelqu'un d'autre** | ✓ ấy + sa règle, người |
+| 10 | **situer dans le temps** | ✓ hôm nay, hôm qua, ngày mai, đã, đang, sẽ, rồi, chưa &nbsp;·&nbsp; ✗ bây giờ, giờ |
+| 11 | **dire ce que je peux, dois, devrais faire** | ✓ phải, có thể, nên, được, đừng |
+| 12 | **décrire et comparer** | ✓ ngon, đẹp, mệt, đói, buồn, rất, lắm, hơn, nhất + adjectif sans « là » |
+| 13 | **compter des choses** | ✓ cái, con, người, quả, chiếc + la règle des classificateurs |
+| 14 | **demander de l'aide, me faire comprendre** | ✓ giúp, hiểu, biết, nói, chờ, ơi &nbsp;·&nbsp; ✗ « répétez », « lentement », « je ne comprends pas » |
+| 15 | **raconter ma journée** | ✓ ngủ, làm, học, chơi, đọc, viết, nghe, gặp, tìm, lấy |
+| 16 | **donner une raison, dire ce que je pense** | ✓ vì, thấy, nhớ, quên, nghĩ &nbsp;·&nbsp; ✗ de quoi enchaîner deux idées |
+| 17 | **inviter, proposer, encourager** | ✗ **les particules finales** (nhé, đi, à, hả) + l'impératif positif |
+| 18 | **tenir la conversation** | ✓ còn, nữa, và, nhưng &nbsp;·&nbsp; ✗ relancer, changer de sujet |
+
+## Ce que la liste dit tout de suite
+
+**Trois objectifs sont bloqués par du contenu manquant, pas par de l'ordre :**
+le 7 (les nombres), le 8 (les verbes en série), le 17 (les particules, où rien
+n'existe du tout). C'est ça la liste de travail — et elle est courte.
+
+**Quinze sur dix-huit sont déjà servis** par les 124 mots enseignés. Le cours
+est plus complet qu'il n'en a l'air ; ce qui manquait, c'était de pouvoir le
+voir.
+
+## Ce dont il faut se méfier
+
+Que ça devienne une taxonomie. Un objectif se déplace en une ligne — le coût
+n'est jamais dans le découpage, il est dans le temps passé à en débattre.
+
+Et la règle du carnet vaut ici aussi : **un objectif qu'on ne peut pas
+illustrer par une chose qu'on dirait vraiment à quelqu'un au Vietnam est une
+préférence, pas un objectif.**
