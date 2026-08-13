@@ -141,6 +141,71 @@ Deux usages distincts, à ne pas confondre :
 - **morphèmes liés** (`Hà Nội`, `thế giới`, `tổ chức`) → une anecdote qui aide
   la mémoire, mais pas de vocabulaire en plus
 
+**Un troisième cas, trouvé le 13 août, que le test libre/lié laisse passer.**
+`nhớ ra` = se souvenir d'un coup. `nhớ` (se souvenir) et `ra` (sortir) sont tous
+deux des mots **libres** — le test passe — et la décomposition ment quand même :
+ce `ra` ne veut pas dire « dehors », il marque le résultat. Pareil pour `nghĩ ra`
+(trouver une idée) et `tìm ra` (trouver après avoir cherché).
+
+Donc le test complet a deux conditions, pas une : les morceaux doivent être
+libres, **et** le sens du tout doit se déduire des parties. `sân bay` passe les
+deux. `Hà Nội` échoue la première. `nhớ ra` échoue la seconde.
+
+### Dire ce qu'un mot va construire, au moment où on l'apprend
+*Proposé par Meo, 13 août.*
+
+L'idée du dessus prise dans l'autre sens. La décomposition paie **au composé** :
+on arrive sur `sân bay` et on récolte `sân` et `bay`. Celle-ci paie **à l'atome** :
+au moment où on enseigne `đi`, on dit qu'il servira à en fabriquer d'autres.
+
+Le même fait, raconté à deux moments différents — et le second transforme un mot
+ordinaire en investissement. L'apprenant ne range pas « aller », il range une
+pièce.
+
+**Tiroir :** geste qui revient → une formulation en code, dans `_INTRODUCE`.
+
+**Ce qui la rend meilleure que sa jumelle : elle ne coûte aucune annotation.**
+La décomposition arrière a besoin qu'un humain ou un modèle juge chaque composé
+— c'est tout le travail des glosses, avec le risque d'invention. Celle-ci se
+calcule : `pieces` existe déjà sur les items, il suffit de l'inverser. Au moment
+d'introduire un mot, on regarde quels items pas encore enseignés le contiennent
+dans leurs `pieces`. Zéro champ nouveau, zéro appel au modèle, et **aucune
+invention possible** : le code ne peut nommer que des items qui existent.
+
+**Le garde-fou.** C'est une promesse. Deux façons de la trahir :
+
+- annoncer un composé que le séquencement n'atteindra jamais → ne compter que
+  les items réellement enseignables, prérequis satisfaits ;
+- nommer le composé, c'est l'enseigner en avance et donner la réponse d'un
+  rappel futur — la famille de bugs de `_leaked_target`.
+
+D'où la forme probable : **le nombre, pas les mots.** « Celui-là en construira
+quatre autres plus tard. » Ça crée l'attente sans rien dépenser.
+
+**Combien de mots sont concernés — mesuré le 13 août** sur notre roster, en
+inversant `pieces` :
+
+```
+120  mots enseignés
+ 43  sont pièce d'au moins un autre item          plus d'un sur trois
+```
+
+```
+tôi, ăn      pièce de 5 items
+là, muốn, không, anh, chị    pièce de 4
+```
+
+Donc l'annonce aurait lieu sur plus d'un mot sur trois — assez pour que ce soit
+un geste régulier, pas une curiosité. Et le chiffre ne peut que monter : il est
+plafonné par le nombre de constructions écrites, aujourd'hui cinq.
+
+**Pas encore mesuré** dans le cours de référence, en revanche. À compter :
+est-ce qu'il annonce qu'un mot resservira, ou est-ce qu'il le laisse découvrir ?
+L'intuition dit que oui et souvent — ce serait la marque de fabrique de la
+méthode — mais l'intuition ne vaut rien ici, c'est la règle du carnet.
+
+**Statut :** à essayer, et la moins chère des deux.
+
 **Limite honnête :** ça marche sur les composés sino-vietnamiens, pas sur tout.
 `phở` ne se décompose pas. C'est un type de hook, applicable là où il s'applique
 — pas une règle à forcer partout.
