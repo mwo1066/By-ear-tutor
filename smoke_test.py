@@ -76,6 +76,13 @@ VOICE_CASES = [
       ("tutor", "Now you say it.")]),
     # Digits are nobody's vocabulary but must still be spoken.
     ("I have 1975 words.", [("tutor", "I have 1975 words.")]),
+    # 2026-08-13 -- the model answered in markdown. The stream split
+    # "**Tôi cũng muốn ăn.**" and a bare "**" arrived as its own line, was
+    # routed to the tutor voice and sent to Azure, which returned an empty
+    # clip. Routing must see the same text synthesis will.
+    ("**Tôi cũng muốn ăn.**", [("teacher", "Tôi cũng muốn ăn.")]),
+    ("The full sentence is: **Tôi cũng muốn ăn.**",
+     [("tutor", "The full sentence is:"), ("teacher", "Tôi cũng muốn ăn.")]),
 ]
 
 # 2026-08-10 -- the model cued Minh with a bare "Minh.", which the colon-only
@@ -156,6 +163,13 @@ TALKING_CASES = [
     ("Fen Bey.", "en", False),     # an attempt at sân bay
     ("and Bay", "en", False),
     ("Tôi tên là Nam", "vi", False),  # Vietnamese: never treated as talking
+    # 2026-08-13 -- the learner asked out loud for the answer to be given to
+    # them. Pass 1 decoded it as KOREAN, so a guard testing lang == "en" never
+    # fired, and a forced-Vietnamese pass invented "Tôi... Chị... Giờ giải
+    # thích cho tôi" which reached the lesson behind a [lang:vi] tag. Only the
+    # language and the length were recorded, not pass 1's own text.
+    ("neun jeoneun seonsaengnim kke jilmun", "ko", True),
+    ("Tôi cũng muốn ăn", "vi", False),  # …and a long real attempt still is not talking
 ]
 
 

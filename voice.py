@@ -95,6 +95,12 @@ def split_by_voice(text: str, known_vn_words: frozenset[str] = frozenset()) -> l
     known_vn_words should be every word appearing in the current roster's
     item names, so genuine Vietnamese vocabulary is recognized regardless of
     what language the tutor's own voice happens to be using this session."""
+    # Markup never reaches the routing decision. The model answers in markdown
+    # when it is being emphatic -- "**Tôi cũng muốn ăn.**" -- and a leading "**"
+    # glues onto the first word, so the run that opens is decided on a token
+    # that is not the word. Idempotent, and synthesize() strips again for any
+    # caller that skips this.
+    text = _strip_markdown(text)
     # re.split with a capturing group alternates: even indices are the gaps
     # between words (spaces, punctuation), odd indices are the words themselves.
     parts = _WORD_SPLIT_RE.split(text.strip())
@@ -334,8 +340,18 @@ class SpeechPipeline:
         Submitting to the pool starts synthesis at once, so by the time the
         playback thread reaches a clip its audio is usually already in hand.
         """
+        # Markdown comes off FIRST, before anything decides what this text is.
+        # synthesize() strips it too, but that runs after routing, so the two
+        # disagreed: the model wrote "**Tôi cũng muốn ăn.**", the stream split
+        # it, and a lone "**" arrived here as its own line -- routed to the
+        # tutor voice, sent to Azure, answered with an empty clip. Deciding on
+        # one text and speaking another is the defect; stripping here makes
+        # them the same text.
+        text = _strip_markdown(text)
         text = _strip_authoring_notation(text)
         _warn_if_english_reaches_minh(text, self._known_vn_words)
+        if not text.strip():
+            return
         if is_stage_direction(text):
             # Dropped here rather than sent as an empty string: no Azure round
             # trip, and the log says plainly that the model wrote one.

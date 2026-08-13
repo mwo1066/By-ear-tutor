@@ -302,8 +302,8 @@ SENTENCE_WORDS = 3
 
 
 def is_learner_talking(text: str, lang: str) -> bool:
-    """A confident English sentence: they are addressing the tutor, not
-    attempting the Vietnamese word the lesson is waiting for.
+    """A confident sentence in anything but Vietnamese: they are addressing the
+    tutor, not attempting the Vietnamese word the lesson is waiting for.
 
     Guards the worst failure this system has produced. Live, on a step
     expecting "tôi": the learner said, in clear English, "No, I'm asking for
@@ -318,8 +318,20 @@ def is_learner_talking(text: str, lang: str) -> bool:
     Getting this wrong the other way is cheap: a long Vietnamese attempt heard
     as English is marked missed and asked again. Getting it wrong this way
     overwrites what the learner actually said.
+
+    Keyed on "not Vietnamese" rather than "English", because the same failure
+    came back on 13 August wearing a different label. The learner asked out
+    loud for the answer to be given to them. Pass 1 decoded that as KOREAN, so
+    `lang == "en"` was false, the guard never fired, a forced-Vietnamese pass
+    invented "Tôi... Chị... Giờ giải thích cho tôi", and the lesson received
+    that behind a [lang:vi] tag as though it were an attempt.
+
+    The length test is what actually separates a question from an attempt, and
+    it does not care which language the decoder guessed. Every recorded case
+    still lands where it did: the short ones ("toi", "Fen Bey.", "and Bay") are
+    attempts whatever the label, and confident Vietnamese is never touched.
     """
-    return lang == "en" and len(text.split()) > SENTENCE_WORDS
+    return lang != "vi" and len(text.split()) > SENTENCE_WORDS
 
 
 def transcribe(audio: np.ndarray, expected: str | None = None, matches=None) -> tuple[str, str]:
@@ -353,7 +365,13 @@ def transcribe(audio: np.ndarray, expected: str | None = None, matches=None) -> 
             # They are speaking to the tutor, not attempting the word. Forcing
             # this into Vietnamese does not recover anything -- it destroys the
             # only true record of what was said.
-            print(f"  [diag] a sentence in English, not an attempt at {expected!r} -- kept as heard")
+            if lang != "en":
+                # Pass 1 was lost in some third language, so ITS text is not a
+                # reading of what was said either -- keeping it would hand the
+                # tutor Korean. Decoding as English is what the no-expected
+                # branch below already does with a long utterance.
+                text = _forced(wav_bytes, "en", t0)
+            print(f"  [diag] a sentence, not an attempt at {expected!r} -- kept as heard")
             return text, "en"
         second = _forced(wav_bytes, "vi", t0)
         if matches(second, expected):
