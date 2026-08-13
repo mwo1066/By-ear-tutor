@@ -19,6 +19,7 @@ sys.stdout.reconfigure(encoding="utf-8")
 
 import content
 import listen
+import srs
 import tutor
 import voice
 
@@ -249,6 +250,47 @@ def check_voice_cases(vocab) -> int:
     return failed
 
 
+def check_every_plan_builds() -> int:
+    """build_plan must survive every item the course can reach, in real order.
+
+    The session test below runs eight turns and stops, so it only ever plans
+    the first two or three items -- all atoms. Constructions and rules come
+    much later, and one of them had been raising UnboundLocalError for three
+    commits: a duplicated `elif item.kind == "construction"` left the OLD
+    branch in place as dead code, while the live one lost its short closing
+    step to a pasted copy of the rule branch's, which reads a variable that
+    only exists there.
+
+    Nothing caught it because nothing had ever planned a construction. Every
+    item, in the order the sequencing produces, is the only bar that means
+    anything here.
+    """
+    random.seed(7)
+    queue = [i for i in content.load_course(tutor.CONTENT_DIR) if content.is_teachable(i)]
+    store = srs.ProgressStore(None)
+    seen: list = []
+    failed = 0
+    while queue:
+        item = queue.pop(content.pick_next_index(queue, seen))
+        seen.append(item)
+        store.mark_introduced(item.name)
+        pieces = content.pieces_of(item, seen)
+        try:
+            plan = tutor.build_plan(item, pieces,
+                                    tutor._recall_targets(store, item, pieces, seen), seen)
+        except Exception as exc:
+            print(f"FAIL — planning {item.kind} {item.name!r} raised {type(exc).__name__}: {exc}")
+            failed += 1
+            continue
+        if not plan:
+            print(f"FAIL — {item.kind} {item.name!r} produced an empty plan")
+            failed += 1
+        for step in plan:
+            if step.kind in ("recall_piece", "rapidfire", "settle") and step.target:
+                store.record_recall(step.target)
+    return failed
+
+
 def check_prerequisite_order() -> int:
     """Nothing may be taught before the words it is made of -- run over the
     WHOLE course, not a sample.
@@ -292,7 +334,8 @@ def main(NO_INTRO=False) -> int:
     if (check_voice_cases(vocab) + check_leak_cases() + check_error_cases()
             + check_talking_cases() + check_derived_pieces(roster)
             + check_spoken_targets() + check_answer_cases()
-            + check_prerequisite_order()):
+            + check_prerequisite_order()
+            + check_every_plan_builds()):
         return 1
 
     turns = {"n": 0}
