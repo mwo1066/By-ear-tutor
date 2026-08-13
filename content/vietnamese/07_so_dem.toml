@@ -127,3 +127,45 @@ category = "rules"
 language = "vi"
 description = "Quy tắc: ba chữ số đổi tên khi đứng CUỐI một số lớn hơn 20. 'một' thành 'mốt' — hai mươi mốt (21). 'năm' thành 'lăm' — hai mươi lăm (25). 'bốn' có thể thành 'tư' — hai mươi tư hay hai mươi bốn, cả hai đều được. Hai ngoại lệ đáng nhớ: 11 vẫn 'mười một' và 14 vẫn 'mười bốn', nhưng 15 thì ĐÃ đổi rồi — 'mười lăm'. Nói sai vẫn được hiểu, nhưng nói đúng là nghe ra người có học tiếng."
 pieces = ["mốt", "lăm", "tư", "một", "năm", "bốn"]
+
+[[items]]
+type = "concept"
+name = "tuổi"
+kind = "atom"
+gloss = "years old"
+category = "noun"
+language = "vi"
+description = "Danh từ chỉ tuổi. Đứng SAU con số, không có gì ở giữa: 'hai mươi tuổi' — không cần 'là', không cần 'năm'. Đây là chỗ con số vừa học trở thành câu nói được. Thanh hỏi — giọng võng xuống rồi lên."
+
+[[items]]
+type = "procedure"
+name = "bao nhiêu tiền?"
+kind = "construction"
+gloss = "how much does it cost?"
+pieces = ["bao nhiêu", "tiền"]
+literal = "how much money?"
+category = "construction"
+language = "vi"
+description = "Câu hỏi giá, dùng hai từ đã biết và không thêm gì. Trả lời bằng con số cộng 'nghìn': 'Hai mươi lăm nghìn.' Đây là câu mở ra mọi việc mua bán, và nó không cần động từ nào cả."
+
+[[items]]
+type = "procedure"
+name = "số + [đồ uống]: hai cà phê"
+kind = "construction"
+gloss = "two coffees"
+pieces = ["hai", "cà phê"]
+literal = "two coffee"
+category = "construction"
+language = "vi"
+description = "Đặt con số THẲNG trước đồ uống, không cần loại từ khi gọi món: 'hai cà phê', 'ba nước'. Ngắn hơn tiếng Anh, không có 'cups of'. Con số vừa học dùng được ngay ở đây với mọi món đã biết."
+
+[[items]]
+type = "procedure"
+name = "Tôi ... tuổi"
+kind = "construction"
+gloss = "I am ___ years old"
+pieces = ["tôi", "tuổi"]
+literal = "I [number] years"
+category = "construction"
+language = "vi"
+description = "Nói tuổi mình: chủ ngữ, con số, rồi 'tuổi'. 'Tôi hai mươi lăm tuổi.' KHÔNG có 'là' ở giữa — 'là' chỉ đứng trước danh từ, và đây là con số. Câu này trả lời câu hỏi tuổi, thứ quyết định chọn 'anh' hay 'em'."

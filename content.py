@@ -346,10 +346,31 @@ MAX_PREREQUISITE_DEPTH = 3
 # another one may come. The rule simply waits; nothing is dropped.
 MIN_ITEMS_BETWEEN_RULES = 4
 
+# The same defect, one level up: a file holds one topic, file order is teaching
+# order, so a whole file comes out as a block. Measured after writing the number
+# system -- ELEVEN numerals in eleven consecutive slots, a quarter of an hour of
+# counting and nothing else. Rules had a spacer and no other category did.
+# Three in a row is enough to feel like a theme; a fourth makes it a drill.
+MAX_SAME_CATEGORY_RUN = 3
+
 
 def _rule_is_due(seen_items: list[Item]) -> bool:
     recent = seen_items[-MIN_ITEMS_BETWEEN_RULES:]
     return not any(i.kind == "rule" for i in recent)
+
+
+def _saturated_category(seen_items: list[Item]) -> str | None:
+    """The category that has just run long enough to need a break, if any.
+
+    Deliberately about the LAST few items only, not a quota over the course: a
+    learner does not mind meeting twenty numbers, they mind meeting them one
+    after another.
+    """
+    recent = seen_items[-MAX_SAME_CATEGORY_RUN:]
+    if len(recent) < MAX_SAME_CATEGORY_RUN:
+        return None
+    categories = {i.category for i in recent}
+    return recent[-1].category if len(categories) == 1 else None
 
 
 def pick_next_index(queue: list[Item], seen_items: list[Item]) -> int:
@@ -379,16 +400,20 @@ def pick_next_index(queue: list[Item], seen_items: list[Item]) -> int:
     If nothing is fully teachable (a phrase whose words the course never teaches
     separately), the least-blocked item wins rather than deadlocking.
     """
-    # Rules first, because the prerequisite walk below returns the head of the
-    # queue as soon as it is ready -- which is exactly where a run of rules
-    # sits, so a spacing check placed after it never ran.
-    if not _rule_is_due(seen_items):
+    # Spacing first, because the prerequisite walk below returns the head of the
+    # queue as soon as it is ready -- which is exactly where a run of rules, or
+    # of numbers, sits, so a spacing check placed after it never ran.
+    rules_due = _rule_is_due(seen_items)
+    saturated = _saturated_category(seen_items)
+    if not rules_due or saturated:
         spaced = [i for i, item in enumerate(queue)
-                  if item.kind != "rule" and not unknown_pieces(item, seen_items)]
+                  if (rules_due or item.kind != "rule")
+                  and item.category != saturated
+                  and not unknown_pieces(item, seen_items)]
+        # Nothing else is ready, so the run continues rather than deadlocking:
+        # spacing is a preference and teaching is not.
         if spaced:
-            queue = queue[:]           # never reorder the caller's list
-            wanted = spaced[0]
-            return wanted
+            return spaced[0]
 
     wanted = 0
     for _ in range(MAX_PREREQUISITE_DEPTH):
