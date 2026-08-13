@@ -164,10 +164,17 @@ def load_course(content_dir: Path) -> list[Item]:
     Every caller that needs the whole course must use this rather than
     concatenating the two loaders, which is what let the collision through in
     seven separate places.
+
+    Case-insensitively, because a live session writes whatever the model
+    capitalised: "Ở" and "Người" were both sitting in the personal store beside
+    the roster's "ở" and "người", and an exact-name comparison let both
+    through. The learner would have met the same word twice, with two glosses
+    written by two different authors.
     """
     roster = load_roster(content_dir)
-    claimed = {i.name for i in roster}
-    return roster + [i for i in load_personal_items(content_dir) if i.name not in claimed]
+    claimed = {i.name.casefold() for i in roster}
+    return roster + [i for i in load_personal_items(content_dir)
+                     if i.name.casefold() not in claimed]
 
 
 def save_personal_items(content_dir: Path, items: list[Item]) -> None:

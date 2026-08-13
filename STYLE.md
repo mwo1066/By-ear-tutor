@@ -502,6 +502,77 @@ Attendues, pas encore intégrées. Quand elles arrivent : note par note, quel
 tiroir — et lesquelles ne survivent pas au test.
 
 
+### Les tons : donner un modèle, jamais un jugement
+*Proposé par Meo, 13 août.*
+
+**Le mur qui décide de tout : le tuteur n'entend jamais la prononciation de
+l'apprenant.** Pas de « c'était presque ça, remonte un peu ». Donc la seule
+pédagogie disponible est de **rendre la différence audible** — donner un modèle
+et créer un contraste, jamais évaluer.
+
+Ce n'est pas une limite à contourner, c'est ce qui choisit le design.
+
+**Les trois temps, dans l'ordre :**
+
+1. **Dès les premières minutes** — « écoute Minh et copie ». Une consigne, dite
+   une fois, vraie du début à la fin du cours. C'est la fondation.
+2. **À l'introduction d'un mot** — nommer son ton, quand ce mot en a besoin.
+   Jamais un tableau des six tons le premier jour : c'est la règle écrite dont
+   ce cours ne veut pas.
+3. **Quand un mot nouveau ressemble à un ancien déjà consolidé** — les comparer,
+   dire les deux tons, et faire dire les deux par Minh dans le même souffle.
+
+Le troisième temps est le seul moment où la différence existe vraiment pour
+l'oreille. `ba` puis `bà`, un seul clip, deux mots.
+
+**Combien de mots sont concernés — mesuré le 13 août :**
+
+```
+                                    enseignés (147)      tout (2062)
+même squelette, TON différent         3 groupes      246 groupes / 582 mots
++ voyelle modifiée (ơ/o, ư/u, ê/e)    3 groupes      289 groupes / 801 mots
+```
+
+**Presque 40 % du vocabulaire a un sosie.** Mais trois paires seulement parmi
+les mots enseignés : le mécanisme ne sert quasiment à rien aujourd'hui et
+devient central quand le vocabulaire grossit. À écrire, pas à câbler tout de
+suite.
+
+Les trois qui existent :
+
+```
+ba  (ngang) trois          /  bà  (huyền) grand-mère
+bạn (nặng)  toi            /  bán (sắc)   vendre
+con (ngang) classificateur /  còn (huyền) et toi ?
+```
+
+**Tiroir :** geste qui revient → une formulation en code, dans `_INTRODUCE`.
+Rien à annoter : le ton se **calcule** depuis le diacritique, comme les notes de
+ton écrites aujourd'hui dans les fichiers de contenu.
+
+**La condition qui compte : le second mot seulement.** Deux sosies enseignés
+côte à côte s'entremêlent. La comparaison se déclenche à l'introduction du
+NOUVEAU, et seulement si l'ancien est bien consolidé — le niveau SRS donne ce
+chiffre. Le cours le fait déjà par accident : `bạn`/`bán` sont à 125 items
+d'écart, `con`/`còn` à 105. Seul `ba`/`bà` est serré, à 15.
+
+**Deux choses à ne pas faire.**
+
+*Ne jamais valider un ton.* « Bien, c'était le bon ton » est une information
+qu'on n'a pas. Une fausse confirmation installe l'erreur avec un tampon de
+garantie — pire que le silence.
+
+*Ne pas parler du ton d'un mot composé.* `cà phê` n'a pas un ton, il en a deux.
+Les notes de ton sont par syllabe, ce que le calcul par diacritique donne déjà.
+
+**Une réserve sur notre propre outil.** Minh est une voix de synthèse, et un mot
+isolé ne porte pas son ton comme le même mot dans une phrase — l'intonation de
+phrase déforme. Ce qui plaide pour le temps 1 : **le mot répété seul est la
+référence propre**, et c'est ce qu'on a de plus fiable.
+
+**Statut :** à essayer au temps 3 d'abord, c'est celui qui apporte le plus et
+qui se calcule entièrement.
+
 ---
 
 # Ce que le cours enseigne — brouillon d'objectifs
