@@ -1008,6 +1008,42 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item],
         # Whether a sentence can carry a rule is Vietnamese knowledge; when the
         # code has no evidence it hands the list over instead of guessing, the
         # same division this file already makes on the vary step.
+        # A rule ABOUT person-words is asked as a situation, never as a phrase.
+        # Meo, validating ơi: instead of giving the answer in the application,
+        # pose it as a puzzle -- "I want you to call this kind of person". Then
+        # nothing Vietnamese is said and the learner has to build it.
+        #
+        # This is the vary step's move, reused: name the situation in English,
+        # ask for it. Both rules Meo flagged declare anh and chị in their
+        # pieces, so has_person_slot is already true for them and no new field
+        # is needed. It fixes ơi and ấy with one change -- they had the same
+        # defect, "How would you say anh ấy?", the question saying its answer.
+        # has_person_slot is too loose here: it asks whether a person-word is
+        # PRESENT, and word order (tôi, uống, cà phê) and possession (của, cà
+        # phê, tôi) both use one as example material without being about it.
+        # Those would have been asked as "call this kind of person", which is
+        # nonsense. A rule is ABOUT address when most of its material is.
+        # Two of them at least, and most of the material: one alone is an
+        # example word, which is what "tôi, là" is doing in the tone rule.
+        address_pieces = sum(1 for p in item.pieces if p in ADDRESS_TERMS)
+        about_address = address_pieces >= 2 and address_pieces * 2 >= len(item.pieces)
+        profile = learner_module.load(LEARNER_PATH)
+        rows = profile.address_rows() or address_situations(known or [])
+        if about_address and rows:
+            situations = "; ".join([learner_module.pair_with_minh()] + rows)
+            for rung in ("someone this rule is easiest on", "a different person entirely",
+                         "a third, and let them choose which person-word fits"):
+                plan.append(Step(
+                    "apply", item.name,
+                    f"Put the rule to work by naming a SITUATION and asking them to do it: "
+                    f"{rung}. Say who the person is in English — \"someone older than you, a man\" "
+                    f"— and ask them to say it to that person. NEVER say the Vietnamese: naming it "
+                    f"is handing over the whole answer, which is the one thing this turn must not "
+                    f"do. The situations this course teaches, and only these: {situations}. One "
+                    f"question, then stop.",
+                ))
+            return plan
+
         related = [c for c in (known or [])
                    if c.kind == "construction" and set(c.pieces) & set(item.pieces)]
         if related:
