@@ -60,10 +60,12 @@ description = "Tính từ: món ăn hay đồ uống làm mình thấy thích. T
 type = "procedure"
 name = "tính từ không cần 'là'"
 kind = "rule"
-gloss = "adjectives need no 'is'"
+gloss = "you already use là in \"my name is Nam\" — it goes before a name or a thing, and never before a describing word"
+after = "ngon"
+pieces = ["ngon", "cơm"]
 category = "rules"
 language = "vi"
-description = "Quy tắc: tính từ đứng NGAY sau chủ ngữ, không bao giờ dùng 'là' ở giữa. 'Cơm ngon' đúng — 'cơm là ngon' sai. 'Là' chỉ đứng trước danh từ: 'Tôi là Nam' đúng. Khác hẳn tiếng Anh: người mới học hay quen tay thêm 'là' trước tính từ — bỏ được thói quen đó là câu nghe tự nhiên ngay."
+description = "Quy tắc: bắt đầu từ chỗ người học ĐÃ dùng 'là': 'Tôi tên là Nam' — 'là' đứng trước một cái TÊN, một danh từ. Còn với tính từ thì bỏ hẳn: 'Cơm ngon' đúng, 'cơm là ngon' sai. Đừng nói là họ hay quên — họ chưa từng dùng sai, khoá học chưa dạy kiểu đó. Nói cái đã biết trước, rồi cái mới: 'là' cho danh từ, không có gì cho tính từ."
 
 # Règles rattachées à ce fichier : elles arrivent après les mots
 # qu'elles décrivent, jamais groupées en bloc de théorie.
