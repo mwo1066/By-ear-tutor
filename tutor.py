@@ -28,10 +28,11 @@ sys.stdin.reconfigure(encoding="utf-8")
 
 from content import (load_course, 
     Item, load_persona_system_prompt, load_roster, load_personal_items,
-    add_personal_items, address_situations, askable, check_roster, derive_pieces,
+    add_personal_items, address_situations, ADDRESS_TERMS, askable, check_roster, derive_pieces,
     has_person_slot, is_teachable, pieces_of, pick_next_index,
 )
 from srs import ProgressStore
+import learner as learner_module
 import voice as voice_module
 from voice import SpeechPipeline
 
@@ -44,6 +45,9 @@ from listen import listen_and_transcribe
 ROOT = Path(__file__).parent
 CONTENT_DIR = ROOT / "content" / "vietnamese"
 STATE_PATH = ROOT / "state.json"
+# Who the learner is, kept apart from what they know: different lifetimes, and
+# state.json is a flat map of item name to level with no room inside it.
+LEARNER_PATH = ROOT / "learner.json"
 ENV_PATH = ROOT / ".env"
 
 # Groq, after OpenRouter's free tier proved too slow to hold a conversation.
@@ -175,6 +179,26 @@ TOOLS = [
             },
         },
     },
+    {
+        "type": "function",
+        "function": {
+            "name": "remember_learner",
+            "description": (
+                "The learner said something about themselves -- their name, their age, or whether "
+                "they are a man or a woman. Call this so the course can teach THEIR person-words "
+                "instead of the neutral ones. Only for what they actually said: never infer a "
+                "gender from a name or an age from a voice."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "name": {"type": "string", "description": "their given name, as they said it"},
+                    "gender": {"type": "string", "enum": ["male", "female"]},
+                    "age": {"type": "integer", "description": "their age in years"},
+                },
+            },
+        },
+    },
 ]
 
 THEME_GENERATION_TOOL = [
@@ -243,7 +267,7 @@ THEME_GENERATION_TOOL = [
                 "required": ["items"],
             },
         },
-    }
+    },
 ]
 
 def load_api_key() -> str:
@@ -731,6 +755,18 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item],
         invite = (" This is the first rule of the course, so add one short line telling them they "
                   "can ask you to say any rule again, any time, and that forgetting one is normal. "
                   "Say it once and never repeat it.") if first_rule else ""
+        # The address rule is the one rule the course cannot state properly
+        # without knowing who is in front of it: which person-word the learner
+        # uses for THEMSELVES depends on their own age and gender. So this is
+        # where it asks -- at the only moment the question is obviously part of
+        # the lesson rather than a form to fill in. Asked once: the condition
+        # is the profile being incomplete, so answering it stops the asking.
+        profile = learner_module.load(LEARNER_PATH)
+        if item.steps and not profile.complete and any(t in " ".join(item.steps) for t in ADDRESS_TERMS):
+            invite += (" You do not know yet whether they are a man or a woman, or roughly how old "
+                       "they are, and this rule cannot be made concrete without it. Ask them, in "
+                       "one short natural question, as part of explaining the rule — not as a form. "
+                       "When they answer, call remember_learner with what they actually said.")
         # Never a recall: the name is a description of the language, not
         # something the learner ever says. Asking "what was tính từ không cần
         # là?" is nonsense, and the old name-splitting made exactly that
@@ -805,7 +841,12 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item],
         # "My name is Lan", then "My name is Mai". It permuted given names,
         # which are not vocabulary and teach nothing, while the pronoun -- the
         # only interesting thing in that sentence -- never moved.
-        rows = "; ".join(address_situations(known or []))
+        # The learner's OWN table wins over the rule's generic one. Same shape,
+        # so nothing below changes -- but "someone younger → they are em, you
+        # are anh" is a different kind of sentence from "the term depends on
+        # relative age and gender", which is a table to memorise.
+        profile = learner_module.load(LEARNER_PATH)
+        rows = "; ".join(profile.address_rows() or address_situations(known or []))
         if has_person_slot(item) and rows:
             vary_instruction = (
                 f'Vary WHO they are speaking to. Name the situation out loud — "now you are '
@@ -1549,6 +1590,22 @@ def _run_turn(api_key, messages, store, roster, queue_items, themes_generated_th
                 for name in matched:
                     store.deprioritize(name)
                 print(f"  (deprioritised: theme '{args['topic']}' -- {len(matched)} item(s))")
+        elif fn["name"] == "remember_learner":
+            # Merged field by field, never replaced: a name volunteered in one
+            # session and an age three sessions later, and the second must not
+            # wipe the first. Values are checked here rather than trusted --
+            # the model is being asked about a person, which is exactly where
+            # it is most tempted to fill in a blank it was not given.
+            profile = learner_module.load(LEARNER_PATH)
+            if args.get("name"):
+                profile.name = str(args["name"]).strip()
+            if args.get("gender") in learner_module.SELF_WHEN_OLDER:
+                profile.gender = args["gender"]
+            age = args.get("age")
+            if isinstance(age, int) and 0 < age < 120:
+                profile.age = age
+            learner_module.save(LEARNER_PATH, profile)
+            print(f"  (learner: {profile.summary() or 'nothing usable'})")
 
         messages.append({
             "role": "tool",

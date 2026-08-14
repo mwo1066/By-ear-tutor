@@ -8,3 +8,4 @@ voices/test_text*.txt
 *.wav
 .cache/
 *.bak
+learner.json
