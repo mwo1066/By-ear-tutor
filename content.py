@@ -62,6 +62,17 @@ class Item:
     # someone younger, unsure -- and nothing read them: the field was not loaded
     # at all. A table nobody can reach is a table that gets re-invented.
     steps: list[str] = field(default_factory=list)
+    # A rule may name the item it belongs WITH, and it is then emitted the turn
+    # after that item instead of waiting its turn in the rule queue.
+    #
+    # Without it a rule cannot be placed at all, only ranked. Rules come out one
+    # every five items in file order, so a rule's position is decided by how
+    # many rules precede it and by nothing else: "đã" is the 22nd item and its
+    # rule the 15th rule, which lands it at 82. Measured across the course, the
+    # median rule arrives 47 items after the last of its own words, and 21 of 30
+    # wait more than 30. So a learner meets a word, drills it as vocabulary, and
+    # is told an hour later where it goes.
+    after: str = ""
     source: str = "roster"  # "roster" (curated TOML) or "personnel" (LLM-generated live)
     topic: str | None = None  # theme this item was generated for, if any -- lets a whole theme be deprioritized at once
 
@@ -86,6 +97,7 @@ def load_roster(content_dir: Path) -> list[Item]:
                 literal=raw.get("literal", ""),
                 hook=raw.get("hook", ""),
                 steps=list(raw.get("steps", [])),
+                after=raw.get("after", ""),
             ))
     return items
 
@@ -457,6 +469,16 @@ def pick_next_index(queue: list[Item], seen_items: list[Item]) -> int:
     If nothing is fully teachable (a phrase whose words the course never teaches
     separately), the least-blocked item wins rather than deadlocking.
     """
+    # A rule that named its word comes FIRST, ahead of every spacing rule. That
+    # is the whole point of the field: the spacer exists to stop rules
+    # clustering, and a rule attached to a word is not clustering, it is
+    # finishing the word. Bypassing the spacer is the intent, not a side effect.
+    taught = {i.name for i in seen_items}
+    attached = [i for i, item in enumerate(queue)
+                if item.after and item.after in taught and not unknown_pieces(item, seen_items)]
+    if attached:
+        return attached[0]
+
     # Spacing first, because the prerequisite walk below returns the head of the
     # queue as soon as it is ready -- which is exactly where a run of rules, or
     # of numbers, sits, so a spacing check placed after it never ran.

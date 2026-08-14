@@ -122,11 +122,12 @@ pieces = ["mười", "mươi", "hai", "ba"]
 type = "procedure"
 name = "năm thành lăm khi đứng cuối"
 kind = "rule"
+after = "lăm"
 gloss = "the digit five changes its name when it lands at the end of a number"
 category = "rules"
 language = "vi"
 description = "Quy tắc: 'năm' đổi thành 'lăm' khi đứng CUỐI một số — 'mười lăm' (15), 'hai mươi lăm' (25). Lý do rất thật: 'năm' còn nghĩa là năm tháng, nên 'mười năm năm' không ai hiểu được. 'một' và 'bốn' cũng đổi tên ở cuối, nhưng đó là chuyện khác, học sau."
-pieces = ["mốt", "lăm", "tư", "một", "năm", "bốn"]
+pieces = ["lăm", "năm", "mười"]
 
 [[items]]
 type = "concept"
