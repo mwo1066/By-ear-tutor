@@ -650,7 +650,11 @@ def rapidfire_count(item: Item, pieces: list[Item]) -> int:
     if item.kind == "construction":
         base = 1 if pieces else 2      # its chain already re-asked every piece
     elif item.kind == "rule":
-        base = 4                       # nothing was said back; this is the practice
+        # Was 4, on the reasoning that nothing had been said back so this WAS
+        # the practice. No longer true: a rule now carries two apply steps of
+        # its own, so four unrelated recalls on top made it the longest item in
+        # the course for no added learning.
+        base = 2
     else:
         base = 3
     return max(1, base + random.choice((-1, 0, 0, 1)))
