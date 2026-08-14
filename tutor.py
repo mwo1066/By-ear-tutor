@@ -736,6 +736,32 @@ def _known_words_note(known: list[Item]) -> str:
             f'the name instead. Never ask for a word you have not taught: they cannot know it.')
 
 
+def _known_sentences_note(known: list[Item]) -> str:
+    """The sentence patterns this course has taught, in the exact form it taught
+    them.
+
+    Never truncated, unlike the word list: there are 5 of them at item 78 and 22
+    at the end of the course, so the whole set costs about a thousand characters
+    at its largest. The word list is capped because any word the model reaches
+    for is probably known; a word ORDER is not like that.
+
+    Written after a live turn where the learner said "Tôi tên là Nam" -- exactly
+    the form the roster teaches -- and was told "that's close" and corrected to
+    "Tên tôi là Nam". Both are Vietnamese. Only one has been taught, and the
+    model had no way to know which: past twelve known words it receives "use
+    only Vietnamese you have already taught", which names nothing at all. Being
+    corrected when you were right is the worst thing a course can do.
+    """
+    rows = [f'"{i.name}" ({i.literal})' if i.literal else f'"{i.name}"'
+            for i in known if i.kind == "construction"]
+    if not rows:
+        return ""
+    return (" The sentences this course has taught, in the exact form it taught them: "
+            + "; ".join(rows) + ". Ask for one of these in THAT form and accept THAT form. "
+            "Vietnamese allows other orders; the learner has been given this one, so another "
+            "is a correction they cannot use and did not earn.")
+
+
 def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item],
                known: list[Item] | None = None) -> list[Step]:
     """The full turn-by-turn plan for teaching one item.
@@ -782,8 +808,8 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item],
             f"ASK IT IN ENGLISH. Naming the Vietnamese sentence you want back is stating the "
             f"answer: say \"how would you say my name is Nam, to Minh?\", never \"how would you "
             f"say em tên là Nam?\".{invite}"
-            f"{_known_words_note(known or [])} Nothing else. Do not skip the statement: a question "
-            f"alone leaves them with a rule nobody told them.",
+            f"{_known_words_note(known or [])}{_known_sentences_note(known or [])} Nothing else. "
+            f"Do not skip the statement: a question alone leaves them with a rule nobody told them.",
         ))
     elif item.kind == "construction":
         for piece in pieces:
@@ -864,7 +890,8 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item],
                      f'order, none removed.') if item.literal else " Keep every part of it."
             vary_instruction = (
                 f'They have just built "{item.gloss}". Ask for it once more with exactly ONE '
-                f'element changed.{shape}{_known_words_note(known or [])} Drop a part and it '
+                f'element changed.{shape}{_known_words_note(known or [])}'
+                f'{_known_sentences_note(known or [])} Drop a part and it '
                 f'silently becomes a different sentence, which is the one thing this turn must not '
                 f'do. One question, in English, then stop. Say no Vietnamese and do not have Minh '
                 f'speak — the Vietnamese sentence is the answer you are asking them for.'
