@@ -312,6 +312,42 @@ def check_every_plan_builds() -> int:
     return failed
 
 
+
+# (line, is the Vietnamese stranded mid-sentence). Counting per LINE accused the
+# course's own introduce turn, which switches voice twice and is exactly right:
+# the Vietnamese ends its sentence and a new one follows. The defect is a switch
+# INSIDE a sentence, where a second voice says a word and the first resumes.
+CHOPPY_CASES = [
+    ("In Vietnamese, the word for name is tên. tên. Now you say it.", False),
+    ("In Vietnamese, that's tôi.", False),
+    ("Listen again — tôi. And again?", False),
+    ("Three little words—đã, đang, sẽ—show past, present and future.", True),
+    # Three examples in a row, but the Vietnamese still ENDS the sentence, so
+    # this is not the defect -- it is a separate question of how much to say
+    # at once, and flagging it here would blunt the signal.
+    ("They go right before the verb, like “Tôi đã ăn,” “Tôi đang ăn,” “Tôi sẽ ăn.”", False),
+    # The line from the same turn that IS the defect: a pattern named in the
+    # middle, the tutor resuming after it.
+    ("You’ve already used the pattern “tôi tên là …,” so you can try it with a tense marker.", True),
+]
+
+
+def check_choppy_cases(vocab) -> int:
+    """A line the tutor really said, and whether it strands Vietnamese."""
+    import io
+    import contextlib
+    failed = 0
+    for text, expected in CHOPPY_CASES:
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            voice._warn_if_choppy(text, vocab)
+        got = bool(buf.getvalue().strip())
+        if got != expected:
+            verb = "missed" if expected else "wrongly flagged"
+            print(f"FAIL — choppiness guard {verb} {text[:52]!r}")
+            failed += 1
+    return failed
+
 def check_prerequisite_order() -> int:
     """Nothing may be taught before the words it is made of -- run over the
     WHOLE course, not a sample.
@@ -356,7 +392,7 @@ def main(NO_INTRO=False) -> int:
             + check_talking_cases() + check_derived_pieces(roster)
             + check_spoken_targets() + check_answer_cases()
             + check_prerequisite_order()
-            + check_every_plan_builds()):
+            + check_every_plan_builds() + check_choppy_cases(vocab)):
         return 1
 
     turns = {"n": 0}

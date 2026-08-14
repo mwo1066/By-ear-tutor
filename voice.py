@@ -238,12 +238,25 @@ def _warn_if_english_reaches_minh(text: str, known_vn_words: frozenset[str]) -> 
 MAX_VOICE_SWITCHES = 1
 
 
+_SENTENCE_SPLIT = re.compile(r"(?<=[.!?])\s+")
+
+
 def _warn_if_choppy(text: str, known_vn_words: frozenset[str]) -> None:
     """Counted rather than corrected: the code cannot rewrite the sentence, and
-    a number in the log is what tells us whether the instruction is working."""
-    switches = len(split_by_voice(text, known_vn_words)) - 1
-    if switches > MAX_VOICE_SWITCHES:
-        print(f"  [diag] !! {switches} voice switches in one line — Vietnamese landed mid-sentence")
+    a number in the log is what tells us whether the instruction is working.
+
+    Per SENTENCE, not per line, or it accuses the course's own best turn. "In
+    Vietnamese, the word for name is tên. tên. Now you say it." switches voice
+    twice across the line and is exactly right: the Vietnamese ENDS its
+    sentence, and what follows is a new one. "Three little words—đã, đang,
+    sẽ—show past" switches twice inside ONE sentence, which is the defect. The
+    first version of this counted the line and flagged both.
+    """
+    for sentence in _SENTENCE_SPLIT.split(text.strip()):
+        switches = len(split_by_voice(sentence, known_vn_words)) - 1
+        if switches > MAX_VOICE_SWITCHES:
+            print(f"  [diag] !! Vietnamese landed mid-sentence ({switches} voice "
+                  f"switches): {sentence.strip()[:60]!r}")
 
 
 _TTS_ERRORS = (urllib.error.URLError, TimeoutError, OSError)
