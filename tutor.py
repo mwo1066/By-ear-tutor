@@ -634,6 +634,12 @@ def _vocab_words(items: list[Item]) -> frozenset[str]:
 # rule had them say nothing at all, so those are where the recalls belong.
 N_RAPIDFIRE = 3
 
+# How many turns a rule gets to be USED after being stated. Two, because one is
+# what it had -- crammed into the same breath as the statement and the examples
+# -- and because a rule that cannot be shown twice on two different sentences is
+# a rule the course has no business teaching yet.
+N_RULE_APPLY = 2
+
 
 def rapidfire_count(item: Item, pieces: list[Item]) -> int:
     """How many bare recalls this item's plan ends with.
@@ -939,6 +945,30 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item],
             answer_is_target=True,
             ask=speakable(item.gloss),
         ))
+
+    if item.kind == "rule":
+        # A rule used to get ONE turn about itself, which had to state it, give
+        # examples and apply it all in a breath -- and then the plan went
+        # straight to recalls of unrelated words. Measured on the real
+        # sequencing: rule -> rapidfire anh -> rapidfire em -> rapidfire tên.
+        # Stated once and never used again, which is exactly what a learner
+        # reported: "I understood nothing about the rule and it is not even
+        # used."
+        #
+        # Every other kind gets several turns on the thing being taught -- an
+        # atom has introduce plus settle, a construction has a recall per piece
+        # plus scaffold plus answer plus variations. The rule was alone in
+        # having one.
+        for _ in range(N_RULE_APPLY):
+            plan.append(Step(
+                "apply", item.name,
+                f"Put the rule to work once more, on a DIFFERENT sentence from the one you just "
+                f"used. Take something they can already say and ask for it changed in the one way "
+                f"this rule is about — the change has to be visible in the answer, or the turn "
+                f"teaches nothing.{_known_sentences_note(known or [])} ASK IT IN ENGLISH and do not "
+                f"say the Vietnamese sentence you want back: that is the answer. One question, then "
+                f"stop. No new rule, no new word, no second idea.",
+            ))
 
     for target in recall_targets:
         plan.append(Step(
