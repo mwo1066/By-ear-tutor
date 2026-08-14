@@ -1315,7 +1315,19 @@ def _lesson_note(lesson: dict) -> str:
         return "\n".join(lines)
 
     if lesson["item"] is not None:
-        lines.append(f"Item being worked: {lesson['item'].name} — {lesson['item'].description}")
+        # The GLOSS, never the description. `description` is a paragraph of
+        # Vietnamese written for whoever authors the content, and it was being
+        # handed to a model asked to speak English -- which then leaked
+        # fragments of it aloud. Rendered on the tier-1 rules: "That works for
+        # both actions and describing words, like a verb động từ", "you add the
+        # word ấy after the person word. ấy", "adding a word after the
+        # person-word. đã". Three different rules, the same cause.
+        #
+        # Nothing is lost: every instruction already carries the English side it
+        # needs, and the item's name is what the turn is about.
+        item = lesson["item"]
+        lines.append(f"Item being worked: {item.name}"
+                     + (f" — {item.gloss}" if item.gloss else ""))
     lines.append(f"THIS TURN, THIS ONLY: {step.instruction}")
     verdict = lesson.get("verdict")
     if verdict == "correct":
