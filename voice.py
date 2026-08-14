@@ -229,6 +229,23 @@ def _warn_if_english_reaches_minh(text: str, known_vn_words: frozenset[str]) -> 
             print(f"  [diag] !! Minh was handed {chunk!r}, which carries no Vietnamese")
 
 
+# A sentence that ends in Vietnamese is one switch. Anything above that means
+# the Vietnamese landed INSIDE the English, which is what the persona forbids --
+# a second voice says a word, then the first voice resumes, so the sound arrives
+# before any meaning is attached to it. Live, a rule turn opened with "Three
+# little words—đã, đang, sẽ—show past, present and future", and the learner
+# asked what the three random words were.
+MAX_VOICE_SWITCHES = 1
+
+
+def _warn_if_choppy(text: str, known_vn_words: frozenset[str]) -> None:
+    """Counted rather than corrected: the code cannot rewrite the sentence, and
+    a number in the log is what tells us whether the instruction is working."""
+    switches = len(split_by_voice(text, known_vn_words)) - 1
+    if switches > MAX_VOICE_SWITCHES:
+        print(f"  [diag] !! {switches} voice switches in one line — Vietnamese landed mid-sentence")
+
+
 _TTS_ERRORS = (urllib.error.URLError, TimeoutError, OSError)
 
 
@@ -350,6 +367,7 @@ class SpeechPipeline:
         text = _strip_markdown(text)
         text = _strip_authoring_notation(text)
         _warn_if_english_reaches_minh(text, self._known_vn_words)
+        _warn_if_choppy(text, self._known_vn_words)
         if not text.strip():
             return
         if is_stage_direction(text):
