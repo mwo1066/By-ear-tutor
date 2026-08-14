@@ -845,8 +845,11 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item],
         # so nothing below changes -- but "someone younger → they are em, you
         # are anh" is a different kind of sentence from "the term depends on
         # relative age and gender", which is a table to memorise.
+        # Minh goes first and always: he is the one person in the room, so the
+        # rule stops being a table for at least one row, profile or no profile.
         profile = learner_module.load(LEARNER_PATH)
-        rows = "; ".join(profile.address_rows() or address_situations(known or []))
+        rows = "; ".join([learner_module.pair_with_minh()]
+                         + (profile.address_rows() or address_situations(known or [])))
         if has_person_slot(item) and rows:
             vary_instruction = (
                 f'Vary WHO they are speaking to. Name the situation out loud — "now you are '

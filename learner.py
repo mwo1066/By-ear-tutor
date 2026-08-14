@@ -27,6 +27,23 @@ SELF_WHEN_OLDER = {"male": "anh", "female": "chị"}
 NEUTRAL_SELF, NEUTRAL_OTHER = "tôi", "bạn"
 
 
+def pair_with_minh() -> str:
+    """The one address pair the course never has to guess.
+
+    Everything else about the system depends on BOTH people, which is why it
+    reads as a table. But inside a lesson the other person is never unknown: it
+    is Minh, a man, and the learner's teacher. Facing an older man everyone is
+    `em` whatever their own gender, and deference is the safe error in the
+    direction sources agree on -- treating someone as slightly older than they
+    are is harmless, the reverse is the mistake.
+
+    Needs no profile at all, which makes it the only part of the address system
+    that works from the first minute. Written here rather than in the persona
+    because it is a fact about the pair, not a way of speaking.
+    """
+    return "with Minh, right here: you are em and he is anh"
+
+
 @dataclass
 class Learner:
     name: str = ""

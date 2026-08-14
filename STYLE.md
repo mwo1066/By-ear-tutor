@@ -639,6 +639,48 @@ idée, qu'est-ce qui est posé la première fois, et qu'est-ce qui est encaissé
 seconde ?* Si la réponse est « tout, tout de suite », ce n'est pas de cette
 famille — et il faut se demander si ça double la charge au lieu de la répartir.
 
+### Le troisième moment : quand la dernière pièce tombe
+*Proposé par Meo, 13 août.*
+
+Les deux entrées ci-dessus placent la décomposition à deux instants. Meo en
+désigne un troisième, et c'est le meilleur : **le moment où le second morceau
+est enseigné**, avant même que le composé arrive.
+
+```
+au composé   (« Décomposer un nom connu »)   la 1re pièce peut dater de 3 semaines
+à l'atome    (« Dire ce qu'un mot va… »)     la 2e pièce n'existe pas encore
+à la 2e pièce  ← celui-ci                    les DEUX moitiés sont fraîches
+```
+
+C'est le seul des trois où l'apprenant a les deux morceaux en tête en même
+temps. Et c'est le même calcul que le deuxième, avec un filtre plus strict —
+donc un seul mécanisme à construire, pas deux.
+
+**Mesuré le 13 août, et le chiffre dit de ne pas le câbler tout de suite :**
+
+```
+il se déclencherait   2 fois   sur tout le cours actuel
+   en enseignant xin  ->  Xin chào devient composable
+   en enseignant sao  ->  không sao devient composable
+```
+
+Deux. Parce que le cours n'a que 27 mots multi-syllabes enseignés, et que leurs
+syllabes ne sont presque jamais enseignées séparément. Les 428 composés
+décomposables mesurés le matin sont tous dans le **stock muet**.
+
+**Le vrai blocage, trouvé en cherchant à le construire :** aucun atome ne porte
+de décomposition. `pieces` existe et vaut zéro sur zéro atome — le champ ne sert
+qu'aux constructions et aux règles. Donc **les trois moments sont bloqués par la
+même donnée manquante**, et elle appartient à la passe d'annotation, pas au code.
+
+Le découpage par syllabes du nom est calculable sans annotation, mais il ment
+une fois sur deux (`cho nên`, `bà con`, `con cái` — mesuré). Il ne peut servir
+qu'à proposer des candidats à vérifier, jamais à parler.
+
+**Statut :** à ne PAS câbler maintenant. Le mécanisme firerait deux fois. À
+reprendre le jour où les décompositions sont écrites — et ce jour-là les trois
+moments arrivent ensemble, puisqu'ils attendent la même chose.
+
 ---
 
 # Ce que le cours enseigne — brouillon d'objectifs
