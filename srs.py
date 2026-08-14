@@ -80,14 +80,25 @@ class ProgressStore:
     def mark_introduced(self, name: str) -> None:
         self._states.setdefault(name, ItemState(name=name))
 
-    def record_recall(self, name: str) -> None:
-        """One more exposure: the word drops down the odds by one notch.
+    def record_recall(self, name: str, got_it: bool = True) -> None:
+        """One more exposure, and whether it actually landed.
 
         Called when a recall the CODE asked for has been answered, so it counts
         what actually happened rather than what a grader thought it saw.
+
+        `got_it=False` moves the word back UP the queue instead of down. It was
+        called unconditionally until 13 August, so a word missed twice was
+        promoted for having been missed: live, "chị" was asked, missed, asked
+        again, answered with the single letter "G", and came out at level 8 --
+        drawn once in twenty-seven. The mechanism whose whole purpose is to
+        bring back what the learner does not know was burying precisely that.
+
+        A miss costs two levels rather than resetting to zero: they have still
+        just heard it twice in a minute, and asking three more times in a row
+        is drilling rather than spacing.
         """
         state = self._states.setdefault(name, ItemState(name=name))
-        state.level += 1
+        state.level = state.level + 1 if got_it else max(0, state.level - 2)
 
     def deprioritize(self, name: str) -> None:
         """The learner asked to stop working on this. Buried, never deleted."""

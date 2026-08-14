@@ -1242,9 +1242,23 @@ _LANG_TAG = re.compile(r"^\s*\[lang:[a-z-]+\]\s*", re.IGNORECASE)
 
 
 def _bare(text: str) -> str:
-    """Letters only, no tone marks -- what a beginner and a recogniser both lose first."""
+    """Letters only, no tone marks -- what a beginner and a recogniser both lose
+    first -- but word boundaries KEPT.
+
+    They used to be dropped with everything else, which turned every short
+    target into a substring of any long utterance. Live on 13 August: the
+    recogniser hallucinated "…những video hấp dẫn" out of room noise, and "ăn"
+    was found inside "dẫn", so the word was recorded as answered. A tone mark is
+    dropped, a space becomes a space.
+    """
     lowered = unicodedata.normalize("NFD", text.lower()).replace("đ", "d")
-    return "".join(c for c in lowered if c.isalpha())
+    kept = []
+    for c in lowered:
+        if c.isalpha():
+            kept.append(c)
+        elif not unicodedata.combining(c):
+            kept.append(" ")   # a real separator, not a tone mark
+    return " ".join("".join(kept).split())
 
 
 def _should_retry(step, user_text: str, lesson: dict) -> bool:
@@ -1282,7 +1296,9 @@ def answered_target(user_text: str, target: str) -> bool:
     said, want = _bare(_LANG_TAG.sub("", user_text)), _bare(target)
     if not want:
         return True
-    if want in said:
+    # Padded, so the match is on whole words. Unpadded, "ăn" was found inside
+    # "dẫn" and a hallucinated sentence counted as the answer.
+    if f" {want} " in f" {said} ":
         return True
     # A single letter is not a word, whatever it scores. "D" against "đi" rates
     # 0.67 -- the same as a genuine "Đôi" for "tôi" -- because one of two letters
@@ -1633,8 +1649,9 @@ def _conversation_loop(api_key, messages, store, roster, queue_items, themes_gen
                     got_it = answered_target(user_input, done.target)
                     lesson["verdict"] = "correct" if got_it else "missed_twice"
                     lesson["verdict_target"] = done.target
-                    store.record_recall(done.target)
-                    print(f"  [level] {done.target} -> {store.level(done.target)}")
+                    store.record_recall(done.target, got_it)
+                    print(f"  [level] {done.target} -> {store.level(done.target)}"
+                          f"{'' if got_it else '  (missed — comes back sooner)'}")
                 lesson["retried"] = False
                 # A step the MODEL wrote asked something only it can mark. Give
                 # it the next turn to react, before the plan moves on.

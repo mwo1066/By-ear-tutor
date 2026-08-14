@@ -178,6 +178,13 @@ TALKING_CASES = [
 # the normal case, so the bar is generous on purpose -- but not so generous that
 # a single letter, or one shared letter out of two, records a word as known.
 ANSWER_CASES = [
+    # 2026-08-13 -- room noise, and Whisper answered with YouTube boilerplate it
+    # was trained on. "ăn" bare is "an", which sits inside "dẫn", so with word
+    # boundaries dropped the hallucination counted as the answer and the word
+    # was recorded as known.
+    ("[lang:vi] Hãy subscribe cho kênh Ghiền Mì Gõ Để không bỏ lỡ những video hấp dẫn", "ăn", False),
+    ("[lang:vi] Tôi muốn ăn.", "ăn", True),      # …and a real one still counts
+    ("[lang:vi] G", "chị", False),               # a single letter never was an answer
     ("Dạ", "là", False),        # one shared letter out of two: was accepted, level went to 7
     ("D", "đi", False),         # a single letter is not a word
     ("Đôi", "tôi", True),       # two of three: a real recognition
