@@ -971,15 +971,30 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item],
         # atom has introduce plus settle, a construction has a recall per piece
         # plus scaffold plus answer plus variations. The rule was alone in
         # having one.
-        for _ in range(N_RULE_APPLY):
+        # The CODE picks which sentence each application uses, and they differ.
+        # Asking for a different one was an instruction, and live it was ignored
+        # three turns running: the rule turn asked "how would you answer Bạn
+        # muốn ăn?", then both applications asked exactly that again. The
+        # learner heard one question four times and the session ran out before
+        # anything else happened. Whether two sentences are different is not a
+        # judgement call, so it is not the model's to make.
+        #
+        # Ones sharing a piece with the rule come first, since a rule shows best
+        # on material it actually touches. Measured: the median rule has 5 taught
+        # sentences to choose from and only 2 of 35 have fewer than two.
+        pool = [c for c in (known or []) if c.kind == "construction"]
+        pool.sort(key=lambda c: not (set(c.pieces) & set(item.pieces)))
+        for n in range(N_RULE_APPLY):
+            chosen = pool[n % len(pool)] if pool else None
+            on_it = (f' Use THIS sentence and no other: "{chosen.gloss}" ({chosen.name}).'
+                     if chosen else "")
             plan.append(Step(
                 "apply", item.name,
-                f"Put the rule to work once more, on a DIFFERENT sentence from the one you just "
-                f"used. Take something they can already say and ask for it changed in the one way "
-                f"this rule is about — the change has to be visible in the answer, or the turn "
-                f"teaches nothing.{_known_sentences_note(known or [])} ASK IT IN ENGLISH and do not "
-                f"say the Vietnamese sentence you want back: that is the answer. One question, then "
-                f"stop. No new rule, no new word, no second idea.",
+                f"Put the rule to work once more.{on_it} Ask for it changed in the one way this "
+                f"rule is about — the change has to be visible in the answer, or the turn teaches "
+                f"nothing.{'' if chosen else _known_sentences_note(known or [])} ASK IT IN ENGLISH "
+                f"and do not say the Vietnamese back: that is the answer. One question, then stop. "
+                f"No new rule, no new word, no second idea.",
             ))
 
     for target in recall_targets:
