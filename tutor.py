@@ -634,11 +634,23 @@ def _vocab_words(items: list[Item]) -> frozenset[str]:
 # rule had them say nothing at all, so those are where the recalls belong.
 N_RAPIDFIRE = 3
 
-# How many turns a rule gets to be USED after being stated. Two, because one is
-# what it had -- crammed into the same breath as the statement and the examples
-# -- and because a rule that cannot be shown twice on two different sentences is
-# a rule the course has no business teaching yet.
-N_RULE_APPLY = 2
+# A rule is put to work by CLIMBING one sentence, not by being asked for whole
+# sentences repeatedly. This is the reference method's move, named by Meo while
+# testing: "he always starts calm -- how do you say don't want, then I don't
+# want, then I don't want to eat."
+#
+# It also settles a conflict. The first version asked for a DIFFERENT sentence
+# each time, because live the same question came four turns running. But the
+# defect there was the identical QUESTION, not the repeated sentence: a ladder
+# stays on one sentence and asks something new at every rung, which is both
+# closer to the method and further from what went wrong.
+_RULE_LADDER = (
+    "Ask for the SHORTEST fragment in which the rule already shows -- two or three words, no "
+    "subject, no object. Start small.",
+    "Now the same fragment with the person in front of it. One element added, nothing else.",
+    "Now the whole sentence. This is the rung they have been climbing towards.",
+)
+N_RULE_APPLY = len(_RULE_LADDER)
 
 
 def rapidfire_count(item: Item, pieces: list[Item]) -> int:
@@ -982,19 +994,27 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item],
         # Ones sharing a piece with the rule come first, since a rule shows best
         # on material it actually touches. Measured: the median rule has 5 taught
         # sentences to choose from and only 2 of 35 have fewer than two.
-        pool = [c for c in (known or []) if c.kind == "construction"]
-        pool.sort(key=lambda c: not (set(c.pieces) & set(item.pieces)))
-        for n in range(N_RULE_APPLY):
-            chosen = pool[n % len(pool)] if pool else None
-            on_it = (f' Use THIS sentence and no other: "{chosen.gloss}" ({chosen.name}).'
-                     if chosen else "")
+        # Pinned ONLY when a taught sentence genuinely shares material with the
+        # rule. Without that test the sort fell back to whatever came first, and
+        # the negation rule was handed "My name is ___" -- a sentence with no
+        # verb in it to negate, which is the one thing the rule cannot do.
+        # Whether a sentence can carry a rule is Vietnamese knowledge; when the
+        # code has no evidence it hands the list over instead of guessing, the
+        # same division this file already makes on the vary step.
+        related = [c for c in (known or [])
+                   if c.kind == "construction" and set(c.pieces) & set(item.pieces)]
+        chosen = related[0] if related else None
+        on_it = (f' Work on THIS sentence and no other: "{chosen.gloss}" ({chosen.name}).'
+                 if chosen else _known_sentences_note(known or []) +
+                 " Pick ONE of them that this rule can visibly change, and stay on it for this "
+                 "turn and the next two.")
+        for rung in _RULE_LADDER:
             plan.append(Step(
                 "apply", item.name,
-                f"Put the rule to work once more.{on_it} Ask for it changed in the one way this "
-                f"rule is about — the change has to be visible in the answer, or the turn teaches "
-                f"nothing.{'' if chosen else _known_sentences_note(known or [])} ASK IT IN ENGLISH "
-                f"and do not say the Vietnamese back: that is the answer. One question, then stop. "
-                f"No new rule, no new word, no second idea.",
+                f"Put the rule to work.{on_it} {rung} The change this rule makes has to be visible "
+                f"in the answer, or the turn teaches nothing. ASK IT IN ENGLISH and do not say the "
+                f"Vietnamese back: that is the answer. One question, then stop. No new rule, no new "
+                f"word, no second idea.",
             ))
 
     for target in recall_targets:
