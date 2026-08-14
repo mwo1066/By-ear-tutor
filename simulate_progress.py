@@ -44,7 +44,23 @@ SECONDS_PER_TURN = 15
 ACCURACY = 0.8
 
 
-def run_until(match, seed: int = 7):
+def run_until_count(stop_after: int, seed: int = 7):
+    """Stops with exactly `stop_after` items taught, so item stop_after+1 is next.
+
+    Exists so a specific turn can be reached by NUMBER. --until= matches on the
+    item name, and every rule in this course is named in Vietnamese: reaching
+    the address rule meant typing "cách chọn từ xưng hô" into PowerShell, which
+    is fragile enough that the flag went unused. A position is typeable.
+    """
+    n = {"taught": 0}
+
+    def enough(_item) -> bool:
+        return n["taught"] >= stop_after
+
+    return run_until(enough, seed, on_taught=lambda: n.__setitem__("taught", n["taught"] + 1))
+
+
+def run_until(match, seed: int = 7, on_taught=None):
     """Advances until the NEXT item due satisfies `match`, then stops.
 
     `match` takes an Item, so a caller can stop on a kind, on a name, or on
@@ -65,6 +81,8 @@ def run_until(match, seed: int = 7):
         seen.append(item)
         store.mark_introduced(item.name)
         taught.append(item.name)
+        if on_taught:
+            on_taught()
         pieces = pieces_of(item, seen)
         for step in build_plan(item, pieces,
                                _recall_targets(store, item, pieces, seen), seen):
@@ -183,6 +201,10 @@ def main() -> int:
         print(f"\nWrote {STATE_PATH}")
         print("Now run:  python tutor.py --no-intro     (WITHOUT --fresh)")
         return 0
+
+    at = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--at=")), None)
+    if at and at.isdigit():
+        return report(*run_until_count(int(at)))
 
     wanted = next((a.split("=", 1)[1] for a in sys.argv if a.startswith("--until=")), None)
     if wanted:
