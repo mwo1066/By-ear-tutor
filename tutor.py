@@ -1305,6 +1305,13 @@ def _bare(text: str) -> str:
     return " ".join("".join(kept).split())
 
 
+# How many turns in a row the learner may hold one step by talking to the tutor
+# instead of answering it. Without a cap, a step is never consumed while they
+# keep speaking English, and the lesson stops moving; with one, a real
+# back-and-forth still fits and a monologue does not stall the course.
+MAX_STEP_WAITS = 2
+
+
 def _should_retry(step, user_text: str, lesson: dict) -> bool:
     """One second chance on a missed recall, never two.
 
@@ -1680,14 +1687,27 @@ def _conversation_loop(api_key, messages, store, roster, queue_items, themes_gen
             lesson["verdict_target"] = None
             lesson["answer_only"] = False
             lesson["react_only"] = False
-            if learner_gave_up(user_input):
+            gave_up = learner_gave_up(user_input)
+            if gave_up:
                 # Not a question, so the step is still consumed -- but this turn
                 # belongs to them: they asked, in as many words, to be told.
                 lesson["gave_up"] = True
                 print("  (learner said they don't know -- the answer is given before moving on)")
-            if learner_asked_something(user_input):
+            # Was learner_asked_something, which needs a literal "?" -- and
+            # transcribed speech rarely carries one. Live: "I have a question. I
+            # don't understand Tentoylannam." held nothing, the step was scored
+            # as missed, and the tutor answered about an unrelated word.
+            #
+            # learner_spoke_freely already means "they said something that wants
+            # an answer, not the word asked for", and already forces a model
+            # turn. It just did not hold the step -- so the code decided they
+            # were talking to us, handed the turn over, and consumed the step
+            # anyway. One condition, used for both, is the whole fix.
+            if not gave_up and learner_spoke_freely(user_input) \
+                    and lesson.get("waits", 0) < MAX_STEP_WAITS:
                 lesson["answer_only"] = True
-                print("  (learner asked a question -- this turn answers it, the step waits)")
+                lesson["waits"] = lesson.get("waits", 0) + 1
+                print("  (learner is talking to us -- this turn answers them, the step waits)")
             elif _should_retry(done, user_input, lesson):
                 # They answered a different word entirely. Worth one more go --
                 # the plan used to advance regardless, so the "wrong word, Minh
@@ -1696,10 +1716,12 @@ def _conversation_loop(api_key, messages, store, roster, queue_items, themes_gen
                 lesson["retried"] = True
                 print(f"  (missed '{done.target}' -- one more go)")
             else:
-                # The step is done. If it asked for a word, that IS the
-                # exposure -- recorded here, where the code knows exactly what
-                # it asked, instead of being reconstructed afterwards by a
-                # model re-reading the transcript.
+                # The step is done, so the waiting budget starts fresh for the
+                # next one.
+                lesson["waits"] = 0
+                # If it asked for a word, that IS the exposure -- recorded here,
+                # where the code knows exactly what it asked, instead of being
+                # reconstructed afterwards by a model re-reading the transcript.
                 if done is not None and done.kind in RECALL_KINDS and done.target:
                     # The code has already decided whether this was right. Pass
                     # that decision on, or the model judges again from the raw
