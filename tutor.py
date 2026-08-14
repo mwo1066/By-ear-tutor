@@ -29,7 +29,7 @@ sys.stdin.reconfigure(encoding="utf-8")
 from content import (load_course, 
     Item, load_persona_system_prompt, load_roster, load_personal_items,
     add_personal_items, address_situations, ADDRESS_TERMS, askable, check_roster, derive_pieces,
-    has_person_slot, is_teachable, pieces_of, pick_next_index,
+    has_person_slot, is_teachable, pieces_of, pick_next_index, tone_twin,
 )
 from srs import ProgressStore
 import learner as learner_module
@@ -691,6 +691,12 @@ class Step:
     ask: str = ""
     hook: str = ""
     literal: str = ""
+    # An already-taught word this one differs from ONLY in tone, when there is
+    # one. Carried on the step rather than looked up when speaking, so the turn
+    # is decided in one place -- and computed, never authored: the tone is in
+    # the diacritic.
+    twin: str = ""
+    twin_gloss: str = ""
 
 
 def _ask_for(item: Item) -> str:
@@ -937,6 +943,8 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item],
             f'enough. Then ask them to say it. Nothing else.',
             ask=speakable(item.gloss),
             hook=item.hook,
+            twin=(twin := tone_twin(item, known or [])) and twin.name or "",
+            twin_gloss=twin and speakable(twin.gloss) or "",
         ))
         plan.append(Step(
             "settle", item.name,
@@ -1073,6 +1081,17 @@ _INTRODUCE = (
     "The Vietnamese for {ask} is {name}. {name}. Your turn — say it.",
     "Here's the word for {ask}: {name}. {name}. Now you try it.",
 )
+# The same shape, plus the one word already known that differs from it only in
+# pitch. Every Vietnamese run still ENDS its sentence, so Minh is handed whole
+# clips and the voice never switches mid-sentence -- checked by the same guard
+# that caught the rule turn dropping three words into the middle of one.
+_INTRODUCE_TWIN = (
+    "In Vietnamese, the word for {ask} is {name}. {name}. Careful — you already know "
+    "{twin_gloss}, and it is the same sounds at a different pitch. Here they are together: "
+    "{twin}. {name}. Now you say it.",
+    "The Vietnamese for {ask} is {name}. {name}. This one is a pair with {twin_gloss}, which "
+    "you know — same sounds, different pitch. Listen: {twin}. {name}. Your turn.",
+)
 
 
 def _pick(lesson: dict, slot: str, options: tuple[str, ...]) -> str:
@@ -1144,7 +1163,17 @@ def scripted_turn(lesson: dict) -> str | None:
             literal=speakable(step.literal), ask=step.ask)
     elif step.kind == "introduce":
         # The one scripted turn that SAYS the target rather than asking for it.
-        body = _pick(lesson, "intro", _INTRODUCE).format(ask=step.ask, name=step.target)
+        # A whole different line when the word has a tone twin, rather than the
+        # ordinary one with the contrast bolted on the end -- bolting it on left
+        # "Now you say it" in the MIDDLE, so the learner was told to speak and
+        # then talked over. Here the contrast lands after the meaning and before
+        # the ask, with Minh saying the two words back to back: the only second
+        # in which the difference exists for a foreign ear, and the only thing
+        # this course can honestly do about tones, since it never hears the
+        # learner and so can model and contrast but never judge.
+        forms = _INTRODUCE_TWIN if step.twin else _INTRODUCE
+        body = _pick(lesson, "intro", forms).format(
+            ask=step.ask, name=step.target, twin=step.twin, twin_gloss=step.twin_gloss)
         # A hook goes in FRONT: the fact earns the word, then the word lands.
         # For "phở" or "cà phê" the template alone is circular -- it tells a
         # learner who already knows the thing that the Vietnamese for it is the

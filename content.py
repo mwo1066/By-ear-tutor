@@ -2,6 +2,7 @@
 import json
 import re
 import tomllib
+import unicodedata
 from dataclasses import dataclass, asdict, field
 from pathlib import Path
 
@@ -283,6 +284,42 @@ def address_situations(items: list[Item]) -> list[str]:
         if i.kind == "rule" and i.steps and any(t in " ".join(i.steps) for t in ADDRESS_TERMS):
             return i.steps
     return []
+
+
+# The five tone marks, as combining characters. NOT the vowel modifiers (horn,
+# breve, circumflex): ơ and o are different vowels, à and a are the same vowel
+# said at a different pitch, and only the second pair is a tone twin.
+_TONE_MARKS = {"́", "̀", "̉", "̃", "̣"}
+
+
+def toneless(name: str) -> str:
+    """The word with its pitch removed -- what a foreign ear actually hears."""
+    return "".join(c for c in unicodedata.normalize("NFD", name.lower())
+                   if c not in _TONE_MARKS)
+
+
+def tone_twin(item: Item, already_seen: list[Item]) -> Item | None:
+    """An already-taught word that differs from this one ONLY in tone.
+
+    The pair is the whole lesson. "thanh sắc, the voice rises" teaches nothing to
+    someone with nothing to compare it against; `ba` then `bà` in one breath is
+    the only second in which the difference exists for a foreign ear.
+
+    Deliberately at the SECOND word of a pair, never the first: two lookalikes
+    taught side by side blur into each other, and the older one has had time to
+    settle. Measured on the roster -- 3 pairs among the words taught (ba/bà,
+    bạn/bán, con/còn), 246 groups across the whole vocabulary, so this is nearly
+    idle today and central once the stock wakes up.
+    """
+    if item.kind != "atom" or len(item.name.split()) != 1:
+        return None
+    skeleton = toneless(item.name)
+    for other in reversed(already_seen):
+        if (other.kind == "atom" and other is not item
+                and other.name.lower() != item.name.lower()
+                and toneless(other.name) == skeleton):
+            return other
+    return None
 
 
 def has_person_slot(item: Item) -> bool:

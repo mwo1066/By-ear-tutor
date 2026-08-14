@@ -322,6 +322,13 @@ CHOPPY_CASES = [
     ("In Vietnamese, that's tôi.", False),
     ("Listen again — tôi. And again?", False),
     ("Three little words—đã, đang, sẽ—show past, present and future.", True),
+    # The tone-twin introduction: four Vietnamese words across the line, every
+    # run ending its own sentence, and the ask last. The first version bolted
+    # the contrast onto the ordinary template and left "Now you say it" in the
+    # middle, so the learner was told to speak and then talked over.
+    ("In Vietnamese, the word for one, as in twenty-one is mốt. mốt. Careful — you already "
+     "know one, and it is the same sounds at a different pitch. Here they are together: "
+     "một. mốt. Now you say it.", False),
     # Three examples in a row, but the Vietnamese still ENDS the sentence, so
     # this is not the defect -- it is a separate question of how much to say
     # at once, and flagging it here would blunt the signal.
