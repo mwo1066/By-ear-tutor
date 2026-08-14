@@ -1003,11 +1003,22 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item],
         # same division this file already makes on the vary step.
         related = [c for c in (known or [])
                    if c.kind == "construction" and set(c.pieces) & set(item.pieces)]
-        chosen = related[0] if related else None
-        on_it = (f' Work on THIS sentence and no other: "{chosen.gloss}" ({chosen.name}).'
-                 if chosen else _known_sentences_note(known or []) +
-                 " Pick ONE of them that this rule can visibly change, and stay on it for this "
-                 "turn and the next two.")
+        if related:
+            c = related[0]
+            on_it = f' Work on THIS sentence and no other: "{c.gloss}" ({c.name}).'
+        elif item.pieces:
+            # No taught sentence touches this rule, so the rule's OWN words are
+            # the material. Handing over the list of sentences instead produced
+            # the worst turn of the session: asked to show that an adjective
+            # needs no "là", the model chose "I am not a student" -- a noun,
+            # which REQUIRES là, so the application demonstrated the opposite of
+            # the rule. Naming the words it must build from cannot do that.
+            words = ", ".join(f'"{p}"' for p in item.pieces)
+            on_it = (f" Build the sentence out of these words, which are what this rule is about: "
+                     f"{words}. Nothing else, and never a word they have not been taught.")
+        else:
+            on_it = (_known_sentences_note(known or []) +
+                     " Pick ONE of them that this rule can visibly change, and stay on it.")
         for rung in _RULE_LADDER:
             plan.append(Step(
                 "apply", item.name,
