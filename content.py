@@ -89,6 +89,12 @@ def load_roster(content_dir: Path) -> list[Item]:
     return items
 
 
+# A gloss is spoken inside "the word for ___", so it has to be short enough to
+# sit in a question. Measured on the roster: everything above this was a
+# definition that had been written into the wrong field.
+MAX_GLOSS_WORDS = 6
+
+
 def check_roster(items: list[Item]) -> list[str]:
     """Authoring defects that would silently degrade a lesson, as messages.
 
@@ -118,6 +124,20 @@ def check_roster(items: list[Item]) -> list[str]:
         # English gloss would quietly undo that.
         if i.kind != "rule" and i.gloss and i.name.lower() in i.gloss.lower():
             problems.append(f"{i.name}: its own name appears in its gloss {i.gloss!r} — the recall would give the answer away")
+        # A gloss is not a definition. It is what fills the blank in "the word
+        # for ___", which a scripted recall says ALOUD, so a gloss describing
+        # the word instead of translating it comes out as "the word for the
+        # counting word for things" or, worse, "what was right now, in the
+        # middle of?". Heard in a simulated session on 13 August; 16 of 151
+        # glosses failed, eight of them written that same day by someone
+        # trying to be helpful. A prompt cannot hold this over 1900 items.
+        if i.kind == "atom" and i.gloss:
+            if "word" in i.gloss.lower():
+                problems.append(f"{i.name}: gloss {i.gloss!r} describes the word instead of translating it — "
+                                f'it would be read as "the word for {i.gloss}"')
+            if len(i.gloss.split()) > MAX_GLOSS_WORDS:
+                problems.append(f"{i.name}: gloss {i.gloss!r} is {len(i.gloss.split())} words — "
+                                f"too long to sit inside a spoken question")
         # A gloss that IS an English question word collides with the frame the
         # question is asked in: "And what — what was the word?" reads as two
         # questions. One item hit this; the frequency import will bring who,
