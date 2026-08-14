@@ -128,16 +128,6 @@ description = "Lời chào — dùng cả khi gặp nhau và khi tạm biệt. T
 
 [[items]]
 type = "procedure"
-name = "động từ không chia"
-kind = "rule"
-gloss = "verbs never change, whoever is doing the action"
-category = "rules"
-language = "vi"
-description = "Quy tắc: động từ tiếng Việt giữ nguyên một hình thức duy nhất. 'Tôi ăn', 'bạn ăn', 'anh ấy ăn' — cùng một chữ 'ăn'. Không chia theo ngôi, không chia theo số. Đây là điều nên nói sớm với người mới học: nó xoá đi phần khó nhất của tiếng Pháp hay tiếng Tây Ban Nha."
-pieces = ["muốn", "ăn"]
-
-[[items]]
-type = "procedure"
 name = "không có giống, không có mạo từ"
 kind = "rule"
 gloss = "no genders, and no word for 'a' or 'the'"

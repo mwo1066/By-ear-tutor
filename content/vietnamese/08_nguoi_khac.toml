@@ -128,3 +128,22 @@ category = "rules"
 language = "vi"
 description = "Quy tắc: 'phải' đứng NGAY TRƯỚC động từ. 'Em phải đi.' Cùng chỗ với 'muốn' và 'cần' đã học — cùng một chỗ trống, chỉ đổi chữ. 'có thể' và 'nên' cũng vào chỗ đó, nhưng từng cái một. Điều đáng nhớ riêng: 'được' thì ngược lại, đứng SAU động từ."
 pieces = ["phải", "có thể", "nên", "được"]
+[[items]]
+type = "concept"
+name = "đang"
+kind = "atom"
+gloss = "in the middle of doing"
+category = "verb"
+language = "vi"
+description = "Từ đánh dấu việc đang diễn ra, đặt NGAY TRƯỚC động từ. 'Tôi đang ăn cơm' — tôi đang ăn ngay lúc này. Cùng vị trí với 'đã' và 'sẽ', nên dạy ba cái liền nhau: chỉ chữ ở giữa đổi."
+
+
+[[items]]
+type = "procedure"
+name = "đang: việc đang diễn ra, đứng trước động từ"
+kind = "rule"
+gloss = "to say something is happening right now, one word goes before the action"
+category = "rules"
+language = "vi"
+description = "Quy tắc: đặt 'đang' NGAY TRƯỚC động từ để nói việc đang xảy ra lúc này. 'Tôi ăn cơm' thành 'Tôi đang ăn cơm'. Đúng cái chỗ trống mà 'đã' đã dùng — không phải chỗ mới, chỉ đổi chữ. Biết một chỗ là biết cả ba."
+pieces = ["đang", "ăn"]

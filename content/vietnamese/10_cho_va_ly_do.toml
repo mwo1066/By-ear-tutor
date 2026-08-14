@@ -163,3 +163,22 @@ category = "rules"
 language = "vi"
 description = "Quy tắc: 'ở' đánh dấu nơi chốn, rồi 'trong' nói rõ phía trong. 'Em ở trong nhà.' Trật tự cố định, không đảo. Chỉ 'ở' một mình cũng đủ khi không cần rõ: 'Em ở Hà Nội.' 'trên' và 'dưới' vào đúng chỗ của 'trong', nhưng từng cái một."
 pieces = ["ở", "trong", "trên", "dưới"]
+[[items]]
+type = "concept"
+name = "sẽ"
+kind = "atom"
+gloss = "will"
+category = "verb"
+language = "vi"
+description = "Từ đánh dấu tương lai, đặt NGAY TRƯỚC động từ. 'Tôi sẽ ăn cơm'. Cũng không bắt buộc — 'ngày mai' một mình là đủ. Ba từ đã/đang/sẽ chiếm cùng một chỗ, đó là điều dễ nhất trong hệ thống thì của tiếng Việt."
+
+
+[[items]]
+type = "procedure"
+name = "sẽ: việc sắp tới, đứng trước động từ"
+kind = "rule"
+gloss = "to say something will happen, one word goes before the action"
+category = "rules"
+language = "vi"
+description = "Quy tắc: đặt 'sẽ' NGAY TRƯỚC động từ để nói việc sắp tới. 'Tôi sẽ ăn cơm'. Vẫn cùng một chỗ trống với 'đã' và 'đang' — chỗ thứ ba và cuối cùng, không có gì mới ngoài chữ. Và như hai cái kia, không bắt buộc: 'ngày mai' một mình là đủ."
+pieces = ["sẽ", "ăn"]
