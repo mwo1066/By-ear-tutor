@@ -647,8 +647,15 @@ N_RAPIDFIRE = 3
 _RULE_LADDER = (
     "Ask for the SHORTEST fragment in which the rule already shows -- two or three words, no "
     "subject, no object. Start small.",
-    "Now the same fragment with the person in front of it. One element added, nothing else.",
-    "Now the whole sentence. This is the rung they have been climbing towards.",
+    # Was "the same fragment with the person in front of it", and that assumed
+    # every rule's material grows subject-first. It does not: the adjective rule
+    # builds "cơm ngon", which is already a whole sentence, and asking for a
+    # person in front produced "tôi cơm ngon" -- which the tutor then confirmed
+    # as correct. A wrong sentence taught as right is worse than no rung.
+    "Now grow it by ONE element, whichever one that sentence naturally takes next. If it is "
+    "already complete, ask for the same thing about something else instead -- never pad it with "
+    "a word that does not belong.",
+    "Now the fullest form these words allow. This is the rung they have been climbing towards.",
 )
 N_RULE_APPLY = len(_RULE_LADDER)
 
@@ -1023,9 +1030,14 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item],
             plan.append(Step(
                 "apply", item.name,
                 f"Put the rule to work.{on_it} {rung} The change this rule makes has to be visible "
-                f"in the answer, or the turn teaches nothing. ASK IT IN ENGLISH and do not say the "
-                f"Vietnamese back: that is the answer. One question, then stop. No new rule, no new "
-                f"word, no second idea.",
+                f"in the answer, or the turn teaches nothing."
+                # The ở rule asked for "I am at home", then "at school", then "at
+                # the market" -- none of nhà, trường or chợ has been taught, so
+                # every rung was unanswerable. An application may only use words
+                # the learner has.
+                f"{_known_words_note(known or [])} ASK IT IN ENGLISH and do not say the Vietnamese "
+                f"back: that is the answer. One question, then stop. No new rule, no new word, no "
+                f"second idea.",
             ))
 
     for target in recall_targets:
