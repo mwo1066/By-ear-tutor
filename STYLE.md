@@ -681,6 +681,52 @@ qu'à proposer des candidats à vérifier, jamais à parler.
 reprendre le jour où les décompositions sont écrites — et ce jour-là les trois
 moments arrivent ensemble, puisqu'ils attendent la même chose.
 
+### Demander à l'apprenant d'inventer sa propre phrase
+*Proposé par Meo, 14 août.*
+
+À un moment, arrêter de demander « comment dirais-tu X ? » et demander **une
+phrase à lui**, avec ce qu'il a.
+
+**C'est le seul tour où l'apprenant choisirait le contenu.** Aujourd'hui, sans
+exception, le tuteur décide quoi produire et l'apprenant restitue. Or le but du
+cours est de parler à des gens qui, eux, ne fourniront jamais la phrase. La
+différence entre réciter et parler est exactement là.
+
+**Tiroir :** un geste qui revient → une étape dans `build_plan`, du même genre
+que `apply`. Probablement pas à chaque item : à un palier, quand une
+construction vient d'être consolidée — « maintenant, dites-moi quelque chose à
+vous avec ces cinq mots ».
+
+**Sœur de « dire ce qu'on sait déjà dire ».** L'inventaire annonce ce qui est
+possible ; celle-ci le fait prouver. Les deux au même palier se tiendraient
+bien : voilà ce que vous savez dire, maintenant dites-en une.
+
+**Ce qui joue contre, et c'est sérieux.** Le code ne peut pas juger une phrase
+libre : `answered_target` compare à une cible connue, et ici il n'y a pas de
+cible. **Donc le modèle doit juger** — précisément ce que cette journée entière
+a consisté à lui retirer. Chaque fois qu'on lui a laissé la bride, il a validé
+`tôi cơm ngon`, corrigé une réponse juste, inventé une erreur jamais commise.
+
+Une phrase inventée par l'apprenant et validée à tort est **pire** qu'un rappel
+raté : elle installe une faute avec un tampon d'approbation.
+
+Deuxième obstacle : la reconnaissance. Une phrase libre est longue, et les
+longues transcriptions sont les pires — mesuré toute la soirée.
+
+**La sortie possible :** ne pas juger. Le tuteur écoute, Minh redit une version
+correcte, et on avance — sans verdict. C'est ce que le cours fait déjà pour la
+prononciation, où il ne peut pas non plus corriger : donner un modèle, jamais
+un jugement. La même honnêteté marcherait ici.
+
+**À mesurer :** le cours de référence demande-t-il jamais d'inventer ? Mon
+intuition dit rarement et tard, parce que sa force est justement de ne jamais
+laisser l'apprenant sans filet. Si c'est zéro fois en vingt-cinq minutes, c'est
+une préférence — et alors on l'essaie en le sachant.
+
+**Statut :** à mesurer d'abord. Et à ne pas câbler tant que le tour de règle
+n'est pas scripté : ce serait ajouter un endroit où le modèle juge, le jour où
+on cherche à en retirer un.
+
 ---
 
 # Ce que le cours enseigne — brouillon d'objectifs
