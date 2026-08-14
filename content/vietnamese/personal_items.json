@@ -13,19 +13,6 @@
     "topic": "introductions"
   },
   {
-    "name": "Tuổi",
-    "item_type": "concept",
-    "category": "noun",
-    "language": "vi",
-    "description": "Danh từ chỉ số năm sinh, tuổi tác. Thanh hỏi (giọng xuống lên). Thường đi sau số: \"hai mươi tuổi\". Không cần trợ từ \"là\" khi nói tuổi: \"Tôi hai mươi tuổi\" chứ không phải \"Tôi là hai mươi tuổi\". Lưu ý: người Việt thường hỏi tuổi để xác định xưng hô phù hợp.",
-    "gloss": "age",
-    "kind": "atom",
-    "pieces": [],
-    "literal": "",
-    "source": "personnel",
-    "topic": "introductions"
-  },
-  {
     "name": "Bạn bao nhiêu tuổi?",
     "item_type": "concept",
     "category": "question",
@@ -35,22 +22,6 @@
     "kind": "atom",
     "pieces": [],
     "literal": "",
-    "source": "personnel",
-    "topic": "introductions"
-  },
-  {
-    "name": "Tôi ... tuổi",
-    "item_type": "procedure",
-    "category": "sentence pattern",
-    "language": "vi",
-    "description": "Cấu trúc khẳng định tuổi: Chủ ngữ + số + \"tuổi\". Sử dụng \"tôi\" (đã học) làm chủ ngữ. Không dùng \"là\" trước tuổi. Ví dụ: \"Tôi hai mươi lăm tuổi\". Thanh điệu: \"tôi\" ngang, số (tùy số), \"tuổi\" hỏi. Mẫu câu này cũng áp dụng cho người khác: \"Anh ba mươi tuổi\", \"Chị hai mươi tám tuổi\".",
-    "gloss": "I ___ years old",
-    "kind": "construction",
-    "pieces": [
-      "tôi",
-      "Tuổi"
-    ],
-    "literal": "I ___ years old",
     "source": "personnel",
     "topic": "introductions"
   },
@@ -253,32 +224,6 @@
     "topic": "greetings and introductions"
   },
   {
-    "name": "Ở",
-    "item_type": "concept",
-    "category": "introductions",
-    "language": "vi",
-    "description": "Giới từ chỉ nơi chốn, dùng sau động từ 'sống', 'làm', 'học' để chỉ địa điểm. 'Ở' thanh hỏi (giọng xuống lên). Phát âm ngắn, không nhấn mạnh. Không dùng độc lập, luôn đi với danh từ chỉ địa điểm ngay sau đó.",
-    "gloss": "at / in (location)",
-    "kind": "atom",
-    "pieces": [],
-    "literal": "",
-    "source": "personnel",
-    "topic": "greetings and introductions"
-  },
-  {
-    "name": "Người",
-    "item_type": "concept",
-    "category": "introductions",
-    "language": "vi",
-    "description": "Danh từ chỉ con người, cũng dùng để chỉ quốc tịch trong cấu trúc 'người + [tên nước]'. 'Người' thanh hỏi (giọng xuống lên). Ví dụ: 'người Việt', 'người Mỹ'. Xuất hiện trong câu hỏi 'Bạn là người nước nào?'.",
-    "gloss": "person / nationality",
-    "kind": "atom",
-    "pieces": [],
-    "literal": "",
-    "source": "personnel",
-    "topic": "greetings and introductions"
-  },
-  {
     "name": "Chào anh / Chào chị / Chào em",
     "item_type": "procedure",
     "category": "greetings",
@@ -346,32 +291,6 @@
     "literal": "I name is [name], I come from [country]",
     "source": "personnel",
     "topic": "greetings and introductions"
-  },
-  {
-    "name": "Je suis prêt",
-    "item_type": "concept",
-    "category": "phrase",
-    "language": "vi",
-    "description": "Biểu hiện ‘tôi sẵn sàng’, dùng trong giao tiếp để nói rằng mình đã chuẩn bị xong và sẵn sàng bắt đầu. Giọng điệu trung tính, lịch sự.",
-    "gloss": "I am ready",
-    "kind": "atom",
-    "pieces": [],
-    "literal": "",
-    "source": "personnel",
-    "topic": null
-  },
-  {
-    "name": "đi",
-    "item_type": "concept",
-    "category": "travel",
-    "language": "vi",
-    "description": "Động từ chỉ hành động di chuyển từ nơi này sang nơi khác. Thanh ngang — giọng đều, không lên không xuống. Dùng khi muốn nói 'đi' đến một địa điểm, thường đi kèm với 'đến' hoặc 'đến nơi'.",
-    "gloss": "to go",
-    "kind": "atom",
-    "pieces": [],
-    "literal": "",
-    "source": "personnel",
-    "topic": "travel"
   },
   {
     "name": "sân bay",
@@ -472,19 +391,6 @@
     "topic": "personal course for musicians"
   },
   {
-    "name": "xin lỗi",
-    "item_type": "concept",
-    "category": "greetings",
-    "language": "vi",
-    "description": "Cụm từ thể hiện lời xin lỗi, dùng khi làm sai hoặc làm phiền người khác. Thanh ngang — giọng nhẹ, không kéo dài. Thường dùng trước hoặc sau khi giải thích lý do.",
-    "gloss": "sorry",
-    "kind": "atom",
-    "pieces": [],
-    "literal": "",
-    "source": "personnel",
-    "topic": "general greetings"
-  },
-  {
     "name": "chúc mừng",
     "item_type": "concept",
     "category": "greetings",
@@ -511,19 +417,6 @@
       "không"
     ],
     "literal": "you healthy not?",
-    "source": "personnel",
-    "topic": "general greetings"
-  },
-  {
-    "name": "chào buổi sáng anh/chị",
-    "item_type": "concept",
-    "category": "greetings",
-    "language": "vi",
-    "description": "Câu chào buổi sáng cho người lớn tuổi hoặc người không quen, dùng kính trọng. Thanh ngang, giọng lên nhẹ ở cuối để tạo cảm giác thân thiện.",
-    "gloss": "good morning (formal)",
-    "kind": "atom",
-    "pieces": [],
-    "literal": "",
     "source": "personnel",
     "topic": "general greetings"
   },
@@ -594,7 +487,7 @@
     "category": "ordering food",
     "language": "vi",
     "description": "Danh từ thực phẩm, thanh ngang — giọng đều, không lên không xuống. Dùng để chỉ món ăn hoặc đồ uống muốn gọi. Thường đứng trước động từ muốn/đặt. Ví dụ: \"phở\", \"bún\", \"cá\".",
-    "gloss": "pho / vermicelli / fish",
+    "gloss": "pho, the noodle soup",
     "kind": "atom",
     "pieces": [],
     "literal": "",
