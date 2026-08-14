@@ -15,8 +15,8 @@ The learner it plays is deliberately good but not perfect -- ACCURACY below --
 because a flawless one never triggers the retry path and an awful one never
 gets past the first word.
 
-    python simulate_progress.py 60            # what an hour would leave behind
-    python simulate_progress.py 60 --write    # write it to state.json
+    python simulate_progress.py --random --write   # land somewhere new, every time
+    python simulate_progress.py 60 --write         # a specific hour of course
 
 Then run the tutor WITHOUT --fresh to land in the middle of the course.
 
@@ -133,9 +133,41 @@ def run(turns: int, seed: int = 7) -> ProgressStore:
     return store, taught, len(queue)
 
 
+def _finish(store, taught, left, minutes: int, write: bool) -> int:
+    """Reports what an hour left behind, and writes it if asked."""
+    levels = Counter(store.level(n) for n in taught)
+    print(f"{len(taught)} item(s) introduced in {minutes} minutes, {left} still ahead\n")
+    print("the last dozen taught:")
+    for n, name in enumerate(taught[-12:], len(taught) - 11):
+        print(f"  {n:3}. {name}  (level {store.level(name)})")
+    print("\nhow consolidated:")
+    for level in sorted(levels):
+        share = "1 in " + str(max(1, round((level + 1) ** 1.5)))
+        print(f"  level {level}: {levels[level]:3} item(s)   drawn {share}")
+    if not write:
+        print(f"\nNothing written. Re-run with --write to save to {STATE_PATH.name}.")
+        return 0
+    store.path = STATE_PATH
+    store.save()
+    print(f"\nWrote {STATE_PATH}")
+    print("Now run:  python tutor.py --no-intro     (WITHOUT --fresh)")
+    return 0
+
+
 def main() -> int:
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     write = "--write" in sys.argv
+    # --random exists because the seed was fixed at 7, so the same duration
+    # always produced the SAME state: running it twice tested the same twenty
+    # minutes of course twice. Testing widely means landing in different places,
+    # and the place matters more than the length -- item 40 and item 140 exercise
+    # different machinery.
+    if "--random" in sys.argv:
+        seed = random.randrange(10_000)
+        minutes = random.choice((15, 25, 40, 55, 70, 90, 110))
+        print(f"[--random] seed {seed}, {minutes} minutes of course\n")
+        store, taught, left = run(minutes * 60 // SECONDS_PER_TURN, seed=seed)
+        return _finish(store, taught, left, minutes, write)
 
     def report(store, taught, nxt) -> int:
         kind = nxt.kind if nxt else "?"
@@ -173,28 +205,8 @@ def main() -> int:
             return 0
 
     minutes = int(args[0]) if args else 60
-    turns = minutes * 60 // SECONDS_PER_TURN
-    store, taught, left = run(turns)
-    levels = Counter(store.level(n) for n in taught)
-
-    print(f"{minutes} minutes ≈ {turns} turns\n")
-    print(f"{len(taught)} item(s) introduced, {left} still ahead\n")
-    print("what was covered, in order:")
-    for n, name in enumerate(taught, 1):
-        print(f"  {n:3}. {name}  (level {store.level(name)})")
-    print("\nhow consolidated:")
-    for level in sorted(levels):
-        share = "1 in " + str(max(1, round(1 / (1 / (level + 1) ** 1.5))))
-        print(f"  level {level}: {levels[level]:3} word(s)   drawn {share}")
-
-    if not write:
-        print(f"\nNothing written. Re-run with --write to save to {STATE_PATH.name}.")
-        return 0
-    store.path = STATE_PATH
-    store.save()
-    print(f"\nWrote {STATE_PATH}")
-    print("Now run:  python tutor.py --no-intro     (WITHOUT --fresh)")
-    return 0
+    store, taught, left = run(minutes * 60 // SECONDS_PER_TURN)
+    return _finish(store, taught, left, minutes, write)
 
 
 if __name__ == "__main__":
