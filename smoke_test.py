@@ -355,6 +355,39 @@ def check_choppy_cases(vocab) -> int:
             failed += 1
     return failed
 
+
+# (line, kind of turn, does it state its own answer). A rule or an application
+# asks for a whole sentence, so _leaked_target -- which needs a known target
+# word -- could never fire on one. Every line here was really said by the tutor
+# while the tier-1 rules were being rendered one by one.
+ANSWER_ALOUD_CASES = [
+    ("How would you say “anh ấy”?", "apply", True),
+    ("How would you say “bạn ơi, tên là gì?” to Minh?", "rule", True),
+    ("How would you say “I don’t want to eat” using the pattern “không muốn + [động từ]”?",
+     "apply", True),
+    # Naming the material one word at a time is a fair question, not a leak.
+    ("So how would you say “he” using anh and ấy?", "apply", False),
+    ("How would you call a male friend using “anh” and “ơi”?", "apply", False),
+    ("How would you say “not want” in Vietnamese?", "apply", False),
+    # An introduction SAYS the word on purpose; it is not an asking turn.
+    ("In Vietnamese, the word for name is tên. tên. Now you say it.", "introduce", False),
+]
+
+
+def check_answer_aloud_cases(roster) -> int:
+    import contextlib
+    import io
+    failed = 0
+    for text, kind, expected in ANSWER_ALOUD_CASES:
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            tutor._warn_if_answer_spoken(text, tutor.Step(kind, "x", ""), roster)
+        if bool(buf.getvalue().strip()) != expected:
+            verb = "missed" if expected else "wrongly flagged"
+            print(f"FAIL — answer-aloud guard {verb} {text[:56]!r}")
+            failed += 1
+    return failed
+
 def check_prerequisite_order() -> int:
     """Nothing may be taught before the words it is made of -- run over the
     WHOLE course, not a sample.
@@ -399,7 +432,7 @@ def main(NO_INTRO=False) -> int:
             + check_talking_cases() + check_derived_pieces(roster)
             + check_spoken_targets() + check_answer_cases()
             + check_prerequisite_order()
-            + check_every_plan_builds() + check_choppy_cases(vocab)):
+            + check_every_plan_builds() + check_choppy_cases(vocab) + check_answer_aloud_cases(roster)):
         return 1
 
     turns = {"n": 0}

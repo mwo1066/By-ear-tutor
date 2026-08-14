@@ -1262,6 +1262,41 @@ def _target_fragments(target: str) -> list[str]:
     return [f for f in (p.strip(" +,.") for p in _PLACEHOLDER.split(target)) if f]
 
 
+# Turns that ASK for something the learner must produce. _leaked_target only
+# covers the ones with a known target word; a rule or an application asks for a
+# whole sentence nobody can name in advance, so it needs a different test.
+_ASKING_KINDS = ("rule", "apply", "vary", "scaffold")
+
+# A Vietnamese run this long inside an asking turn IS the answer. One word is
+# naming the material -- "say he using anh and ấy" is a fair question. Two words
+# running is the phrase itself: "how would you say anh ấy?" answers itself.
+# Measured on six real lines, it separates them exactly.
+MAX_VN_WORDS_WHEN_ASKING = 1
+
+
+def _warn_if_answer_spoken(text: str, step: Step | None, roster: list[Item]) -> None:
+    """Reports an asking turn that said the Vietnamese it was asking for.
+
+    Detection, like every guard here: the reply is spoken as it streams, so by
+    the time a whole turn can be judged the learner has heard it. What it buys
+    is knowing -- a question containing its own answer reads as a perfectly
+    good turn in a transcript, which is how it survived every session logged.
+
+    Rendered across the tier-1 rules, it is the dominant defect: "How would you
+    say anh ấy?", "how would you say bạn ơi, tên là gì?", "using the pattern
+    không muốn + [động từ]". Three different rules, the same move.
+    """
+    if step is None or step.kind not in _ASKING_KINDS:
+        return
+    runs = [chunk for key, chunk in voice_module.split_by_voice(text, _vocab_words(roster))
+            if key == "teacher"]
+    longest = max((len(r.split()) for r in runs), default=0)
+    if longest > MAX_VN_WORDS_WHEN_ASKING:
+        worst = max(runs, key=lambda r: len(r.split()))
+        print(f"  [diag] !! asking turn said a {longest}-word Vietnamese phrase — "
+              f"that is the answer: {worst.strip()!r}")
+
+
 def _leaked_target(text: str, step: Step | None) -> bool:
     """True if a turn that was asking FOR something went and said it.
 
@@ -1693,6 +1728,7 @@ def _run_turn(api_key, messages, store, roster, queue_items, themes_generated_th
     if _leaked_target(full_text, current_step(lesson)):
         print(f"  [diag] !! the answer was given away: this turn asked FOR "
               f"{current_step(lesson).target!r} and said it")
+    _warn_if_answer_spoken(full_text, current_step(lesson), roster)
 
     voice.wait()  # never open the mic while our own voice is still playing
     print(f"  [timing] total (reply + speech): {time.monotonic() - t0:.1f}s")
