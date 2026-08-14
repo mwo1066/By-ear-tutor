@@ -145,12 +145,12 @@ pieces = ["của", "cà phê", "tôi"]
 
 [[items]]
 type = "procedure"
-name = "thì: đã / đang / sẽ, đều không bắt buộc"
+name = "đã: việc đã xong, đứng trước động từ"
 kind = "rule"
-gloss = "three little words mark past, now and future — and you can leave them out"
+gloss = "to put an action in the past, one word goes right before it"
 category = "rules"
 language = "vi"
-description = "Quy tắc: 'đã' cho việc đã xong, 'đang' cho việc đang diễn ra, 'sẽ' cho việc sắp tới. Đặt ngay trước động từ: 'Tôi đã ăn', 'Tôi đang ăn', 'Tôi sẽ ăn'. Cả ba đều KHÔNG bắt buộc — người Việt bỏ chúng suốt khi ngữ cảnh đã rõ, nhất là khi trong câu đã có 'hôm qua', 'ngày mai'."
+description = "Quy tắc: đặt 'đã' NGAY TRƯỚC động từ để nói việc đã xong. 'Tôi ăn cơm' thành 'Tôi đã ăn cơm'. Và nó KHÔNG bắt buộc — khi câu đã có 'hôm qua', người Việt bỏ 'đã' đi. Chỗ này là cả hệ thống thì của tiếng Việt: một chỗ trống ngay trước động từ. 'đang' và 'sẽ' đã học cũng vào đúng chỗ đó, nhưng học từng cái một, không học ba cái cùng lúc."
 pieces = ["đã", "đang", "sẽ", "ăn"]
 
 [[items]]

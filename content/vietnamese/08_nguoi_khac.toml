@@ -121,10 +121,10 @@ pieces = ["ơi", "anh", "chị"]
 
 [[items]]
 type = "procedure"
-name = "phải / có thể / nên đứng trước động từ"
+name = "phải: bắt buộc, đứng trước động từ"
 kind = "rule"
-gloss = "must, can and should all sit before the action — unlike 'được', which sits after"
+gloss = "to say you must do something, one word goes before the action"
 category = "rules"
 language = "vi"
-description = "Ba từ tình thái cùng một chỗ: ngay trước động từ, giống 'muốn' và 'cần' đã học. Điều đáng nói là 'có thể' đứng TRƯỚC còn 'được' đứng SAU, mà cả hai đều dịch là 'can' — đó là chỗ người học lẫn nhiều nhất."
+description = "Quy tắc: 'phải' đứng NGAY TRƯỚC động từ. 'Em phải đi.' Cùng chỗ với 'muốn' và 'cần' đã học — cùng một chỗ trống, chỉ đổi chữ. 'có thể' và 'nên' cũng vào chỗ đó, nhưng từng cái một. Điều đáng nhớ riêng: 'được' thì ngược lại, đứng SAU động từ."
 pieces = ["phải", "có thể", "nên", "được"]

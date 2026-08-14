@@ -120,12 +120,12 @@ pieces = ["mười", "mươi", "hai", "ba"]
 
 [[items]]
 type = "procedure"
-name = "ba chữ đổi khi đứng cuối: mốt, lăm, tư"
+name = "năm thành lăm khi đứng cuối"
 kind = "rule"
-gloss = "three digits change their name when they land at the end of a number"
+gloss = "the digit five changes its name when it lands at the end of a number"
 category = "rules"
 language = "vi"
-description = "Quy tắc: ba chữ số đổi tên khi đứng CUỐI một số lớn hơn 20. 'một' thành 'mốt' — hai mươi mốt (21). 'năm' thành 'lăm' — hai mươi lăm (25). 'bốn' có thể thành 'tư' — hai mươi tư hay hai mươi bốn, cả hai đều được. Hai ngoại lệ đáng nhớ: 11 vẫn 'mười một' và 14 vẫn 'mười bốn', nhưng 15 thì ĐÃ đổi rồi — 'mười lăm'. Nói sai vẫn được hiểu, nhưng nói đúng là nghe ra người có học tiếng."
+description = "Quy tắc: 'năm' đổi thành 'lăm' khi đứng CUỐI một số — 'mười lăm' (15), 'hai mươi lăm' (25). Lý do rất thật: 'năm' còn nghĩa là năm tháng, nên 'mười năm năm' không ai hiểu được. 'một' và 'bốn' cũng đổi tên ở cuối, nhưng đó là chuyện khác, học sau."
 pieces = ["mốt", "lăm", "tư", "một", "năm", "bốn"]
 
 [[items]]
