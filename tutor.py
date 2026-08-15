@@ -1044,8 +1044,16 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item],
                 ))
             return plan
 
-        related = [c for c in (known or [])
-                   if c.kind == "construction" and set(c.pieces) & set(item.pieces)]
+        # Sorted by HOW MUCH they share, not by who comes first. The yes/no
+        # question rule (có, không) was pinned to "không phải là + [danh từ]",
+        # which shares only "không" and is about negation -- so all three rungs
+        # asked for "not a student" while the rule being taught was how to ask a
+        # question. The construction that shares both pieces was sitting right
+        # there, later in the course order.
+        related = sorted(
+            (c for c in (known or [])
+             if c.kind == "construction" and set(c.pieces) & set(item.pieces)),
+            key=lambda c: -len(set(c.pieces) & set(item.pieces)))
         if related:
             c = related[0]
             on_it = f' Work on THIS sentence and no other: "{c.gloss}" ({c.name}).'
