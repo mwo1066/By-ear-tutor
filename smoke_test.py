@@ -388,6 +388,25 @@ def check_answer_aloud_cases(roster) -> int:
             failed += 1
     return failed
 
+
+def check_pieces_exist(roster) -> int:
+    """Every declared piece must be a teachable item.
+
+    A piece that does not exist is not a typo, it is a rule that can never be
+    taught: unknown_pieces never empties, so the sequencing holds it back for
+    ever and nothing says so. Written after declaring "nhà" as a piece of the
+    location rule -- a word the course does not contain.
+    """
+    names = {i.name for i in roster if content.is_teachable(i)}
+    failed = 0
+    for item in roster:
+        for piece in item.pieces:
+            if piece not in names:
+                print(f"FAIL — {item.name!r} declares piece {piece!r}, which is not a teachable item")
+                failed += 1
+    return failed
+
+
 def check_prerequisite_order() -> int:
     """Nothing may be taught before the words it is made of -- run over the
     WHOLE course, not a sample.
@@ -432,7 +451,7 @@ def main(NO_INTRO=False) -> int:
             + check_talking_cases() + check_derived_pieces(roster)
             + check_spoken_targets() + check_answer_cases()
             + check_prerequisite_order()
-            + check_every_plan_builds() + check_choppy_cases(vocab) + check_answer_aloud_cases(roster)):
+            + check_every_plan_builds() + check_choppy_cases(vocab) + check_answer_aloud_cases(roster) + check_pieces_exist(roster)):
         return 1
 
     turns = {"n": 0}

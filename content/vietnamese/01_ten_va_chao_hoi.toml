@@ -17,7 +17,7 @@ gloss = "Vietnamese swaps the word for 'I' depending on who you are talking to �
 category = "rules"
 language = "vi"
 description = "Quy tắc à dire TÔT, ngay sau 'tôi'. Người học vừa nhận 'tôi' như thể nó tương đương với 'I' trong tiếng Anh — nó không phải. Tiếng Việt đổi từ xưng hô theo quan hệ giữa hai người nói: cùng một người vừa là 'anh', vừa là 'em', tuỳ đối diện là ai. KHÔNG dạy bảng chọn ở đây — các từ đó chưa được dạy. Chỉ nói ba điều: điều này tồn tại, các từ sẽ đến sớm, và 'tôi' không bao giờ sai trong lúc chờ. Mục đích là để người học không xây thói quen 'tôi = I' rồi phải défaire sau."
-pieces = ["tôi"]
+pieces = ["tôi", "anh"]
 
 [[items]]
 type = "concept"
@@ -84,6 +84,7 @@ category = "rules"
 language = "vi"
 description = "Quy tắc chọn từ xưng hô theo tuổi và giới tính của người đối diện so với mình. Cùng một người có thể là 'anh' với người này và 'em' với người kia — xưng hô đổi theo từng cặp người nói chuyện. Người mới học chọn sai không ai giận, nhưng chọn đúng nghe ấm và tự nhiên hơn nhiều so với 'tôi' — 'tôi' đúng ngữ pháp nhưng lạnh."
 steps = ["đàn ông hơn tuổi mình → anh", "phụ nữ hơn tuổi mình → chị", "người ít tuổi hơn mình → em", "chưa chắc, hoặc trang trọng → bạn / tôi"]
+pieces = ["anh", "chị", "em"]
 
 [[items]]
 type = "concept"
@@ -134,6 +135,7 @@ gloss = "no genders, and no word for 'a' or 'the'"
 category = "rules"
 language = "vi"
 description = "Quy tắc: danh từ không có giống đực/cái, và không có mạo từ. 'Cà phê' vừa là 'coffee', vừa là 'a coffee', vừa là 'the coffee' — ngữ cảnh quyết định. Người học tiếng Pháp thường mất nhiều tháng cho phần này; ở đây không có gì để học."
+pieces = ["cà phê", "nước"]
 
 [[items]]
 type = "procedure"
@@ -143,7 +145,7 @@ gloss = "question words stay where the answer would be"
 category = "rules"
 language = "vi"
 description = "Quy tắc: từ để hỏi giữ đúng vị trí của câu trả lời, không nhảy lên đầu câu như tiếng Anh. 'Bạn tên là gì?' — chữ 'gì' đứng đúng chỗ mà cái tên sẽ đứng. 'Bạn ăn gì?' cũng vậy. Người học tiếng Anh hay muốn đảo lên đầu; không cần."
-pieces = ["gì"]
+pieces = ["gì", "tên"]
 
 [[items]]
 type = "procedure"
@@ -153,7 +155,7 @@ gloss = "words don't change in the plural — you add a word instead"
 category = "rules"
 language = "vi"
 description = "Quy tắc: danh từ giữ nguyên dù một hay nhiều. Muốn nói rõ số nhiều thì thêm 'các' (tất cả, toàn bộ) hoặc 'những' (một số trong đó) đứng trước. Không có đuôi '-s' như tiếng Anh."
-pieces = ["các"]
+pieces = ["các", "người"]
 
 [[items]]
 type = "procedure"
@@ -173,6 +175,7 @@ gloss = "to say you can do something, the word goes after the action"
 category = "rules"
 language = "vi"
 description = "Quy tắc: 'được' đứng SAU động từ để nói làm được, có khả năng. 'Tôi nói được tiếng Việt.' Khác tiếng Anh, nơi 'can' đứng trước. 'Được' cũng đứng một mình để nói 'ok, được thôi'."
+pieces = ["được", "nói"]
 
 [[items]]
 type = "procedure"

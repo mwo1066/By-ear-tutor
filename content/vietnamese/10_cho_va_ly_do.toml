@@ -164,7 +164,7 @@ gloss = "and for a PLACE it is neither of those two — English says is for all 
 category = "rules"
 language = "vi"
 description = "Quy tắc: 'ở' đánh dấu nơi chốn. 'Em ở Hà Nội.' Đây là mảnh thứ ba của cùng một chuyện: tiếng Anh dùng một chữ 'is' cho cả ba, tiếng Việt dùng ba cách khác nhau — 'là' trước một cái TÊN hay danh từ, KHÔNG CÓ GÌ trước tính từ, và 'ở' trước một NƠI CHỐN. Hai mảnh đầu đã học rồi; đây là cái cuối. Nói cả ba cạnh nhau một lần, rồi chỉ luyện cái này. Sau này 'trong', 'trên', 'dưới' sẽ nói rõ phía nào, nhưng đó là chuyện khác."
-pieces = ["ở"]
+pieces = ["ở", "đâu"]
 [[items]]
 type = "concept"
 name = "sẽ"

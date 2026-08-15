@@ -113,6 +113,8 @@ category = "rules"
 language = "vi"
 description = "Quy tắc: đặt 'không' ngay trước động từ ĐỂ phủ định cả câu — 'Tôi không muốn ăn.', 'Anh không uống cà phê.' Và trước tính từ y hệt, không đổi gì cả: 'Em không mệt.', 'Cơm này không ngon.' Một chữ, một chỗ, cho cả hai loại từ — chỗ này tiếng Việt dễ hơn tiếng Anh rất nhiều, vì tiếng Anh phải đổi giữa 'don't' và 'am not'. Đây cũng là việc thứ hai của chữ 'không' đã biết: vừa trả lời một mình được, vừa phủ định được."
 
+pieces = ["không", "muốn", "ăn"]
+
 # Règles rattachées à ce fichier : elles arrivent après les mots
 # qu'elles décrivent, jamais groupées en bloc de théorie.
 
@@ -187,4 +189,4 @@ gloss = "when it's obvious who you mean, you just drop the word"
 category = "rules"
 language = "vi"
 description = "Quy tắc: bỏ chủ ngữ khi ngữ cảnh đã rõ. Hỏi 'Bạn ăn chưa?' thì trả lời 'Ăn rồi' là đủ, không cần 'tôi'. Câu đầy đủ không sai, nhưng nghe cứng. Người mới học nên biết sớm để hiểu người bản xứ nói."
-pieces = ["ăn"]
+pieces = ["ăn", "rồi"]
