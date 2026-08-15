@@ -118,3 +118,16 @@ Copy `content/vietnamese/`, replace the item files and the persona. Items are
 listed in teaching order, and a construction should spell out the words it is
 built from — `tôi tên là + [tên riêng]` is recognised as `tôi` + `tên` + `là`,
 which is what drives both the recall chain and the ordering guarantee.
+
+## The documents
+
+The glossary is in English. The rest is in French — those documents are read, not run.
+
+| file | answers |
+| --- | --- |
+| [`LEXIQUE.md`](LEXIQUE.md) | **the glossary** — every term defined once, grouped by whether it is standard field vocabulary, a narrowed borrowing, or coined here. Read this first. In English. |
+| [`SPEC.md`](SPEC.md) | what the code does today. 59 rules, each naming where it is enforced and what to edit. |
+| [`STATUS.md`](STATUS.md) | where the project stands, what is still open. |
+| [`STYLE.md`](STYLE.md) | ideas not yet activated, and the measurements behind them. |
+| [`changes/`](changes/) | one folder per change, written before the code; `changes/archive/JOURNAL.md` indexes what was already tried. |
+

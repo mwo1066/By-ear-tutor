@@ -12,7 +12,8 @@ description = "Đại từ ngôi thứ nhất, trung lập và luôn đúng ng�
 [[items]]
 type = "procedure"
 name = "xưng hô thay đổi theo người đối diện"
-kind = "rule"
+kind = "feature"
+nature = "strand"
 gloss = "Vietnamese swaps the word for 'I' depending on who you are talking to — you will meet those soon, and tôi is always safe in the meantime"
 category = "rules"
 language = "vi"
@@ -78,7 +79,8 @@ description = "Từ xưng hô với người ít tuổi hơn mình, nam hay nữ
 [[items]]
 type = "procedure"
 name = "cách chọn từ xưng hô"
-kind = "rule"
+kind = "feature"
+nature = "strand"
 gloss = "you have been saying tôi for I, and Vietnamese people hardly ever say it in real life; which word you use depends on who is in front of you, so with Minh — the Vietnamese voice, a man older than you — you are em and he is anh, while your tutor is a woman and would never be anh; keep tôi for strangers, for formal moments, and whenever you are not sure"
 category = "rules"
 language = "vi"
@@ -130,7 +132,9 @@ description = "Lời chào — dùng cả khi gặp nhau và khi tạm biệt. T
 [[items]]
 type = "procedure"
 name = "không có giống, không có mạo từ"
-kind = "rule"
+kind = "feature"
+nature = "discrete"
+tier = 3
 gloss = "no genders, and no word for 'a' or 'the'"
 category = "rules"
 language = "vi"
@@ -140,7 +144,9 @@ pieces = ["cà phê", "nước"]
 [[items]]
 type = "procedure"
 name = "từ để hỏi đứng nguyên chỗ"
-kind = "rule"
+kind = "feature"
+nature = "discrete"
+tier = 3
 gloss = "a question word like gì stays exactly where the answer would go, so nothing moves in the sentence"
 category = "rules"
 language = "vi"
@@ -150,7 +156,9 @@ pieces = ["gì", "tên"]
 [[items]]
 type = "procedure"
 name = "danh từ không đổi khi nhiều"
-kind = "rule"
+kind = "feature"
+nature = "discrete"
+tier = 3
 gloss = "words don't change in the plural — you add a word instead"
 category = "rules"
 language = "vi"
@@ -160,7 +168,9 @@ pieces = ["các", "người"]
 [[items]]
 type = "procedure"
 name = "loại từ: số + loại từ + danh từ"
-kind = "rule"
+kind = "feature"
+nature = "discrete"
+tier = 2
 gloss = "counting needs a helper between the number and the thing: con for animals, cái for objects, người for people"
 category = "rules"
 language = "vi"
@@ -170,7 +180,9 @@ pieces = ["hai", "cái", "con", "người"]
 [[items]]
 type = "procedure"
 name = "được đứng sau động từ: làm được"
-kind = "rule"
+kind = "feature"
+nature = "discrete"
+tier = 3
 gloss = "được means you managed it, and unlike every other helper it goes AFTER the action, not before"
 category = "rules"
 language = "vi"
@@ -180,7 +192,9 @@ pieces = ["được", "nói"]
 [[items]]
 type = "procedure"
 name = "ạ: một chữ làm câu lịch sự"
-kind = "rule"
+kind = "feature"
+nature = "discrete"
+tier = 2
 gloss = "ạ on the end of anything makes it polite — one syllable, no other change, and Vietnamese people notice it at once"
 category = "rules"
 language = "vi"
@@ -190,7 +204,8 @@ pieces = ["ạ", "cảm ơn"]
 [[items]]
 type = "procedure"
 name = "thanh điệu: nghe và bắt chước"
-kind = "rule"
+kind = "feature"
+nature = "strand"
 gloss = "the same sounds said at a different pitch are different words — so copy the pitch, not just the sounds"
 category = "rules"
 language = "vi"

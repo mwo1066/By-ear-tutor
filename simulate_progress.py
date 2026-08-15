@@ -210,7 +210,7 @@ def main() -> int:
     if wanted:
         return report(*run_until(lambda i: wanted.lower() in i.name.lower()))
 
-    for kind in ("rule", "construction"):
+    for kind in ("feature", "construction"):
         if f"--next-{kind}" in sys.argv:
             store, taught, nxt = run_until_kind(kind)
             print(f"{len(taught)} item(s) taught, and the next one due is a {kind}:\n")

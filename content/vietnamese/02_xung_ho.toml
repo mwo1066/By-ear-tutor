@@ -35,7 +35,8 @@ description = "Khung phủ định của 'là': thêm 'không phải' vào trư�
 [[items]]
 type = "procedure"
 name = "xưng hô đổi theo từng cặp người nói"
-kind = "rule"
+kind = "feature"
+nature = "strand"
 gloss = "the word you use for 'you' changes with who you're talking to"
 category = "rules"
 language = "vi"

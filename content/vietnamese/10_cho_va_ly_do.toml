@@ -147,7 +147,9 @@ description = "Câu đáp lại lời xin lỗi hoặc lời cảm ơn: 'Không 
 [[items]]
 type = "procedure"
 name = "trả lời: lặp lại động từ"
-kind = "rule"
+kind = "feature"
+nature = "discrete"
+tier = 1
 after = "không"
 gloss = "a yes-or-no question is answered with the verb itself, not with a word for yes — muốn, or không muốn"
 category = "rules"
@@ -158,7 +160,9 @@ pieces = ["có", "không", "muốn"]
 [[items]]
 type = "procedure"
 name = "nơi chốn: ở"
-kind = "rule"
+kind = "feature"
+nature = "discrete"
+tier = 2
 after = "ở"
 gloss = "ở marks a PLACE, and it is neither of the other two: English says is for a name, for a description and for a place alike, Vietnamese uses a different word each time"
 category = "rules"
@@ -178,7 +182,9 @@ description = "Từ đánh dấu tương lai, đặt NGAY TRƯỚC động từ.
 [[items]]
 type = "procedure"
 name = "sẽ: việc sắp tới, đứng trước động từ"
-kind = "rule"
+kind = "feature"
+nature = "discrete"
+tier = 2
 after = "sẽ"
 gloss = "sẽ before the action puts it in the future, in the same slot as đã and đang, and it is just as optional"
 category = "rules"

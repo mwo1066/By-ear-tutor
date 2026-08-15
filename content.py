@@ -15,7 +15,7 @@ PERSONAL_ITEMS_FILENAME = "personal_items.json"
 #   construction  a sentence pattern assembled out of items already taught
 #   rule          something the tutor STATES; the learner never says it back,
 #                 so it is never a recall target ("tính từ không cần 'là'")
-KINDS = {"atom", "construction", "rule"}
+KINDS = {"atom", "construction", "feature"}
 
 
 @dataclass
@@ -129,13 +129,13 @@ def check_roster(items: list[Item]) -> list[str]:
     for i in items:
         if i.kind not in KINDS:
             problems.append(f"{i.name}: unknown kind {i.kind!r}")
-        if not i.gloss and i.kind != "rule":
+        if not i.gloss and i.kind != "feature":
             problems.append(f"{i.name}: no gloss — questions about it cannot be asked from the meaning side")
         # The code now speaks recall questions itself, built from the gloss and
         # from nothing else, so the gloss IS the guarantee that a question does
         # not state its own answer. A Vietnamese name that leaked into its own
         # English gloss would quietly undo that.
-        if i.kind != "rule" and i.gloss and i.name.lower() in i.gloss.lower():
+        if i.kind != "feature" and i.gloss and i.name.lower() in i.gloss.lower():
             problems.append(f"{i.name}: its own name appears in its gloss {i.gloss!r} — the recall would give the answer away")
         # A gloss is not a definition. It is what fills the blank in "the word
         # for ___", which a scripted recall says ALOUD, so a gloss describing
@@ -265,7 +265,7 @@ def derive_pieces(name: str, known: list[Item]) -> list[str]:
         # Found the moment a frequency stock landed: "phải" arrived at rank 19
         # with no gloss yet, derive_pieces correctly spotted it inside "không
         # phải là", and that alone would have blocked the construction forever.
-        if item.kind == "rule" or not is_teachable(item) or item.name.lower() == name.lower():
+        if item.kind == "feature" or not is_teachable(item) or item.name.lower() == name.lower():
             continue
         needle = f" {item.name.lower()} "
         at = haystack.find(needle)
@@ -293,7 +293,7 @@ def address_situations(items: list[Item]) -> list[str]:
     the moment the content is reorganised, which it was twice today.
     """
     for i in items:
-        if i.kind == "rule" and i.steps and any(t in " ".join(i.steps) for t in ADDRESS_TERMS):
+        if i.kind == "feature" and i.steps and any(t in " ".join(i.steps) for t in ADDRESS_TERMS):
             return i.steps
     return []
 
@@ -354,7 +354,7 @@ def is_teachable(item: Item) -> bool:
     drop 2000 raw words in, and they simply wait their turn to be annotated
     instead of surfacing as a broken turn.
     """
-    return item.kind == "rule" or bool(item.gloss)
+    return item.kind == "feature" or bool(item.gloss)
 
 
 # A gloss that is a grammar formula rather than English, and a name that is an
@@ -380,7 +380,7 @@ def askable(item: Item) -> bool:
     it has a scaffold, a literal, a rule to state -- it just cannot be the
     bare question of a recall slot.
     """
-    if not is_teachable(item) or item.kind == "rule":
+    if not is_teachable(item) or item.kind == "feature":
         return False
     # The name only has to survive _target_fragments, which strips placeholders
     # -- so "tôi tên là + [tên riêng]" is fine, it is said as "tôi tên là". An
@@ -425,7 +425,7 @@ MAX_SAME_CATEGORY_RUN = 3
 
 def _rule_is_due(seen_items: list[Item]) -> bool:
     recent = seen_items[-MIN_ITEMS_BETWEEN_RULES:]
-    return not any(i.kind == "rule" for i in recent)
+    return not any(i.kind == "feature" for i in recent)
 
 
 def _saturated_category(seen_items: list[Item]) -> str | None:
@@ -486,7 +486,7 @@ def pick_next_index(queue: list[Item], seen_items: list[Item]) -> int:
     saturated = _saturated_category(seen_items)
     if not rules_due or saturated:
         spaced = [i for i, item in enumerate(queue)
-                  if (rules_due or item.kind != "rule")
+                  if (rules_due or item.kind != "feature")
                   and item.category != saturated
                   and not unknown_pieces(item, seen_items)]
         # Nothing else is ready, so the run continues rather than deadlocking:

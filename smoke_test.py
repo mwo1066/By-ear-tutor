@@ -438,7 +438,7 @@ def check_rule_glosses_name_their_word(roster) -> int:
     """
     failed = 0
     for item in roster:
-        if item.kind != "rule" or not item.gloss:
+        if item.kind != "feature" or not item.gloss:
             continue
         subject = next((p for p in item.pieces if p in item.name), None)
         if subject and subject not in item.gloss:
@@ -466,7 +466,7 @@ def check_glosses_cite_only_taught_words(roster) -> int:
                  for s in i.name.split()}
     failed = 0
     for item in roster:
-        if item.kind != "rule" or not item.gloss:
+        if item.kind != "feature" or not item.gloss:
             continue
         for raw in item.gloss.replace(",", " ").replace(":", " ").replace("—", " ").split():
             word = raw.strip("\"'.?!()").lower()

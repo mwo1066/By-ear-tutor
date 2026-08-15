@@ -657,7 +657,7 @@ def rapidfire_count(item: Item, pieces: list[Item]) -> int:
     """
     if item.kind == "construction":
         base = 1 if pieces else 2      # its chain already re-asked every piece
-    elif item.kind == "rule":
+    elif item.kind == "feature":
         # Was 4, on the reasoning that nothing had been said back so this WAS
         # the practice. No longer true: a rule now carries two apply steps of
         # its own, so four unrelated recalls on top made it the longest item in
@@ -750,7 +750,7 @@ def _known_words_note(known: list[Item]) -> str:
     measured: given a free hand to swap the person, the model asked for "your
     name is", i.e. bạn, which the roster teaches one item later.
     """
-    names = [i.name for i in known if i.kind != "rule"]
+    names = [i.name for i in known if i.kind != "feature"]
     if not names:
         return ""
     if len(names) > MAX_LISTED_KNOWN_WORDS:
@@ -797,11 +797,11 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item],
     """
     plan: list[Step] = []
 
-    if item.kind == "rule":
+    if item.kind == "feature":
         # Said once, at the first rule of the course. Every rule would make it a
         # tic -- the same objection the notebook raises about praising each turn
         # -- and the point lands better as a door opened than as a refrain.
-        first_rule = not any(i.kind == "rule" for i in (known or []))
+        first_rule = not any(i.kind == "feature" for i in (known or []))
         invite = (" This is the first rule of the course, so add one short line telling them they "
                   "can ask you to say any rule again, any time, and that forgetting one is normal. "
                   "Say it once and never repeat it.") if first_rule else ""
@@ -974,7 +974,7 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item],
             ask=speakable(item.gloss),
         ))
 
-    if item.kind == "rule":
+    if item.kind == "feature":
         # A rule used to get ONE turn about itself, which had to state it, give
         # examples and apply it all in a breath -- and then the plan went
         # straight to recalls of unrelated words. Measured on the real
@@ -1730,7 +1730,7 @@ def _recall_targets(store: ProgressStore, item: Item | None, pieces: list[Item],
     """
     by_name = {i.name: i for i in seen_items}
     exclude = {p.name for p in pieces}
-    exclude |= {i.name for i in seen_items if i.kind == "rule"}
+    exclude |= {i.name for i in seen_items if i.kind == "feature"}
     if item is not None:
         exclude.add(item.name)
 

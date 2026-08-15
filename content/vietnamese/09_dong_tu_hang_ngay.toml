@@ -264,7 +264,8 @@ description = "Động từ. Cũng dùng khi gọi món: 'Em lấy cái này.' T
 [[items]]
 type = "procedure"
 name = "ghép hai từ đã biết thành từ mới"
-kind = "rule"
+kind = "feature"
+nature = "strand"
 gloss = "Vietnamese builds new words by putting two words you already know side by side — this is how you understand a word nobody taught you"
 category = "rules"
 language = "vi"

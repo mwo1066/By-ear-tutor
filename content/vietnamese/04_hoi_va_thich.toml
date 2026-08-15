@@ -59,7 +59,9 @@ description = "Tính từ: món ăn hay đồ uống làm mình thấy thích. T
 [[items]]
 type = "procedure"
 name = "tính từ không cần 'là'"
-kind = "rule"
+kind = "feature"
+nature = "discrete"
+tier = 1
 gloss = "in front of a describing word, là disappears: cơm ngon, never cơm là ngon. It only stays in front of a name or a thing, the way you already say tôi tên là Nam"
 after = "ngon"
 pieces = ["ngon", "cơm"]
@@ -73,7 +75,9 @@ description = "Quy tắc: bắt đầu từ chỗ người học ĐÃ dùng 'là
 [[items]]
 type = "procedure"
 name = "tính từ đứng sau danh từ"
-kind = "rule"
+kind = "feature"
+nature = "discrete"
+tier = 2
 gloss = "the describing word comes after the thing, not before"
 category = "rules"
 language = "vi"
@@ -83,7 +87,9 @@ pieces = ["cà phê", "ngon"]
 [[items]]
 type = "procedure"
 name = "câu hỏi có/không"
-kind = "rule"
+kind = "feature"
+nature = "discrete"
+tier = 1
 gloss = "có at the front and không at the end wrap any statement into a yes-or-no question — no inversion, no extra verb"
 category = "rules"
 language = "vi"
@@ -93,7 +99,9 @@ pieces = ["có", "không"]
 [[items]]
 type = "procedure"
 name = "rất trước, lắm sau"
-kind = "rule"
+kind = "feature"
+nature = "discrete"
+tier = 3
 gloss = "two words for very: rất goes before the describing word, lắm goes after it"
 category = "rules"
 language = "vi"
@@ -103,7 +111,9 @@ pieces = ["rất", "lắm", "ngon"]
 [[items]]
 type = "procedure"
 name = "so sánh: tính từ + hơn"
-kind = "rule"
+kind = "feature"
+nature = "discrete"
+tier = 3
 gloss = "hơn after a describing word is how you compare — ngon hơn, better tasting"
 category = "rules"
 language = "vi"
@@ -392,7 +402,8 @@ description = "Từ để hỏi cách thức, đứng ở CUỐI câu: 'Cái nà
 [[items]]
 type = "procedure"
 name = "lịch sự nằm trong từ xưng hô, không phải trong giọng"
-kind = "rule"
+kind = "feature"
+nature = "strand"
 gloss = "politeness here is not a tone of voice — it is the person-word you pick, plus two small words"
 category = "rules"
 language = "vi"

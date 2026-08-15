@@ -102,7 +102,9 @@ description = "Tự xưng thân mật giữa bạn bè cùng tuổi, mềm hơn 
 [[items]]
 type = "procedure"
 name = "nói VỀ ai đó: xưng hô + ấy"
-kind = "rule"
+kind = "feature"
+nature = "discrete"
+tier = 1
 after = "ấy"
 gloss = "ấy after a person-word turns speaking TO someone into speaking ABOUT them — anh, then anh ấy"
 category = "rules"
@@ -113,7 +115,9 @@ pieces = ["ấy", "anh", "chị"]
 [[items]]
 type = "procedure"
 name = "gọi ai đó: xưng hô + ơi"
-kind = "rule"
+kind = "feature"
+nature = "discrete"
+tier = 1
 after = "ơi"
 gloss = "ơi after a person-word calls out to them — it is how you get a waiter's attention across a room"
 category = "rules"
@@ -124,7 +128,9 @@ pieces = ["ơi", "anh", "chị"]
 [[items]]
 type = "procedure"
 name = "phải: bắt buộc, đứng trước động từ"
-kind = "rule"
+kind = "feature"
+nature = "discrete"
+tier = 2
 after = "phải"
 gloss = "phải before the action means you have to, and it takes the same slot as muốn and cần"
 category = "rules"
@@ -144,7 +150,9 @@ description = "Từ đánh dấu việc đang diễn ra, đặt NGAY TRƯỚC đ
 [[items]]
 type = "procedure"
 name = "đang: việc đang diễn ra, đứng trước động từ"
-kind = "rule"
+kind = "feature"
+nature = "discrete"
+tier = 2
 after = "đang"
 gloss = "đang before the action means right now, in the middle of it — the same slot đã uses"
 category = "rules"

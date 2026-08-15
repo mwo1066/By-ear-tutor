@@ -111,7 +111,8 @@ description = "Chữ 'bốn' có thể đổi thành 'tư' khi đứng CUỐI t�
 [[items]]
 type = "procedure"
 name = "đếm từ 11 đến 99"
-kind = "rule"
+kind = "feature"
+nature = "strand"
 gloss = "past ten you stack two words you already know — but the word for ten changes shape on the way"
 category = "rules"
 language = "vi"
@@ -121,7 +122,9 @@ pieces = ["mười", "mươi", "hai", "ba"]
 [[items]]
 type = "procedure"
 name = "năm thành lăm khi đứng cuối"
-kind = "rule"
+kind = "feature"
+nature = "discrete"
+tier = 3
 after = "lăm"
 gloss = "năm becomes lăm at the end of a number, because năm also means year and mười năm năm would be unsayable"
 category = "rules"
