@@ -825,7 +825,8 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item],
             "rule", item.name,
             f"Say this, in your own words and in order: {item.gloss or item.description}. Do NOT claim "
             f"they have noticed it or been doing it -- they have not, and being told they "
-            f"missed something they were never shown is the one thing a rule turn must not do. This is the turn where you TELL rather "
+            f"missed something they were never shown is the one thing a rule turn must not do. "
+            f"Use ONLY the examples written above and invent none: a rule about adjectives was given \"a job, a nationality\" as illustrations, neither of which this course can say, and the gap was filled with \"tên tôi\" -- possession, nothing to do with the rule. This is the turn where you TELL rather "
             f"than ask, so two or three sentences are right here — start from what they have "
             f"already been doing, then the surprise, then what to do about it. "
             # No question here, and this is the fix for the defect that survived

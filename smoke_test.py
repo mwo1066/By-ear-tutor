@@ -448,6 +448,36 @@ def check_rule_glosses_name_their_word(roster) -> int:
     return failed
 
 
+
+def check_glosses_cite_only_taught_words(roster) -> int:
+    """A rule's gloss may only quote Vietnamese the course actually teaches.
+
+    The gloss is recited aloud, so a word quoted in it is a word the learner is
+    expected to recognise. Sibling to the mistake that produced this check from
+    the other side: the adjective rule was given "a name, a job, a nationality"
+    as its illustrations, and the course can say none of job or nationality --
+    so the model filled the gap with "tên tôi", which is possession and has
+    nothing to do with the rule.
+
+    Syllable-aware: "cà phê" is one taught item and must not be read as two
+    unknown words.
+    """
+    syllables = {s.lower() for i in roster if content.is_teachable(i)
+                 for s in i.name.split()}
+    failed = 0
+    for item in roster:
+        if item.kind != "rule" or not item.gloss:
+            continue
+        for raw in item.gloss.replace(",", " ").replace(":", " ").replace("—", " ").split():
+            word = raw.strip("\"'.?!()").lower()
+            if not word or not any(ord(c) > 127 for c in word):
+                continue
+            if word not in syllables:
+                print(f"FAIL — rule {item.name!r} quotes {word!r}, which the course never teaches")
+                failed += 1
+    return failed
+
+
 def check_pieces_exist(roster) -> int:
     """Every declared piece must be a teachable item.
 
@@ -510,7 +540,8 @@ def main(NO_INTRO=False) -> int:
             + check_talking_cases() + check_derived_pieces(roster)
             + check_spoken_targets() + check_answer_cases()
             + check_prerequisite_order()
-            + check_every_plan_builds() + check_choppy_cases(vocab) + check_answer_aloud_cases(roster) + check_pieces_exist(roster) + check_speaker_cues() + check_rule_glosses_name_their_word(roster)):
+            + check_every_plan_builds() + check_choppy_cases(vocab) + check_answer_aloud_cases(roster) + check_pieces_exist(roster) + check_speaker_cues() + check_rule_glosses_name_their_word(roster)
+            + check_glosses_cite_only_taught_words(roster)):
         return 1
 
     turns = {"n": 0}
