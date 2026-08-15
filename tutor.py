@@ -2053,7 +2053,12 @@ def run_session(fresh: bool = False, no_intro: bool = False):
     # Unteachable items are kept in the roster but never queued: an imported
     # word with no gloss yet is real vocabulary, just not a lesson.
     queue_items = [by_name[n] for n in store.select_new(all_names) if is_teachable(by_name[n])]
-    seen_items = [i for i in roster if not store.is_new(i.name)]  # everything ever taught, roster order
+    # In TEACHING order, read back from the state file, not roster order: the
+    # spacing checks look at the last few items seen, so a history rebuilt in
+    # the wrong order makes them pick a different next item than the run that
+    # wrote the state.
+    by_name = {i.name: i for i in roster}
+    seen_items = [by_name[n] for n in store.taught_order() if n in by_name]
     # An empty plan means the opening turn: the tutor greets, and the first
     # item is loaded only once that turn is behind us.
     lesson = {"item": None, "plan": [], "i": 0, "started": False, "retried": False,

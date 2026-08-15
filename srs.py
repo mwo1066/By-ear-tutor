@@ -70,6 +70,19 @@ class ProgressStore:
                 level = entry.get("level", 0) if isinstance(entry, dict) else 0
                 self._states[name] = ItemState(name=name, level=level)
 
+    def taught_order(self) -> list[str]:
+        """Every item ever introduced, in the order it was taught.
+
+        The order is already in the file -- mark_introduced inserts as the
+        lesson advances and JSON keeps key order -- but nothing read it back.
+        Resuming rebuilt the history in ROSTER order instead, and the spacing
+        checks look at the last few items seen, so they decided differently
+        from the run that produced the state. Live: a state written to stop one
+        item before the yes/no rule opened the session on "buồn" instead, and
+        three of seven rendered rules missed theirs the same way.
+        """
+        return list(self._states)
+
     def is_new(self, name: str) -> bool:
         return name not in self._states
 
