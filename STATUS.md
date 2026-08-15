@@ -117,6 +117,14 @@ three points should survive in about six sentences.
 
 **Style.** `STYLE.md` is the notebook: ideas land there and leave through one of three drawers -- a field on an item, a wording in code, or the prompt as a last resort -- with a test in front of each (how often does it occur in the reference course?). It is read by nobody at runtime, deliberately. Meo's notes still to come.
 
+**Changes.** `changes/` holds one folder per change, written before the code and
+read by Meo first: why, which spec rules move, what is in scope and what is
+deliberately out. `/proposer` opens one, `/appliquer` implements it, `/archiver`
+folds the delta into `SPEC.md` and files it under `changes/archive/`.
+`changes/archive/JOURNAL.md` is the index -- read it before proposing anything,
+it is where the already-tried-and-undone live. `/derive` is the separate audit:
+re-read the code, report what `SPEC.md` claims and the code no longer does.
+
 **Speech synthesis dominates the clock.** A teaching turn is ~10-15s, of which
 ~0.5s is the model. Everything else is Azure — and on a scripted turn it is
 now the only thing on the clock at all.
