@@ -12,6 +12,17 @@ Une ligne par changement archivé, au format :
 
 ## Changements archivés
 
+`0003` — **regrouper `SPEC.md` par sorte d'item, et aligner tout le vocabulaire**
+— 2026-08-15 — le bloc central de 14 règles se scinde en cinq sections, dont trois
+« Enseigner un… » qui suivent les trois sortes d'item du lexique. Sommaire ajouté,
+et la convention posée : **les numéros de règle sont des identifiants stables**,
+ils ne se renumérotent pas quand une section bouge. « hors-mot » → « trait »
+partout, et les six symboles portant `RULE` renommés — ce qui **revient sur une
+exclusion explicite de 0002**, dont l'argument tombe dès lors que les symboles et
+les lignes **Changer** changent ensemble. Aucun texte de règle réécrit. Livré par
+le commit `a1f3285`, dont le message d'une ligne ne dit presque rien du
+changement — le dossier a été écrit après coup, et c'est lui qui porte le détail.
+
 `0002` — **nommer les hors-mots `feature`, et leurs natures `discrete` / `strand`**
 — 2026-08-15 — supprime la collision entre « règle » le comportement et « règle »
 l'item enseigné, qui avait fait perdre le fil deux fois dans la même séance.
