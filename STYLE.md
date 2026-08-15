@@ -57,10 +57,20 @@ question suivante porte sur le même mot, le redire, c'est donner la réponse.
 **Pas encore mesuré** dans le cours de référence. À compter : est-ce qu'il
 répète le mot après une bonne réponse, ou est-ce qu'il enchaîne ?
 
-**Statut :** à essayer.
+**La moitié qui existe déjà — SPEC 18c.** Le mot EST redonné, mais uniquement
+quand l'apprenant s'est trompé : « It was ngon. » Sur une bonne réponse il reçoit
+« That's it. », sans le mot. Ce qui est proposé ici est donc l'**autre cas**, et
+c'est le plus intéressant des deux : celui où l'apprenant vient de le produire
+correctement.
+
+**Statut :** à étendre, pas à construire. Le mécanisme est en place dans
+`_acknowledgement`, il ne couvre que le cas raté.
 
 ### Décomposer un nom connu, pour en enseigner deux d'un coup
 *Proposé par Meo.*
+
+→ **Catégorie B**, un fil qui n'existe pas encore : c'est cette entrée qui dit
+pourquoi. Voir « Les hors-mots : deux natures, pas une ».
 
 Quand un mot connu se découpe en mots qui existent, le dire. En chinois, Beijing
 = nord + capitale. En vietnamien on a exactement les mêmes, parce qu'une grande
@@ -151,6 +161,18 @@ Donc le test complet a deux conditions, pas une : les morceaux doivent être
 libres, **et** le sens du tout doit se déduire des parties. `sân bay` passe les
 deux. `Hà Nội` échoue la première. `nhớ ra` échoue la seconde.
 
+**Limite honnête :** ça marche sur les composés sino-vietnamiens, pas sur tout.
+`phở` ne se décompose pas. C'est un type de hook, applicable là où il s'applique
+— pas une règle à forcer partout.
+
+**Piste, pas encore creusée :** si les morceaux sont de vrais mots, ils
+pourraient devenir des items à part entière. `bay` mériterait sa place après
+`sân bay` — l'apprenant le rencontrerait deux fois, une fois caché dans
+« aéroport », une fois pour lui-même.
+
+**Statut :** câblé dans `fill_item_metadata.py`, pas encore vérifié sur des
+propositions réelles.
+
 ### Dire ce qu'un mot va construire, au moment où on l'apprend
 *Proposé par Meo, 13 août.*
 
@@ -205,18 +227,6 @@ L'intuition dit que oui et souvent — ce serait la marque de fabrique de la
 méthode — mais l'intuition ne vaut rien ici, c'est la règle du carnet.
 
 **Statut :** à essayer, et la moins chère des deux.
-
-**Limite honnête :** ça marche sur les composés sino-vietnamiens, pas sur tout.
-`phở` ne se décompose pas. C'est un type de hook, applicable là où il s'applique
-— pas une règle à forcer partout.
-
-**Piste, pas encore creusée :** si les morceaux sont de vrais mots, ils
-pourraient devenir des items à part entière. `bay` mériterait sa place après
-`sân bay` — l'apprenant le rencontrerait deux fois, une fois caché dans
-« aéroport », une fois pour lui-même.
-
-**Statut :** câblé dans `fill_item_metadata.py`, pas encore vérifié sur des
-propositions réelles.
 
 ### C'est en variant qu'on gère le rythme
 *Proposé par Meo. C'est la phrase qui compte : la variation n'est pas un remède
@@ -275,11 +285,20 @@ sait de combien.
 parler l'apprenant, et la règle 3 dit qu'il doit parler au moins autant que le
 tuteur. La longueur des digressions compte autant que leur fréquence.
 
-**Statut :** à mesurer d'abord. C'est l'idée qui a le plus de chances de changer
+**Un levier est déjà en place — SPEC 17.** Le nombre de rappels qui closent un
+item varie de 1 à 4, et pour l'argument exact de cette entrée : fixé à trois, un
+apprenant attentif apprenait la cadence et répondait au rythme plutôt qu'à la
+question. Ce tiers-là est fait et mesuré. Restent le tour qui raconte sans rien
+demander, et des hooks plus fréquents.
+
+**Statut :** à mesurer pour ce qui reste. C'est l'idée qui a le plus de chances de changer
 la sensation du cours, et celle qu'il ne faut surtout pas régler à l'aveugle.
 
 ### Demander qui est l'apprenant, pour lui enseigner SES pronoms
 *Proposé par Meo.*
+
+→ **Catégorie B**, un fil continu — et l'item `cách chọn từ xưng hô` en est le
+vestige. Voir « Les hors-mots : deux natures, pas une ».
 
 En vietnamien, le mot pour « je » dépend de qui parle à qui. Meo s'adressant à
 sa copine dit `anh` pour « je » et `em` pour « tu ». Ce ne sont pas des
@@ -335,7 +354,10 @@ vous les verrez bientôt, et tôi ne sera jamais faux en attendant »*. Elle ne
 donne aucun tableau (les mots n'existent pas encore), elle empêche seulement de
 construire l'habitude « tôi = I » qu'il faudra défaire à l'item 11.
 
-**Statut :** à faire. C'est probablement la personnalisation la plus rentable de
+**Statut : FAIT**, le 14 août — « Let the course know who the learner is, so it
+can teach THEIR person-words ». Le profil vit dans `learner.py` et `learner.json`,
+et `build_plan` le lit pour composer les situations d'adresse (SPEC 13d). Restait
+vrai à l'écriture : c'était probablement la personnalisation la plus rentable de
 toute la langue — le système d'adresse est ce qui distingue quelqu'un qui parle
 vietnamien de quelqu'un qui récite du vietnamien.
 
@@ -505,6 +527,8 @@ tiroir — et lesquelles ne survivent pas au test.
 ### Les tons : donner un modèle, jamais un jugement
 *Proposé par Meo, 13 août.*
 
+→ **Catégorie B**, un fil continu. Voir « Les hors-mots : deux natures, pas une ».
+
 **Le mur qui décide de tout : le tuteur n'entend jamais la prononciation de
 l'apprenant.** Pas de « c'était presque ça, remonte un peu ». Donc la seule
 pédagogie disponible est de **rendre la différence audible** — donner un modèle
@@ -570,8 +594,10 @@ isolé ne porte pas son ton comme le même mot dans une phrase — l'intonation 
 phrase déforme. Ce qui plaide pour le temps 1 : **le mot répété seul est la
 référence propre**, et c'est ce qu'on a de plus fiable.
 
-**Statut :** à essayer au temps 3 d'abord, c'est celui qui apporte le plus et
-qui se calcule entièrement.
+**Statut : FAIT au temps 3**, le 14 août — « Say a tone pair out loud when the
+second of the two is taught ». Le calcul vit dans `tone_twin`, la paire est dite
+par Minh dans `_INTRODUCE`, et SPEC 28b porte la règle. Les temps 1 et 2 restent
+ouverts.
 
 ### Le second sens d'un homophone, à la seconde rencontre
 *Proposé par Meo, 13 août.*
@@ -792,3 +818,195 @@ n'est jamais dans le découpage, il est dans le temps passé à en débattre.
 Et la règle du carnet vaut ici aussi : **un objectif qu'on ne peut pas
 illustrer par une chose qu'on dirait vraiment à quelqu'un au Vietnam est une
 préférence, pas un objectif.**
+
+---
+
+# Les hors-mots : deux natures, pas une
+
+*Établi le 15 août, session « Tours mécaniques automatisés ». **Le classement en
+tiers n'a jamais été validé par Meo** — c'était une proposition, elle attend
+d'être barrée, déplacée, corrigée.*
+
+**Ce n'est pas une taxonomie.** A et B ne sont pas deux étiquettes sur la même
+chose : ce sont **deux mécanismes**, qui demandent deux codes différents. C'est
+tout l'intérêt de la distinction, et la seule raison de la garder.
+
+**Où vit quoi.** La classification elle-même — A ou B, quel tier — n'est **pas**
+dans `SPEC.md`, et c'est normal : elle n'est pas encore dans le code. Ce qui y
+est, ce sont les **fils** eux-mêmes, chacun avec sa règle. La colonne du milieu
+ci-dessous donne le numéro. Le jour où `0001` écrit la classification dans les
+items, elle deviendra active et recevra sa propre règle dans `SPEC.md`.
+
+**Comment lire cette page avec le reste du carnet.** Ici on tranche : quelle
+nature, quel tier, quel mécanisme existe ou manque. Le **pourquoi pédagogique et
+les mesures** restent dans les entrées du carnet plus haut, et chaque ligne dit
+laquelle. Aucun fait n'est écrit deux fois — et le détail n'est pas décoratif :
+c'est lui qui dit **comment** coder la chose. Une catégorie sans son entrée de
+carnet donne le classement et perd la méthode.
+
+Le code traitait les 35 hors-mots à l'identique : un `kind = "feature"`,
+une position dans la file, enseigné, terminé. Le futur et les tons sont modélisés
+pareil. C'est ça, l'erreur.
+
+## Catégorie B — les fils continus (7)
+
+**Ce ne sont pas des items, ce sont des dimensions.** Le ton s'attache à *chaque
+mot*. Le système de pronoms s'attache à *chaque phrase contenant une personne*.
+Ça ne peut pas avoir de position, parce que ça n'a pas de fin.
+
+| l'item aujourd'hui | le fil existe-t-il déjà ? | le détail, plus haut dans ce fichier |
+| --- | --- | --- |
+| les tons : écouter et copier | **oui** — `SPEC 28c`, la paire dite par Minh | « Les tons : donner un modèle, jamais un jugement » |
+| le mot pour « je » change | **oui** — `SPEC 12e` (le profil) + `12d` | « Demander qui est l'apprenant, pour lui enseigner SES pronoms » |
+| comment choisir son terme | **oui** — `SPEC 12e` + `13d` | idem |
+| le terme change selon la paire | **oui** — `SPEC 12d` + `13d` | idem |
+| la politesse est dans le mot d'adresse | **oui** — `SPEC 13d` | idem |
+| coller deux mots connus | **NON** — `pieces` vaut 0 sur 2042 atomes, `hook` 1 | « Décomposer un nom connu » + « Le troisième moment » |
+| compter de 11 à 99 | **NON** — aucun mécanisme nulle part | — rien d'écrit |
+
+**Les quatre du milieu sont un seul fil découpé en quatre items**, parce que
+l'item était le seul moule disponible. Pour six des sept, la version « fil »
+existe déjà et enseigne mieux que la version item : ces items-là sont des
+vestiges, à supprimer et non à réordonner.
+
+**Deux des sept n'ont pas de fil**, et c'est ce qui décide de l'ordre des
+travaux. Les supprimer retirerait de l'enseignement sans rien mettre à la place ;
+ils restent des items tant que leur fil n'existe pas.
+
+- **les nombres** — aucun mécanisme, nulle part.
+- **coller deux mots connus** — la session du 15 août a répondu « oui, le
+  `hook` », et c'est faux : mesuré, `pieces` vaut **0 sur 2042 atomes** et un
+  seul atome porte un `hook`. Le carnet l'avait déjà établi le 13 août — *« les
+  trois moments sont bloqués par la même donnée manquante, et elle appartient à
+  la passe d'annotation, pas au code »*. Le fil n'est pas construit, il est
+  **bloqué par du contenu à écrire**.
+
+## Catégorie A — les faits ponctuels (28)
+
+Ils restent des items avec une position. Ce qui leur manque, c'est **la seconde
+moitié** : on ne peut pas *redemander* un hors-mot, mais on peut le
+*ré-appliquer*. Le véhicule existe déjà — l'étape `apply` — mais elle ne se
+déclenche qu'à l'introduction.
+
+**La mesure qui a produit cette page :**
+
+```
+33 hors-mots enseignés sur tout le cours
+niveau après le cours entier : min 0, max 0
+jamais redemandés            : 33 / 33
+```
+
+Contre un niveau moyen de **4,5** pour les mots. Les hors-mots sont explicitement
+exclus du tirage des rappels — « nobody says a rule back », ce qui est vrai, et a
+été pris pour « donc il n'y a rien à faire ».
+
+**Toujours vrai au 15 août :** `tutor.py` → `exclude |= {i.name for i in
+seen_items if i.kind == "rule"}`.
+
+## Les tiers — la catégorie A classée par utilité
+
+**Tier 1 — on ne peut pas parler sans (7)**
+
+| la règle | ce qu'elle dit |
+| --- | --- |
+| ordre des mots | sujet, verbe, objet — comme en anglais |
+| `không` + verbe/adjectif | un mot devant, et c'est nié |
+| `có … không ?` | on encadre la phrase pour questionner |
+| répondre en répétant le verbe | on ne dit pas oui, on renvoie le verbe |
+| `ơi` | héler — le premier mot de toute interaction avec un inconnu |
+| pas de `là` devant un adjectif | « Em mệt », vingt fois par jour |
+| `ấy` | sans lui on ne parle qu'**à** quelqu'un, jamais **de** quelqu'un |
+
+**Tier 2 — très fréquent (11) :** `đã` · `rồi` · `chưa` · **`đang`** · **`sẽ`** ·
+`phải` · `ở`+`trong` · possession `của` · adjectif après le nom · `ạ` ·
+classificateurs
+
+**Tier 3 — soulagement et finition (10) :** verbes invariables · ni genre ni
+article · pas de pluriel · mot interrogatif en place · omettre le sujet · `cũng` ·
+`rất` avant / `lắm` après · `hơn` · `được` · `năm` → `lăm`
+
+### Ce que le classement dit tout de suite
+
+**Les tiers 1 et 2 sont presque tous en fin de cours ; le tier 3 presque tout au
+début.** `ơi` en 106, `có…không ?` en 121 — des choses de la première minute
+d'une vraie conversation, servies en dernier. L'ordre actuel suit les fichiers,
+et la grammaire générale a été écrite avant le vocabulaire utile.
+
+### Les trois incertitudes, telles quelles
+
+- **les classificateurs** — la règle est un fait (nombre + classificateur + nom),
+  mais **quel** classificateur pour quel nom est un fil : chaque nom nouveau
+  apporte le sien. A pour la règle, avec un fil B latent qu'on ne modélise pas.
+- **répondre en écho** — classé A parce que le fait se dit une fois. Mais c'est
+  un réflexe qui vaut pour chaque question fermée, à jamais. Ce qui distingue un
+  fil, c'est qu'il **s'approfondit** ; l'écho ne s'approfondit pas. Le plus
+  discutable des vingt-six.
+- **coller deux mots connus** — classé B, et c'est peut-être faux : c'est une
+  stratégie de compréhension qui accompagne chaque mot composé rencontré, pas un
+  fait qu'on range.
+
+## Les 35 items d'aujourd'hui, rattachés
+
+**C'est la table qui manquait.** Les catégories ont vécu comme des listes de
+libellés français, sans jamais toucher un item du cours. Rattachées, elles
+retombent presque exactement sur les comptes de la session : **28 en A**
+(7 + 11 + 10, après rattachement de `đang` et `sẽ`) et **7 en B**.
+
+| l'item | catégorie |
+| --- | --- |
+| `câu hỏi có/không` | A · tier 1 |
+| `gọi ai đó: xưng hô + ơi` | A · tier 1 |
+| `nói VỀ ai đó: xưng hô + ấy` | A · tier 1 |
+| `phủ định: không + [động từ hoặc tính từ]` | A · tier 1 |
+| `trả lời: lặp lại động từ` | A · tier 1 |
+| `trật tự câu: chủ ngữ – động từ – tân ngữ` | A · tier 1 |
+| `tính từ không cần 'là'` | A · tier 1 |
+| `chưa: chưa xong, và cũng để hỏi` | A · tier 2 |
+| `loại từ: số + loại từ + danh từ` | A · tier 2 |
+| `nơi chốn: ở` | A · tier 2 |
+| `phải: bắt buộc, đứng trước động từ` | A · tier 2 |
+| `rồi: việc đã xong` | A · tier 2 |
+| `sở hữu: danh từ + của + người` | A · tier 2 |
+| `tính từ đứng sau danh từ` | A · tier 2 |
+| `đã: việc đã xong, đứng trước động từ` | A · tier 2 |
+| `ạ: một chữ làm câu lịch sự` | A · tier 2 |
+| `cũng đứng trước động từ` | A · tier 3 |
+| `danh từ không đổi khi nhiều` | A · tier 3 |
+| `không có giống, không có mạo từ` | A · tier 3 |
+| `lược bỏ chủ ngữ khi đã rõ` | A · tier 3 |
+| `năm thành lăm khi đứng cuối` | A · tier 3 |
+| `rất trước, lắm sau` | A · tier 3 |
+| `so sánh: tính từ + hơn` | A · tier 3 |
+| `từ để hỏi đứng nguyên chỗ` | A · tier 3 |
+| `được đứng sau động từ: làm được` | A · tier 3 |
+| `động từ không chia` | A · tier 3 |
+| `cách chọn từ xưng hô` | B |
+| `ghép hai từ đã biết thành từ mới` | B |
+| `lịch sự nằm trong từ xưng hô, không phải trong giọng` | B |
+| `thanh điệu: nghe và bắt chước` | B |
+| `xưng hô thay đổi theo người đối diện` | B |
+| `xưng hô đổi theo từng cặp người nói` | B |
+| `đếm từ 11 đến 99` | B — sans fil |
+| `sẽ: việc sắp tới, đứng trước động từ` | A · tier 2 |
+| `đang: việc đang diễn ra, đứng trước động từ` | A · tier 2 |
+
+### Les deux rattachés après coup
+
+`đang` et `sẽ` n'étaient dans aucune catégorie. Créés le **14 août** par « Split
+the three tense markers into three rules, one each », donc **avant** la
+classification, qui les a simplement oubliés.
+
+**Rangés en A · tier 2 par Meo**, à côté de `đã`, `rồi` et `chưa` : même place
+dans la phrase, même fréquence, même nature de fait ponctuel. Le tier 2 compte
+donc **11** règles, pas 9, et la catégorie A **28**.
+
+## Ce qui en découle, et qui n'est pas fait
+
+1. **Retirer les 6 hors-mots doublons** — petit, surtout du contenu.
+2. **Faire revenir les applications** — l'étape `apply` tirée plus tard, pondérée
+   par le même SRS que les mots. C'est là qu'est la valeur : le 33/33.
+3. **Réordonner le cours selon les tiers** — contenu seul, zéro code, et bloqué
+   tant que le classement n'est pas validé.
+
+**Rien de tout ça n'est implémenté au 15 août.** Les sept items de catégorie B
+existent toujours, l'exclusion du SRS tient, l'ordre du cours n'a pas bougé.
