@@ -421,6 +421,33 @@ def check_speaker_cues() -> int:
     return failed
 
 
+
+def check_rule_glosses_name_their_word(roster) -> int:
+    """A rule ABOUT a word must NAME that word in its gloss.
+
+    The gloss is what the model is told to say, so a gloss reading "to say
+    something will happen, one word goes before the action" leaves it to guess
+    WHICH word -- and guessing is where every invented sentence tonight came
+    from. Measured before fixing: 25 of 35 glosses contained no Vietnamese at
+    all.
+
+    Only rules whose subject IS a word are checked. "verbs never change" and
+    "no genders, no articles" are about an ABSENCE and have nothing to name;
+    the test for that is whether the rule's own pieces include a function word
+    it is built on.
+    """
+    failed = 0
+    for item in roster:
+        if item.kind != "rule" or not item.gloss:
+            continue
+        subject = next((p for p in item.pieces if p in item.name), None)
+        if subject and subject not in item.gloss:
+            print(f"FAIL — rule {item.name!r} is about {subject!r} and never names it: "
+                  f"{item.gloss!r}")
+            failed += 1
+    return failed
+
+
 def check_pieces_exist(roster) -> int:
     """Every declared piece must be a teachable item.
 
@@ -483,7 +510,7 @@ def main(NO_INTRO=False) -> int:
             + check_talking_cases() + check_derived_pieces(roster)
             + check_spoken_targets() + check_answer_cases()
             + check_prerequisite_order()
-            + check_every_plan_builds() + check_choppy_cases(vocab) + check_answer_aloud_cases(roster) + check_pieces_exist(roster) + check_speaker_cues()):
+            + check_every_plan_builds() + check_choppy_cases(vocab) + check_answer_aloud_cases(roster) + check_pieces_exist(roster) + check_speaker_cues() + check_rule_glosses_name_their_word(roster)):
         return 1
 
     turns = {"n": 0}
