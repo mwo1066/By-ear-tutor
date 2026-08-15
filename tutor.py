@@ -644,20 +644,9 @@ N_RAPIDFIRE = 3
 # defect there was the identical QUESTION, not the repeated sentence: a ladder
 # stays on one sentence and asks something new at every rung, which is both
 # closer to the method and further from what went wrong.
-_RULE_LADDER = (
-    "Ask for the SHORTEST fragment in which the rule already shows -- two or three words, no "
-    "subject, no object. Start small.",
-    # Was "the same fragment with the person in front of it", and that assumed
-    # every rule's material grows subject-first. It does not: the adjective rule
-    # builds "cơm ngon", which is already a whole sentence, and asking for a
-    # person in front produced "tôi cơm ngon" -- which the tutor then confirmed
-    # as correct. A wrong sentence taught as right is worse than no rung.
-    "Now grow it by ONE element, whichever one that sentence naturally takes next. If it is "
-    "already complete, ask for the same thing about something else instead -- never pad it with "
-    "a word that does not belong.",
-    "Now the fullest form these words allow. This is the rung they have been climbing towards.",
-)
-N_RULE_APPLY = len(_RULE_LADDER)
+# How many of a rule's own words get recalled before it is assembled. Capped so
+# a rule with six pieces does not become a vocabulary drill with a rule attached.
+MAX_RULE_PIECE_RECALLS = 3
 
 
 def rapidfire_count(item: Item, pieces: list[Item]) -> int:
@@ -1070,19 +1059,39 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item],
         else:
             on_it = (_known_sentences_note(known or []) +
                      " Pick ONE of them that this rule can visibly change, and stay on it.")
-        for rung in _RULE_LADDER:
+        # The pieces FIRST, one at a time, then the assembly -- which is what a
+        # construction already does (a recall per piece, then the scaffold, then
+        # the whole thing) and what Meo asked for twice: "we said we ask for the
+        # individual words có and không, then we make a sentence, it's simpler."
+        #
+        # It also answers the other half of the complaint. Three rungs on one
+        # sentence meant hearing "tôi tên là Nam" three times running; now only
+        # the last turn uses a sentence at all.
+        #
+        # And these recalls are SCRIPTED, so two of a rule's three practice
+        # turns stop going through the model -- in the direction everything
+        # measured today points.
+        by_name = {i.name: i for i in (known or [])}
+        for piece in [by_name[p] for p in item.pieces if p in by_name][:MAX_RULE_PIECE_RECALLS]:
             plan.append(Step(
-                "apply", item.name,
-                f"Put the rule to work.{on_it} {rung} The change this rule makes has to be visible "
-                f"in the answer, or the turn teaches nothing."
-                # The ở rule asked for "I am at home", then "at school", then "at
-                # the market" -- none of nhà, trường or chợ has been taught, so
-                # every rung was unanswerable. An application may only use words
-                # the learner has.
-                f"{_known_words_note(known or [])} ASK IT IN ENGLISH and do not say the Vietnamese "
-                f"back: that is the answer. One question, then stop. No new rule, no new word, no "
-                f"second idea.",
+                "recall_piece", piece.name,
+                f"Ask them, in English, for the Vietnamese for {_ask_for(piece)}. One question, "
+                f"then stop. Do not say the Vietnamese word yourself and do not have Minh say it.",
+                answer_is_target=True,
+                ask=speakable(piece.gloss),
             ))
+        plan.append(Step(
+            "apply", item.name,
+            f"Now put those words together.{on_it} Ask for ONE sentence that uses the rule, on "
+            f"material they have just recalled. The change this rule makes has to be visible in "
+            f"the answer, or the turn teaches nothing."
+            # The ở rule asked for "I am at home", then "at school", then "at
+            # the market" -- none of nhà, trường or chợ has been taught, so
+            # every rung was unanswerable. An application may only use words
+            # the learner has.
+            f"{_known_words_note(known or [])} ASK IT IN ENGLISH and do not say the Vietnamese "
+            f"back: that is the answer. One question, then stop.",
+        ))
 
     for target in recall_targets:
         plan.append(Step(
