@@ -389,6 +389,35 @@ def check_answer_aloud_cases(roster) -> int:
     return failed
 
 
+
+# (line, what should survive to the speakers). A line that is ONLY a name is
+# dropped by is_stage_direction; these are the other half -- a cue in FRONT of
+# real speech, where the tutor's own voice read the label out loud. Heard live:
+# "Minh says: cho." The colon is what separates a cue from a real line.
+SPEAKER_CUE_CASES = [
+    ("Minh says: cho.", "cho."),
+    ("Minh: tôi.", "tôi."),
+    ("minh repeats: ăn", "ăn"),
+    # Both of these are real speech and must survive untouched.
+    ("Minh says hello.", "Minh says hello."),
+    ("Minh, say hello to our new student.", "Minh, say hello to our new student."),
+    ("I said no.", "I said no."),
+]
+
+
+def check_speaker_cues() -> int:
+    import contextlib
+    import io
+    failed = 0
+    for text, expected in SPEAKER_CUE_CASES:
+        with contextlib.redirect_stdout(io.StringIO()):
+            got = voice._strip_authoring_notation(text)
+        if got != expected:
+            print(f"FAIL — {text!r} became {got!r}, expected {expected!r}")
+            failed += 1
+    return failed
+
+
 def check_pieces_exist(roster) -> int:
     """Every declared piece must be a teachable item.
 
@@ -451,7 +480,7 @@ def main(NO_INTRO=False) -> int:
             + check_talking_cases() + check_derived_pieces(roster)
             + check_spoken_targets() + check_answer_cases()
             + check_prerequisite_order()
-            + check_every_plan_builds() + check_choppy_cases(vocab) + check_answer_aloud_cases(roster) + check_pieces_exist(roster)):
+            + check_every_plan_builds() + check_choppy_cases(vocab) + check_answer_aloud_cases(roster) + check_pieces_exist(roster) + check_speaker_cues()):
         return 1
 
     turns = {"n": 0}

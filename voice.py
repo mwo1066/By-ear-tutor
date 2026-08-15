@@ -197,6 +197,17 @@ def _strip_markdown(text: str) -> str:
 # said "It was muốn + [động từ]", which Minh recited as "muốn động từ".
 _AUTHORING_NOTATION = re.compile(r"\s*\+?\s*\[[^\]]*\]|_{2,}")
 
+# A speaker cue at the START of a line that has real speech after it. The COLON
+# is what separates it from a real line: "Minh, say hello to our new student."
+# is the tutor addressing Minh out loud, which the persona asks for at the
+# intro, while "Minh says: cho." is a label read aloud before the word. A line
+# that is ONLY a cue is dropped by is_stage_direction; this is the other half --
+# "Minh says: cho." where the tutor's own voice reads the label out loud before
+# handing the word over. Heard live. The cue goes, the word stays: dropping the
+# line would lose the only Vietnamese in it.
+_SPEAKER_CUE = re.compile(r"^\s*(?:minh|the teacher)(?:\s+(?:says|repeats|said))?\s*:\s+", re.IGNORECASE)
+
+
 
 def _strip_authoring_notation(text: str) -> str:
     """Removes what belongs to the content files and not to a sentence.
@@ -205,7 +216,7 @@ def _strip_authoring_notation(text: str) -> str:
     placeholder is never speech under any circumstance. The log line is what
     makes the real bug visible upstream.
     """
-    cleaned = _AUTHORING_NOTATION.sub("", text)
+    cleaned = _SPEAKER_CUE.sub("", _AUTHORING_NOTATION.sub("", text))
     if cleaned != text:
         print(f"  (authoring notation stripped before speech: {text!r})")
     return " ".join(cleaned.split())
