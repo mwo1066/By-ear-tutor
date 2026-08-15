@@ -13,8 +13,10 @@ PERSONAL_ITEMS_FILENAME = "personal_items.json"
 #                 ("tôi", and also multi-word units like "cà phê" that are one
 #                 lexical block, not an assembly)
 #   construction  a sentence pattern assembled out of items already taught
-#   rule          something the tutor STATES; the learner never says it back,
-#                 so it is never a recall target ("tính từ không cần 'là'")
+#   feature       a fact about the language the tutor STATES; the learner never
+#                 says it back, so it is never a recall target ("tính từ không
+#                 cần 'là'"). Typological sense -- covers grammar, tone and
+#                 politeness alike. See LEXIQUE.md.
 KINDS = {"atom", "construction", "feature"}
 
 
@@ -57,19 +59,20 @@ class Item:
     # hears it, which matters: an invented etymology is worse than none.
     hook: str = ""
     # A rule may carry the situations it covers, one per line, as data rather
-    # than buried in its Vietnamese notes. The address rule has had four of
+    # than buried in its Vietnamese notes. The address feature has had four of
     # them since it was written -- man older than you, woman older than you,
     # someone younger, unsure -- and nothing read them: the field was not loaded
     # at all. A table nobody can reach is a table that gets re-invented.
     steps: list[str] = field(default_factory=list)
-    # A rule may name the item it belongs WITH, and it is then emitted the turn
-    # after that item instead of waiting its turn in the rule queue.
+    # A feature may name the item it belongs WITH, and it is then emitted the
+    # turn after that item instead of waiting its turn in the feature queue.
     #
-    # Without it a rule cannot be placed at all, only ranked. Rules come out one
-    # every five items in file order, so a rule's position is decided by how
-    # many rules precede it and by nothing else: "đã" is the 22nd item and its
-    # rule the 15th rule, which lands it at 82. Measured across the course, the
-    # median rule arrives 47 items after the last of its own words, and 21 of 30
+    # Without it a feature cannot be placed at all, only ranked. Features come
+    # out one every five items in file order, so a feature's position is decided
+    # by how many features precede it and by nothing else: "đã" is the 22nd item
+    # and its feature the 15th, which lands it at 82. Measured across the
+    # course, the median feature arrives 47 items after the last of its own
+    # words, and 21 of 30
     # wait more than 30. So a learner meets a word, drills it as vocabulary, and
     # is told an hour later where it goes.
     after: str = ""
@@ -413,7 +416,7 @@ MAX_PREREQUISITE_DEPTH = 3
 # without a new word. Spacing them by hand does not survive 2000 words, so it
 # is enforced here instead: after a rule, this many items must be said before
 # another one may come. The rule simply waits; nothing is dropped.
-MIN_ITEMS_BETWEEN_RULES = 4
+MIN_ITEMS_BETWEEN_FEATURES = 4
 
 # The same defect, one level up: a file holds one topic, file order is teaching
 # order, so a whole file comes out as a block. Measured after writing the number
@@ -423,8 +426,8 @@ MIN_ITEMS_BETWEEN_RULES = 4
 MAX_SAME_CATEGORY_RUN = 3
 
 
-def _rule_is_due(seen_items: list[Item]) -> bool:
-    recent = seen_items[-MIN_ITEMS_BETWEEN_RULES:]
+def _feature_is_due(seen_items: list[Item]) -> bool:
+    recent = seen_items[-MIN_ITEMS_BETWEEN_FEATURES:]
     return not any(i.kind == "feature" for i in recent)
 
 
@@ -482,11 +485,11 @@ def pick_next_index(queue: list[Item], seen_items: list[Item]) -> int:
     # Spacing first, because the prerequisite walk below returns the head of the
     # queue as soon as it is ready -- which is exactly where a run of rules, or
     # of numbers, sits, so a spacing check placed after it never ran.
-    rules_due = _rule_is_due(seen_items)
+    features_due = _feature_is_due(seen_items)
     saturated = _saturated_category(seen_items)
-    if not rules_due or saturated:
+    if not features_due or saturated:
         spaced = [i for i, item in enumerate(queue)
-                  if (rules_due or item.kind != "feature")
+                  if (features_due or item.kind != "feature")
                   and item.category != saturated
                   and not unknown_pieces(item, seen_items)]
         # Nothing else is ready, so the run continues rather than deadlocking:

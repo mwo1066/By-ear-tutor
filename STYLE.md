@@ -70,7 +70,7 @@ correctement.
 *Proposé par Meo.*
 
 → **Catégorie B**, un fil qui n'existe pas encore : c'est cette entrée qui dit
-pourquoi. Voir « Les hors-mots : deux natures, pas une ».
+pourquoi. Voir « Les traits : deux natures, pas une ».
 
 Quand un mot connu se découpe en mots qui existent, le dire. En chinois, Beijing
 = nord + capitale. En vietnamien on a exactement les mêmes, parce qu'une grande
@@ -298,7 +298,7 @@ la sensation du cours, et celle qu'il ne faut surtout pas régler à l'aveugle.
 *Proposé par Meo.*
 
 → **Catégorie B**, un fil continu — et l'item `cách chọn từ xưng hô` en est le
-vestige. Voir « Les hors-mots : deux natures, pas une ».
+vestige. Voir « Les traits : deux natures, pas une ».
 
 En vietnamien, le mot pour « je » dépend de qui parle à qui. Meo s'adressant à
 sa copine dit `anh` pour « je » et `em` pour « tu ». Ce ne sont pas des
@@ -527,7 +527,7 @@ tiroir — et lesquelles ne survivent pas au test.
 ### Les tons : donner un modèle, jamais un jugement
 *Proposé par Meo, 13 août.*
 
-→ **Catégorie B**, un fil continu. Voir « Les hors-mots : deux natures, pas une ».
+→ **Catégorie B**, un fil continu. Voir « Les traits : deux natures, pas une ».
 
 **Le mur qui décide de tout : le tuteur n'entend jamais la prononciation de
 l'apprenant.** Pas de « c'était presque ça, remonte un peu ». Donc la seule
@@ -821,7 +821,7 @@ préférence, pas un objectif.**
 
 ---
 
-# Les hors-mots : deux natures, pas une
+# Les traits : deux natures, pas une
 
 *Établi le 15 août, session « Tours mécaniques automatisés ». **Le classement en
 tiers n'a jamais été validé par Meo** — c'était une proposition, elle attend
@@ -844,7 +844,7 @@ laquelle. Aucun fait n'est écrit deux fois — et le détail n'est pas décorat
 c'est lui qui dit **comment** coder la chose. Une catégorie sans son entrée de
 carnet donne le classement et perd la méthode.
 
-Le code traitait les 35 hors-mots à l'identique : un `kind = "feature"`,
+Le code traitait les 35 traits à l'identique : un `kind = "feature"`,
 une position dans la file, enseigné, terminé. Le futur et les tons sont modélisés
 pareil. C'est ça, l'erreur.
 
@@ -857,8 +857,8 @@ mot*. Le système de pronoms s'attache à *chaque phrase contenant une personne*
 | l'item aujourd'hui | le fil existe-t-il déjà ? | le détail, plus haut dans ce fichier |
 | --- | --- | --- |
 | les tons : écouter et copier | **oui** — `SPEC 28c`, la paire dite par Minh | « Les tons : donner un modèle, jamais un jugement » |
-| le mot pour « je » change | **oui** — `SPEC 12e` (le profil) + `12d` | « Demander qui est l'apprenant, pour lui enseigner SES pronoms » |
-| comment choisir son terme | **oui** — `SPEC 12e` + `13d` | idem |
+| le mot pour « je » change | **oui** — `SPEC 10b` (le profil) + `12d` | « Demander qui est l'apprenant, pour lui enseigner SES pronoms » |
+| comment choisir son terme | **oui** — `SPEC 10b` + `13d` | idem |
 | le terme change selon la paire | **oui** — `SPEC 12d` + `13d` | idem |
 | la politesse est dans le mot d'adresse | **oui** — `SPEC 13d` | idem |
 | coller deux mots connus | **NON** — `pieces` vaut 0 sur 2042 atomes, `hook` 1 | « Décomposer un nom connu » + « Le troisième moment » |
@@ -884,19 +884,19 @@ ils restent des items tant que leur fil n'existe pas.
 ## Catégorie A — les faits ponctuels (28)
 
 Ils restent des items avec une position. Ce qui leur manque, c'est **la seconde
-moitié** : on ne peut pas *redemander* un hors-mot, mais on peut le
+moitié** : on ne peut pas *redemander* un trait, mais on peut le
 *ré-appliquer*. Le véhicule existe déjà — l'étape `apply` — mais elle ne se
 déclenche qu'à l'introduction.
 
 **La mesure qui a produit cette page :**
 
 ```
-33 hors-mots enseignés sur tout le cours
+33 traits enseignés sur tout le cours
 niveau après le cours entier : min 0, max 0
 jamais redemandés            : 33 / 33
 ```
 
-Contre un niveau moyen de **4,5** pour les mots. Les hors-mots sont explicitement
+Contre un niveau moyen de **4,5** pour les mots. Les traits sont explicitement
 exclus du tirage des rappels — « nobody says a rule back », ce qui est vrai, et a
 été pris pour « donc il n'y a rien à faire ».
 
@@ -1002,7 +1002,7 @@ donc **11** règles, pas 9, et la catégorie A **28**.
 
 ## Ce qui en découle, et qui n'est pas fait
 
-1. **Retirer les 6 hors-mots doublons** — petit, surtout du contenu.
+1. **Retirer les 6 traits doublons** — petit, surtout du contenu.
 2. **Faire revenir les applications** — l'étape `apply` tirée plus tard, pondérée
    par le même SRS que les mots. C'est là qu'est la valeur : le 33/33.
 3. **Réordonner le cours selon les tiers** — contenu seul, zéro code, et bloqué

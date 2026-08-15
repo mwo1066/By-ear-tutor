@@ -117,6 +117,22 @@ three points should survive in about six sentences.
 
 **Style.** `STYLE.md` is the notebook: ideas land there and leave through one of three drawers -- a field on an item, a wording in code, or the prompt as a last resort -- with a test in front of each (how often does it occur in the reference course?). It is read by nobody at runtime, deliberately. Meo's notes still to come.
 
+**Open, and deliberately not started yet.** Recorded here so they do not
+evaporate the way the discrete/strand split did:
+
+- **Bring applications back.** 33 of 33 features were never re-asked across a
+  whole course, final level 0, against 4.5 for words -- a fifth of what is
+  taught evaporates. The `nature` field now makes the 28 discrete ones
+  targetable without touching the 7 strands. This is the measured defect.
+- **Validate the tier ranking.** It was one assistant's ordering by usefulness,
+  never corrected by Meo, and reordering the course is blocked until it is.
+  Today the most useful features come last: `ơi` at position 106.
+- **Sort the 22 features with no `after`.** Some legitimately attach to no word
+  (SVO order, no gender); others were probably just forgotten.
+- **Category B, untouched on purpose.** Five of the seven strands duplicate a
+  thread already running in code. Removing them waits until Meo has looked at
+  them.
+
 **Changes.** `changes/` holds one folder per change, written before the code and
 read by Meo first: why, which spec rules move, what is in scope and what is
 deliberately out. `/proposer` opens one, `/appliquer` implements it, `/archiver`

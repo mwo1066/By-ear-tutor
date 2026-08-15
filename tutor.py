@@ -646,7 +646,7 @@ N_RAPIDFIRE = 3
 # closer to the method and further from what went wrong.
 # How many of a rule's own words get recalled before it is assembled. Capped so
 # a rule with six pieces does not become a vocabulary drill with a rule attached.
-MAX_RULE_PIECE_RECALLS = 3
+MAX_FEATURE_PIECE_RECALLS = 3
 
 
 def rapidfire_count(item: Item, pieces: list[Item]) -> int:
@@ -801,10 +801,10 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item],
         # Said once, at the first rule of the course. Every rule would make it a
         # tic -- the same objection the notebook raises about praising each turn
         # -- and the point lands better as a door opened than as a refrain.
-        first_rule = not any(i.kind == "feature" for i in (known or []))
+        first_feature = not any(i.kind == "feature" for i in (known or []))
         invite = (" This is the first rule of the course, so add one short line telling them they "
                   "can ask you to say any rule again, any time, and that forgetting one is normal. "
-                  "Say it once and never repeat it.") if first_rule else ""
+                  "Say it once and never repeat it.") if first_feature else ""
         # The address rule is the one rule the course cannot state properly
         # without knowing who is in front of it: which person-word the learner
         # uses for THEMSELVES depends on their own age and gender. So this is
@@ -1081,7 +1081,7 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item],
         # turns stop going through the model -- in the direction everything
         # measured today points.
         by_name = {i.name: i for i in (known or [])}
-        for piece in [by_name[p] for p in item.pieces if p in by_name][:MAX_RULE_PIECE_RECALLS]:
+        for piece in [by_name[p] for p in item.pieces if p in by_name][:MAX_FEATURE_PIECE_RECALLS]:
             plan.append(Step(
                 "recall_piece", piece.name,
                 f"Ask them, in English, for the Vietnamese for {_ask_for(piece)}. One question, "

@@ -422,7 +422,7 @@ def check_speaker_cues() -> int:
 
 
 
-def check_rule_glosses_name_their_word(roster) -> int:
+def check_feature_glosses_name_their_word(roster) -> int:
     """A rule ABOUT a word must NAME that word in its gloss.
 
     The gloss is what the model is told to say, so a gloss reading "to say
@@ -540,7 +540,7 @@ def main(NO_INTRO=False) -> int:
             + check_talking_cases() + check_derived_pieces(roster)
             + check_spoken_targets() + check_answer_cases()
             + check_prerequisite_order()
-            + check_every_plan_builds() + check_choppy_cases(vocab) + check_answer_aloud_cases(roster) + check_pieces_exist(roster) + check_speaker_cues() + check_rule_glosses_name_their_word(roster)
+            + check_every_plan_builds() + check_choppy_cases(vocab) + check_answer_aloud_cases(roster) + check_pieces_exist(roster) + check_speaker_cues() + check_feature_glosses_name_their_word(roster)
             + check_glosses_cite_only_taught_words(roster)):
         return 1
 

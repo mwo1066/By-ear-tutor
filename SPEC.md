@@ -4,7 +4,7 @@ Chaque comportement en français, avec l'endroit où il est appliqué et ce qu'i
 faut modifier pour le changer. Écrit à partir du code, pas de mémoire.
 
 **Le vocabulaire de ce fichier est défini dans [`LEXIQUE.md`](LEXIQUE.md)** —
-hors-mot, atome, pièce, tour scripté, glose. À lire d'abord si tu arrives sur le
+trait, atome, pièce, tour scripté, glose. À lire d'abord si tu arrives sur le
 projet.
 
 **Lis d'abord la ligne « Où ».** C'est la distinction qui compte le plus, et
@@ -18,6 +18,31 @@ Mettre une règle dans le prompt alors qu'elle pouvait être du code, c'est ce
 qui a produit un tuteur récitant dix étapes d'un souffle et redemandant quatre
 fois le même mot. Laisser une règle dans le prompt après l'avoir déplacée dans
 le code, c'est ce qui a produit un marqueur que plus rien n'émettait.
+
+---
+
+## Les sections
+
+| | ce qu'elle répond |
+| --- | --- |
+| [Les deux voix](#les-deux-voix) | qui parle, et dans quelle langue |
+| [La forme d'un tour](#la-forme-dun-tour) | ce qu'un tour a le droit de faire, et qui l'écrit |
+| [L'ordre du cours](#lordre-du-cours) | qu'est-ce qui vient après quoi |
+| [Ce que le cours sait](#ce-que-le-cours-sait) | les données qu'il tient — sur les items, sur l'apprenant |
+| [Enseigner un mot](#enseigner-un-mot) | un `atom` |
+| [Enseigner une construction](#enseigner-une-construction) | une `construction` |
+| [Enseigner un trait](#enseigner-un-trait) | un `feature` |
+| [Comment les mots reviennent](#comment-les-mots-reviennent) | le niveau, l'espacement, les rappels |
+| [Les réponses](#les-réponses) | comment une réponse est jugée, et ce qu'on en dit |
+| [Entendre l'apprenant](#entendre-lapprenant) | le micro, le silence, la transcription |
+| [L'ouverture](#louverture) | le tout premier tour |
+| [La prononciation](#la-prononciation) | les tons, et ce qu'on se refuse à juger |
+| [Les outils](#les-outils) | les trois appels que le modèle peut passer |
+| [L'infrastructure](#linfrastructure) | le modèle, le budget, la sauvegarde |
+
+Les trois sections « Enseigner… » suivent les trois sortes d'item du
+[`LEXIQUE.md`](LEXIQUE.md), dans cet ordre. Les numéros de règle sont des
+identifiants stables : ils ne se renumérotent pas quand une section bouge.
 
 ---
 
@@ -171,7 +196,7 @@ budget, et ne disait rien du tout.
 
 ---
 
-## Ce qui est enseigné, et dans quel ordre
+## L'ordre du cours
 
 ### 8. La séquence est composée, jamais choisie
 Les items sont enseignés dans l'ordre du roster. Le modèle ne choisit jamais
@@ -187,13 +212,13 @@ aucun n'avait été enseigné
 **Changer :** `content.py` → `pick_next_index`, et le champ `pieces` des items
 
 ### 9b. La grammaire est espacée, jamais empilée
-Après un hors-mot, **quatre items** doivent passer avant qu'un autre puisse
+Après un trait, **quatre items** doivent passer avant qu'un autre puisse
 venir. Et jamais plus de **trois items de la même catégorie** à la suite.
 Personne n'est jeté : celui qui ne peut pas venir attend son tour.
-**Où :** code — `MIN_ITEMS_BETWEEN_RULES` (4), `MAX_SAME_CATEGORY_RUN` (3), mais
+**Où :** code — `MIN_ITEMS_BETWEEN_FEATURES` (4), `MAX_SAME_CATEGORY_RUN` (3), mais
 la garantie dépend du champ `category` **écrit dans le contenu**
 **Pourquoi :** un fichier porte un sujet et l'ordre des fichiers est l'ordre
-d'enseignement, donc un fichier entier sort en bloc. Mesuré : **neuf hors-mots
+d'enseignement, donc un fichier entier sort en bloc. Mesuré : **neuf traits
 d'affilée** autour de l'item 35 — neuf minutes de théorie sans un mot nouveau.
 Puis, après l'écriture du système de numération, **onze numéraux en onze places
 consécutives** : un quart d'heure à compter et rien d'autre.
@@ -201,19 +226,21 @@ consécutives** : un quart d'heure à compter et rien d'autre.
 2000 mots.
 **Ce que ça exige du contenu :** une `category` juste sur chaque item. Une
 catégorie fausse ou vide rend l'espacement aveugle sur cet item.
-**Changer :** `content.py` → `MIN_ITEMS_BETWEEN_RULES`, `MAX_SAME_CATEGORY_RUN`
+**Changer :** `content.py` → `MIN_ITEMS_BETWEEN_FEATURES`, `MAX_SAME_CATEGORY_RUN`
 
-### 9c. Un hors-mot qui nomme son mot passe devant l'espacement
+### 9c. Un trait qui nomme son mot passe devant l'espacement
 Le champ `after` porte le nom d'un mot. Tant que ce mot n'est pas enseigné, le
-hors-mot attend ; dès qu'il l'est, le hors-mot passe **avant toutes les règles
+trait attend ; dès qu'il l'est, le trait passe **avant toutes les règles
 d'espacement**, 9b comprise.
 **Où :** code — la branche `attached` de `pick_next_index` ; le champ `after`
-est **écrit dans le contenu**, sur 13 des 35 hors-mots
+est **écrit dans le contenu**, sur 13 des 35 traits
 **Pourquoi contourner l'espacement :** l'espaceur existe pour empêcher les
-hors-mots de faire grappe. Un hors-mot attaché à un mot ne fait pas grappe — il
+traits de faire grappe. Un trait attaché à un mot ne fait pas grappe — il
 **finit** le mot. Le contournement est l'intention du champ, pas un effet de
 bord.
 **Changer :** le champ `after` des items ; `content.py` → `pick_next_index`
+
+## Ce que le cours sait
 
 ### 10. Chaque item porte ses propres données d'enseignement
 `gloss` (« I / me »), `kind` (atome ou construction), `pieces`, `literal`.
@@ -227,8 +254,35 @@ modèle entre lui et la synthèse : `speakable` traduit ce qui s'écrit mais ne 
 dit pas — « I / me » → « I or me », « My name is ___ » → « My name is
 something ». Et `check_roster` refuse qu'un item porte son propre nom
 vietnamien dans son gloss, ce qui rendrait la réponse au moment de la question.
+**Le repli assumé, et son risque :** quand un item n'a pas de gloss, deux
+endroits retombent sur `description` — les notes d'écriture, rédigées **en
+vietnamien** pour qui rédige le contenu. Aucun item enseigné n'a de gloss vide
+aujourd'hui, donc rien ne le déclenche. Mais c'est la forme latente d'un défaut
+déjà corrigé une fois ailleurs : `_lesson_note` ouvrait chaque tour sur cette
+même description, et des fragments de vietnamien ressortaient au milieu de
+phrases qui devaient être anglaises.
+**Ce qui est porté mais jamais lu :** `type` (`concept`/`procedure`) sur les 2085
+items, `senses` et `frequency_rank` sur les 1915 du stock. Aucun ne pilote une
+décision d'enseignement — les garder ne coûte rien, s'y fier serait une erreur.
 **Changer :** les fichiers d'items ; `fill_item_metadata.py` remplit les champs
-manquants ; `tutor.py` → `speakable`
+manquants ; `tutor.py` → `speakable`, `_ask_for`
+
+### 10b. Le cours sait qui est l'apprenant, et lui enseigne SES mots de personne
+Une tranche d'âge et un genre suffisent : ils décident si l'apprenant est `anh`,
+`chị` ou `em` face à quelqu'un. Le profil fournit les situations d'adresse
+utilisées par la variation (12d) et par les traits d'adresse (13d) — et à
+défaut de profil, le code retombe sur les situations que le cours enseigne.
+**Où :** code — `learner.py`, `learner.json`, lu par `build_plan`
+**Pourquoi :** le cours enseignait `tôi`, dont sa propre fiche dit *« đúng ngữ
+pháp nhưng lạnh »* — grammaticalement juste, mais froid. Puis `anh`/`chị`/`em`
+dans l'abstrait, comme un tableau à mémoriser. Dès que le cours sait qui vous
+êtes, ce n'est plus une règle : ce sont **vos** mots.
+**La limite assumée :** l'adresse dépend des DEUX personnes. Savoir qui est
+l'apprenant est nécessaire, pas suffisant — mais « avec quelqu'un de plus jeune,
+vous êtes `anh` » est déjà infiniment plus concret que la règle générale.
+**Changer :** `learner.py` → `SELF_WHEN_OLDER`, `pair_with_minh`, `address_rows`
+
+## Enseigner un mot
 
 ### 11. Un mot nouveau a deux tours
 `introduce` puis `settle` — révélé et entendu, puis on réagit et on redemande.
@@ -265,6 +319,8 @@ chose que le mot vietnamien est celui qu'il s'apprête à entendre.
 que pas de hook du tout. Aujourd'hui un seul item du cours en porte un.
 **Changer :** le champ `hook` des items ; `fill_item_metadata.py` pour la
 consigne qui les fait écrire
+
+## Enseigner une construction
 
 ### 12. Une construction déroule toute la chaîne
 Un rappel par pièce, un par tour, puis l'ordre littéral, puis la réponse, puis
@@ -334,32 +390,17 @@ porte des `steps` mentionnant un terme d'adresse. Coder le nom de l'item aurait
 cassé au premier remaniement du contenu — il y en a eu deux aujourd'hui.
 **Changer :** `content.py` → `ADDRESS_TERMS`, le champ `steps` des items
 
-### 12e. Le cours sait qui est l'apprenant, et lui enseigne SES mots de personne
-Une tranche d'âge et un genre suffisent : ils décident si l'apprenant est `anh`,
-`chị` ou `em` face à quelqu'un. Le profil fournit les situations d'adresse
-utilisées par la variation (12d) et par les hors-mots d'adresse (13d) — et à
-défaut de profil, le code retombe sur les situations que le cours enseigne.
-**Où :** code — `learner.py`, `learner.json`, lu par `build_plan`
-**Pourquoi :** le cours enseignait `tôi`, dont sa propre fiche dit *« đúng ngữ
-pháp nhưng lạnh »* — grammaticalement juste, mais froid. Puis `anh`/`chị`/`em`
-dans l'abstrait, comme un tableau à mémoriser. Dès que le cours sait qui vous
-êtes, ce n'est plus une règle : ce sont **vos** mots.
-**La limite assumée :** l'adresse dépend des DEUX personnes. Savoir qui est
-l'apprenant est nécessaire, pas suffisant — mais « avec quelqu'un de plus jeune,
-vous êtes `anh` » est déjà infiniment plus concret que la règle générale.
-**Changer :** `learner.py` → `SELF_WHEN_OLDER`, `pair_with_minh`, `address_rows`
-
 ### 13. La règle est nommée après que le motif a été produit, jamais avant
 **Où :** le code place l'étape en dernier ; le prompt dit comment la formuler
 **Changer :** `tutor.py` → `build_plan`
 
 *(Le mot « règle » ici désigne l'étape qui énonce le motif à la fin d'une
 construction — l'étape `rule` du plan. Le **type d'item** ne s'appelle plus
-ainsi : c'est `feature`, voir les hors-mots ci-dessous.)*
+ainsi : c'est `feature`, voir les traits ci-dessous.)*
 
 ---
 
-## Les hors-mots
+## Enseigner un trait
 
 Le troisième type d'item, à côté du mot isolé (11) et de la construction (12).
 **35 items du cours**, deuxième type le plus nombreux. Ce ne sont ni des mots ni
@@ -371,35 +412,35 @@ la politesse qui vit dans le mot de personne et non dans le ton de voix.
 où l'atlas WALS les catalogue. Leur nature s'écrit `nature = "discrete"` ou
 `"strand"`. Voir `LEXIQUE.md`.
 
-### 13b. Un hors-mot fait redire ses pièces une à une, puis les assemble
+### 13b. Un trait fait redire ses pièces une à une, puis les assemble
 La même forme qu'une construction : un rappel par pièce (jusqu'à
-`MAX_RULE_PIECE_RECALLS`, 3), puis **une** étape d'application qui demande de
+`MAX_FEATURE_PIECE_RECALLS`, 3), puis **une** étape d'application qui demande de
 les mettre ensemble.
 **Où :** code — la branche `item.kind == "rule"` de `build_plan`
-**Pourquoi :** un hors-mot n'avait qu'UN tour, qui devait énoncer la chose,
+**Pourquoi :** un trait n'avait qu'UN tour, qui devait énoncer la chose,
 l'illustrer et l'appliquer d'un seul souffle — puis le plan enchaînait sur des
-rappels sans rapport. Séquencement mesuré : hors-mot → rapidfire `anh` →
+rappels sans rapport. Séquencement mesuré : trait → rapidfire `anh` →
 rapidfire `em` → rapidfire `tên`. Énoncé une fois et plus jamais utilisé, ce qui
 est exactement ce qu'un apprenant a rapporté : « je n'ai rien compris à la
 règle, et elle n'est même pas utilisée ». Tous les autres types ont plusieurs
 tours sur la chose enseignée ; celui-là était seul à n'en avoir qu'un.
 **Effet de bord voulu :** les rappels de pièces sont scriptés (4b), donc deux
-des trois tours de pratique d'un hors-mot ne passent plus par le modèle.
-**Changer :** `tutor.py` → `MAX_RULE_PIECE_RECALLS`, la branche `feature`
+des trois tours de pratique d'un trait ne passent plus par le modèle.
+**Changer :** `tutor.py` → `MAX_FEATURE_PIECE_RECALLS`, la branche `feature`
 
-### 13c. Le code choisit la phrase sur laquelle un hors-mot s'applique
+### 13c. Le code choisit la phrase sur laquelle un trait s'applique
 Parmi les constructions déjà enseignées, celle qui partage **le plus de pièces**
-avec le hors-mot. Aucune ne partage : ce sont les mots propres du hors-mot qui
+avec le trait. Aucune ne partage : ce sont les mots propres du trait qui
 servent de matière. Il n'en a pas : la liste des phrases connues, et le modèle
 en choisit une.
 **Où :** code — le tri `related`, par nombre de pièces communes décroissant
 **Pourquoi ce n'est pas au modèle :** demander « une phrase différente » était
-une consigne, et elle a été ignorée trois tours de suite — le tour du hors-mot a
+une consigne, et elle a été ignorée trois tours de suite — le tour du trait a
 demandé « how would you answer Bạn muốn ăn ? », puis les deux applications ont
 redemandé exactement la même. L'apprenant a entendu une question quatre fois et
 la séance s'est terminée là. Que deux phrases soient différentes n'est pas un
 jugement, donc ce n'est pas au modèle de le rendre.
-**Pourquoi « le plus », et pas « la première » :** le hors-mot des questions
+**Pourquoi « le plus », et pas « la première » :** le trait des questions
 oui/non (`có`, `không`) était épinglé sur `không phải là + [danh từ]`, qui ne
 partage que `không` et parle de négation — les trois applications ont demandé
 « pas étudiant » pendant qu'on enseignait comment poser une question. La
@@ -411,22 +452,22 @@ l'inverse de ce qu'elle enseignait. Nommer les mots à assembler ne peut pas
 faire ça.
 **Changer :** `tutor.py` → la branche `feature`, le tri `related`
 
-### 13d. Un hors-mot qui porte SUR les mots d'adresse est posé comme une situation
+### 13d. Un trait qui porte SUR les mots d'adresse est posé comme une situation
 Jamais comme une phrase. « Quelqu'un de plus âgé que toi, un homme — comment tu
 lui dis ça ? » Trois échelons : la personne la plus facile, une tout autre, puis
 une troisième où l'apprenant choisit lui-même le mot de personne. **Aucun
 vietnamien n'est prononcé** : le nommer, c'est donner toute la réponse.
 **Où :** code — `about_address`, puis trois étapes `apply` et un retour immédiat
 **Pourquoi :** « How would you say anh ấy ? » — la question qui énonce sa
-réponse. Les deux hors-mots concernés, `ấy` et `ơi`, avaient le même défaut.
+réponse. Les deux traits concernés, `ấy` et `ơi`, avaient le même défaut.
 **Pourquoi un test étroit :** « contient un mot de personne » était trop
 large — l'ordre des mots (`tôi, uống, cà phê`) et la possession (`của, cà phê,
 tôi`) en utilisent un comme simple matière d'exemple sans porter dessus. Ils
 auraient été demandés comme « appelle ce genre de personne », ce qui n'a aucun
 sens. Le test est donc : **au moins deux** pièces d'adresse, **et** la moitié au
 moins des pièces. Un seul mot de personne est un exemple, pas un sujet — c'est
-ce que fait `tôi, là` dans le hors-mot des tons.
-**Ce que ça coûte :** ce chemin sort du plan immédiatement. Un hors-mot
+ce que fait `tôi, là` dans le trait des tons.
+**Ce que ça coûte :** ce chemin sort du plan immédiatement. Un trait
 d'adresse n'a donc ni rappels de pièces (13b) ni rappels de clôture (17).
 **Les situations viennent du profil de l'apprenant**, pas d'une table figée.
 **Changer :** `tutor.py` → `about_address`, `ADDRESS_TERMS` dans `content.py`
@@ -475,7 +516,7 @@ référence.
 rien dire du tout. Depuis qu'elle porte ses propres rappels et ses applications,
 quatre rappels étrangers par-dessus en faisaient l'item le plus long du cours
 sans rien apprendre de plus.
-**L'exception :** un hors-mot d'adresse (13d) n'en reçoit aucun — son plan
+**L'exception :** un trait d'adresse (13d) n'en reçoit aucun — son plan
 s'arrête à ses trois situations.
 **Ce que ça ne change PAS :** combien de fois un mot donné est révisé. Les
 rappels d'un item portent sur d'AUTRES mots — l'item en cours est exclu. Un mot
@@ -797,6 +838,6 @@ Et elle se **relit dans l'ordre où elle a été écrite**, pas dans celui du ro
 **Pourquoi :** les contrôles d'espacement regardent les derniers items vus. Un
 historique reconstruit dans l'ordre du roster les fait décider autrement que la
 séance qui a produit l'état — `--at=120` ouvrait sur le mauvais item, et trois
-hors-mots sur sept manquaient le leur. Une partie de ce qui ressemblait à du
+traits sur sept manquaient le leur. Une partie de ce qui ressemblait à du
 contenu qui dérive était l'état rebâti de travers avant le premier mot.
 **Changer :** `tutor.py` → `run_session` ; `srs.py` → `taught_order`
