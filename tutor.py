@@ -1032,9 +1032,10 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item],
                          "a third, and let them choose which person-word fits"):
                 plan.append(Step(
                     "apply", item.name,
-                    f"Put the rule to work by naming a SITUATION and asking them to do it: "
-                    f"{rung}. Say who the person is in English — \"someone older than you, a man\" "
-                    f"— and ask them to say it to that person. NEVER say the Vietnamese: naming it "
+                    f"Put the rule to work by naming a SITUATION: {rung}. Say who the person is in "
+                    f"English — \"someone older than you, a man\" — and then ask for what THIS "
+                    f"rule does with them, which is: {item.gloss}. Not something else you could "
+                    f"do with a person. NEVER say the Vietnamese: naming it "
                     f"is handing over the whole answer, which is the one thing this turn must not "
                     f"do. The situations this course teaches, and only these: {situations}. One "
                     f"question, then stop.",
