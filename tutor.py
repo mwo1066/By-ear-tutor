@@ -823,8 +823,9 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item],
         # possible by finding real vocabulary inside the description.
         plan.append(Step(
             "rule", item.name,
-            f"Say this, in your own words and in order, as something they have already been half "
-            f"noticing: {item.gloss or item.description}. This is the turn where you TELL rather "
+            f"Say this, in your own words and in order: {item.gloss or item.description}. Do NOT claim "
+            f"they have noticed it or been doing it -- they have not, and being told they "
+            f"missed something they were never shown is the one thing a rule turn must not do. This is the turn where you TELL rather "
             f"than ask, so two or three sentences are right here — start from what they have "
             f"already been doing, then the surprise, then what to do about it. "
             # No question here, and this is the fix for the defect that survived
