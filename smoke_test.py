@@ -362,7 +362,10 @@ def check_choppy_cases(vocab) -> int:
 # while the tier-1 rules were being rendered one by one.
 ANSWER_ALOUD_CASES = [
     ("How would you say “anh ấy”?", "apply", True),
-    ("How would you say “bạn ơi, tên là gì?” to Minh?", "rule", True),
+    # Said by a rule turn when rule turns still asked. Kept as an apply case:
+    # a rule turn only TELLS now, so naming Vietnamese in one is legitimate,
+    # and the same line on the turn that asks is still the defect.
+    ("How would you say “bạn ơi, tên là gì?” to Minh?", "apply", True),
     ("How would you say “I don’t want to eat” using the pattern “không muốn + [động từ]”?",
      "apply", True),
     # Naming the material one word at a time is a fair question, not a leak.

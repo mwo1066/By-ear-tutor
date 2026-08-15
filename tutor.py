@@ -826,9 +826,15 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item],
             f"Say this, in your own words and in order, as something they have already been half "
             f"noticing: {item.gloss or item.description}. This is the turn where you TELL rather "
             f"than ask, so two or three sentences are right here — start from what they have "
-            f"already been doing, then the surprise, then what to do about it. Then ONE question "
-            f"that puts it to work on a sentence they have ALREADY built, changed in the one way "
-            f"this rule is about — never a new sentence, never longer, never two ideas joined. "
+            f"already been doing, then the surprise, then what to do about it. "
+            # No question here, and this is the fix for the defect that survived
+            # six rewordings of "ask it in English": the turn kept ending on
+            # "How would you say cơm ngon to Minh?", handing over the answer.
+            # The turn that ASKS is the next one and the code writes it, so this
+            # one has nothing left to leak. End on a short hand-off -- "let's put
+            # it to work" -- and stop.
+            f"Ask NOTHING: the next turn does the asking. End on a short line that hands over, "
+            f"three or four words, and stop. "
             f"The sentence you pick must be one this rule can VISIBLY change: asking for \"my name "
             f"is Nam\" to demonstrate past, present and future is a question the rule cannot touch, "
             f"and the learner is left wondering what the words were for. If none of the sentences "
@@ -1043,9 +1049,9 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item],
             (c for c in (known or [])
              if c.kind == "construction" and set(c.pieces) & set(item.pieces)),
             key=lambda c: -len(set(c.pieces) & set(item.pieces)))
-        if related:
-            c = related[0]
-            on_it = f' Work on THIS sentence and no other: "{c.gloss}" ({c.name}).'
+        pinned = related[0] if related else None
+        if pinned:
+            on_it = f' Work on THIS sentence and no other: "{pinned.gloss}" ({pinned.name}).'
         elif item.pieces:
             # No taught sentence touches this rule, so the rule's OWN words are
             # the material. Handing over the list of sentences instead produced
@@ -1080,6 +1086,19 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item],
                 answer_is_target=True,
                 ask=speakable(piece.gloss),
             ))
+        # What the scripted question asks FOR, in English only. A pinned
+        # sentence has a gloss ready; otherwise the rule's own words are named
+        # by their glosses and the learner is asked to combine them the way the
+        # rule says. Either way no Vietnamese can appear, which is the whole
+        # point -- the instruction said "ask it in English" in six wordings and
+        # the turn still ended on "How would you say cơm ngon to Minh?".
+        if pinned:
+            apply_ask = speakable(pinned.gloss)
+        else:
+            glosses = [speakable(by_name[p].gloss) for p in item.pieces
+                       if p in by_name and by_name[p].gloss][:2]
+            apply_ask = (" and ".join(glosses) + ", put together the way the rule says"
+                         if len(glosses) == 2 else "")
         plan.append(Step(
             "apply", item.name,
             f"Now put those words together.{on_it} Ask for ONE sentence that uses the rule, on "
@@ -1091,6 +1110,7 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item],
             # the learner has.
             f"{_known_words_note(known or [])} ASK IT IN ENGLISH and do not say the Vietnamese "
             f"back: that is the answer. One question, then stop.",
+            ask=apply_ask,
         ))
 
     for target in recall_targets:
@@ -1143,7 +1163,7 @@ RECALL_KINDS = ("recall_piece", "rapidfire", "settle")
 # ask for the Vietnamese -- and live it said the Vietnamese: "can you say the
 # full sentence tôi tên là ...", which is the answer, on the one step that
 # forbids it. Its instruction had said "do not say any Vietnamese" all along.
-SCRIPTED_KINDS = RECALL_KINDS + ("introduce", "scaffold")
+SCRIPTED_KINDS = RECALL_KINDS + ("introduce", "scaffold", "apply")
 
 
 # A repeat has to SOUND like a repeat: three goes at "What's the Vietnamese word
@@ -1186,6 +1206,17 @@ _SCAFFOLD = (
     "Word for word, that is: {literal}. So how would you say {ask}?",
     "In Vietnamese the order is: {literal}. Now — {ask}?",
     "Literally, it goes: {literal}. Give me the whole thing — {ask}?",
+)
+# The question that puts a rule to work, written HERE rather than asked for.
+# The instruction said "ASK IT IN ENGLISH and do not say the Vietnamese back:
+# that is the answer" in six different wordings across one evening, and the
+# model kept ending on "How would you say cơm ngon to Minh?" -- handing over the
+# whole answer. It is not a judgement call, so it stopped being the model's:
+# these are built from the ENGLISH gloss, so no Vietnamese can appear.
+_APPLY_ASK = (
+    "Now put it to work — how would you say {ask}?",
+    "So, using that: how would you say {ask}?",
+    "Let's use it. How would you say {ask}?",
 )
 _INTRODUCE = (
     "In Vietnamese, the word for {ask} is {name}. {name}. Now you say it.",
@@ -1272,6 +1303,10 @@ def scripted_turn(lesson: dict) -> str | None:
             return None          # nothing to scaffold with; the model still has a go
         body = _pick(lesson, "scaffold", _SCAFFOLD).format(
             literal=speakable(step.literal), ask=step.ask)
+    elif step.kind == "apply":
+        if not step.ask:
+            return None          # nothing to ask from; the model still has a go
+        body = _pick(lesson, "apply", _APPLY_ASK).format(ask=step.ask)
     elif step.kind == "introduce":
         # The one scripted turn that SAYS the target rather than asking for it.
         # A whole different line when the word has a tone twin, rather than the
@@ -1318,7 +1353,10 @@ def _target_fragments(target: str) -> list[str]:
 # Turns that ASK for something the learner must produce. _leaked_target only
 # covers the ones with a known target word; a rule or an application asks for a
 # whole sentence nobody can name in advance, so it needs a different test.
-_ASKING_KINDS = ("rule", "apply", "vary", "scaffold")
+# "rule" is no longer here: it TELLS and asks nothing, so the question that
+# used to leak out of it is gone. "apply" stays as a backstop for the case
+# where the code has no gloss to build a question from.
+_ASKING_KINDS = ("apply", "vary", "scaffold")
 
 # A Vietnamese run this long inside an asking turn IS the answer. One word is
 # naming the material -- "say he using anh and ấy" is a fair question. Two words
