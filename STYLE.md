@@ -456,8 +456,63 @@ contre la taxonomie.
 3. **Mesurer avant de câbler.** Combien de variations distinctes une souche
    supporte-t-elle réellement ? Si c'est deux, l'idée ne vaut pas sa complexité.
 
-**Statut :** à mesurer d'abord — le point 3. Rien à câbler tant qu'on ne sait
-pas combien de variations une souche donne.
+**Mesuré le 15 août — le verrou saute.** Croisement des 8 souches validées avec
+les 27 traits `discrete`, en ne gardant que la compatibilité structurelle (`đã`
+exige un verbe, `rất` un adjectif, `ấy` un mot de personne) :
+
+```
+tôi biết                              21 traits applicables
+ăn cơm · uống cà phê · uống nước      19 chacune
+em mệt                                 8
+cà phê của tôi                         7
+cà phê ngon · cơm ngon                 6 chacune
+                                     ---
+                        105 variations au premier niveau
+```
+
+**105 est un plafond, pas un résultat** : c'est de la compatibilité de forme, pas
+du vietnamien. `hơn` s'applique à `cơm ngon` et donne `cơm ngon hơn`, à quoi il
+manque un terme de comparaison — compté, et à jeter. Le vrai nombre sort de la
+relecture, et **une phrase grammaticale que personne ne dit est pire qu'une
+phrase en moins** : elle s'installe comme réflexe.
+
+Mais le test posé plus haut était « si une souche ne donne que deux variations,
+l'idée ne vaut pas sa complexité ». La moyenne est de **treize**. Même en jetant
+les deux tiers, huit souches déjà écrites donnent une trentaine de phrases.
+
+**Et ça dit où porter l'effort :** une souche **verbe + nom** vaut trois fois une
+souche **nom + adjectif** (19 contre 6), parce que la plupart des traits agissent
+sur le verbe — le temps, la négation, la question, l'obligation. Les souches à
+écrire sont donc des phrases avec un verbe, pas des descriptions.
+
+### Un tour, trois choses
+
+```
+tôi đã ăn cơm
+ │   │   └── les mots   : tôi, ăn, cơm reviennent
+ │   └────── le trait   : đã est réappliqué
+ └────────── le réflexe : construire, pas réciter
+```
+
+Le trait ne revient plus par une étape séparée — il revient **dans le tour même**
+qui fait revenir les mots. C'est plus économique que `0005`, où une application
+de trait occupe un tour entier pour elle seule.
+
+### Ce que ça rouvre, et qu'il faut trancher avant de câbler
+
+`0005` a décidé **explicitement** de ne pas compter les mots employés dans une
+phrase : *« l'application les exerce, mais le code n'enregistre rien pour eux »*.
+C'était juste quand une application était un exercice de trait. **Ça devient faux
+si la phrase est le véhicule des mots** — le niveau de `ăn` dirait qu'il n'a pas
+été travaillé alors qu'il vient d'être produit dix fois.
+
+**Décision de Meo, 15 août :** on compte l'exposition des mots dans la phrase, et
+le niveau est redéfini une fois pour toutes — **« combien de fois l'apprenant a
+produit ce mot »**, quelle qu'en soit la forme. C'est exactement ce que compte
+`METHOD.md` quand il relève `to` soixante fois.
+
+**Statut :** mesuré, et à câbler. Il reste à écrire les souches et à faire
+relire les variations — le code ne peut pas décider qu'une phrase se dit.
 
 ### Dire ce qu'un mot va construire, au moment où on l'apprend
 *Proposé par Meo, 13 août.*
