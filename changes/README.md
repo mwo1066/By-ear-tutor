@@ -1,89 +1,87 @@
-# Les changements
+# Changes
 
-`SPEC.md` dit ce que le tuteur fait **aujourd'hui**. Ici on écrit ce qu'on veut
-qu'il fasse **ensuite** — avant d'y toucher.
+`SPEC.md` says what the tutor does **today**. Here we write what we want it to do
+**next** — before touching it.
 
-- `changes/` — ce qui est proposé ou en cours. Un dossier par changement.
-- `changes/archive/` — ce qui est fait. On n'y touche plus.
-- `changes/archive/JOURNAL.md` — la liste complète, la plus récente en haut.
-  **C'est le fichier qu'on lit avant de proposer quoi que ce soit.**
+- `changes/` — what is proposed or in progress. One folder per change.
+- `changes/archive/` — what is done. Not touched again.
+- `changes/archive/JOURNAL.md` — the full list, most recent at the top.
+  **This is the file to read before proposing anything.**
 
-## Le rituel
+## The ritual
 
-| étape | commande | ce qui se passe |
+| step | command | what happens |
 | --- | --- | --- |
-| **1. Proposer** | `/proposer <idée>` | Je lis le journal, je vérifie qu'on ne l'a pas déjà fait ou déjà défait, j'écris `changes/NNNN-nom/proposition.md`. **Aucun code n'est écrit.** Tu lis, tu corriges, tu refuses. |
-| **2. Appliquer** | `/appliquer NNNN` | J'implémente les tâches dans l'ordre, en cochant. Si la réalité diverge de la proposition, je m'arrête et je te le dis — je ne dérive pas en silence. |
-| **3. Archiver** | `/archiver NNNN` | Je replie le changement dans `SPEC.md`, j'écris ce que ça a donné, je déplace le dossier dans `archive/` et j'ajoute la ligne au journal. |
-| **à part** | `/derive` | Je relis le code, je redérive les règles, et je liste ce que `SPEC.md` affirme et que le code ne fait plus. Je ne change rien. |
+| **1. Propose** | `/proposer <idea>` | I read the journal, check we have not already done it or already undone it, and write `changes/NNNN-name/proposition.md`. **No code is written.** You read it, correct it, refuse it. |
+| **2. Apply** | `/appliquer NNNN` | I implement the tasks in order, ticking them off. If reality diverges from the proposal I stop and say so — I do not drift in silence. |
+| **3. Archive** | `/archiver NNNN` | I fold the change into `SPEC.md`, write what it gave, move the folder into `archive/` and add the line to the journal. |
+| **separately** | `/derive` | I re-read the code, re-derive the rules, and list what `SPEC.md` claims and the code no longer does. I change nothing. |
 
-## Pourquoi avant, et pas après
+## Why before, and not after
 
-Une spec écrite après le code décrit ce qui a été fait. Écrite avant, elle
-décide ce qui sera fait — et c'est la seule version que tu peux refuser avant
-qu'elle coûte quelque chose.
+A spec written after the code describes what was done. Written before, it decides
+what will be done — and that is the only version you can refuse before it costs
+anything.
 
-Rien ici n'est une garantie. C'est un rituel : il tient tant qu'on le suit.
-La différence avec l'état d'avant, c'est qu'un rituel qu'on saute laisse une
-trace — le dossier manquant, la ligne absente du journal.
+Nothing here is a guarantee. It is a ritual: it holds as long as it is followed.
+The difference from before is that a skipped ritual leaves a trace — the missing
+folder, the absent journal line.
 
-## Un changement, un périmètre
+## One change, one scope
 
-**Le test : un changement répare *une* chose qu'une séance réelle pourrait
-montrer de travers.** S'il faut deux observations distinctes pour le justifier,
-c'est deux changements.
+**The test: a change repairs *one* thing a real session could show going wrong.**
+If it takes two distinct observations to justify it, it is two changes.
 
-Signes qu'il faut découper, et je dois te le proposer quand je les vois :
+Signs it needs splitting, which I have to point out when I see them:
 
-- le « Pourquoi » ne s'écrit qu'avec un « et » entre deux problèmes ;
-- deux moitiés des tâches pourraient être livrées séparément et chacune servir ;
-- ça touche du **code** ici et du **prompt** là, pour des raisons sans rapport ;
-- les règles de `SPEC.md` touchées ne sont pas dans la même section.
+- the "Why" can only be written with an "and" between two problems;
+- two halves of the tasks could ship separately and each be useful;
+- it touches **code** here and **prompt** there, for unrelated reasons;
+- the `SPEC.md` rules it touches are not in the same section.
 
-Découper coûte un dossier de plus. Ne pas découper coûte un changement qu'on ne
-peut plus ni relire, ni refuser à moitié, ni retrouver dans le journal.
+Splitting costs one more folder. Not splitting costs a change that can no longer
+be reviewed, half-refused, or found again in the journal.
 
-## Le gabarit
+## The template
 
-Un seul fichier par changement, `proposition.md` :
+One file per change, `proposition.md`:
 
 ```markdown
-# <Ce que ça change, en une ligne>
+# <What it changes, in one line>
 
-**Statut :** proposé
-**Ouvert le :** AAAA-MM-JJ
+**Status:** proposed
+**Opened:** YYYY-MM-DD
 
-## Pourquoi
-Ce qui ne va pas, **observé**. Une séance, une sortie, une ligne de code —
-pas une supposition.
+## Why
+What is wrong, **observed**. A session, an output, a line of code — not a
+supposition.
 
-## Ce qui change dans SPEC.md
-Par numéro de règle, avec le verbe qui va bien :
-- règle 12c — **modifiée** : ...
-- règle 34 — **nouvelle** : ...
-- règle 7 — **supprimée**, parce que ...
+## What changes in SPEC.md
+By rule number, with the right verb:
+- rule 12c — **modified**: ...
+- rule 34 — **new**: ...
+- rule 7 — **removed**, because ...
 
-Et pour chaque règle, la ligne qui compte : **code** ou **prompt**.
+And for each rule, the line that matters: **code** or **prompt**.
 
-## Périmètre
-**Dedans :** ...
-**Dehors :** ... (ce qu'on aurait pu y mettre et qu'on n'y met pas)
+## Scope
+**In:** ...
+**Out:** ... (what could have gone in and is deliberately left out)
 
-## Tâches
+## Tasks
 - [ ] ...
 
-## Vérification
-Comment on saura que c'est fait. `smoke_test.py` au minimum ; dis lequel des
-cas il couvre, et ce qu'il ne couvre pas.
+## Verification
+How we will know it is done. `smoke_test.py` at minimum; say which of its cases
+covers it, and what it does not cover.
 ```
 
-À l'archivage, une dernière section est ajoutée :
+On archiving, one last section is added:
 
 ```markdown
-## Résultat
-**Terminé le :** AAAA-MM-JJ — commits `abc1234`, `def5678`
+## Result
+**Finished:** YYYY-MM-DD — commits `abc1234`, `def5678`
 
-Ce qui a été fait autrement que prévu, et pourquoi. Ce qu'on a essayé et
-abandonné en route. **C'est la section qui évite de le refaire dans six
-semaines.**
+What was done differently from the plan, and why. What was tried and abandoned
+on the way. **This is the section that stops it being redone in six weeks.**
 ```

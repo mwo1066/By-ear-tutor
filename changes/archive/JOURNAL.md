@@ -1,150 +1,147 @@
-# Journal des changements
+# Change journal
 
-La liste de ce qui a été fait, la plus récente en haut. **À lire avant de
-proposer quoi que ce soit** — c'est ici qu'on voit si l'idée a déjà été
-essayée, et ce qu'elle avait donné.
+The list of what has been done, most recent at the top. **To read before
+proposing anything** — this is where you see whether an idea has already been
+tried, and what it gave.
 
-Une ligne par changement archivé, au format :
+One line per archived change, in the form:
 
-`NNNN — <titre> — AAAA-MM-JJ — <ce que ça a donné en une phrase>`
-
----
-
-## Changements archivés
-
-`0008` — **trier le carnet en deux** — 2026-08-15 — `STYLE.md` était rangé par
-provenance des idées, alors que la question posée est toujours « est-ce que ça
-tourne ? ». Deux parties : 5 qui tournent (dont 3 à moitié, ce qui manque étant
-nommé), 8 qui ne sont que des idées. Une règle d'entrée en partie 1 : dire **où**
-l'idée vit, sinon on ne saura pas l'an prochain si elle tourne encore.
-
-`0007` — **valider le classement en tiers, et retirer l'ordre sujet–verbe–objet**
-— 2026-08-15 — le classement des traits par utilité est **validé par Meo**, ce qui
-débloque le réordonnancement du cours. SVO supprimée du contenu : sa fiche la
-présentait comme le filet du débutant, et c'est l'argument contre — un
-francophone place déjà sujet-verbe-objet sans y penser. `đã` et « les verbes ne
-changent jamais » montent en tier 1, la seconde parce qu'elle pose la question à
-laquelle la première répond. Tiers 8 / 10 / 9 sur 34 traits.
-
-`0006` — **rattacher huit traits au mot dont ils parlent** — 2026-08-15 — le
-champ `after` fait passer un trait juste après son mot au lieu de le laisser
-attendre son tour. Huit traits nommaient leur mot dans leur titre sans le
-déclarer : écart médian entre un trait et son mot ramené de **46 items à 1**.
-Deux dont `không` et `có`, en tier 1. Vérifié avant écriture qu'aucun n'était
-retardé. Sept autres n'ont légitimement aucun mot d'attache — ils parlent d'une
-forme, pas d'un mot.
-
-`0005` — **faire revenir un trait sous forme d'application** — 2026-08-15 — le
-défaut mesuré est fermé : les traits passent d'un niveau de 1, jamais revus, à
-une médiane de 4, contre 4 pour les mots. Un trait `discrete` entre dans le
-tirage et en sort sous forme de phrase à produire, plafonné à une par clôture —
-sans quoi 86 % des clôtures en auraient porté deux ou plus pendant la transition.
-A fait apparaître trois choses invisibles : `askable` était une seconde barrière
-et il manquait le mot `drawable` ; le champ `nature` écrit par `0001` n'était pas
-chargé du tout ; et `simulate_progress.py` portait une copie de la règle de
-notation qui aurait continué à rapporter l'ancien chiffre après la correction.
-
-`0004` — **trois endroits où le code disait quelque chose de faux** — 2026-08-15
-— « Progress saved » annoncé sous `--fresh` alors que rien n'est écrit ; un trait
-sans glose signalé nulle part, l'exemption datant d'avant les tours scriptés ; et
-`không phải là` dont la glose « not be + [noun] » se prononçait « not be
-something ». Plus `N_RAPIDFIRE`, rebranché au lieu d'être supprimé. Aucune leçon
-ne change : les quatre trompaient le lecteur, pas l'apprenant.
-
-`0003` — **regrouper `SPEC.md` par sorte d'item, et aligner tout le vocabulaire**
-— 2026-08-15 — le bloc central de 14 règles se scinde en cinq sections, dont trois
-« Enseigner un… » qui suivent les trois sortes d'item du lexique. Sommaire ajouté,
-et la convention posée : **les numéros de règle sont des identifiants stables**,
-ils ne se renumérotent pas quand une section bouge. « hors-mot » → « trait »
-partout, et les six symboles portant `RULE` renommés — ce qui **revient sur une
-exclusion explicite de 0002**, dont l'argument tombe dès lors que les symboles et
-les lignes **Changer** changent ensemble. Aucun texte de règle réécrit. Livré par
-le commit `a1f3285`, dont le message d'une ligne ne dit presque rien du
-changement — le dossier a été écrit après coup, et c'est lui qui porte le détail.
-
-`0002` — **nommer les hors-mots `feature`, et leurs natures `discrete` / `strand`**
-— 2026-08-15 — supprime la collision entre « règle » le comportement et « règle »
-l'item enseigné, qui avait fait perdre le fil deux fois dans la même séance.
-`feature` au sens de la typologie linguistique — la plupart des 35 sont des
-traits nommés de l'atlas WALS. A produit `LEXIQUE.md`, 28 termes groupés selon
-qu'ils viennent du domaine, en sont une restriction, ou ont été inventés ici.
-Valeurs seulement : aucun nom de symbole n'a bougé, donc les lignes **Changer**
-de `SPEC.md` restent valides.
-
-`0001` — **écrire la nature et le tier de chaque hors-mot dans les items** —
-*(les valeurs s'appelaient `A` et `B` ; renommées `discrete` et `strand` par 0002)* —
-2026-08-15 — 35 items annotés (28 faits ponctuels répartis sur trois tiers, 7 fils
-continus), zéro
-comportement changé. Rend possible le retour des applications sur les faits
-ponctuels. A rattrapé deux oublis de la classification du matin :
-`đang` et `sẽ`, rangés en tier 2 par Meo et écrits comme les 33 autres. Et
-corrigé une erreur : le fil de la composition n'existe pas, contrairement à ce
-qui avait été conclu.
+`NNNN — <title> — YYYY-MM-DD — <what it gave, in one sentence>`
 
 ---
 
-# Avant le rituel
+## Archived changes
 
-Les 123 commits d'avant ce journal. Reconstitué depuis `git log`, donc fidèle
-aux titres de commits et à rien d'autre : ce qui a été fait est exact, le
-« pourquoi » n'y est que là où le commit le disait.
+`0008` — **sort the notebook in two** — 2026-08-15 — `STYLE.md` was filed by
+where the ideas came from, while the question actually asked of it is always
+"does this run?". Two parts: 5 that run (3 of them half, with what is missing
+named), 8 that are only ideas. An entry condition for part 1: say **where** the
+idea lives, otherwise nobody will know next year whether it still runs.
 
-Pour retrouver le détail d'une ligne : `git show <hash>`.
+`0007` — **validate the tier ranking, and remove subject–verb–object** —
+2026-08-15 — the ranking of features by usefulness is **validated by Meo**, which
+unblocks reordering the course. SVO removed from the content: its entry presented
+it as the beginner's safety net, and that is the argument against — a French
+speaker already places subject-verb-object without thinking. `đã` and "verbs
+never change" move up to tier 1, the second because it raises the question the
+first answers. Tiers 8 / 10 / 9 across 34 features.
 
-## Ce qu'on a déjà essayé **et défait**
+`0006` — **attach eight features to the word they are about** — 2026-08-15 — the
+`after` field makes a feature come right after its word instead of waiting its
+turn. Eight features named their word in their own title without declaring it:
+median gap between a feature and its word brought down from **46 items to 1**.
+Two of them, `không` and `có`, are tier 1. Checked before writing that none was
+delayed. Seven others legitimately have no anchor word — they are about a shape,
+not a word.
 
-Ce sont les entrées les plus utiles du fichier : chacune est une chose qui
-paraît une bonne idée, qu'on a implémentée, et qu'on a retirée. Elles sont
-celles qu'on redemande sans le savoir.
+`0005` — **bring a feature back as an application** — 2026-08-15 — the measured
+defect is closed: features go from a level of 1, never seen again, to a median of
+4, against 4 for words. A `discrete` feature enters the draw and comes out as a
+sentence to produce, capped at one per close — without which 86% of closes would
+have carried two or more during the transition. Surfaced three invisible things:
+`askable` was a second gate and the word `drawable` was missing; the `nature`
+field written by `0001` was not loaded at all; and `simulate_progress.py` carried
+a copy of the scoring rule that would have gone on reporting the old number after
+the fix.
 
-| l'idée | essayée | défaite | où ça a atterri |
+`0004` — **three places where the code said something untrue** — 2026-08-15 —
+"Progress saved" announced under `--fresh` while nothing is written; a feature
+with no gloss reported nowhere, the exemption dating from before scripted turns;
+and `không phải là`, whose gloss "not be + [noun]" was spoken as "not be
+something". Plus `N_RAPIDFIRE`, rewired rather than deleted. No lesson changes:
+all four misled the reader, not the learner.
+
+`0003` — **regroup `SPEC.md` by item kind, and align the whole vocabulary** —
+2026-08-15 — the central block of fourteen rules splits into five sections, three
+of them "Teaching a…" following the three item kinds of the glossary. Table of
+contents added, and the convention set: **rule numbers are stable identifiers**,
+they do not renumber when a section moves. "hors-mot" → "feature" everywhere, and
+the six symbols carrying `RULE` renamed — which **reverses an explicit exclusion
+from 0002**, whose argument falls once the symbols and the **Change** lines move
+together. No rule text rewritten. Shipped by commit `a1f3285`, whose one-line
+message says almost nothing about the change — the folder was written afterwards,
+and it is the folder that carries the detail.
+
+`0002` — **name a taught fact `feature`, and its natures `discrete` / `strand`**
+— 2026-08-15 — removes the collision between "rule" the behaviour and "rule" the
+taught item, which had lost the thread twice in a single session. `feature` in
+the sense of linguistic typology — most of the 35 are named features of the WALS
+atlas. Produced `LEXIQUE.md`, 28 terms grouped by whether they come from the
+field, narrow it, or were coined here. Values only: no symbol name moved, so the
+**Change** lines of `SPEC.md` stayed valid.
+
+`0001` — **write the nature and tier of every feature into the items** —
+*(the values were called `A` and `B`; renamed `discrete` and `strand` by 0002)* —
+2026-08-15 — 35 items annotated (28 one-off facts spread over three tiers, 7
+continuous threads), zero behaviour changed. Makes it possible to bring
+applications back on the one-off facts. Caught two omissions from that morning's
+classification: `đang` and `sẽ`, filed in tier 2 by Meo and written like the
+other 33. And corrected a mistake: the composition thread does not exist,
+contrary to what had been concluded.
+
+---
+
+# Before the ritual
+
+The 123 commits that came before this journal. Reconstructed from `git log`, so
+faithful to the commit titles and to nothing else: what was done is accurate, the
+"why" is there only where the commit said it.
+
+To find the detail behind a line: `git show <hash>`.
+
+## What we have already tried **and undone**
+
+These are the most useful entries in the file: each is something that looks like
+a good idea, was implemented, and was taken out. They are the ones we ask for
+again without knowing it.
+
+| the idea | tried | undone | where it landed |
 | --- | --- | --- | --- |
-| **Réparer les transcriptions approximatives** après coup | `accec85` 2026-07-27 | `35b4caa` le même jour — laisser le tuteur juger l'écart | `SPEC.md` règle 26 : « La transcription n'est jamais réparée » |
-| **Un modèle de secours** en cas de panne du principal | `2e274e3` 2026-07-21, puis `62af20c` (retour à llama-3.1-8b, gpt-oss-20b cassait les appels d'outils) | `31543a7` 2026-07-27 — attendre le vrai modèle | `SPEC.md` règle 30 : « Un seul modèle, aucun secours » |
-| **Abandonner les tons** | supprimés `e46cbe2` 2026-07-27 | remis `29f7ffb` 2026-08-14, une paire dite à voix haute quand le second des deux est enseigné | `SPEC.md` règle 28b : « Les tons SONT enseignés » — mais règle 28 : jamais de jugement sur la prononciation |
-| **Le push-to-talk** | `92f0ccf` 2026-07-22 | remplacé par les mains libres, détecteur + volume `c3018e2` 2026-08-09 | `SPEC.md` règles 23, 23b |
-| **Le projet en anglais** | `6a78dd1` 2026-08-07 | `SPEC.md` réécrit en français `159ea0b` 2026-08-09 | code et prompts en anglais, docs que tu lis en français |
-| **Un outil `next_item`** confié au modèle | avant `216637e` | `216637e` 2026-07-28 — la séquence voyage dans le contexte | `SPEC.md` règles 8, 29 |
-| **Le correcteur de fin de séance** | avant `c2e15ae` | `c2e15ae` 2026-07-29 | remplacé par le niveau par mot, règle 14 |
+| **Repairing approximate transcriptions** after the fact | `accec85` 2026-07-27 | `35b4caa` the same day — let the tutor judge the gap | `SPEC.md` rule 26: "A transcription is never repaired" |
+| **A fallback model** when the main one fails | `2e274e3` 2026-07-21, then `62af20c` (back to llama-3.1-8b, gpt-oss-20b broke tool calls) | `31543a7` 2026-07-27 — wait for the real one | `SPEC.md` rule 30: "One model, no fallback" |
+| **Dropping the tones** | removed `e46cbe2` 2026-07-27 | restored `29f7ffb` 2026-08-14, a pair said aloud when the second of the two is taught | `SPEC.md` rule 28b: "Tones ARE taught" — but rule 28: never a verdict on pronunciation |
+| **Push-to-talk** | `92f0ccf` 2026-07-22 | replaced by hands-free, detector + loudness `c3018e2` 2026-08-09 | `SPEC.md` rules 23, 23b |
+| **The project in English** | `6a78dd1` 2026-08-07 | `SPEC.md` rewritten in French `159ea0b` 2026-08-09 | and back to English on 2026-08-15, this time for the whole repo |
+| **A `next_item` tool** handed to the model | before `216637e` | `216637e` 2026-07-28 — the sequence rides in the context | `SPEC.md` rules 8, 29 |
+| **The end-of-session grader** | before `c2e15ae` | `c2e15ae` 2026-07-29 | replaced by the per-word level, rule 14 |
 
-## Le motif qui revient le plus souvent
+## The pattern that recurs most
 
-**Le prompt grossit, puis il faut le vider.** Quatre fois :
+**The prompt grows, then it has to be emptied.** Four times:
 
-- `17c8406` 2026-07-27 — consolidation, 3742 → 2703 tokens à règles égales
-- `473df0d` 2026-07-28 — « défaire le gonflement du prompt depuis la consolidation »
-- `77bdffc` 2026-07-28 — retirer les règles décrivant des situations que le code empêche déjà
-- `4987b96` 2026-07-28 — supprimer les règles mnémotechniques et de récit
+- `17c8406` 2026-07-27 — consolidation, 3742 → 2703 tokens at equal rules
+- `473df0d` 2026-07-28 — "undo the prompt bloat since the consolidation"
+- `77bdffc` 2026-07-28 — remove rules describing situations the code already prevents
+- `4987b96` 2026-07-28 — delete the mnemonic and story rules
 
-C'est ce motif qui a produit la ligne **Où : code / prompt** en tête de
-`SPEC.md`. Toute proposition qui ajoute au prompt doit dire ce qu'elle en
-retire, ou pourquoi le code ne peut pas le faire.
+It is this pattern that produced the **Where: code / prompt** line at the head of
+`SPEC.md`. Any proposal that adds to the prompt has to say what it removes from
+it, or why the code cannot do it.
 
-**Le discours d'ouverture, quatre fois aussi :** raccourci `2bc148a`, empêché
-d'être écrasé `202aef5`, restauré `4fc4cc8` (un plan vide voulait dire deux
-choses opposées), réécrit autour des trois points de Meo `b14f73c`. Atterri en
-règle 27.
+**The opening speech, four times as well:** shortened `2bc148a`, stopped from
+being overwritten `202aef5`, restored `4fc4cc8` (an empty plan meant two opposite
+things), rewritten around Meo's three points `b14f73c`. Landed as rule 27.
 
-## Les étapes structurantes
+## The structural steps
 
-| quand | ce qui a changé | commits |
+| when | what changed | commits |
 | --- | --- | --- |
-| 2026-07-21 | premier cerveau de tuteur, texte seul | `81f02b1` |
-| 2026-07-22 | les deux voix, première conversation parlée | `aa3d7c6`, `6075851`, `5802d86` |
-| 2026-07-27 | la boucle refondue sur la méthode réelle de Paul Noble | `f6cb2bb` |
-| 2026-07-29 | **le cycle d'enseignement devient une machine à états en code** | `ae0b608`, `c2e15ae` |
-| 2026-08-09 | naissance de `SPEC.md` | `0da69a0`, `159ea0b` |
-| 2026-08-11 | **le code écrit les tours mécaniques**, sans appel au modèle | `7e7728c` (décision), `bf69808` (fait) |
-| 2026-08-11 | naissance de `STYLE.md`, le carnet d'idées | `d2d994f` |
-| 2026-08-12 → 08-13 | le contenu se complète : personnes, questions, nombres, modaux, lieux | `f3e7e14`, `3cf528f`, `bd53620`, `a386650` |
-| 2026-08-14 → 08-15 | les règles deviennent enseignables : une règle nomme ses mots, le code choisit la phrase, on demande les mots un à un puis on assemble | `5560fd7`, `9506a3d`, `b40d766`, `bb45efc` |
+| 2026-07-21 | first tutor brain, text only | `81f02b1` |
+| 2026-07-22 | the two voices, first spoken conversation | `aa3d7c6`, `6075851`, `5802d86` |
+| 2026-07-27 | the loop rebuilt on Paul Noble's actual method | `f6cb2bb` |
+| 2026-07-29 | **the teaching cycle becomes a state machine in code** | `ae0b608`, `c2e15ae` |
+| 2026-08-09 | `SPEC.md` is born | `0da69a0`, `159ea0b` |
+| 2026-08-11 | **the code writes the mechanical turns**, with no model call | `7e7728c` (decision), `bf69808` (done) |
+| 2026-08-11 | `STYLE.md` is born, the notebook | `d2d994f` |
+| 2026-08-12 → 08-13 | the content fills out: person-words, questions, numbers, modals, places | `f3e7e14`, `3cf528f`, `bd53620`, `a386650` |
+| 2026-08-14 → 08-15 | rules become teachable: a rule names its words, the code picks the sentence, the words are asked one at a time then assembled | `5560fd7`, `9506a3d`, `b40d766`, `bb45efc` |
 
-## Où chercher le reste
+## Where to find the rest
 
-`git log --oneline` donne les 123 titres. Ils sont écrits pour être lus : le
-titre dit ce que le commit change, pas quel fichier il touche.
+`git log --oneline` gives the 123 titles. They are written to be read: the title
+says what the commit changes, not which file it touches.
 
-Recherche par sujet :
+Search by subject:
 
 ```bash
 git log --oneline --grep=rule
