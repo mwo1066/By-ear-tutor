@@ -183,3 +183,18 @@ besoin, et c'est la même décision : extraite dans `_apply_material`. Les deux
 tours formulent différemment (l'un peut dire « ces mots-là », que l'apprenant
 vient de redire ; l'autre doit nommer sa propre matière) mais choisissent
 pareil.
+
+## Et la copie n'était pas seule
+
+Après coup, une recherche des invariants recopiés en a trouvé **trois autres**,
+dont **deux dans le fichier qu'on venait de corriger** : `simulate_progress.py`
+écrivait la liste à trois endroits, `smoke_test.py` à un quatrième. J'avais
+réparé l'instance sur laquelle j'avais trébuché, pas la classe.
+
+Les quatre renvoient maintenant à `SCORING_KINDS`, défini une fois dans
+`tutor.py` avec la raison écrite à côté. La seule occurrence littérale qui
+subsiste est la définition.
+
+**C'est la leçon la plus utile du lot** : trouver une prose périmée ne dit rien
+sur le nombre de ses jumelles. Ce qui les trouve n'est pas l'attention, c'est une
+recherche — et elle est mécanique, donc reproductible.

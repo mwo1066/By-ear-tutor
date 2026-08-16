@@ -307,7 +307,7 @@ def check_every_plan_builds() -> int:
             print(f"FAIL — {item.kind} {item.name!r} produced an empty plan")
             failed += 1
         for step in plan:
-            if step.kind in ("recall_piece", "rapidfire", "settle") and step.target:
+            if step.kind in tutor.SCORING_KINDS and step.target:
                 store.record_recall(step.target)
     return failed
 
