@@ -12,6 +12,12 @@ Une ligne par changement archivé, au format :
 
 ## Changements archivés
 
+`0008` — **trier le carnet en deux** — 2026-08-15 — `STYLE.md` était rangé par
+provenance des idées, alors que la question posée est toujours « est-ce que ça
+tourne ? ». Deux parties : 5 qui tournent (dont 3 à moitié, ce qui manque étant
+nommé), 8 qui ne sont que des idées. Une règle d'entrée en partie 1 : dire **où**
+l'idée vit, sinon on ne saura pas l'an prochain si elle tourne encore.
+
 `0007` — **valider le classement en tiers, et retirer l'ordre sujet–verbe–objet**
 — 2026-08-15 — le classement des traits par utilité est **validé par Meo**, ce qui
 débloque le réordonnancement du cours. SVO supprimée du contenu : sa fiche la

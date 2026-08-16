@@ -32,7 +32,157 @@ quand même l'essayer — mais alors on le sait, et on regarde ce que ça donne.
 
 ---
 
-## Idées en attente
+## 1. Ce qui tourne déjà dans le tuteur
+
+Ces idées ne sont plus des idées : quelque chose du tuteur les exécute. **Deux
+sont entières, trois ne couvrent qu'une partie** de ce qu'elles proposaient — et
+pour celles-là, ce qui reste est nommé dans leur statut.
+
+Une entrée qui arrive ici doit dire **où** elle vit : une règle de `SPEC.md`, un
+symbole du code, ou un champ du contenu. Sans ça, personne ne saura l'an prochain
+si elle tourne encore.
+
+### Demander qui est l'apprenant, pour lui enseigner SES pronoms
+*Proposé par Meo.*
+
+→ Un **`strand`**, un fil continu — et l'item `cách chọn từ xưng hô` en est le
+vestige. Voir « Les traits : deux natures, pas une ».
+
+En vietnamien, le mot pour « je » dépend de qui parle à qui. Meo s'adressant à
+sa copine dit `anh` pour « je » et `em` pour « tu ». Ce ne sont pas des
+variantes exotiques : c'est ce qu'il dira tous les jours.
+
+Le cours enseigne aujourd'hui `tôi`, et sa propre fiche dit pourquoi c'est
+tiède :
+
+> *« 'tôi' đúng ngữ pháp nhưng lạnh »* — grammaticalement juste, mais froid.
+
+Puis il enseigne `anh`/`chị`/`em` dans l'abstrait, comme une règle à connaître.
+Si le cours savait qui vous êtes, ce ne serait plus une règle — ce serait **vos**
+mots.
+
+**Ce que ça débloque, et ce n'est pas qu'un mot :**
+
+- « je » devient `anh` ou `em` selon l'interlocuteur, au lieu du `tôi` neutre
+- la règle `cách chọn từ xưng hô` cesse d'être un tableau à mémoriser et devient
+  « pour vous, avec quelqu'un de plus jeune, vous êtes `anh` »
+- les phrases deviennent vraies : « tôi tên là Mathias » au lieu d'un prénom
+  inventé
+
+**Tiroir :** aucun des trois — c'est un **profil d'apprenant**, une donnée
+persistante qui n'existe pas encore. `state.json` ne connaît que des niveaux par
+mot. STATUS le signale déjà pour le nom ; l'âge et le genre sont le même champ.
+
+**Ce qu'il faut, au minimum :** une tranche d'âge et un genre. C'est ce qui
+détermine si vous êtes `anh`, `chị` ou `em` face à quelqu'un.
+
+**La limite honnête :** le système d'adresse dépend des DEUX personnes. Savoir
+qui vous êtes est nécessaire, pas suffisant — il faut aussi savoir à qui vous
+parlez. Mais le cours peut dire « avec quelqu'un de plus jeune, vous êtes
+`anh` », ce qui est infiniment plus concret que la règle générale.
+
+**Comment le demander :** le cours enseigne déjà `bạn tên là gì?` — « comment
+tu t'appelles ? ». Il pose la question pour de vrai et garde la réponse. L'âge
+a son item aussi (`Tôi ... tuổi`). Le cours contient donc déjà les questions qui
+remplissent son propre profil.
+
+**La preuve, tombée en séance le 11 août.** Meo demande : « est-ce que je peux
+dire *Anh tên là* si je m'adresse à un mec plus vieux ? » Le tuteur n'a pas su
+répondre ; la question est arrivée ici.
+
+La réponse est non — face à un homme plus âgé, lui c'est `anh` et vous c'est
+`em`. Et dans le log, Meo avait déjà tenté « An... An... An ten la... » : il
+substituait le pronom tout seul, dans le mauvais sens. **La question à laquelle
+le cours ne sait pas répondre est exactement celle que le profil rendrait
+triviale.**
+
+**Fait le 11 août, en attendant le profil :** une règle en position 2, juste
+après `tôi` — *« le vietnamien change le mot pour "je" selon à qui on parle ;
+vous les verrez bientôt, et tôi ne sera jamais faux en attendant »*. Elle ne
+donne aucun tableau (les mots n'existent pas encore), elle empêche seulement de
+construire l'habitude « tôi = I » qu'il faudra défaire à l'item 11.
+
+**Statut : FAIT**, le 14 août — « Let the course know who the learner is, so it
+can teach THEIR person-words ». Le profil vit dans `learner.py` et `learner.json`,
+et `build_plan` le lit pour composer les situations d'adresse (SPEC 13d). Restait
+vrai à l'écriture : c'était probablement la personnalisation la plus rentable de
+toute la langue — le système d'adresse est ce qui distingue quelqu'un qui parle
+vietnamien de quelqu'un qui récite du vietnamien.
+
+### Les tons : donner un modèle, jamais un jugement
+*Proposé par Meo, 13 août.*
+
+→ Un **`strand`**, un fil continu. Voir « Les traits : deux natures, pas une ».
+
+**Le mur qui décide de tout : le tuteur n'entend jamais la prononciation de
+l'apprenant.** Pas de « c'était presque ça, remonte un peu ». Donc la seule
+pédagogie disponible est de **rendre la différence audible** — donner un modèle
+et créer un contraste, jamais évaluer.
+
+Ce n'est pas une limite à contourner, c'est ce qui choisit le design.
+
+**Les trois temps, dans l'ordre :**
+
+1. **Dès les premières minutes** — « écoute Minh et copie ». Une consigne, dite
+   une fois, vraie du début à la fin du cours. C'est la fondation.
+2. **À l'introduction d'un mot** — nommer son ton, quand ce mot en a besoin.
+   Jamais un tableau des six tons le premier jour : c'est la règle écrite dont
+   ce cours ne veut pas.
+3. **Quand un mot nouveau ressemble à un ancien déjà consolidé** — les comparer,
+   dire les deux tons, et faire dire les deux par Minh dans le même souffle.
+
+Le troisième temps est le seul moment où la différence existe vraiment pour
+l'oreille. `ba` puis `bà`, un seul clip, deux mots.
+
+**Combien de mots sont concernés — mesuré le 13 août :**
+
+```
+                                    enseignés (147)      tout (2062)
+même squelette, TON différent         3 groupes      246 groupes / 582 mots
++ voyelle modifiée (ơ/o, ư/u, ê/e)    3 groupes      289 groupes / 801 mots
+```
+
+**Presque 40 % du vocabulaire a un sosie.** Mais trois paires seulement parmi
+les mots enseignés : le mécanisme ne sert quasiment à rien aujourd'hui et
+devient central quand le vocabulaire grossit. À écrire, pas à câbler tout de
+suite.
+
+Les trois qui existent :
+
+```
+ba  (ngang) trois          /  bà  (huyền) grand-mère
+bạn (nặng)  toi            /  bán (sắc)   vendre
+con (ngang) classificateur /  còn (huyền) et toi ?
+```
+
+**Tiroir :** geste qui revient → une formulation en code, dans `_INTRODUCE`.
+Rien à annoter : le ton se **calcule** depuis le diacritique, comme les notes de
+ton écrites aujourd'hui dans les fichiers de contenu.
+
+**La condition qui compte : le second mot seulement.** Deux sosies enseignés
+côte à côte s'entremêlent. La comparaison se déclenche à l'introduction du
+NOUVEAU, et seulement si l'ancien est bien consolidé — le niveau SRS donne ce
+chiffre. Le cours le fait déjà par accident : `bạn`/`bán` sont à 125 items
+d'écart, `con`/`còn` à 105. Seul `ba`/`bà` est serré, à 15.
+
+**Deux choses à ne pas faire.**
+
+*Ne jamais valider un ton.* « Bien, c'était le bon ton » est une information
+qu'on n'a pas. Une fausse confirmation installe l'erreur avec un tampon de
+garantie — pire que le silence.
+
+*Ne pas parler du ton d'un mot composé.* `cà phê` n'a pas un ton, il en a deux.
+Les notes de ton sont par syllabe, ce que le calcul par diacritique donne déjà.
+
+**Une réserve sur notre propre outil.** Minh est une voix de synthèse, et un mot
+isolé ne porte pas son ton comme le même mot dans une phrase — l'intonation de
+phrase déforme. Ce qui plaide pour le temps 1 : **le mot répété seul est la
+référence propre**, et c'est ce qu'on a de plus fiable.
+
+**Statut : FAIT au temps 3**, le 14 août — « Say a tone pair out loud when the
+second of the two is taught ». Le calcul vit dans `tone_twin`, la paire est dite
+par Minh dans `_INTRODUCE`, et SPEC 28b porte la règle. Les temps 1 et 2 restent
+ouverts.
 
 ### Redire le mot juste après la réponse de l'apprenant
 *Proposé par Meo.*
@@ -65,6 +215,72 @@ correctement.
 
 **Statut :** à étendre, pas à construire. Le mécanisme est en place dans
 `_acknowledgement`, il ne couvre que le cas raté.
+
+### C'est en variant qu'on gère le rythme
+*Proposé par Meo. C'est la phrase qui compte : la variation n'est pas un remède
+contre l'ennui, c'est l'instrument qui produit le rythme.*
+
+Une leçon dont tous les tours ont la même forme n'a pas un rythme monotone —
+elle n'a **pas de rythme**. C'est un métronome. Le rythme naît du contraste : un
+tour long, puis trois courts ; une phrase qui raconte, puis une question sèche.
+
+**Mesuré le 11 août** sur les 56 tours scriptés du cours :
+
+```
+ 3 mots  █
+ 7 mots  ███████████████   ← le pic
+ 9 mots  ███████
+12 mots  ███████
+13 mots  ███████
+36 mots  █                 ← le seul hook du roster
+```
+
+Médiane 9 mots, presque tout entre 7 et 13. Le seul tour qui sort du lot est
+celui qui porte un fait. Le métronome, chiffré.
+
+**Ce qui doit rester fixe, ce qui doit bouger.** C'est la distinction qui évite
+de tout casser :
+
+- **le signal reste fixe** — la forme de la question. « and again, what was ___ ? »
+  doit être reconnaissable en trois occurrences, sinon l'apprenant redécode
+  l'anglais au lieu d'écouter le vietnamien.
+- **la texture bouge** — la longueur du tour, la présence ou non d'une phrase
+  avant la question, un fait, une digression, trois rappels enchaînés vite puis
+  un seul posé lentement.
+
+Varier le cadre de la question serait donc une erreur ; varier tout le reste est
+le sujet.
+
+**Ce que ça veut dire concrètement**, et ce n'est pas une seule chose :
+
+- un tour qui ne demande rien et raconte (« le café au Vietnam, c'est… »), puis
+  on ré-enchaîne — ce serait une **étape** de plus dans `build_plan`
+- des hooks beaucoup plus fréquents, pour que la longueur des introductions
+  varie d'elle-même
+- ~~des séries de rappels de longueur inégale, au lieu de trois systématiques~~
+  **fait** le 11 août : `rapidfire_count` tire de 1 à 5 autour de la moyenne 3
+  mesurée, et le nombre suit ce que le tour vient de faire — 1 après une
+  construction qui a déjà fait réciter ses pièces, 4 après une règle où
+  l'apprenant n'a rien dit. Le premier des trois leviers, et le seul qui ne
+  demandait aucun contenu à écrire.
+
+**La mesure qui décide :** le profil de longueur des tours du cours de
+référence. Pas « est-ce qu'il digresse » mais « quelle est sa distribution ».
+Si elle est plate comme la nôtre, il n'y a rien à faire. Si elle est étalée, on
+sait de combien.
+
+**Ce qui joue contre :** un tour sans question dépense de la synthèse sans faire
+parler l'apprenant, et la règle 3 dit qu'il doit parler au moins autant que le
+tuteur. La longueur des digressions compte autant que leur fréquence.
+
+**Un levier est déjà en place — SPEC 17.** Le nombre de rappels qui closent un
+item varie de 1 à 4, et pour l'argument exact de cette entrée : fixé à trois, un
+apprenant attentif apprenait la cadence et répondait au rythme plutôt qu'à la
+question. Ce tiers-là est fait et mesuré. Restent le tour qui raconte sans rien
+demander, et des hooks plus fréquents.
+
+**Statut :** à mesurer pour ce qui reste. C'est l'idée qui a le plus de chances de changer
+la sensation du cours, et celle qu'il ne faut surtout pas régler à l'aveugle.
 
 ### Décomposer un nom connu, pour en enseigner deux d'un coup
 *Proposé par Meo.*
@@ -173,6 +389,13 @@ pourraient devenir des items à part entière. `bay` mériterait sa place après
 **Statut :** câblé dans `fill_item_metadata.py`, pas encore vérifié sur des
 propositions réelles.
 
+---
+
+## 2. Ce qui n'est encore qu'une idée
+
+Rien dans le code ne les exécute. Chacune porte le tiroir qu'elle viserait et le
+test qui reste à faire avant d'y toucher.
+
 ### Dire ce qu'un mot va construire, au moment où on l'apprend
 *Proposé par Meo, 13 août.*
 
@@ -227,139 +450,6 @@ L'intuition dit que oui et souvent — ce serait la marque de fabrique de la
 méthode — mais l'intuition ne vaut rien ici, c'est la règle du carnet.
 
 **Statut :** à essayer, et la moins chère des deux.
-
-### C'est en variant qu'on gère le rythme
-*Proposé par Meo. C'est la phrase qui compte : la variation n'est pas un remède
-contre l'ennui, c'est l'instrument qui produit le rythme.*
-
-Une leçon dont tous les tours ont la même forme n'a pas un rythme monotone —
-elle n'a **pas de rythme**. C'est un métronome. Le rythme naît du contraste : un
-tour long, puis trois courts ; une phrase qui raconte, puis une question sèche.
-
-**Mesuré le 11 août** sur les 56 tours scriptés du cours :
-
-```
- 3 mots  █
- 7 mots  ███████████████   ← le pic
- 9 mots  ███████
-12 mots  ███████
-13 mots  ███████
-36 mots  █                 ← le seul hook du roster
-```
-
-Médiane 9 mots, presque tout entre 7 et 13. Le seul tour qui sort du lot est
-celui qui porte un fait. Le métronome, chiffré.
-
-**Ce qui doit rester fixe, ce qui doit bouger.** C'est la distinction qui évite
-de tout casser :
-
-- **le signal reste fixe** — la forme de la question. « and again, what was ___ ? »
-  doit être reconnaissable en trois occurrences, sinon l'apprenant redécode
-  l'anglais au lieu d'écouter le vietnamien.
-- **la texture bouge** — la longueur du tour, la présence ou non d'une phrase
-  avant la question, un fait, une digression, trois rappels enchaînés vite puis
-  un seul posé lentement.
-
-Varier le cadre de la question serait donc une erreur ; varier tout le reste est
-le sujet.
-
-**Ce que ça veut dire concrètement**, et ce n'est pas une seule chose :
-
-- un tour qui ne demande rien et raconte (« le café au Vietnam, c'est… »), puis
-  on ré-enchaîne — ce serait une **étape** de plus dans `build_plan`
-- des hooks beaucoup plus fréquents, pour que la longueur des introductions
-  varie d'elle-même
-- ~~des séries de rappels de longueur inégale, au lieu de trois systématiques~~
-  **fait** le 11 août : `rapidfire_count` tire de 1 à 5 autour de la moyenne 3
-  mesurée, et le nombre suit ce que le tour vient de faire — 1 après une
-  construction qui a déjà fait réciter ses pièces, 4 après une règle où
-  l'apprenant n'a rien dit. Le premier des trois leviers, et le seul qui ne
-  demandait aucun contenu à écrire.
-
-**La mesure qui décide :** le profil de longueur des tours du cours de
-référence. Pas « est-ce qu'il digresse » mais « quelle est sa distribution ».
-Si elle est plate comme la nôtre, il n'y a rien à faire. Si elle est étalée, on
-sait de combien.
-
-**Ce qui joue contre :** un tour sans question dépense de la synthèse sans faire
-parler l'apprenant, et la règle 3 dit qu'il doit parler au moins autant que le
-tuteur. La longueur des digressions compte autant que leur fréquence.
-
-**Un levier est déjà en place — SPEC 17.** Le nombre de rappels qui closent un
-item varie de 1 à 4, et pour l'argument exact de cette entrée : fixé à trois, un
-apprenant attentif apprenait la cadence et répondait au rythme plutôt qu'à la
-question. Ce tiers-là est fait et mesuré. Restent le tour qui raconte sans rien
-demander, et des hooks plus fréquents.
-
-**Statut :** à mesurer pour ce qui reste. C'est l'idée qui a le plus de chances de changer
-la sensation du cours, et celle qu'il ne faut surtout pas régler à l'aveugle.
-
-### Demander qui est l'apprenant, pour lui enseigner SES pronoms
-*Proposé par Meo.*
-
-→ Un **`strand`**, un fil continu — et l'item `cách chọn từ xưng hô` en est le
-vestige. Voir « Les traits : deux natures, pas une ».
-
-En vietnamien, le mot pour « je » dépend de qui parle à qui. Meo s'adressant à
-sa copine dit `anh` pour « je » et `em` pour « tu ». Ce ne sont pas des
-variantes exotiques : c'est ce qu'il dira tous les jours.
-
-Le cours enseigne aujourd'hui `tôi`, et sa propre fiche dit pourquoi c'est
-tiède :
-
-> *« 'tôi' đúng ngữ pháp nhưng lạnh »* — grammaticalement juste, mais froid.
-
-Puis il enseigne `anh`/`chị`/`em` dans l'abstrait, comme une règle à connaître.
-Si le cours savait qui vous êtes, ce ne serait plus une règle — ce serait **vos**
-mots.
-
-**Ce que ça débloque, et ce n'est pas qu'un mot :**
-
-- « je » devient `anh` ou `em` selon l'interlocuteur, au lieu du `tôi` neutre
-- la règle `cách chọn từ xưng hô` cesse d'être un tableau à mémoriser et devient
-  « pour vous, avec quelqu'un de plus jeune, vous êtes `anh` »
-- les phrases deviennent vraies : « tôi tên là Mathias » au lieu d'un prénom
-  inventé
-
-**Tiroir :** aucun des trois — c'est un **profil d'apprenant**, une donnée
-persistante qui n'existe pas encore. `state.json` ne connaît que des niveaux par
-mot. STATUS le signale déjà pour le nom ; l'âge et le genre sont le même champ.
-
-**Ce qu'il faut, au minimum :** une tranche d'âge et un genre. C'est ce qui
-détermine si vous êtes `anh`, `chị` ou `em` face à quelqu'un.
-
-**La limite honnête :** le système d'adresse dépend des DEUX personnes. Savoir
-qui vous êtes est nécessaire, pas suffisant — il faut aussi savoir à qui vous
-parlez. Mais le cours peut dire « avec quelqu'un de plus jeune, vous êtes
-`anh` », ce qui est infiniment plus concret que la règle générale.
-
-**Comment le demander :** le cours enseigne déjà `bạn tên là gì?` — « comment
-tu t'appelles ? ». Il pose la question pour de vrai et garde la réponse. L'âge
-a son item aussi (`Tôi ... tuổi`). Le cours contient donc déjà les questions qui
-remplissent son propre profil.
-
-**La preuve, tombée en séance le 11 août.** Meo demande : « est-ce que je peux
-dire *Anh tên là* si je m'adresse à un mec plus vieux ? » Le tuteur n'a pas su
-répondre ; la question est arrivée ici.
-
-La réponse est non — face à un homme plus âgé, lui c'est `anh` et vous c'est
-`em`. Et dans le log, Meo avait déjà tenté « An... An... An ten la... » : il
-substituait le pronom tout seul, dans le mauvais sens. **La question à laquelle
-le cours ne sait pas répondre est exactement celle que le profil rendrait
-triviale.**
-
-**Fait le 11 août, en attendant le profil :** une règle en position 2, juste
-après `tôi` — *« le vietnamien change le mot pour "je" selon à qui on parle ;
-vous les verrez bientôt, et tôi ne sera jamais faux en attendant »*. Elle ne
-donne aucun tableau (les mots n'existent pas encore), elle empêche seulement de
-construire l'habitude « tôi = I » qu'il faudra défaire à l'item 11.
-
-**Statut : FAIT**, le 14 août — « Let the course know who the learner is, so it
-can teach THEIR person-words ». Le profil vit dans `learner.py` et `learner.json`,
-et `build_plan` le lit pour composer les situations d'adresse (SPEC 13d). Restait
-vrai à l'écriture : c'était probablement la personnalisation la plus rentable de
-toute la langue — le système d'adresse est ce qui distingue quelqu'un qui parle
-vietnamien de quelqu'un qui récite du vietnamien.
 
 ### Les mots qu'on reconnaît déjà — la couche française
 *Proposé par Meo.*
@@ -494,111 +584,6 @@ devient un vrai sujet.
 
 ---
 
-## Déjà mesuré dans le cours de référence
-
-Les faits qui ont servi jusqu'ici, gardés ensemble pour qu'on n'ait pas à les
-remesurer :
-
-- « repeat after me » : **0** fois en vingt-cinq minutes
-- « how would you say ___ ? » : **22** fois → THE CORE MOVE
-- « and again, what was ___ ? » : **21** fois → `_REPEAT_ASK`
-- questions de rappel : environ **3 par mot nouveau** → `N_RAPIDFIRE`
-- rien n'est jamais « acquis » puis retiré ; un mot revient de moins en moins
-  → `srs.weight`, `DECAY`
-
-Et sur le vocabulaire lui-même, mesuré sur la liste de fréquence :
-
-- **43 %** des 2000 mots les plus fréquents sont polysyllabiques
-- **1 sur 5** se découpe entièrement en mots présents dans la même liste
-
-Et sur nos propres tours, mesuré le 11 août :
-
-- **56** tours scriptés, longueur médiane **9 mots**, presque tous entre 7 et 13
-- un seul dépasse 17 mots : celui qui porte un `hook`
-
----
-
-## Les notes de Meo
-
-Attendues, pas encore intégrées. Quand elles arrivent : note par note, quel
-tiroir — et lesquelles ne survivent pas au test.
-
-
-### Les tons : donner un modèle, jamais un jugement
-*Proposé par Meo, 13 août.*
-
-→ Un **`strand`**, un fil continu. Voir « Les traits : deux natures, pas une ».
-
-**Le mur qui décide de tout : le tuteur n'entend jamais la prononciation de
-l'apprenant.** Pas de « c'était presque ça, remonte un peu ». Donc la seule
-pédagogie disponible est de **rendre la différence audible** — donner un modèle
-et créer un contraste, jamais évaluer.
-
-Ce n'est pas une limite à contourner, c'est ce qui choisit le design.
-
-**Les trois temps, dans l'ordre :**
-
-1. **Dès les premières minutes** — « écoute Minh et copie ». Une consigne, dite
-   une fois, vraie du début à la fin du cours. C'est la fondation.
-2. **À l'introduction d'un mot** — nommer son ton, quand ce mot en a besoin.
-   Jamais un tableau des six tons le premier jour : c'est la règle écrite dont
-   ce cours ne veut pas.
-3. **Quand un mot nouveau ressemble à un ancien déjà consolidé** — les comparer,
-   dire les deux tons, et faire dire les deux par Minh dans le même souffle.
-
-Le troisième temps est le seul moment où la différence existe vraiment pour
-l'oreille. `ba` puis `bà`, un seul clip, deux mots.
-
-**Combien de mots sont concernés — mesuré le 13 août :**
-
-```
-                                    enseignés (147)      tout (2062)
-même squelette, TON différent         3 groupes      246 groupes / 582 mots
-+ voyelle modifiée (ơ/o, ư/u, ê/e)    3 groupes      289 groupes / 801 mots
-```
-
-**Presque 40 % du vocabulaire a un sosie.** Mais trois paires seulement parmi
-les mots enseignés : le mécanisme ne sert quasiment à rien aujourd'hui et
-devient central quand le vocabulaire grossit. À écrire, pas à câbler tout de
-suite.
-
-Les trois qui existent :
-
-```
-ba  (ngang) trois          /  bà  (huyền) grand-mère
-bạn (nặng)  toi            /  bán (sắc)   vendre
-con (ngang) classificateur /  còn (huyền) et toi ?
-```
-
-**Tiroir :** geste qui revient → une formulation en code, dans `_INTRODUCE`.
-Rien à annoter : le ton se **calcule** depuis le diacritique, comme les notes de
-ton écrites aujourd'hui dans les fichiers de contenu.
-
-**La condition qui compte : le second mot seulement.** Deux sosies enseignés
-côte à côte s'entremêlent. La comparaison se déclenche à l'introduction du
-NOUVEAU, et seulement si l'ancien est bien consolidé — le niveau SRS donne ce
-chiffre. Le cours le fait déjà par accident : `bạn`/`bán` sont à 125 items
-d'écart, `con`/`còn` à 105. Seul `ba`/`bà` est serré, à 15.
-
-**Deux choses à ne pas faire.**
-
-*Ne jamais valider un ton.* « Bien, c'était le bon ton » est une information
-qu'on n'a pas. Une fausse confirmation installe l'erreur avec un tampon de
-garantie — pire que le silence.
-
-*Ne pas parler du ton d'un mot composé.* `cà phê` n'a pas un ton, il en a deux.
-Les notes de ton sont par syllabe, ce que le calcul par diacritique donne déjà.
-
-**Une réserve sur notre propre outil.** Minh est une voix de synthèse, et un mot
-isolé ne porte pas son ton comme le même mot dans une phrase — l'intonation de
-phrase déforme. Ce qui plaide pour le temps 1 : **le mot répété seul est la
-référence propre**, et c'est ce qu'on a de plus fiable.
-
-**Statut : FAIT au temps 3**, le 14 août — « Say a tone pair out loud when the
-second of the two is taught ». Le calcul vit dans `tone_twin`, la paire est dite
-par Minh dans `_INTRODUCE`, et SPEC 28b porte la règle. Les temps 1 et 2 restent
-ouverts.
-
 ### Le second sens d'un homophone, à la seconde rencontre
 *Proposé par Meo, 13 août.*
 
@@ -645,25 +630,6 @@ demanderait un dictionnaire de sens.
 **Statut :** à écrire dans la consigne d'annotation, pas à câbler.
 
 ---
-
-## Ce que les trois idées de Meo ont en commun
-
-Elles sont arrivées séparément le 13 août et ce sont la même :
-
-| | on paie… | on encaisse… |
-| --- | --- | --- |
-| **composition** | à l'atome (`đi`) | au composé (`đi học`) |
-| **jumeau de ton** | au premier mot (`ba`) | au second (`bà`) |
-| **homophone** | au premier sens (`nam` sud) | au retour (`nam` masculin) |
-
-**La deuxième rencontre est celle qui rapporte.** La première pose une brique
-qui ne paie pas encore ; c'est en revenant dessus qu'on récolte, et sans rien
-avoir à mémoriser de neuf.
-
-Ce qui donne un test commun, plus utile que trois règles séparées : *pour cette
-idée, qu'est-ce qui est posé la première fois, et qu'est-ce qui est encaissé la
-seconde ?* Si la réponse est « tout, tout de suite », ce n'est pas de cette
-famille — et il faut se demander si ça double la charge au lieu de la répartir.
 
 ### Le troisième moment : quand la dernière pièce tombe
 *Proposé par Meo, 13 août.*
@@ -754,6 +720,57 @@ n'est pas scripté : ce serait ajouter un endroit où le modèle juge, le jour o
 on cherche à en retirer un.
 
 ---
+
+---
+
+## Déjà mesuré dans le cours de référence
+
+Les faits qui ont servi jusqu'ici, gardés ensemble pour qu'on n'ait pas à les
+remesurer :
+
+- « repeat after me » : **0** fois en vingt-cinq minutes
+- « how would you say ___ ? » : **22** fois → THE CORE MOVE
+- « and again, what was ___ ? » : **21** fois → `_REPEAT_ASK`
+- questions de rappel : environ **3 par mot nouveau** → `N_RAPIDFIRE`
+- rien n'est jamais « acquis » puis retiré ; un mot revient de moins en moins
+  → `srs.weight`, `DECAY`
+
+Et sur le vocabulaire lui-même, mesuré sur la liste de fréquence :
+
+- **43 %** des 2000 mots les plus fréquents sont polysyllabiques
+- **1 sur 5** se découpe entièrement en mots présents dans la même liste
+
+Et sur nos propres tours, mesuré le 11 août :
+
+- **56** tours scriptés, longueur médiane **9 mots**, presque tous entre 7 et 13
+- un seul dépasse 17 mots : celui qui porte un `hook`
+
+---
+
+---
+
+## Ce que les trois idées de Meo ont en commun
+
+*Le tri a séparé les trois entrées : la composition et le jumeau de ton
+tournent déjà (partie 1), l'homophone est encore une idée (partie 2). Ce qui
+suit est ce qu'elles partagent, et qui ne dépend pas de leur état.*
+
+Elles sont arrivées séparément le 13 août et ce sont la même :
+
+| | on paie… | on encaisse… |
+| --- | --- | --- |
+| **composition** | à l'atome (`đi`) | au composé (`đi học`) |
+| **jumeau de ton** | au premier mot (`ba`) | au second (`bà`) |
+| **homophone** | au premier sens (`nam` sud) | au retour (`nam` masculin) |
+
+**La deuxième rencontre est celle qui rapporte.** La première pose une brique
+qui ne paie pas encore ; c'est en revenant dessus qu'on récolte, et sans rien
+avoir à mémoriser de neuf.
+
+Ce qui donne un test commun, plus utile que trois règles séparées : *pour cette
+idée, qu'est-ce qui est posé la première fois, et qu'est-ce qui est encaissé la
+seconde ?* Si la réponse est « tout, tout de suite », ce n'est pas de cette
+famille — et il faut se demander si ça double la charge au lieu de la répartir.
 
 # Ce que le cours enseigne — brouillon d'objectifs
 
