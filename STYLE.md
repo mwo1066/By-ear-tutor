@@ -905,25 +905,35 @@ seen_items if i.kind == "rule"}`.
 
 ## Les tiers — les traits `discrete` classés par utilité
 
-**Tier 1 — on ne peut pas parler sans (7)**
+**Validé par Meo le 15 août.** La liste qui fait foi est le champ `tier` des
+items ; ce qui suit est le *pourquoi* de chaque rang, qui ne vit nulle part
+ailleurs.
+
+**Tier 1 — on ne peut pas parler sans (8)**
 
 | la règle | ce qu'elle dit |
 | --- | --- |
-| ordre des mots | sujet, verbe, objet — comme en anglais |
-| `không` + verbe/adjectif | un mot devant, et c'est nié |
-| `có … không ?` | on encadre la phrase pour questionner |
-| répondre en répétant le verbe | on ne dit pas oui, on renvoie le verbe |
-| `ơi` | héler — le premier mot de toute interaction avec un inconnu |
-| pas de `là` devant un adjectif | « Em mệt », vingt fois par jour |
-| `ấy` | sans lui on ne parle qu'**à** quelqu'un, jamais **de** quelqu'un |
+| **les verbes ne changent jamais** | une seule forme, pour tout le monde. Une phrase et c'est compris — et elle pose aussitôt la question du temps |
+| **`đã`** | le passé, juste avant le verbe. La réponse à la question que la précédente vient de poser, enseignée dans la foulée |
+| **`không` + verbe/adjectif** | un mot devant, et c'est nié. Même mot pour les deux |
+| **`có … không ?`** | on encadre la phrase pour questionner. Pas d'inversion, pas d'auxiliaire |
+| **répondre en répétant le verbe** | on ne dit pas oui, on renvoie le verbe |
+| **`ơi`** | héler — le premier mot de toute interaction avec un inconnu |
+| **pas de `là` devant un adjectif** | « Em mệt », vingt fois par jour |
+| **`ấy`** | sans lui on ne parle qu'**à** quelqu'un, jamais **de** quelqu'un |
 
-**Tier 2 — très fréquent (11) :** `đã` · `rồi` · `chưa` · **`đang`** · **`sẽ`** ·
-`phải` · `ở`+`trong` · possession `của` · adjectif après le nom · `ạ` ·
-classificateurs
+**Tier 2 — très fréquent (10) :** `rồi` · `chưa` · `đang` · `sẽ` · `phải` ·
+`ở`+`trong` · `của` · adjectif après le nom · `ạ` · classificateurs
 
-**Tier 3 — soulagement et finition (10) :** verbes invariables · ni genre ni
-article · pas de pluriel · mot interrogatif en place · omettre le sujet · `cũng` ·
-`rất` avant / `lắm` après · `hơn` · `được` · `năm` → `lăm`
+**Tier 3 — confort et finition (9) :** ni genre ni article · pas de pluriel ·
+mot interrogatif en place · omettre le sujet · `cũng` · `rất` avant / `lắm`
+après · `hơn` · `được` · `năm` → `lăm`
+
+**Retirée du cours le 15 août :** l'ordre sujet–verbe–objet. Elle était en tête
+du tier 1 et sa fiche la présentait comme le filet du débutant — « dans le doute,
+range comme en anglais et c'est souvent juste ». Décision de Meo : un francophone
+le fait déjà sans y penser, donc la règle occupe un créneau pour enseigner un
+réflexe acquis.
 
 ### Ce que le classement dit tout de suite
 

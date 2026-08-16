@@ -12,6 +12,14 @@ Une ligne par changement archivé, au format :
 
 ## Changements archivés
 
+`0007` — **valider le classement en tiers, et retirer l'ordre sujet–verbe–objet**
+— 2026-08-15 — le classement des traits par utilité est **validé par Meo**, ce qui
+débloque le réordonnancement du cours. SVO supprimée du contenu : sa fiche la
+présentait comme le filet du débutant, et c'est l'argument contre — un
+francophone place déjà sujet-verbe-objet sans y penser. `đã` et « les verbes ne
+changent jamais » montent en tier 1, la seconde parce qu'elle pose la question à
+laquelle la première répond. Tiers 8 / 10 / 9 sur 34 traits.
+
 `0006` — **rattacher huit traits au mot dont ils parlent** — 2026-08-15 — le
 champ `after` fait passer un trait juste après son mot au lieu de le laisser
 attendre son tour. Huit traits nommaient leur mot dans leur titre sans le

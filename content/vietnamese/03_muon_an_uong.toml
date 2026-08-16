@@ -32,7 +32,7 @@ type = "procedure"
 name = "động từ không chia"
 kind = "feature"
 nature = "discrete"
-tier = 3
+tier = 1
 after = "đã"
 gloss = "verbs never change, whoever is doing the action"
 category = "rules"
@@ -125,18 +125,6 @@ pieces = ["không", "muốn", "ăn"]
 
 [[items]]
 type = "procedure"
-name = "trật tự câu: chủ ngữ – động từ – tân ngữ"
-kind = "feature"
-nature = "discrete"
-tier = 1
-gloss = "the word order is the same as English: who, does, what"
-category = "rules"
-language = "vi"
-description = "Quy tắc: trật tự cơ bản giống tiếng Anh — 'Tôi uống cà phê' đúng thứ tự 'I drink coffee'. Đây là chỗ dựa an toàn cho người mới: khi chưa chắc, cứ xếp như tiếng Anh thì thường đúng."
-pieces = ["tôi", "uống", "cà phê"]
-
-[[items]]
-type = "procedure"
 name = "sở hữu: danh từ + của + người"
 kind = "feature"
 after = "của"
@@ -153,7 +141,7 @@ type = "procedure"
 name = "đã: việc đã xong, đứng trước động từ"
 kind = "feature"
 nature = "discrete"
-tier = 2
+tier = 1
 after = "đã"
 gloss = "đã goes right before the action to put it in the past, and you can drop it whenever the time is already clear"
 category = "rules"
