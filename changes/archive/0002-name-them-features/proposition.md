@@ -47,7 +47,7 @@ without ever finishing. `discrete` is its natural opposite.
 
 **In:** the **values** `kind = "rule"` → `"feature"` and `nature = "A"/"B"` →
 `"discrete"/"strand"`, in the content and in the code; the corresponding
-references in `SPEC.md`, `STYLE.md` and `README.md`; writing `LEXIQUE.md`.
+references in `SPEC.md`, `STYLE.md` and `README.md`; writing `GLOSSARY.md`.
 
 **Out:**
 
@@ -66,7 +66,7 @@ references in `SPEC.md`, `STYLE.md` and `README.md`; writing `LEXIQUE.md`.
 - [x] Rename the 17 code sites concerning an item's `kind`
 - [x] Leave untouched the 4 sites concerning a **step**'s `kind`
 - [x] Fix the references in `SPEC.md` and `STYLE.md`
-- [x] Write `LEXIQUE.md` in English, grouped by where the term comes from
+- [x] Write `GLOSSARY.md` in English, grouped by where the term comes from
 - [x] Add the map of documents to `README.md`
 - [x] `python smoke_test.py`
 
@@ -79,7 +79,7 @@ distribution is unchanged after renaming — 7 / 11 / 10 in `discrete`, 7 in
 ## Result
 
 **Finished:** 2026-08-15 — 4 code files, 8 content files, 3 documents, plus
-`LEXIQUE.md` created.
+`GLOSSARY.md` created.
 
 **The glossary is in English while `SPEC.md` and `STYLE.md` are in French.**
 Accepted: those two are read by one person, the glossary is what you hand to

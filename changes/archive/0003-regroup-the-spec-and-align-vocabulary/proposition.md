@@ -14,7 +14,7 @@ carries, teaching a word, teaching a construction. And a separate "Features"
 section, when it answers exactly the same question for the third item kind. 59
 rules with no table of contents.
 
-**The vocabulary diverged between files.** `LEXIQUE.md` and the code had said
+**The vocabulary diverged between files.** `GLOSSARY.md` and the code had said
 `feature` since 0002; `SPEC.md` said "hors-mot" 23 times, and six code symbols
 still carried `RULE` in their names.
 
@@ -45,7 +45,7 @@ section in half.
 **The table of contents sets the convention** that will avoid the question next
 time: rule numbers are **stable identifiers**, they do not renumber when a
 section moves. That is what makes it possible to reorganise without invalidating
-the cross-references from `STYLE.md`, `LEXIQUE.md` and the code comments.
+the cross-references from `STYLE.md`, `GLOSSARY.md` and the code comments.
 
 **Two additions to rule 10**, from the content audit:
 
@@ -70,7 +70,7 @@ rule 10.
   move, not as a revision.
 - **`Rule 9` in a `tutor.py` comment** — that one does mean a rule of `SPEC.md`.
   It is the correct use of the word, it stays.
-- **`LEXIQUE.md`**, already aligned since it is the source.
+- **`GLOSSARY.md`**, already aligned since it is the source.
 
 ## What this reverses from 0002
 

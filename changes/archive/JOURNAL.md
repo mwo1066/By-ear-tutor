@@ -66,7 +66,7 @@ and it is the folder that carries the detail.
 — 2026-08-15 — removes the collision between "rule" the behaviour and "rule" the
 taught item, which had lost the thread twice in a single session. `feature` in
 the sense of linguistic typology — most of the 35 are named features of the WALS
-atlas. Produced `LEXIQUE.md`, 28 terms grouped by whether they come from the
+atlas. Produced `GLOSSARY.md`, 28 terms grouped by whether they come from the
 field, narrow it, or were coined here. Values only: no symbol name moved, so the
 **Change** lines of `SPEC.md` stayed valid.
 

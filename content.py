@@ -16,7 +16,7 @@ PERSONAL_ITEMS_FILENAME = "personal_items.json"
 #   feature       a fact about the language the tutor STATES; the learner never
 #                 says it back, so it is never a recall target ("tính từ không
 #                 cần 'là'"). Typological sense -- covers grammar, tone and
-#                 politeness alike. See LEXIQUE.md.
+#                 politeness alike. See GLOSSARY.md.
 KINDS = {"atom", "construction", "feature"}
 
 
@@ -80,7 +80,7 @@ class Item:
     # "strand" is one that never finishes -- tone attaches to every word, the
     # address system to every sentence with a person in it -- so it fires from
     # the material and must never be drawn as a recall target. Empty on atoms
-    # and constructions. See LEXIQUE.md.
+    # and constructions. See GLOSSARY.md.
     nature: str = ""
     tier: int = 0
     source: str = "roster"  # "roster" (curated TOML) or "personnel" (LLM-generated live)

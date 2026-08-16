@@ -3,7 +3,7 @@
 Every behaviour, with the place it is enforced and what to edit to change it.
 Written from the code, not from memory.
 
-**The vocabulary of this file is defined in [`LEXIQUE.md`](LEXIQUE.md)** —
+**The vocabulary of this file is defined in [`GLOSSARY.md`](GLOSSARY.md)** —
 feature, atom, piece, scripted turn, gloss. Read that first if you are new to
 the project.
 
@@ -41,7 +41,7 @@ produced a marker nothing emitted any more.
 | [Infrastructure](#infrastructure) | the model, the budget, saving |
 
 The three "Teaching…" sections follow the three item kinds of
-[`LEXIQUE.md`](LEXIQUE.md), in that order. Rule numbers are stable
+[`GLOSSARY.md`](GLOSSARY.md), in that order. Rule numbers are stable
 identifiers: they do not renumber when a section moves.
 
 ---
@@ -431,7 +431,7 @@ politeness living in the person-word rather than in the tone of voice.
 
 **Name in the code:** `kind = "feature"` — a **typological feature**, in the
 sense the WALS atlas catalogues them. Their nature is written
-`nature = "discrete"` or `"strand"`. See `LEXIQUE.md`.
+`nature = "discrete"` or `"strand"`. See `GLOSSARY.md`.
 
 ### 13b. A feature has its pieces recalled one at a time, then assembled
 The same shape as a construction: one recall per piece (up to

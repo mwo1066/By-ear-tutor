@@ -1,24 +1,24 @@
 ---
-description: Replier un changement terminé dans SPEC.md et dans le journal
-argument-hint: <numéro du changement, ex. 0003>
+description: Fold a finished change into SPEC.md and into the journal
+argument-hint: <change number, e.g. 0003>
 ---
 
-Changement : $ARGUMENTS
+Change: $ARGUMENTS
 
-1. Lis `changes/$ARGUMENTS-*/proposition.md`. **Refuse d'archiver** s'il reste
-   des tâches non cochées : dis lesquelles.
-2. **Replie le delta dans `SPEC.md`.** Pour chaque règle annoncée : ajoute,
-   modifie ou supprime, en gardant la forme du fichier — le titre numéroté, la
-   ligne **Où :** (code ou prompt), le **Pourquoi** quand il y a une vraie
-   raison à retenir, la ligne **Changer :** avec le fichier et les symboles.
-   Le **Pourquoi** se justifie d'un échec observé, jamais d'une intention.
-3. **Vérifie ce que tu écris contre le code**, pas contre la proposition : la
-   proposition disait ce qu'on voulait, le code dit ce qui est. Là où les deux
-   diffèrent, c'est le code qui a raison, et la différence va dans `Résultat`.
-4. Ajoute la section `Résultat` à la proposition : date, commits, ce qui a été
-   fait autrement que prévu, ce qui a été essayé et abandonné en route.
-5. Déplace le dossier dans `changes/archive/` (`git mv`, pour garder le fil).
-6. Ajoute la ligne en tête de « Changements archivés » dans
-   `changes/archive/JOURNAL.md`. Si le changement a défait quelque chose
-   d'antérieur, ajoute aussi la ligne au tableau « essayé **et défait** ».
-7. Mets `STATUS.md` à jour si l'état de marche du projet a bougé.
+1. Read `changes/$ARGUMENTS-*/proposition.md`. **Refuse to archive** if any tasks
+   are still unticked: say which ones.
+2. **Fold the delta into `SPEC.md`.** For each rule announced: add, modify or
+   remove it, keeping the file's shape — the numbered title, the **Where:** line
+   (code or prompt), the **Why** when there is a real reason to keep, the
+   **Change:** line with the file and the symbols. The **Why** is justified by an
+   observed failure, never by an intention.
+3. **Check what you write against the code**, not against the proposal: the
+   proposal said what was wanted, the code says what is. Where the two differ,
+   the code is right, and the difference goes into `Result`.
+4. Add the `Result` section to the proposal: date, commits, what was done
+   differently from the plan, what was tried and abandoned on the way.
+5. Move the folder into `changes/archive/` (`git mv`, to keep the thread).
+6. Add the line at the top of "Archived changes" in
+   `changes/archive/JOURNAL.md`. If the change undid something earlier, add the
+   row to the "tried **and undone**" table as well.
+7. Update `STATUS.md` if the working state of the project has moved.
