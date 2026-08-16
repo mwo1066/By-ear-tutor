@@ -659,12 +659,17 @@ def rapidfire_count(item: Item, pieces: list[Item]) -> int:
         base = 1 if pieces else 2      # its chain already re-asked every piece
     elif item.kind == "feature":
         # Was 4, on the reasoning that nothing had been said back so this WAS
-        # the practice. No longer true: a rule now carries two apply steps of
-        # its own, so four unrelated recalls on top made it the longest item in
-        # the course for no added learning.
+        # the practice. No longer true: a feature now carries its own piece
+        # recalls and an application, so four unrelated recalls on top made it
+        # the longest item in the course for no added learning.
         base = 2
     else:
-        base = 3
+        # The measured average of the reference course, and the only one of the
+        # three bases that IS that average -- a word has revised nothing, so it
+        # gets the full count. It was written 3 here while N_RAPIDFIRE sat
+        # unused a few lines up, so changing the constant changed nothing and
+        # SPEC 17 had to warn against editing it. Now it means what it says.
+        base = N_RAPIDFIRE
     return max(1, base + random.choice((-1, 0, 0, 1)))
 N_VARIATIONS = 3
 
@@ -2159,7 +2164,13 @@ def run_session(fresh: bool = False, no_intro: bool = False):
         store.save()
         print("\n--- End of session ---")
         print(store.summary())
-        print(f"\nProgress saved to {STATE_PATH}")
+        # Ask the store, do not assume the constant: under --fresh it holds no
+        # path and saved nothing, and this is the one line of the session the
+        # learner has no way to check for themselves.
+        if store.path is None:
+            print("\nNothing saved — this was a --fresh run.")
+        else:
+            print(f"\nProgress saved to {store.path}")
 
 
 if __name__ == "__main__":

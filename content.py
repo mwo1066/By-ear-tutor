@@ -134,6 +134,20 @@ def check_roster(items: list[Item]) -> list[str]:
             problems.append(f"{i.name}: unknown kind {i.kind!r}")
         if not i.gloss and i.kind != "feature":
             problems.append(f"{i.name}: no gloss — questions about it cannot be asked from the meaning side")
+        # Features used to be exempt here, and that was true when it was
+        # written: a feature's turn was composed by the model, which could work
+        # from the Vietnamese notes. Since the code began building questions
+        # from the gloss and nothing else, it stopped being true -- and
+        # _ask_for's own docstring already promises the half that went missing,
+        # "a missing gloss falls back to the item's own notes instead AND IS
+        # REPORTED AT STARTUP". This is that report. Worded apart from the line
+        # above on purpose: a feature with no gloss is NOT held out of lessons,
+        # it is taught with a degraded question, which is a different problem
+        # and deserves to be named one by one rather than counted.
+        if not i.gloss and i.kind == "feature":
+            problems.append(f"{i.name}: gloss is empty — it is still taught, but its question falls "
+                            f"back to the Vietnamese notes in `description`, which the model then has "
+                            f"to speak English from")
         # The code now speaks recall questions itself, built from the gloss and
         # from nothing else, so the gloss IS the guarantee that a question does
         # not state its own answer. A Vietnamese name that leaked into its own

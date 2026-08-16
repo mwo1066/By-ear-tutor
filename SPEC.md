@@ -521,10 +521,10 @@ s'arrête à ses trois situations.
 **Ce que ça ne change PAS :** combien de fois un mot donné est révisé. Les
 rappels d'un item portent sur d'AUTRES mots — l'item en cours est exclu. Un mot
 revient par le plan des items suivants, tiré par niveau, indéfiniment (14).
-**Changer :** `tutor.py` → `rapidfire_count`, où les quatre bases sont écrites en
-dur. **Pas** `N_RAPIDFIRE` : cette constante ne porte plus que le défaut de
-`_recall_targets`, que seul le smoke test emprunte — la séance, elle, passe
-toujours le nombre calculé.
+**Changer :** `tutor.py` → `rapidfire_count`. `N_RAPIDFIRE` porte la base du mot
+isolé, c'est-à-dire la moyenne mesurée ; les bases de la construction et du trait
+sont écrites en dur juste à côté, parce qu'elles se déduisent de ce que l'item
+vient de faire dire et non d'une mesure.
 
 ---
 

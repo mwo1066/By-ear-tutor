@@ -12,6 +12,13 @@ Une ligne par changement archivé, au format :
 
 ## Changements archivés
 
+`0004` — **trois endroits où le code disait quelque chose de faux** — 2026-08-15
+— « Progress saved » annoncé sous `--fresh` alors que rien n'est écrit ; un trait
+sans glose signalé nulle part, l'exemption datant d'avant les tours scriptés ; et
+`không phải là` dont la glose « not be + [noun] » se prononçait « not be
+something ». Plus `N_RAPIDFIRE`, rebranché au lieu d'être supprimé. Aucune leçon
+ne change : les quatre trompaient le lecteur, pas l'apprenant.
+
 `0003` — **regrouper `SPEC.md` par sorte d'item, et aligner tout le vocabulaire**
 — 2026-08-15 — le bloc central de 14 règles se scinde en cinq sections, dont trois
 « Enseigner un… » qui suivent les trois sortes d'item du lexique. Sommaire ajouté,

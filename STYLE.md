@@ -69,7 +69,7 @@ correctement.
 ### Décomposer un nom connu, pour en enseigner deux d'un coup
 *Proposé par Meo.*
 
-→ **Catégorie B**, un fil qui n'existe pas encore : c'est cette entrée qui dit
+→ Un **`strand`**, un fil qui n'existe pas encore : c'est cette entrée qui dit
 pourquoi. Voir « Les traits : deux natures, pas une ».
 
 Quand un mot connu se découpe en mots qui existent, le dire. En chinois, Beijing
@@ -297,7 +297,7 @@ la sensation du cours, et celle qu'il ne faut surtout pas régler à l'aveugle.
 ### Demander qui est l'apprenant, pour lui enseigner SES pronoms
 *Proposé par Meo.*
 
-→ **Catégorie B**, un fil continu — et l'item `cách chọn từ xưng hô` en est le
+→ Un **`strand`**, un fil continu — et l'item `cách chọn từ xưng hô` en est le
 vestige. Voir « Les traits : deux natures, pas une ».
 
 En vietnamien, le mot pour « je » dépend de qui parle à qui. Meo s'adressant à
@@ -527,7 +527,7 @@ tiroir — et lesquelles ne survivent pas au test.
 ### Les tons : donner un modèle, jamais un jugement
 *Proposé par Meo, 13 août.*
 
-→ **Catégorie B**, un fil continu. Voir « Les traits : deux natures, pas une ».
+→ Un **`strand`**, un fil continu. Voir « Les traits : deux natures, pas une ».
 
 **Le mur qui décide de tout : le tuteur n'entend jamais la prononciation de
 l'apprenant.** Pas de « c'était presque ça, remonte un peu ». Donc la seule
@@ -848,7 +848,7 @@ Le code traitait les 35 traits à l'identique : un `kind = "feature"`,
 une position dans la file, enseigné, terminé. Le futur et les tons sont modélisés
 pareil. C'est ça, l'erreur.
 
-## Catégorie B — les fils continus (7)
+## Les fils continus — `strand` (7)
 
 **Ce ne sont pas des items, ce sont des dimensions.** Le ton s'attache à *chaque
 mot*. Le système de pronoms s'attache à *chaque phrase contenant une personne*.
@@ -881,7 +881,7 @@ ils restent des items tant que leur fil n'existe pas.
   la passe d'annotation, pas au code »*. Le fil n'est pas construit, il est
   **bloqué par du contenu à écrire**.
 
-## Catégorie A — les faits ponctuels (28)
+## Les faits ponctuels — `discrete` (28)
 
 Ils restent des items avec une position. Ce qui leur manque, c'est **la seconde
 moitié** : on ne peut pas *redemander* un trait, mais on peut le
@@ -903,7 +903,7 @@ exclus du tirage des rappels — « nobody says a rule back », ce qui est vrai,
 **Toujours vrai au 15 août :** `tutor.py` → `exclude |= {i.name for i in
 seen_items if i.kind == "rule"}`.
 
-## Les tiers — la catégorie A classée par utilité
+## Les tiers — les traits `discrete` classés par utilité
 
 **Tier 1 — on ne peut pas parler sans (7)**
 
@@ -945,50 +945,25 @@ et la grammaire générale a été écrite avant le vocabulaire utile.
   stratégie de compréhension qui accompagne chaque mot composé rencontré, pas un
   fait qu'on range.
 
-## Les 35 items d'aujourd'hui, rattachés
+## Où vit la classification
 
-**C'est la table qui manquait.** Les catégories ont vécu comme des listes de
-libellés français, sans jamais toucher un item du cours. Rattachées, elles
-retombent presque exactement sur les comptes de la session : **28 en A**
-(7 + 11 + 10, après rattachement de `đang` et `sẽ`) et **7 en B**.
+**Dans les items, plus ici.** Chaque trait porte `nature` (`discrete` ou
+`strand`) et, s'il est `discrete`, son `tier`. C'est la source ; ce fichier ne
+la recopie pas.
 
-| l'item | catégorie |
-| --- | --- |
-| `câu hỏi có/không` | A · tier 1 |
-| `gọi ai đó: xưng hô + ơi` | A · tier 1 |
-| `nói VỀ ai đó: xưng hô + ấy` | A · tier 1 |
-| `phủ định: không + [động từ hoặc tính từ]` | A · tier 1 |
-| `trả lời: lặp lại động từ` | A · tier 1 |
-| `trật tự câu: chủ ngữ – động từ – tân ngữ` | A · tier 1 |
-| `tính từ không cần 'là'` | A · tier 1 |
-| `chưa: chưa xong, và cũng để hỏi` | A · tier 2 |
-| `loại từ: số + loại từ + danh từ` | A · tier 2 |
-| `nơi chốn: ở` | A · tier 2 |
-| `phải: bắt buộc, đứng trước động từ` | A · tier 2 |
-| `rồi: việc đã xong` | A · tier 2 |
-| `sở hữu: danh từ + của + người` | A · tier 2 |
-| `tính từ đứng sau danh từ` | A · tier 2 |
-| `đã: việc đã xong, đứng trước động từ` | A · tier 2 |
-| `ạ: một chữ làm câu lịch sự` | A · tier 2 |
-| `cũng đứng trước động từ` | A · tier 3 |
-| `danh từ không đổi khi nhiều` | A · tier 3 |
-| `không có giống, không có mạo từ` | A · tier 3 |
-| `lược bỏ chủ ngữ khi đã rõ` | A · tier 3 |
-| `năm thành lăm khi đứng cuối` | A · tier 3 |
-| `rất trước, lắm sau` | A · tier 3 |
-| `so sánh: tính từ + hơn` | A · tier 3 |
-| `từ để hỏi đứng nguyên chỗ` | A · tier 3 |
-| `được đứng sau động từ: làm được` | A · tier 3 |
-| `động từ không chia` | A · tier 3 |
-| `cách chọn từ xưng hô` | B |
-| `ghép hai từ đã biết thành từ mới` | B |
-| `lịch sự nằm trong từ xưng hô, không phải trong giọng` | B |
-| `thanh điệu: nghe và bắt chước` | B |
-| `xưng hô thay đổi theo người đối diện` | B |
-| `xưng hô đổi theo từng cặp người nói` | B |
-| `đếm từ 11 đến 99` | B — sans fil |
-| `sẽ: việc sắp tới, đứng trước động từ` | A · tier 2 |
-| `đang: việc đang diễn ra, đứng trước động từ` | A · tier 2 |
+Une table de rattachement a vécu ici une journée et s'est démentie en une
+journée : écrite avec les valeurs `A` et `B`, elle est devenue fausse dès que
+les items ont pris `discrete` et `strand`. Une donnée recopiée dérive — c'est
+la même leçon que la ligne **Où** de `SPEC.md`, un cran plus bas.
+
+Pour la lire, telle qu'elle est vraiment :
+
+```bash
+python -c "import glob,tomllib,sys; sys.stdout.reconfigure(encoding='utf-8'); [print(f\"{i['nature']:9s} {i.get('tier','-')}  {i['name']}\") for f in sorted(glob.glob('content/vietnamese/*.toml')) for k,v in tomllib.load(open(f,'rb')).items() for i in (v if isinstance(v,list) else [v]) if isinstance(i,dict) and i.get('kind')=='feature']"
+```
+
+Répartition au 15 août : **28 `discrete`** (7 + 11 + 10 sur les trois tiers) et
+**7 `strand`**.
 
 ### Les deux rattachés après coup
 
@@ -996,9 +971,9 @@ retombent presque exactement sur les comptes de la session : **28 en A**
 the three tense markers into three rules, one each », donc **avant** la
 classification, qui les a simplement oubliés.
 
-**Rangés en A · tier 2 par Meo**, à côté de `đã`, `rồi` et `chưa` : même place
+**Rangés en `discrete`, tier 2, par Meo**, à côté de `đã`, `rồi` et `chưa` : même place
 dans la phrase, même fréquence, même nature de fait ponctuel. Le tier 2 compte
-donc **11** règles, pas 9, et la catégorie A **28**.
+donc **11** traits, pas 9, et les `discrete` **28**.
 
 ## Ce qui en découle, et qui n'est pas fait
 
@@ -1008,5 +983,5 @@ donc **11** règles, pas 9, et la catégorie A **28**.
 3. **Réordonner le cours selon les tiers** — contenu seul, zéro code, et bloqué
    tant que le classement n'est pas validé.
 
-**Rien de tout ça n'est implémenté au 15 août.** Les sept items de catégorie B
+**Rien de tout ça n'est implémenté au 15 août.** Les sept items `strand`
 existent toujours, l'exclusion du SRS tient, l'ordre du cours n'a pas bougé.
