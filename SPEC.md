@@ -1,910 +1,891 @@
-# Ce que fait le tuteur
+# What the tutor does
 
-Chaque comportement en français, avec l'endroit où il est appliqué et ce qu'il
-faut modifier pour le changer. Écrit à partir du code, pas de mémoire.
+Every behaviour, with the place it is enforced and what to edit to change it.
+Written from the code, not from memory.
 
-**Le vocabulaire de ce fichier est défini dans [`LEXIQUE.md`](LEXIQUE.md)** —
-trait, atome, pièce, tour scripté, glose. À lire d'abord si tu arrives sur le
-projet.
+**The vocabulary of this file is defined in [`LEXIQUE.md`](LEXIQUE.md)** —
+feature, atom, piece, scripted turn, gloss. Read that first if you are new to
+the project.
 
-**Lis d'abord la ligne « Où ».** C'est la distinction qui compte le plus, et
-celle qui nous a coûté le plus cher :
+**Read the "Where" line first.** It is the distinction that matters most, and
+the one that has cost us the most:
 
-- **code** — une garantie. Le modèle ne peut pas la violer.
-- **prompt** — une consigne. Il la suit la plupart du temps, et l'oublie le
-  reste du temps.
+- **code** — a guarantee. The model cannot violate it.
+- **prompt** — an instruction. It follows it most of the time, and forgets it
+  the rest of the time.
 
-Mettre une règle dans le prompt alors qu'elle pouvait être du code, c'est ce
-qui a produit un tuteur récitant dix étapes d'un souffle et redemandant quatre
-fois le même mot. Laisser une règle dans le prompt après l'avoir déplacée dans
-le code, c'est ce qui a produit un marqueur que plus rien n'émettait.
+Putting a rule in the prompt when it could have been code is what produced a
+tutor reciting ten steps in one breath and asking for the same word four times
+running. Leaving a rule in the prompt after moving it into the code is what
+produced a marker nothing emitted any more.
 
 ---
 
-## Les sections
+## The sections
 
-| | ce qu'elle répond |
+| | what it answers |
 | --- | --- |
-| [Les deux voix](#les-deux-voix) | qui parle, et dans quelle langue |
-| [La forme d'un tour](#la-forme-dun-tour) | ce qu'un tour a le droit de faire, et qui l'écrit |
-| [L'ordre du cours](#lordre-du-cours) | qu'est-ce qui vient après quoi |
-| [Ce que le cours sait](#ce-que-le-cours-sait) | les données qu'il tient — sur les items, sur l'apprenant |
-| [Enseigner un mot](#enseigner-un-mot) | un `atom` |
-| [Enseigner une construction](#enseigner-une-construction) | une `construction` |
-| [Enseigner un trait](#enseigner-un-trait) | un `feature` |
-| [Comment les mots reviennent](#comment-les-mots-reviennent) | le niveau, l'espacement, les rappels |
-| [Les réponses](#les-réponses) | comment une réponse est jugée, et ce qu'on en dit |
-| [Entendre l'apprenant](#entendre-lapprenant) | le micro, le silence, la transcription |
-| [L'ouverture](#louverture) | le tout premier tour |
-| [La prononciation](#la-prononciation) | les tons, et ce qu'on se refuse à juger |
-| [Les outils](#les-outils) | les trois appels que le modèle peut passer |
-| [L'infrastructure](#linfrastructure) | le modèle, le budget, la sauvegarde |
+| [The two voices](#the-two-voices) | who speaks, and in which language |
+| [The shape of a turn](#the-shape-of-a-turn) | what a turn may do, and who writes it |
+| [The order of the course](#the-order-of-the-course) | what comes after what |
+| [What the course knows](#what-the-course-knows) | the data it holds — about items, about the learner |
+| [Teaching a word](#teaching-a-word) | an `atom` |
+| [Teaching a construction](#teaching-a-construction) | a `construction` |
+| [Teaching a feature](#teaching-a-feature) | a `feature` |
+| [How items come back](#how-items-come-back) | the level, the spacing, the recalls |
+| [Answers](#answers) | how an answer is judged, and what is said about it |
+| [Hearing the learner](#hearing-the-learner) | the microphone, the silence, the transcription |
+| [The opening](#the-opening) | the very first turn |
+| [Pronunciation](#pronunciation) | tones, and what we refuse to judge |
+| [The tools](#the-tools) | the three calls the model may make |
+| [Infrastructure](#infrastructure) | the model, the budget, saving |
 
-Les trois sections « Enseigner… » suivent les trois sortes d'item du
-[`LEXIQUE.md`](LEXIQUE.md), dans cet ordre. Les numéros de règle sont des
-identifiants stables : ils ne se renumérotent pas quand une section bouge.
-
----
-
-## Les deux voix
-
-### 1. Deux locuteurs, aiguillés par la langue
-Le tuteur parle la langue de l'apprenant, Minh uniquement le vietnamien.
- La
-voix entendue est décidée par la langue dans laquelle chaque phrase est écrite
-— le modèle ne pose aucune étiquette.
-**Où :** code — `voice.split_by_voice` découpe **mot par mot**, jamais par
-morceau entre deux espaces
-**Pourquoi mot par mot :** cette ligne du SPEC était déjà juste, le code ne
-l'était pas. Il découpait sur les espaces, puis classait un morceau entier
-d'après sa première suite de lettres. Le modèle a écrit « That's correct—là. »
-sans espace autour du tiret : un seul morceau, classé sur « correct », donc la
-voix anglaise a prononcé « là ». La ponctuation n'est plus un séparateur qu'il
-faut prévoir — elle suit simplement le mot qui la précède, ce qui vaut pour le
-tiret, la barre oblique, les parenthèses et celles qu'on n'a pas vues.
-**Changer :** `voice.py` → `TUTOR_VOICE`, `TEACHER_VOICE`, `_WORD_SPLIT_RE`
-
-### 2. Les didascalies et le markdown sont supprimés
-« Minh: » écrit comme une étiquette, ou `**gras**`, n'atteint jamais les
-haut-parleurs. Et **une ligne qui ne contient rien d'autre qu'un nom de
-locuteur n'est pas prononcée du tout**, quelle que soit la ponctuation autour.
-**Où :** les deux — le prompt l'interdit, `voice._strip_markdown` et
-`voice.is_stage_direction` le retirent quand même
-**Pourquoi les deux :** le code empêche que ce soit *entendu*, seul le prompt
-empêche le modèle de *penser* en listes à puces, ce qui aplatit la pédagogie
-**Pourquoi « rien d'autre que le nom » :** l'ancienne règle exigeait un
-deux-points. Le modèle a écrit « Minh: tôi. » une séance, « Minh. » la
-suivante — la voix anglaise a annoncé « Minh » avant chaque réplique du prof,
-deux fois. Ajouter le point corrigeait cette séance et pas la prochaine
-(« Minh — », « (Minh) »). La liste des ponctuations est ouverte ; la liste des
-**noms** est fermée, il y a deux voix.
-**Changer :** `voice.py` → `_SPEAKER_NAMES`, `_SPEAKER_LABEL`, `_MARKDOWN_CHARS`
-
-### 3. Un mot vietnamien dans une phrase du tuteur se place à la fin
-Chaque changement de voix coûte un aller-retour de synthèse : un seul par
-phrase, et à la fin.
-**Où :** prompt
-**Changer :** `persona.toml` → THE TWO VOICES
+The three "Teaching…" sections follow the three item kinds of
+[`LEXIQUE.md`](LEXIQUE.md), in that order. Rule numbers are stable
+identifiers: they do not renumber when a section moves.
 
 ---
 
-## La forme d'un tour
+## The two voices
 
-### 4. Une consigne par tour
-Avant chaque tour, le modèle reçoit exactement une chose à faire. Il ne voit
-jamais la suite du plan.
-**Où :** code — `build_plan` construit la liste, `_lesson_note` n'en révèle
-qu'une étape
-**Pourquoi :** le modèle n'a aucune mémoire entre les tours. À qui on demande
-de retenir où il en est, il dérive à chaque fois.
-**Changer :** `tutor.py` → `build_plan`
+### 1. Two speakers, routed by language
+The tutor speaks the learner's language, Minh only Vietnamese. Which voice is
+heard is decided by the language each phrase is written in — the model applies
+no label of its own.
+**Where:** code — `voice.split_by_voice` splits **word by word**, never on
+whitespace-delimited chunks
+**Why word by word:** this line of the spec was already right, the code was
+not. It split on spaces, then classified a whole chunk from its first run of
+letters. The model wrote "That's correct—là." with no space around the dash: a
+single chunk, classified on "correct", so the English voice pronounced "là".
+Punctuation is no longer a separator that has to be anticipated — it simply
+follows the word before it, which holds for the dash, the slash, brackets, and
+the ones we have not seen yet.
+**Change:** `voice.py` → `TUTOR_VOICE`, `TEACHER_VOICE`, `_WORD_SPLIT_RE`
 
-### 4b. Les tours mécaniques sont écrits par le code, sans appel au modèle
-Une étape est écrite ici dès que le code en tient les **deux moitiés** : le sens
-à partir duquel demander (`ask`, tiré du seul `gloss`) et le mot qu'il ne faut
-surtout pas dire (`target`). Elle est composée et envoyée directement à la
-synthèse. S'il en manque une, le modèle reprend le tour — c'est une garde, pas
-une liste d'exceptions.
+### 2. Stage directions and markdown are stripped
+"Minh:" written as a label, or `**bold**`, never reaches the speakers. And **a
+line containing nothing but a speaker's name is not spoken at all**, whatever
+the punctuation around it.
+**Where:** both — the prompt forbids it, `voice._strip_markdown` and
+`voice.is_stage_direction` remove it anyway
+**Why both:** the code stops it being *heard*, only the prompt stops the model
+*thinking* in bullet points, which flattens the teaching
+**Why "nothing but the name":** the old rule required a colon. The model wrote
+"Minh: tôi." one session and "Minh." the next — the English voice announced
+"Minh" before every one of the teacher's lines, twice. Adding the full stop
+fixed that session and not the next one ("Minh —", "(Minh)"). The list of
+punctuation is open; the list of **names** is closed, there are two voices.
+**Change:** `voice.py` → `_SPEAKER_NAMES`, `_SPEAKER_LABEL`, `_MARKDOWN_CHARS`
 
-Six sortes d'étapes sur les neuf remplissent la condition : `recall_piece`,
-`rapidfire`, `settle`, `introduce`, `scaffold`, `apply`. Les deux dernières
-seulement quand elles ont de quoi — un échafaudage sans ordre littéral, une
-application sans phrase à demander, et le tour repart au modèle.
-
-Restent au modèle, toujours : `answer` (réagir à la phrase qui vient d'être
-produite), `rule` (nommer le motif) et `vary` (reposer la même phrase à
-quelqu'un d'autre). Ce qu'il faut inventer.
-**Où :** code — `scripted_turn` compose, `_speak_scripted_turn` prononce
-**Pourquoi :** le modèle avait un tour de retard. Séance réelle : consigne
-d'introduire « tên », il redemande « tôi » ; il introduit « tên » au tour
-suivant, celui où dire le mot est interdit — la réponse donnée avant la
-question, et un mot vietnamien qui surgit au hasard au milieu d'un exercice.
-Une phrase composée ici ne peut ni sauter son étape, ni donner sa réponse, ni
-prendre du retard. Elle divise aussi par deux le nombre de requêtes par leçon.
-**Pourquoi la liste a grandi :** `introduce` et `scaffold` sont arrivés après
-coup, chacun pour avoir dit le vietnamien sur le tour qui l'interdit.
-L'échafaudage a demandé « can you say the full sentence tôi tên là… » —
-c'est-à-dire la réponse — alors que son instruction disait « ne dis aucun
-vietnamien » depuis le début. Une consigne que le modèle enfreint sur l'étape même qu'elle
-protège est la définition d'une règle à déplacer dans le code.
-**Garantie :** la question est bâtie à partir du seul `gloss`, jamais du nom
-vietnamien — un rappel scripté ne peut donc pas contenir sa propre réponse.
-`smoke_test.py` le vérifie à chaque exécution.
-**Coût assumé :** on perd la réaction à ce que l'apprenant vient de dire. Ce
-qu'il en reste est le verdict du code (18c), placé en tête de la phrase.
-**Changer :** `tutor.py` → `SCRIPTED_KINDS`, `_REPEAT_ASK`, `_ACK_CORRECT`
-
-### 4b-bis. Dire « j'ai oublié » donne toujours droit à la réponse
-« I forgot », « no idea », « dunno » — le tour repart au modèle, qui donne le
-mot, le fait redire par Minh une fois, et dit qu'il reviendra plus tard.
-**Où :** code — `learner_gave_up`
-**Pourquoi :** sur une étape de rappel, la reprise donnait déjà le mot. Mais sur
-une étape écrite par le MODÈLE (règle, échafaudage, variation), le code ne sait
-pas ce qui a été demandé, donc il ne peut ni juger ni redonner. Séance réelle :
-« I forgot » fait deux mots, sous le seuil de 4c, donc la leçon a enchaîné comme
-si rien n'avait été dit.
-**Assumé :** c'est une liste, et ce projet se méfie des listes. Elle est gardée
-parce qu'elle est fermée par autre chose que le code — il n'y a qu'un nombre
-fini de façons de dire qu'on ne sait pas, et elle ne grandit pas quand un modèle
-invente une tournure. Si elle se met à grandir, c'est le signal qu'il faut
-trouver la propriété à la place.
-**Changer :** `tutor.py` → `_GAVE_UP`
-
-### 4c. Un apprenant qui parle vraiment rend la main au modèle
-Une question, ou plus de deux mots d'anglais : le tour repart au modèle, même
-si l'étape était mécanique. Une phrase scriptée ne sait que poser sa question.
-**Où :** code — `learner_spoke_freely`
-**Pourquoi :** c'est aussi le seul chemin qui reste aux outils (29) — tous se
-déclenchent sur quelque chose que l'apprenant a dit.
-**Changer :** `tutor.py` → `FREE_SPEECH_WORDS` (3)
-
-### 4c-bis. Et l'étape n'est pas consommée — deux fois au plus
-Le tour répond à l'apprenant, puis la leçon **revient à la même étape**. Au
-troisième passage elle avance quand même.
-**Où :** code — `MAX_STEP_WAITS` (2), le compteur `waits` de la leçon
-**Pourquoi :** le tour repartait bien au modèle, mais l'étape était comptée
-comme faite. Séance réelle : « I have a question. I don't understand
-Tentoylannam. » — la question a reçu sa réponse, l'étape a été notée manquée, et
-le tuteur a enchaîné sur un mot sans rapport. Rendre la main sans garder sa place
-revient à punir celui qui pose une question.
-**Pourquoi un plafond :** sans lui, quelqu'un qui bavarde ne quitte jamais la
-première étape. Deux attentes, puis la leçon avance.
-**Changer :** `tutor.py` → `MAX_STEP_WAITS`
-
-### 4d. Le tour d'ouverture appartient toujours au modèle
-Quoi qu'en dise le plan. Avec `--no-intro` un item est déjà chargé, et sa
-première étape ouvrirait la séance par une question sèche à quelqu'un qui vient
-de dire bonjour.
-**Où :** code — `_conversation_loop`, `turns_done > 0`
-
-### 5. Un tour se termine à sa question
-Une question, puis le silence. Jamais répondre à sa propre question.
-**Où :** prompt — THREE RULES
-**Changer :** `persona.toml` → règle 2
-
-### 6. Trois phrases maximum
-Après le tour d'ouverture. L'apprenant doit parler au moins autant que le
-tuteur.
-**Où :** prompt — THREE RULES
-**Changer :** `persona.toml` → règle 3
-
-### 7. Une réponse est plafonnée à 500 tokens, raisonnement au minimum
-Sans plafond, le modèle raisonnait sur un canal caché jusqu'à épuiser son
-budget, et ne disait rien du tout.
-**Où :** code
-**Changer :** `tutor.py` → `MAX_TOKENS_PER_TURN`, `reasoning_effort`
+### 3. A Vietnamese word inside a tutor sentence goes at the end
+Every voice switch costs a synthesis round trip: one per sentence, and at the
+end.
+**Where:** prompt
+**Change:** `persona.toml` → THE TWO VOICES
 
 ---
 
-## L'ordre du cours
+## The shape of a turn
 
-### 8. La séquence est composée, jamais choisie
-Les items sont enseignés dans l'ordre du roster. Le modèle ne choisit jamais
-ce qui vient après et n'invente jamais un item.
-**Où :** code — `select_new` renvoie l'ordre du roster, `pick_next_index` sert
-**Changer :** l'ordre des items dans `content/vietnamese/*.toml`
+### 4. One instruction per turn
+Before each turn the model is handed exactly one thing to do. It never sees the
+rest of the plan.
+**Where:** code — `build_plan` builds the list, `_lesson_note` reveals one step
+of it
+**Why:** the model holds no memory between turns. Asked to remember where it
+is, it drifts every time.
+**Change:** `tutor.py` → `build_plan`
 
-### 9. Une phrase n'arrive jamais avant ses mots
-`tôi tên là` ne peut pas être enseigné avant `tôi`, `tên` et `là`.
-**Où :** code — `pick_next_index` saute un item dont les `pieces` manquent
-**Pourquoi :** une session s'était ouverte sur une phrase de cinq mots dont
-aucun n'avait été enseigné
-**Changer :** `content.py` → `pick_next_index`, et le champ `pieces` des items
+### 4b. Mechanical turns are written by the code, with no model call
+A step is written here as soon as the code holds **both halves**: the meaning to
+ask from (`ask`, drawn from the `gloss` alone) and the word that must not be
+said (`target`). It is composed and sent straight to speech synthesis. If one
+half is missing, the model takes the turn back — it is a guard, not a list of
+exceptions.
 
-### 9b. La grammaire est espacée, jamais empilée
-Après un trait, **quatre items** doivent passer avant qu'un autre puisse
-venir. Et jamais plus de **trois items de la même catégorie** à la suite.
-Personne n'est jeté : celui qui ne peut pas venir attend son tour.
-**Où :** code — `MIN_ITEMS_BETWEEN_FEATURES` (4), `MAX_SAME_CATEGORY_RUN` (3), mais
-la garantie dépend du champ `category` **écrit dans le contenu**
-**Pourquoi :** un fichier porte un sujet et l'ordre des fichiers est l'ordre
-d'enseignement, donc un fichier entier sort en bloc. Mesuré : **neuf traits
-d'affilée** autour de l'item 35 — neuf minutes de théorie sans un mot nouveau.
-Puis, après l'écriture du système de numération, **onze numéraux en onze places
-consécutives** : un quart d'heure à compter et rien d'autre.
-**Pourquoi dans le code et pas à la main :** espacer à la main ne survit pas à
-2000 mots.
-**Ce que ça exige du contenu :** une `category` juste sur chaque item. Une
-catégorie fausse ou vide rend l'espacement aveugle sur cet item.
-**Changer :** `content.py` → `MIN_ITEMS_BETWEEN_FEATURES`, `MAX_SAME_CATEGORY_RUN`
+Six of the nine step kinds meet the condition: `recall_piece`, `rapidfire`,
+`settle`, `introduce`, `scaffold`, `apply`. The last two only when they have
+what they need — a scaffold with no literal order, an application with no
+sentence to ask for, and the turn goes back to the model.
 
-### 9c. Un trait qui nomme ce qu'il suit passe devant l'espacement
-Le champ `after` porte le nom d'un **item**. Tant que cet item n'est pas
-enseigné, le trait attend ; dès qu'il l'est, le trait passe **avant toutes les
-règles d'espacement**, 9b comprise.
+Three always stay with the model: `answer` (reacting to the sentence just
+produced), `rule` (naming the pattern) and `vary` (asking the same sentence of
+someone else). What has to be invented.
+**Where:** code — `scripted_turn` composes, `_speak_scripted_turn` speaks
+**Why:** the model was one turn behind. Real session: told to introduce "tên",
+it asked for "tôi" again; it introduced "tên" on the following turn, the one
+where saying the word is forbidden — the answer handed over before the
+question, and a Vietnamese word surfacing at random in the middle of an
+exercise. A sentence composed here can neither skip its step, nor give away its
+answer, nor fall behind. It also halves the number of requests per lesson.
+**Why the list grew:** `introduce` and `scaffold` arrived afterwards, each for
+having said the Vietnamese on the turn that forbids it. The scaffold asked "can
+you say the full sentence tôi tên là…" — that is, the answer — while its
+instruction had said "say no Vietnamese" all along. An instruction the model
+breaks on the very step it protects is the definition of a rule to move into
+the code.
+**Guarantee:** the question is built from the `gloss` alone, never from the
+Vietnamese name — so a scripted recall cannot contain its own answer.
+`smoke_test.py` checks it on every run.
+**Accepted cost:** we lose the reaction to what the learner just said. What
+remains of it is the code's verdict (18c), placed at the head of the sentence.
+**Change:** `tutor.py` → `SCRIPTED_KINDS`, `_REPEAT_ASK`, `_ACK_CORRECT`
 
-**Le plus souvent c'est un mot**, et le trait finit ce mot. Mais un trait peut
-nommer **un autre trait**, et c'est ainsi qu'un ordre entre deux règles devient
-une garantie au lieu d'un hasard : « les verbes ne changent jamais » pose une
-question, `đã` y répond, et la seconde déclare qu'elle suit la première. Les
-deux étaient attachées au même mot et arrivaient dans le bon ordre par l'ordre
-des fichiers — un remaniement de contenu aurait donné la réponse avant la
-question, sans que rien ne le signale.
-**Où :** code — la branche `attached` de `pick_next_index` ; le champ `after`
-est **écrit dans le contenu**, sur 13 des 35 traits
-**Pourquoi contourner l'espacement :** l'espaceur existe pour empêcher les
-traits de faire grappe. Un trait attaché à un mot ne fait pas grappe — il
-**finit** le mot. Le contournement est l'intention du champ, pas un effet de
-bord.
-**La garde :** un `after` qui ne nomme aucun item existant est signalé au
-démarrage. Sans elle, une faute de frappe fait attendre l'item pendant tout le
-cours sans un mot de protestation — rien ne vérifiait ce champ avant qu'il ne
-serve à enchaîner deux règles.
-**Changer :** le champ `after` des items ; `content.py` → `pick_next_index`,
+### 4b-bis. Saying "I forgot" always earns the answer
+"I forgot", "no idea", "dunno" — the turn goes back to the model, which gives
+the word, has Minh say it once, and says it will come back later.
+**Where:** code — `learner_gave_up`
+**Why:** on a recall step, the retry already gave the word. But on a step
+written by the MODEL (rule, scaffold, variation) the code does not know what was
+asked, so it can neither judge nor give it back. Real session: "I forgot" is two
+words, below the threshold of 4c, so the lesson carried on as if nothing had
+been said.
+**Accepted:** it is a list, and this project distrusts lists. It is kept because
+it is closed by something other than the code — there are only finitely many
+ways to say you do not know, and it does not grow when a model invents a
+phrasing. If it starts growing, that is the signal to find the property
+instead.
+**Change:** `tutor.py` → `_GAVE_UP`
+
+### 4c. A learner who really speaks hands the turn back to the model
+A question, or more than two words of English: the turn goes back to the model,
+even if the step was mechanical. A scripted sentence only knows how to ask its
+question.
+**Where:** code — `learner_spoke_freely`
+**Why:** it is also the only path left to the tools (29) — all of them fire on
+something the learner said.
+**Change:** `tutor.py` → `FREE_SPEECH_WORDS` (3)
+
+### 4c-bis. And the step is not consumed — twice at most
+The turn answers the learner, then the lesson **returns to the same step**. On
+the third pass it moves on regardless.
+**Where:** code — `MAX_STEP_WAITS` (2), the lesson's `waits` counter
+**Why:** the turn did go back to the model, but the step was counted as done.
+Real session: "I have a question. I don't understand Tentoylannam." — the
+question got its answer, the step was marked missed, and the tutor moved on to
+an unrelated word. Handing the turn over without keeping your place amounts to
+punishing whoever asks a question.
+**Why a ceiling:** without it, someone chatting never leaves the first step. Two
+waits, then the lesson advances.
+**Change:** `tutor.py` → `MAX_STEP_WAITS`
+
+### 4d. The opening turn always belongs to the model
+Whatever the plan says. With `--no-intro` an item is already loaded, and its
+first step would open the session with a bare question to someone who has just
+said hello.
+**Where:** code — `_conversation_loop`, `turns_done > 0`
+
+### 5. A turn ends on its question
+One question, then silence. Never answer your own question.
+**Where:** prompt — THREE RULES
+**Change:** `persona.toml` → rule 2
+
+### 6. Three sentences maximum
+After the opening turn. The learner must speak at least as much as the tutor.
+**Where:** prompt — THREE RULES
+**Change:** `persona.toml` → rule 3
+
+### 7. A reply is capped at 500 tokens, reasoning at its lowest
+Without a cap the model reasoned on a hidden channel until its budget ran out,
+and said nothing at all.
+**Where:** code
+**Change:** `tutor.py` → `MAX_TOKENS_PER_TURN`, `reasoning_effort`
+
+---
+
+## The order of the course
+
+### 8. The sequence is composed, never chosen
+Items are taught in roster order. The model never picks what comes next and
+never invents an item.
+**Where:** code — `select_new` returns roster order, `pick_next_index` serves it
+**Change:** the order of items in `content/vietnamese/*.toml`
+
+### 9. A sentence never arrives before its words
+`tôi tên là` cannot be taught before `tôi`, `tên` and `là`.
+**Where:** code — `pick_next_index` skips an item whose `pieces` are missing
+**Why:** a session had opened on a five-word phrase, none of whose words had
+been taught
+**Change:** `content.py` → `pick_next_index`, and the `pieces` field of items
+
+### 9b. Grammar is spread, never stacked
+After a feature, **four items** must pass before another one may come. And never
+more than **three items of the same category** in a row. Nothing is dropped:
+whatever cannot come waits its turn.
+**Where:** code — `MIN_ITEMS_BETWEEN_FEATURES` (4), `MAX_SAME_CATEGORY_RUN` (3),
+but the guarantee depends on the `category` field **written in the content**
+**Why:** a file holds one topic and file order is teaching order, so a whole
+file comes out as a block. Measured: **nine features in a row** around item 35 —
+nine minutes of theory without a new word. Then, after the number system was
+written, **eleven numerals in eleven consecutive slots**: a quarter of an hour
+of counting and nothing else.
+**Why in code and not by hand:** spacing by hand does not survive 2000 words.
+**What it demands of the content:** a correct `category` on every item. A wrong
+or empty category makes the spacing blind to that item.
+**Change:** `content.py` → `MIN_ITEMS_BETWEEN_FEATURES`, `MAX_SAME_CATEGORY_RUN`
+
+### 9c. A feature that names what it follows jumps the spacing
+The `after` field carries the name of an **item**. Until that item is taught the
+feature waits; as soon as it is, the feature goes **ahead of every spacing
+rule**, 9b included.
+
+**Most often it is a word**, and the feature finishes that word. But a feature
+can name **another feature**, and that is how an order between two rules becomes
+a guarantee instead of an accident: "verbs never change" raises a question, `đã`
+answers it, and the second declares that it follows the first. Both were
+attached to the same word and arrived in the right order by file order — a
+content reshuffle would have handed over the answer before the question, with
+nothing to flag it.
+**Where:** code — the `attached` branch of `pick_next_index`; the `after` field
+is **written in the content**, on 13 of the 35 features
+**Why bypass the spacing:** the spacer exists to stop features clustering. A
+feature attached to a word is not clustering — it is **finishing** the word. The
+bypass is the field's intent, not a side effect.
+**The guard:** an `after` naming no existing item is reported at startup.
+Without it a typo makes the item wait out the whole course without a word of
+complaint — nothing checked this field until it was used to chain two rules.
+**Change:** the `after` field of items; `content.py` → `pick_next_index`,
 `check_roster`
 
-## Ce que le cours sait
+## What the course knows
 
-### 10. Chaque item porte ses propres données d'enseignement
-`gloss` (« I / me »), `kind` (atome ou construction), `pieces`, `literal`.
-**Où :** contenu — écrit à la main, pas déduit
-**Pourquoi :** le code découpait le nom vietnamien en mots et se trompait dans
-les deux sens — « cà phê » passait pour un assemblage, une règle de grammaire
-pour une phrase. Et sans gloss, « demande ce qu'était là » sortait en « so how
-would you say là ? » : une question qui donne sa réponse.
-**Le `gloss` est maintenant prononcé tel quel** sur les tours scriptés (4b), sans
-modèle entre lui et la synthèse : `speakable` traduit ce qui s'écrit mais ne se
-dit pas — « I / me » → « I or me », « My name is ___ » → « My name is
-something ». Et `check_roster` refuse qu'un item porte son propre nom
-vietnamien dans son gloss, ce qui rendrait la réponse au moment de la question.
-**Le repli assumé, et son risque :** quand un item n'a pas de gloss, deux
-endroits retombent sur `description` — les notes d'écriture, rédigées **en
-vietnamien** pour qui rédige le contenu. Aucun item enseigné n'a de gloss vide
-aujourd'hui, donc rien ne le déclenche. Mais c'est la forme latente d'un défaut
-déjà corrigé une fois ailleurs : `_lesson_note` ouvrait chaque tour sur cette
-même description, et des fragments de vietnamien ressortaient au milieu de
-phrases qui devaient être anglaises.
-**Ce qui est porté mais jamais lu :** `type` (`concept`/`procedure`) sur les 2085
-items, `senses` et `frequency_rank` sur les 1915 du stock. Aucun ne pilote une
-décision d'enseignement — les garder ne coûte rien, s'y fier serait une erreur.
-**Changer :** les fichiers d'items ; `fill_item_metadata.py` remplit les champs
-manquants ; `tutor.py` → `speakable`, `_ask_for`
+### 10. Every item carries its own teaching data
+`gloss` ("I / me"), `kind` (atom or construction), `pieces`, `literal`.
+**Where:** content — written by hand, not inferred
+**Why:** the code split the Vietnamese name into words and got it wrong both
+ways — "cà phê" passed for an assembly, a grammar rule for a sentence. And with
+no gloss, "ask what là was" came out as "so how would you say là?": a question
+that gives its own answer.
+**The `gloss` is now spoken as written** on scripted turns (4b), with no model
+between it and the synthesis: `speakable` translates what is written but not
+said — "I / me" → "I or me", "My name is ___" → "My name is something". And
+`check_roster` refuses an item carrying its own Vietnamese name inside its
+gloss, which would hand over the answer at the moment of the question.
+**The accepted fallback, and its risk:** when an item has no gloss, two places
+fall back to `description` — the authoring notes, written **in Vietnamese** for
+whoever writes the content. No taught item has an empty gloss today, so nothing
+triggers it. But it is the latent form of a defect already fixed once elsewhere:
+`_lesson_note` opened every turn on that same description, and fragments of
+Vietnamese came back out in the middle of sentences that had to be English.
+**Carried but never read:** `type` (`concept`/`procedure`) on all 2085 items,
+`senses` and `frequency_rank` on the 1915 of the stock. None drives a teaching
+decision — keeping them costs nothing, relying on them would be a mistake.
+**Change:** the item files; `fill_item_metadata.py` fills the missing fields;
+`tutor.py` → `speakable`, `_ask_for`
 
-### 10b. Le cours sait qui est l'apprenant, et lui enseigne SES mots de personne
-Une tranche d'âge et un genre suffisent : ils décident si l'apprenant est `anh`,
-`chị` ou `em` face à quelqu'un. Le profil fournit les situations d'adresse
-utilisées par la variation (12d) et par les traits d'adresse (13d) — et à
-défaut de profil, le code retombe sur les situations que le cours enseigne.
-**Où :** code — `learner.py`, `learner.json`, lu par `build_plan`
-**Pourquoi :** le cours enseignait `tôi`, dont sa propre fiche dit *« đúng ngữ
-pháp nhưng lạnh »* — grammaticalement juste, mais froid. Puis `anh`/`chị`/`em`
-dans l'abstrait, comme un tableau à mémoriser. Dès que le cours sait qui vous
-êtes, ce n'est plus une règle : ce sont **vos** mots.
-**La limite assumée :** l'adresse dépend des DEUX personnes. Savoir qui est
-l'apprenant est nécessaire, pas suffisant — mais « avec quelqu'un de plus jeune,
-vous êtes `anh` » est déjà infiniment plus concret que la règle générale.
-**Changer :** `learner.py` → `SELF_WHEN_OLDER`, `pair_with_minh`, `address_rows`
+### 10b. The course knows who the learner is, and teaches THEIR person-words
+An age bracket and a gender are enough: they decide whether the learner is
+`anh`, `chị` or `em` facing someone. The profile supplies the address
+situations used by variation (12d) and by address features (13d) — and with no
+profile, the code falls back on the situations the course teaches.
+**Where:** code — `learner.py`, `learner.json`, read by `build_plan`
+**Why:** the course taught `tôi`, whose own entry says *"đúng ngữ pháp nhưng
+lạnh"* — grammatically correct, but cold. Then `anh`/`chị`/`em` in the abstract,
+as a table to memorise. As soon as the course knows who you are, it stops being
+a rule: they are **your** words.
+**The accepted limit:** address depends on BOTH people. Knowing who the learner
+is is necessary, not sufficient — but "with someone younger, you are `anh`" is
+already infinitely more concrete than the general rule.
+**Change:** `learner.py` → `SELF_WHEN_OLDER`, `pair_with_minh`, `address_rows`
 
-## Enseigner un mot
+## Teaching a word
 
-### 11. Un mot nouveau a deux tours
-`introduce` puis `settle` — révélé et entendu, puis on réagit et on redemande.
-**Où :** code — `build_plan`
-**Pourquoi :** avec un seul tour chacun, trois mots défilaient en moins d'une
-minute et aucun ne se posait
-**Changer :** `tutor.py` → `build_plan`
+### 11. A new word gets two turns
+`introduce` then `settle` — revealed and heard, then reacted to and asked for
+again.
+**Where:** code — `build_plan`
+**Why:** with a single turn each, three words went past in under a minute and
+none of them landed
+**Change:** `tutor.py` → `build_plan`
 
-### 11b. Un mot n'est jamais révélé sans son sens dans la même phrase
-« In Vietnamese, the word for *name* is **tên**. » — le sens et le mot d'un
-souffle, la phrase se termine sur le mot (donc Minh le dit), il est répété, puis
-on demande de le dire.
-**Où :** code — `_INTRODUCE`, composé par `scripted_turn`
-**Pourquoi :** c'était une consigne, et elle a lâché. Séance réelle : chargé
-d'introduire « tên », le modèle a dit « I didn't catch that », fait dire le mot
-par Minh, puis demandé le mot. **La phrase qui donne le sens n'a jamais été
-prononcée.** Un premier contact avec un mot sans son sens n'est pas une leçon.
-**Ce qu'on perd :** la phrase de contexte optionnelle (« seulement si tu as un
-vrai fait à raconter »). Elle n'a été produite **zéro fois** sur toutes les
-séances enregistrées — on payait la garantie du tour pour un ornement jamais
-livré.
-**Changer :** `tutor.py` → `_INTRODUCE`
+### 11b. A word is never revealed without its meaning in the same sentence
+"In Vietnamese, the word for *name* is **tên**." — the meaning and the word in
+one breath, the sentence ending on the word (so Minh says it), the word
+repeated, then they are asked to say it.
+**Where:** code — `_INTRODUCE`, composed by `scripted_turn`
+**Why:** it was an instruction, and it gave way. Real session: told to introduce
+"tên", the model said "I didn't catch that", had Minh say the word, then asked
+for the word. **The sentence carrying the meaning was never spoken.** A first
+contact with a word without its meaning is not a lesson.
+**What is lost:** the optional context sentence ("only if you have a true fact
+worth telling"). It was produced **zero times** across every logged session — we
+were paying the turn's guarantee for an ornament never delivered.
+**Change:** `tutor.py` → `_INTRODUCE`
 
-### 11c. Un fait vrai sur le mot passe DEVANT sa présentation
-Quand un item porte un `hook`, il est dit en premier, puis la phrase qui donne
-le mot. Le fait gagne le mot, puis le mot tombe.
-**Où :** code — `scripted_turn` place `step.hook` en tête ; le `hook` lui-même
-est **écrit dans le contenu**, un item à la fois
-**Pourquoi devant et pas derrière :** sur `phở` ou `cà phê`, la phrase de
-présentation seule tourne à vide — elle annonce à quelqu'un qui connaît déjà la
-chose que le mot vietnamien est celui qu'il s'apprête à entendre.
-**Ce que ça exige du contenu :** un fait **vrai**. La consigne d'annotation dit
-« ne devine jamais » ; une étymologie inventée prononcée à voix haute est pire
-que pas de hook du tout. Aujourd'hui un seul item du cours en porte un.
-**Changer :** le champ `hook` des items ; `fill_item_metadata.py` pour la
-consigne qui les fait écrire
+### 11c. A true fact about the word comes BEFORE its presentation
+When an item carries a `hook`, it is said first, then the sentence giving the
+word. The fact earns the word, then the word lands.
+**Where:** code — `scripted_turn` puts `step.hook` at the front; the `hook`
+itself is **written in the content**, one item at a time
+**Why in front and not behind:** on `phở` or `cà phê` the presentation sentence
+alone runs empty — it announces to someone who already knows the thing that the
+Vietnamese word is the one they are about to hear.
+**What it demands of the content:** a **true** fact. The annotation instruction
+says "never guess"; an invented etymology spoken aloud is worse than no hook at
+all. Today one item of the course carries one.
+**Change:** the `hook` field of items; `fill_item_metadata.py` for the
+instruction that has them written
 
-## Enseigner une construction
+## Teaching a construction
 
-### 12. Une construction se MONTE, elle ne se demande pas entière
-Un rappel par pièce, un par tour. Puis la phrase se monte en **barreaux** — un
-élément de plus à chaque fois, en restant sur la même phrase — le dernier
-barreau étant la phrase entière, avec l'ordre littéral s'il y en a un. Puis la
-réponse, les variations, et la règle énoncée en dernier.
-**Où :** code — `build_plan` ; le **contenu** de chaque barreau est laissé au
-modèle
-**Pourquoi monter :** c'est le geste de la méthode de référence, relevé en
-séance — « how do you say *don't want*, then *I don't want*, then *I don't want
-to eat* ». Demander quatre mots d'un bloc à quelqu'un qui vient de rencontrer
-les trois pièces séparément, c'est lui faire escalader ce qu'il peut gravir.
-**Pourquoi le modèle et pas le code :** `pieces` donne `tôi`, `tên`, `là` et ne
-dit pas que `tôi tên` n'est pas une phrase. Quels paliers existent est une
-connaissance de vietnamien — le code fournit la frontière (rester sur la même
-phrase, n'employer que des mots enseignés, chaque barreau doit être dicible), le
-modèle fournit les paliers. Même partage que la variation (12c).
-**Le nombre de tours ne bouge pas** pour une construction de trois pièces ou
-moins : les barreaux sont pris sur le budget des variations, parce que **monter
-EST une variation**. Au-delà de trois pièces, un tour s'ajoute — six items du
-cours — plutôt que de supprimer la dernière variation, qui porte le changement
-de personne (12d).
-**Changer :** `tutor.py` → `build_plan`, `N_VARIATIONS`
+### 12. A construction is CLIMBED, it is not asked for whole
+One recall per piece, one per turn. Then the sentence is climbed in **rungs** —
+one element more each time, staying on the same sentence — the last rung being
+the whole sentence, with the literal order if it has one. Then the answer, the
+variations, and the rule named last.
+**Where:** code — `build_plan`; the **content** of each rung is left to the
+model
+**Why climb:** it is the reference method's move, caught in session — "how do
+you say *don't want*, then *I don't want*, then *I don't want to eat*". Asking
+for four words in one block from someone who has just met the three pieces
+separately is making them scale what they could have climbed.
+**Why the model and not the code:** `pieces` gives `tôi`, `tên`, `là` and does
+not say that `tôi tên` is not a sentence. Which rungs exist is Vietnamese
+knowledge — the code supplies the boundary (stay on the same sentence, use only
+taught words, every rung must be sayable), the model supplies the rungs. Same
+division as variation (12c).
+**The number of turns does not move** for a construction of three pieces or
+fewer: the rungs are taken out of the variation budget, because **climbing IS a
+variation**. Beyond three pieces one turn is added — six items of the course —
+rather than dropping the last variation, which carries the person swap (12d).
+**Change:** `tutor.py` → `build_plan`, `N_VARIATIONS`
 
-Les étoiles marquent les tours que le code écrit lui-même (4b) ; les autres
-partent au modèle.
+Stars mark the turns the code writes itself (4b); the others go to the model.
 
 ```
-atome         introduce* -> settle* -> rapidfire* x3      (entièrement scripté)
-construction  recall_piece* (un par piece) -> scaffold x1-3 (les barreaux)
+atom          introduce* -> settle* -> rapidfire* x3      (fully scripted)
+construction  recall_piece* (one per piece) -> scaffold x1-3 (the rungs)
               -> answer -> vary -> rule -> rapidfire* x3
 ```
 
-Un mot simple ne passe donc plus par le modèle du tout. Il garde la chaîne de
-construction — échafaudage, variations, règle — et tout tour où l'apprenant
-parle vraiment (4c).
+A simple word therefore no longer goes through the model at all. It keeps the
+construction chain — scaffold, variations, rule — and every turn where the
+learner really speaks (4c).
 
-### 12b. Un tour qui demande une réponse et la donne est signalé
-Détection seulement : la réponse est streamée et parlée au fil de l'eau, donc
-quand on peut juger, c'est déjà entendu. Ce qu'on gagne, c'est de le savoir.
-**Où :** code — `_leaked_target`, sur les tours du modèle uniquement
-**Le placeholder était le trou dans le garde-fou :** la cible d'une
-construction est `tôi tên là + [tên riêng]`, et personne ne prononce jamais
-« plus crochet tên riêng ». La comparaison littérale ne pouvait donc **jamais**
-correspondre — le garde-fou n'a pas pu se déclencher une seule fois sur une
-construction depuis qu'il existe, et « Tôi tên là Nam. » dit sur une étape qui
-l'interdit est passé sans un mot dans les logs. On compare maintenant les
-fragments réellement prononcés, tous requis.
-**Changer :** `tutor.py` → `_PLACEHOLDER`, `_target_fragments`
+### 12b. A turn that asks for an answer and gives it is reported
+Detection only: the reply is streamed and spoken as it arrives, so by the time
+it can be judged it has been heard. What it buys is knowing.
+**Where:** code — `_leaked_target`, on model turns only
+**The placeholder was the hole in the guard:** a construction's target is
+`tôi tên là + [tên riêng]`, and nobody ever says "plus bracket tên riêng". The
+literal comparison could therefore **never** match — the guard has not fired
+once on a construction since it existed, and "Tôi tên là Nam." said on a step
+that forbids it went past without a word in the logs. What is compared now is
+the fragments actually spoken, all of them required.
+**Change:** `tutor.py` → `_PLACEHOLDER`, `_target_fragments`
 
-### 12c. Une variation change la personne, pas seulement le mot du trou
-« tôi tên là Nam » → « bạn tên là… ». Échanger le prénom ne teste rien ;
-changer la personne teste si le motif a été compris.
-**Où :** prompt — l'instruction de `vary`, construite par `build_plan` à partir
-du `gloss` et du `literal` de l'item
-**Pourquoi ça reste au modèle :** pour échanger `tôi` contre `bạn`, le code
-devrait savoir que ces deux-là occupent la même place. `pieces` ne le dit pas,
-et la catégorie non plus — `function_word` contient aussi « gì » et « chào », on
-y tirerait « chào tên là ». Cette connaissance-là est du vietnamien : c'est ce
-que le modèle a et qu'une table n'a pas. L'inverse exact des rappels, où le code
-savait tout et le modèle dérivait.
-**Ce que l'instruction fournit :** le périmètre, pas les mots — la phrase
-(`gloss`), sa forme figée (`literal`), ce qui a le droit de bouger, et le
-silence de Minh.
-**Pourquoi elle a été réécrite :** l'ancienne disait « same structure, one
-element swapped » et rien d'autre. Séance réelle : le modèle a retiré « tên » de
-« tôi tên là » pour produire « tôi là », puis a interrogé sur « I am ___ ». Ce
-n'était pas du bruit — c'était la bonne *sorte* de variation, sur une autre
-phrase que celle enseignée. Rien ne lui avait dit ce qui devait rester.
-**Changer :** `tutor.py` → `build_plan`, branche `vary`
+### 12c. A variation changes the person, not just the word in the blank
+"tôi tên là Nam" → "bạn tên là…". Swapping the given name tests nothing;
+changing the person tests whether the pattern was understood.
+**Where:** prompt — the `vary` instruction, built by `build_plan` from the
+item's `gloss` and `literal`
+**Why it stays with the model:** to swap `tôi` for `bạn`, the code would have to
+know those two occupy the same slot. `pieces` does not say so, and neither does
+the category — `function_word` also holds "gì" and "chào", and permuting inside
+it yields "chào tên là". That knowledge is Vietnamese: it is what the model has
+and a table does not. The exact opposite of recalls, where the code knew
+everything and the model drifted.
+**What the instruction supplies:** the boundary, not the words — the sentence
+(`gloss`), its frozen shape (`literal`), what is allowed to move, and Minh's
+silence.
+**Why it was rewritten:** the old one said "same structure, one element swapped"
+and nothing else. Real session: the model removed "tên" from "tôi tên là" to
+produce "tôi là", then asked about "I am ___". That was not noise — it was the
+right *kind* of variation, on a different sentence from the one being taught.
+Nothing had told it what must stay.
+**Change:** `tutor.py` → `build_plan`, `vary` branch
 
-### 12d. Une phrase qui contient une personne se fait varier PAR interlocuteur
-`tôi tên là` et `bạn tên là gì?` portent un terme d'adresse. Leur variation
-n'est pas « échange un mot » mais « dis-le à quelqu'un d'autre », et l'étape
-nomme la situation à voix haute.
-**Où :** code — `has_person_slot` détecte, `address_situations` fournit les
-quatre lignes, l'instruction de `vary` les transmet
-**La table était déjà dans le contenu** : la règle `cách chọn từ xưng hô` porte
-ses quatre situations dans un champ `steps` que `Item` **ne chargeait pas**. La
-donnée existait, personne ne pouvait la lire — donc le modèle réinventait, et il
-a proposé « your name is » (donc `bạn`) un item avant que le cours l'enseigne.
-**Trouvée par le contenu, pas par le nom :** est la règle d'adresse celle qui
-porte des `steps` mentionnant un terme d'adresse. Coder le nom de l'item aurait
-cassé au premier remaniement du contenu — il y en a eu deux aujourd'hui.
-**Changer :** `content.py` → `ADDRESS_TERMS`, le champ `steps` des items
+### 12d. A sentence containing a person is varied BY interlocutor
+`tôi tên là` and `bạn tên là gì?` carry an address term. Their variation is not
+"swap a word" but "say it to someone else", and the step names the situation out
+loud.
+**Where:** code — `has_person_slot` detects, `address_situations` supplies the
+four rows, the `vary` instruction passes them on
+**The table was already in the content:** the rule `cách chọn từ xưng hô`
+carries its four situations in a `steps` field that `Item` **did not load**. The
+data existed, nobody could read it — so the model reinvented, and it offered
+"your name is" (that is, `bạn`) one item before the course teaches it.
+**Found by content, not by name:** the address rule is the one carrying `steps`
+mentioning an address term. Hard-coding the item's name would have broken at the
+first content reshuffle — there were two of those in one day.
+**Change:** `content.py` → `ADDRESS_TERMS`, the `steps` field of items
 
-### 13. La règle est nommée après que le motif a été produit, jamais avant
-**Où :** le code place l'étape en dernier ; le prompt dit comment la formuler
-**Changer :** `tutor.py` → `build_plan`
+### 13. The rule is named after the pattern has been produced, never before
+**Where:** the code puts the step last; the prompt says how to word it
+**Change:** `tutor.py` → `build_plan`
 
-*(Le mot « règle » ici désigne l'étape qui énonce le motif à la fin d'une
-construction — l'étape `rule` du plan. Le **type d'item** ne s'appelle plus
-ainsi : c'est `feature`, voir les traits ci-dessous.)*
-
----
-
-## Enseigner un trait
-
-Le troisième type d'item, à côté du mot isolé (11) et de la construction (12).
-**35 items du cours**, deuxième type le plus nombreux. Ce ne sont ni des mots ni
-des phrases : l'ordre sujet-verbe-objet, le fait qu'un verbe ne se conjugue
-jamais, `ạ` qui rend poli n'importe quoi, les tons qu'on écoute et qu'on imite,
-la politesse qui vit dans le mot de personne et non dans le ton de voix.
-
-**Nom dans le code :** `kind = "feature"` — un **trait typologique**, au sens
-où l'atlas WALS les catalogue. Leur nature s'écrit `nature = "discrete"` ou
-`"strand"`. Voir `LEXIQUE.md`.
-
-### 13b. Un trait fait redire ses pièces une à une, puis les assemble
-La même forme qu'une construction : un rappel par pièce (jusqu'à
-`MAX_FEATURE_PIECE_RECALLS`, 3), puis **une** étape d'application qui demande de
-les mettre ensemble.
-**Où :** code — la branche `item.kind == "rule"` de `build_plan`
-**Pourquoi :** un trait n'avait qu'UN tour, qui devait énoncer la chose,
-l'illustrer et l'appliquer d'un seul souffle — puis le plan enchaînait sur des
-rappels sans rapport. Séquencement mesuré : trait → rapidfire `anh` →
-rapidfire `em` → rapidfire `tên`. Énoncé une fois et plus jamais utilisé, ce qui
-est exactement ce qu'un apprenant a rapporté : « je n'ai rien compris à la
-règle, et elle n'est même pas utilisée ». Tous les autres types ont plusieurs
-tours sur la chose enseignée ; celui-là était seul à n'en avoir qu'un.
-**Effet de bord voulu :** les rappels de pièces sont scriptés (4b), donc deux
-des trois tours de pratique d'un trait ne passent plus par le modèle.
-**Changer :** `tutor.py` → `MAX_FEATURE_PIECE_RECALLS`, la branche `feature`
-
-### 13c. Le code choisit la phrase sur laquelle un trait s'applique
-Parmi les constructions déjà enseignées, celle qui partage **le plus de pièces**
-avec le trait. Aucune ne partage : ce sont les mots propres du trait qui
-servent de matière. Il n'en a pas : la liste des phrases connues, et le modèle
-en choisit une.
-**Où :** code — le tri `related`, par nombre de pièces communes décroissant
-**Pourquoi ce n'est pas au modèle :** demander « une phrase différente » était
-une consigne, et elle a été ignorée trois tours de suite — le tour du trait a
-demandé « how would you answer Bạn muốn ăn ? », puis les deux applications ont
-redemandé exactement la même. L'apprenant a entendu une question quatre fois et
-la séance s'est terminée là. Que deux phrases soient différentes n'est pas un
-jugement, donc ce n'est pas au modèle de le rendre.
-**Pourquoi « le plus », et pas « la première » :** le trait des questions
-oui/non (`có`, `không`) était épinglé sur `không phải là + [danh từ]`, qui ne
-partage que `không` et parle de négation — les trois applications ont demandé
-« pas étudiant » pendant qu'on enseignait comment poser une question. La
-construction qui partageait les deux pièces attendait plus loin dans le cours.
-**Pourquoi les mots propres en repli :** sans phrase partagée, on a tendu la
-liste au modèle — et pour montrer qu'un adjectif se passe de `là`, il a choisi
-« je ne suis pas étudiant », un nom, qui EXIGE `là`. L'application démontrait
-l'inverse de ce qu'elle enseignait. Nommer les mots à assembler ne peut pas
-faire ça.
-**Changer :** `tutor.py` → la branche `feature`, le tri `related`
-
-### 13d. Un trait qui porte SUR les mots d'adresse est posé comme une situation
-Jamais comme une phrase. « Quelqu'un de plus âgé que toi, un homme — comment tu
-lui dis ça ? » Trois échelons : la personne la plus facile, une tout autre, puis
-une troisième où l'apprenant choisit lui-même le mot de personne. **Aucun
-vietnamien n'est prononcé** : le nommer, c'est donner toute la réponse.
-**Où :** code — `about_address`, puis trois étapes `apply` et un retour immédiat
-**Pourquoi :** « How would you say anh ấy ? » — la question qui énonce sa
-réponse. Les deux traits concernés, `ấy` et `ơi`, avaient le même défaut.
-**Pourquoi un test étroit :** « contient un mot de personne » était trop
-large — l'ordre des mots (`tôi, uống, cà phê`) et la possession (`của, cà phê,
-tôi`) en utilisent un comme simple matière d'exemple sans porter dessus. Ils
-auraient été demandés comme « appelle ce genre de personne », ce qui n'a aucun
-sens. Le test est donc : **au moins deux** pièces d'adresse, **et** la moitié au
-moins des pièces. Un seul mot de personne est un exemple, pas un sujet — c'est
-ce que fait `tôi, là` dans le trait des tons.
-**Ce que ça coûte :** ce chemin sort du plan immédiatement. Un trait
-d'adresse n'a donc ni rappels de pièces (13b) ni rappels de clôture (17).
-**Les situations viennent du profil de l'apprenant**, pas d'une table figée.
-**Changer :** `tutor.py` → `about_address`, `ADDRESS_TERMS` dans `content.py`
+*(The word "rule" here means the step that names the pattern at the end of a
+construction — the plan's `rule` step. The **item kind** is no longer called
+that: it is `feature`, see the features below.)*
 
 ---
 
-## Comment les items reviennent
+## Teaching a feature
 
-### 14. Chaque mot porte un niveau
-Niveau 0 à l'introduction, +1 à chaque rappel. La chance d'être tiré vaut
-`1/(niveau+1)^1.5` — constante au début, rare ensuite, jamais nulle.
-**Où :** code — `srs.weight`, `srs.draw_recalls`
-**Pourquoi :** mesuré sur le cours de référence, rien n'est jamais « acquis »
-puis retiré ; un mot apparaît simplement de moins en moins
-**Changer :** `srs.py` → `DECAY`
+The third item kind, alongside the single word (11) and the construction (12).
+**35 items of the course**, the second most numerous kind. They are neither
+words nor sentences: subject-verb-object order, the fact that a verb never
+conjugates, `ạ` making anything polite, the tones you listen to and copy,
+politeness living in the person-word rather than in the tone of voice.
 
-### 15. L'espacement se compte en mots rencontrés, jamais en jours
-Le cours est une ligne continue qu'on interrompt et qu'on reprend. Trente items
-d'un trait ou étalés sur un mois donnent la même leçon.
-**Où :** code — rien nulle part n'enregistre de date
-**Changer :** `srs.py`
+**Name in the code:** `kind = "feature"` — a **typological feature**, in the
+sense the WALS atlas catalogues them. Their nature is written
+`nature = "discrete"` or `"strand"`. See `LEXIQUE.md`.
 
-### 16. Les mauvaises réponses ne sont pas comptées
-Un mot raté a besoin de plus d'exposition, ce qu'un niveau bas organise déjà.
-**Où :** code — `record_recall` ne fait qu'incrémenter
-**Changer :** `srs.py` → `record_recall`
+### 13b. A feature has its pieces recalled one at a time, then assembled
+The same shape as a construction: one recall per piece (up to
+`MAX_FEATURE_PIECE_RECALLS`, 3), then **one** application step asking for them
+to be put together.
+**Where:** code — the `item.kind == "feature"` branch of `build_plan`
+**Why:** a feature got ONE turn, which had to state the thing, illustrate it and
+apply it in one breath — then the plan moved on to unrelated recalls. Measured
+sequencing: feature → rapidfire `anh` → rapidfire `em` → rapidfire `tên`. Stated
+once and never used again, which is exactly what a learner reported: "I
+understood nothing about the rule, and it is not even used". Every other kind
+gets several turns on the thing being taught; this one alone had a single turn.
+**Deliberate side effect:** the piece recalls are scripted (4b), so two of a
+feature's three practice turns no longer go through the model.
+**Change:** `tutor.py` → `MAX_FEATURE_PIECE_RECALLS`, the `feature` branch
 
-### 17. Des rappels isolés closent presque chaque item — en nombre variable
-Tirés par niveau, en excluant l'item qu'on vient d'enseigner et ses pièces.
-Leur **nombre** varie de 1 à 4 : une base qui suit ce que l'item vient de faire
-dire, plus ou moins un. **Un de ces créneaux peut tomber sur un trait
-`discrete`** (17b) ; les autres restent des mots.
-**Où :** code — `rapidfire_count`
-**Pourquoi variable :** fixé à trois, chaque mot simple coûtait exactement cinq
-tours, et un apprenant attentif apprend la cadence — après le deuxième rappel il
-en reste un. Il répond au rythme et non à la question. `draw_recalls` refuse
-déjà d'être prévisible sur QUELS mots reviennent ; le même argument n'avait
-jamais été appliqué à COMBIEN.
-**Pourquoi motivé et non aléatoire :** la base répond à une seule question — cet
-item vient-il déjà de faire parler l'apprenant ? Une construction a fait redire
-chacune de ses pièces, donc la révision est faite : en empiler trois de plus est
-de la répétition sans objet (**1** avec pièces, **2** sans). Une règle fait
-redire les siennes avant de les assembler, donc pareil (**2**). Un mot isolé n'a
-rien révisé (**3**) — et c'est aussi la moyenne mesurée sur le cours de
-référence.
-**Ce que le 2 de la règle corrige :** elle valait 4, du temps où elle ne faisait
-rien dire du tout. Depuis qu'elle porte ses propres rappels et ses applications,
-quatre rappels étrangers par-dessus en faisaient l'item le plus long du cours
-sans rien apprendre de plus.
-**L'exception :** un trait d'adresse (13d) n'en reçoit aucun — son plan
-s'arrête à ses trois situations.
-**Ce que ça ne change PAS :** combien de fois un mot donné est révisé. Les
-rappels d'un item portent sur d'AUTRES mots — l'item en cours est exclu. Un mot
-revient par le plan des items suivants, tiré par niveau, indéfiniment (14).
-**Changer :** `tutor.py` → `rapidfire_count`. `N_RAPIDFIRE` porte la base du mot
-isolé, c'est-à-dire la moyenne mesurée ; les bases de la construction et du trait
-sont écrites en dur juste à côté, parce qu'elles se déduisent de ce que l'item
-vient de faire dire et non d'une mesure.
+### 13c. The code chooses the sentence a feature is applied to
+Among the constructions already taught, the one sharing **the most pieces** with
+the feature. If none shares any: the feature's own words are the material. If it
+has none: the list of known sentences, and the model picks one.
+**Where:** code — the `related` sort, by descending count of shared pieces
+**Why this is not the model's call:** asking for "a different sentence" was an
+instruction, and it was ignored three turns running — the feature's turn asked
+"how would you answer Bạn muốn ăn?", then both applications asked exactly the
+same again. The learner heard one question four times and the session ended
+there. Whether two sentences differ is not a judgement, so it is not the
+model's to make.
+**Why "the most" and not "the first":** the yes/no question feature (`có`,
+`không`) was pinned to `không phải là + [danh từ]`, which shares only `không`
+and is about negation — all three applications asked for "not a student" while
+what was being taught was how to ask a question. The construction sharing both
+pieces was waiting further along the course.
+**Why the own words as a fallback:** with no shared sentence, we handed the list
+to the model — and to show that an adjective needs no `là`, it chose "I am not a
+student", a noun, which REQUIRES `là`. The application demonstrated the opposite
+of what it was teaching. Naming the words to assemble cannot do that.
+**Change:** `tutor.py` → the `feature` branch, the `related` sort
 
-
-### 17b. Un trait revient, sous forme d'application
-Un trait `discrete` entre dans le tirage au même titre qu'un mot et pondéré par
-le même niveau. Quand il sort, l'étape émise est une **application** — une phrase
-à produire — et jamais un rappel sec.
-**Où :** code — `drawable` décide qui peut être tiré, `build_plan` choisit la
-forme du tour, `MAX_APPLICATIONS_PER_ITEM` (1) plafonne
-**Pourquoi :** mesuré sur un cours entier, **33 traits sur 33 n'étaient jamais
-revus**, niveau final 0, contre 4,5 pour les mots. Un cinquième de ce qui est
-enseigné l'était une seule fois. Un apprenant l'a dit : « je n'ai rien compris à
-la règle, et elle n'est même pas utilisée ».
-**Pourquoi une application et pas un rappel :** personne ne récite une règle. On
-ne peut pas **redemander** un trait, on peut le **réappliquer** — et le tour
-existait déjà, il ne se déclenchait qu'à l'introduction.
-**Trois mots à ne pas confondre :** `is_teachable` (une leçon peut-elle se
-construire ?), `askable` (peut-il être la question sèche d'un rappel ?),
-`drawable` (peut-il occuper un créneau, sous une forme ou une autre ?). Un trait
-est le troisième sans être le second, et c'est cette confusion qui l'avait exclu.
-**Les `strand` ne sont jamais tirés :** ils se déclenchent depuis la matière —
-un mot a un jumeau de ton, une phrase contient une personne — donc les tirer
-demanderait une seconde copie, moins bonne, de ce qui tourne déjà.
-**Le niveau monte sans jugement.** Une application demande une phrase entière :
-il n'y a pas de cible à comparer, et faire juger le modèle rendrait une décision
-que le code a reprise. C'est donc l'**exposition** qui est comptée. Et ce n'est
-pas optionnel : `weight(0)` vaut treize fois `weight(4,5)`, donc un trait resté à
-zéro serait tiré indéfiniment de préférence à tous les mots.
-**Pourquoi le plafond d'une :** une application est un tour long là où un rappel
-est un mot. Simulé sur une clôture de trois avec les traits frais, **86 % des
-clôtures porteraient deux applications ou plus et 44 % en porteraient trois** —
-la forme exacte du défaut que 9b empêche. À l'équilibre ça retombe à 8 %, donc
-le plafond protège surtout la mise en service, et coûte peu ensuite : une
-application de moins par trait sur 120 items, un écart de 22 items au lieu de 17.
-**Mesuré après :** niveau médian des traits **4**, contre 4 pour les mots — les
-mots passent de 5 à 4, ce qui est le prix payé et il est assumé.
-**Changer :** `content.py` → `drawable` ; `tutor.py` → `MAX_APPLICATIONS_PER_ITEM`
+### 13d. A feature that is ABOUT address terms is posed as a situation
+Never as a phrase. "Someone older than you, a man — how do you say it to them?"
+Three rungs: the easiest person, an entirely different one, then a third where
+the learner picks the person-word themselves. **No Vietnamese is spoken**:
+naming it hands over the whole answer.
+**Where:** code — `about_address`, then three `apply` steps and an immediate
+return
+**Why:** "How would you say anh ấy?" — the question that states its own answer.
+The two features concerned, `ấy` and `ơi`, had the same defect.
+**Why a narrow test:** "contains a person-word" was too broad — word order
+(`tôi, uống, cà phê`) and possession (`của, cà phê, tôi`) use one as mere
+example material without being about it. They would have been asked as "call
+this kind of person", which is nonsense. The test is therefore: **at least two**
+address pieces, **and** at least half the pieces. A single person-word is an
+example, not a subject — which is what `tôi, là` is doing in the tone feature.
+**What it costs:** this path leaves the plan immediately. An address feature
+therefore gets neither piece recalls (13b) nor closing recalls (17).
+**The situations come from the learner profile**, not from a fixed table.
+**Change:** `tutor.py` → `about_address`, `ADDRESS_TERMS` in `content.py`
 
 ---
 
-## Les réponses
+## How items come back
 
-### 18. Le mouvement central est « how would you say ___ ? », jamais « répète après moi »
-L'apprenant construit à partir de pièces qu'il a. Seul un mot tout neuf est
-répété tel quel.
-**Où :** prompt — THE CORE MOVE
-**Pourquoi :** « repeat after me » apparaît zéro fois en vingt-cinq minutes du
-cours de référence ; « how would you say » apparaît vingt-deux fois
-**Changer :** `persona.toml` → THE CORE MOVE
+### 14. Every word carries a level
+Level 0 at introduction, +1 on each recall. The chance of being drawn is
+`1/(level+1)^1.5` — constant at first, rare later, never zero.
+**Where:** code — `srs.weight`, `srs.draw_recalls`
+**Why:** measured on the reference course, nothing is ever "learned" and then
+retired; a word simply appears less and less
+**Change:** `srs.py` → `DECAY`
 
-### 18b. Redemander le même mot se dit court, et marqué comme une reprise
-« Et encore une fois, c'était quoi *I or me* ? » — pas la question complète une
-seconde fois. Quatre formulations tournent, jamais deux fois la même d'affilée.
-**Où :** code — `_REPEAT_ASK`, phrase composée par `scripted_turn` (4b)
-**Pourquoi :** trois fois « What's the Vietnamese word for I or me ? » d'affilée
-sonne comme trois questions différentes, et l'apprenant cherche ce qu'il a raté.
-C'est aussi la signature du cours de référence : « and again, what was ___ ? »
-y revient vingt et une fois.
-**Changer :** `tutor.py` → `_REPEAT_ASK`, `_pick`
+### 15. Spacing is counted in items met, never in days
+The course is one continuous line you interrupt and resume. Thirty items in one
+go or spread over a month give the same lesson.
+**Where:** code — nothing anywhere records a date
+**Change:** `srs.py`
 
-### 18c. Le tuteur apprend du code si la réponse était bonne
-Le verdict est calculé par le code, puis transmis au modèle avec la consigne du
-tour suivant : « correct », « raté deux fois », ou rien.
-**Où :** code — `lesson["verdict"]`, lu par `_lesson_note` (tour du modèle) ou
-par `_acknowledgement` (tour scripté, où il devient les premiers mots dits)
-**Pourquoi :** sans ça le modèle rejuge tout seul à partir de la transcription
-brute et contredit le code. Vu en session : trois tours de suite où le niveau
-du mot montait et où le tuteur disait « I didn't catch that » dans le même
-souffle.
-**Ce que le tour scripté en dit, mot pour mot :** sur un mot **raté deux fois**,
-le vietnamien est redonné — « It was ngon. » — dans sa forme prononçable, la même
-que la relance. Sur une **bonne réponse**, une félicitation nue : « That's it. »,
-« Exactly. » — **le mot n'est pas redit**. Et jamais rien du tout si la question
-qui suit demande précisément ce mot : c'est la garde anti-fuite qui tranche, pas
-une seconde règle écrite à côté.
-**Changer :** `tutor.py` → `_lesson_note`, `_acknowledgement`, `_ACK_CORRECT`
+### 16. Wrong answers are not counted
+A missed word needs more exposure, which a low level already arranges.
+**Where:** code — `record_recall` only increments
+**Change:** `srs.py` → `record_recall`
 
-### 19b. Une seule lettre, ou une seule lettre commune, ne suffit pas
-En dessous de trois lettres, la cible exige une correspondance plus serrée
-(0,60), et une réponse d'un seul caractère est refusée quel que soit son score.
-**Où :** code — `SHORT_TARGET_LETTERS`, `SHORT_TARGET_THRESHOLD`
-**Pourquoi :** `difflib` est grossier sur les chaînes courtes. Face à un mot de
-deux lettres, en partager UNE score exactement 0,50 et franchit le seuil. Vu en
-séance : « Dạ » accepté pour « là », niveau poussé à 7 — l'apprenant avait dit
-autre chose et le mot a été enregistré comme consolidé. Et « D » valait « đi »,
-au même score qu'un vrai « Đôi » pour « tôi ».
-**Le seuil est placé dans l'écart, pas à son bord :** 0,50 doit échouer, 0,667
-doit passer. 0,67 refusait « Đôi » d'un cheveu.
-**Changer :** `tutor.py` → `SHORT_TARGET_THRESHOLD`
+### 17. Bare recalls close almost every item — in a variable number
+Drawn by level, excluding the item just taught and its pieces. Their **number**
+varies from 1 to 4: a base that follows what the item has just made the learner
+say, plus or minus one. **One of those slots may land on a `discrete` feature**
+(17b); the others stay words.
+**Where:** code — `rapidfire_count`
+**Why variable:** fixed at three, every simple word cost exactly five turns, and
+an attentive learner learns the cadence — after the second recall one is left.
+They answer the rhythm rather than the question. `draw_recalls` already refuses
+to be predictable about WHICH words come back; the same argument had never been
+applied to HOW MANY.
+**Why motivated and not random:** the base answers a single question — has this
+item already made the learner speak? A construction has had every piece said
+back, so the revision is done: stacking three more is repetition with no object
+(**1** with pieces, **2** without). A feature has its own said back before
+assembling them, so the same (**2**). A single word has revised nothing (**3**)
+— and that is also the average measured on the reference course.
+**What the feature's 2 corrects:** it was 4, from when a feature made nothing be
+said at all. Since it carries its own recalls and its applications, four
+unrelated recalls on top made it the longest item in the course with nothing
+more learned.
+**The exception:** an address feature (13d) gets none — its plan stops at its
+three situations.
+**What it does NOT change:** how often a given word is revised. An item's
+recalls are about OTHER words — the current item is excluded. A word comes back
+through the plans of following items, drawn by level, indefinitely (14).
+**Change:** `tutor.py` → `rapidfire_count`. `N_RAPIDFIRE` carries the single
+word's base, that is, the measured average; the construction's and the feature's
+bases are written literally beside it, because they follow from what the item
+has just made the learner say and not from a measurement.
 
-### 19. Une réponse reconnaissable est correcte
-« Toi » pour tôi, un accent manquant, une transcription approximative : tout
-cela est juste. On confirme et on avance. Jamais reposer la question qu'on
-vient de poser.
-**Où :** les deux — `answered_target` décide, le prompt donne le ton
-**Changer :** `tutor.py` → `ANSWER_MATCH_THRESHOLD` (0.5)
-
-### 20. Un mot vraiment différent a droit à une seule seconde chance
-Minh le redit, la question est reposée court, puis la leçon avance quelle que
-soit la réponse.
-**Où :** code de bout en bout — `_should_retry` décide, `scripted_turn` écrit
-la phrase (« Listen again — tôi. And again? »)
-**Changer :** `tutor.py` → `_should_retry`, `_RETRY_ASK`
-
-> **Faible, connu.** La reprise fait dire le mot par Minh puis le redemande :
-> la réponse est donnée avant la question. La bonne forme serait plutôt
-> « c'était tôi, répète après Minh » — assumer le raté au lieu de mettre en
-> scène une question. C'était une consigne que le modèle interprétait ; c'est
-> maintenant une seule ligne de code, donc une seule ligne à changer.
-
-### 21. Tout vietnamien correct compte, pas seulement la formulation de l'item
-« tên tôi là Nam » n'est pas corrigé en « tôi tên là Nam ».
-**Où :** prompt — WHEN THEY GET IT WRONG
-**Changer :** `persona.toml`
-
-### 22. Une vraie question rejoue l'étape au lieu de la consommer
-Pour qu'un plan scripté ne puisse pas rouler sur l'apprenant.
-**Où :** code — `learner_asked_something`
-**Changer :** `tutor.py`
+### 17b. A feature comes back, as an application
+A `discrete` feature enters the draw on the same footing as a word, weighted by
+the same level. When it comes out, the step emitted is an **application** — a
+sentence to produce — and never a bare recall.
+**Where:** code — `drawable` decides who can be drawn, `build_plan` picks the
+shape of the turn, `MAX_APPLICATIONS_PER_ITEM` (1) caps it
+**Why:** measured over a whole course, **33 features out of 33 were never seen
+again**, final level 0, against 4.5 for words. A fifth of what is taught was
+taught exactly once. A learner said it: "I understood nothing about the rule,
+and it is not even used".
+**Why an application and not a recall:** nobody recites a rule. You cannot
+**re-ask** a feature, you can **re-apply** it — and the turn already existed, it
+only ever fired at introduction.
+**Three words not to confuse:** `is_teachable` (can a lesson be built from it?),
+`askable` (can it be the bare question of a recall?), `drawable` (can it fill a
+slot, in one form or another?). A feature is the third without being the second,
+and that confusion is what had excluded it.
+**`strand`s are never drawn:** they fire from the material — a word has a tone
+twin, a sentence contains a person — so drawing them would ask for a second,
+worse copy of what is already running.
+**The level rises without judgement.** An application asks for a whole sentence:
+there is no target to compare against, and having the model judge would hand
+back a decision the code has taken. So it is the **exposure** that is counted.
+And it is not optional: `weight(0)` is thirteen times `weight(4.5)`, so a
+feature left at zero would be drawn forever in preference to every word.
+**Why the cap of one:** an application is a long turn where a recall is one
+word. Simulated on a close of three with features fresh, **86% of closes would
+carry two applications or more and 44% would carry three** — the exact shape of
+the defect 9b prevents. At equilibrium it falls to 8%, so the cap protects the
+first weeks above all, and costs little afterwards: one application fewer per
+feature over 120 items, a gap of 22 items instead of 17.
+**Measured after:** median feature level **4**, against 4 for words — words drop
+from 5 to 4, which is the price paid and it is accepted.
+**Change:** `content.py` → `drawable`; `tutor.py` → `MAX_APPLICATIONS_PER_ITEM`
 
 ---
 
-## Entendre l'apprenant
+## Answers
 
-### 23. L'enregistrement est mains libres
-Démarre à la parole, s'arrête après 1,2 s de silence. Aucune touche, jamais.
-**Où :** code
-**Changer :** `listen.py` → `TRAILING_SILENCE_MS`
+### 18. The central move is "how would you say ___?", never "repeat after me"
+The learner builds from pieces they have. Only a brand-new word is repeated as
+such.
+**Where:** prompt — THE CORE MOVE
+**Why:** "repeat after me" appears zero times in twenty-five minutes of the
+reference course; "how would you say" appears twenty-two times
+**Change:** `persona.toml` → THE CORE MOVE
 
-### 23b. Une trame est de la parole si le détecteur ET le volume sont d'accord
-Le seuil de volume se mesure en continu — le 20ᵉ centile des trois dernières
-secondes est le bruit de la pièce, et il faut le dépasser d'un facteur trois.
-**Où :** code — `_speech_threshold`, dans le callback d'enregistrement
-**Pourquoi :** mesuré sur un portable au ventilateur bruyant, `webrtcvad` au
-maximum de sévérité classait **93 % du silence** comme de la parole, contre
-91 % pour un mot prononcé — le silence marquait plus haut que la voix. Le même
-enregistrement se séparait proprement au volume : 286 rms pour la pièce, 1117
-pour le mot, des crêtes à 15× d'écart. Chacun est aveugle à une famille de
-bruit différente : le ventilateur passe le détecteur mais pas le volume, une
-porte qui claque passe le volume mais pas le détecteur.
-**Pourquoi mesuré et non fixe :** un seuil calibré sur une pièce rendrait
-l'app sourde dans une autre. La parole est la minorité bruyante des trames
-récentes, donc un centile bas d'entre elles donne la pièce elle-même.
-**Changer :** `listen.py` → `ENERGY_RATIO`, `ENERGY_ABSOLUTE_MIN`
+### 18b. Re-asking the same word is said short, and marked as a repeat
+"And again, what was *I or me*?" — not the full question a second time. Four
+phrasings rotate, never the same one twice running.
+**Where:** code — `_REPEAT_ASK`, the sentence composed by `scripted_turn` (4b)
+**Why:** three goes at "What's the Vietnamese word for I or me?" in a row sound
+like three different questions, and the learner hunts for what they missed. It
+is also the reference course's signature: "and again, what was ___?" occurs
+twenty-one times there.
+**Change:** `tutor.py` → `_REPEAT_ASK`, `_pick`
 
-### 24. Le silence est rogné avant l'envoi
-La transcription Groq n'a pas de filtre de silence côté serveur, et Whisper
-invente des phrases entières à partir de quasi-silence.
-**Où :** code — `_trim_to_speech`
-**Changer :** `listen.py` → `TRIM_PADDING_FRAMES`
+### 18c. The tutor learns from the code whether the answer was right
+The verdict is computed by the code, then passed to the model with the next
+turn's instruction: "correct", "missed twice", or nothing.
+**Where:** code — `lesson["verdict"]`, read by `_lesson_note` (model turn) or by
+`_acknowledgement` (scripted turn, where it becomes the first words spoken)
+**Why:** without it the model judges again on its own from the raw
+transcription and contradicts the code. Seen in session: three turns running
+where the word's level went up and the tutor said "I didn't catch that" in the
+same breath.
+**What the scripted turn says about it, word for word:** on a word **missed
+twice**, the Vietnamese is given back — "It was ngon." — in its speakable form,
+the same one the retry uses. On a **correct answer**, a bare acknowledgement:
+"That's it.", "Exactly." — **the word is not said back**. And nothing at all if
+the question that follows asks for precisely that word: the leak guard decides
+that, not a second rule written beside it.
+**Change:** `tutor.py` → `_lesson_note`, `_acknowledgement`, `_ACK_CORRECT`
 
-### 24b. En dessous de cinq trames de parole, rien n'est envoyé du tout
-Rogner ne suffit pas : le padding construit une fenêtre de 630 ms autour d'une
-seule trame, et une trame isolée n'est pas un mot. On rend une transcription
-vide, la boucle réécoute sans consommer l'étape.
-**Où :** code — `MIN_SPEECH_FRAMES`, dans `record_until_silence`
-**Pourquoi :** Whisper ne rend pas le vide sur du silence, il invente. Vu en
-séance à 1 trame sur 126 : « ありがとうございました » — l'hallucination la plus
-courante de Whisper, apprise sur des fins de vidéos YouTube muettes. Le tuteur
-l'a comptée comme un mot raté et a monté le niveau.
-**Le seuil est mesuré :** une vraie réponse d'un mot donne 13 trames et plus
-(« tôi » → 13/70, transcrit « Tua »). Cinq trames font 150 ms — loin sous
-n'importe quelle syllabe, loin au-dessus du bruit qui hallucine.
-**Changer :** `listen.py` → `MIN_SPEECH_FRAMES`
+### 19b. One letter, or one letter in common, is not enough
+Below three letters the target demands a tighter match (0.60), and a
+single-character answer is refused whatever its score.
+**Where:** code — `SHORT_TARGET_LETTERS`, `SHORT_TARGET_THRESHOLD`
+**Why:** `difflib` is coarse on short strings. Against a two-letter word,
+sharing ONE scores exactly 0.50 and clears the threshold. Seen in session: "Dạ"
+accepted for "là", level pushed to 7 — the learner had said something else and
+the word was recorded as consolidated. And "D" was worth "đi", at the same score
+as a genuine "Đôi" for "tôi".
+**The threshold sits in the gap, not on its edge:** 0.50 must fail, 0.667 must
+pass. 0.67 refused "Đôi" by a hair.
+**Change:** `tutor.py` → `SHORT_TARGET_THRESHOLD`
 
-### 25. La transcription sait quel mot elle attend
-Quand l'étape en cours demande un rappel, une première passe en détection
-automatique ; si elle ne rend pas le mot attendu, une seconde passe en forçant
-le vietnamien. Une requête de plus uniquement quand la première échoue.
-**Où :** code — `transcribe(expected=..., matches=...)`
-**Pourquoi :** Whisper entend juste et écrit faux. `tên` sonne comme *ten* en
-anglais, et il l'a transcrit **`10`** — le bon son, un texte inutilisable.
-**Si la seconde passe ne rend pas le mot non plus**, on garde le texte de la
-première — sauf si elle avait décodé dans une langue hors {vi, en}, auquel cas
-c'est la passe forcée qu'on garde. Sinon le tag ment sur son propre texte : vu
-en séance, une tentative de « tôi » arrivée en japonais sous une étiquette
-`[lang:vi]`.
+### 19. A recognisable answer is correct
+"Toi" for tôi, a missing accent, an approximate transcription: all of it is
+right. Confirm and move on. Never re-ask the question you have just asked.
+**Where:** both — `answered_target` decides, the prompt sets the tone
+**Change:** `tutor.py` → `ANSWER_MATCH_THRESHOLD` (0.5)
 
-> **Et la seconde passe ne part JAMAIS sur une phrase anglaise.** La règle 25b
-> s'applique aussi ici : plus de trois mots en anglais assuré, c'est l'apprenant
-> qui nous parle, pas une tentative de mot. On garde ce qu'il a dit.
+### 20. A genuinely different word earns exactly one second chance
+Minh says it again, the question is re-asked short, then the lesson moves on
+whatever the answer.
+**Where:** code end to end — `_should_retry` decides, `scripted_turn` writes the
+sentence ("Listen again — tôi. And again?")
+**Change:** `tutor.py` → `_should_retry`, `_RETRY_ASK`
+
+> **Weak, and known.** The retry has Minh say the word and then asks for it: the
+> answer is given before the question. The right shape would be "it was tôi,
+> repeat after Minh" — owning the miss instead of staging a question. It used to
+> be an instruction the model interpreted; it is now a single line of code, so a
+> single line to change.
+
+### 21. Any correct Vietnamese counts, not only the item's own phrasing
+"tên tôi là Nam" is not corrected into "tôi tên là Nam".
+**Where:** prompt — WHEN THEY GET IT WRONG
+**Change:** `persona.toml`
+
+### 22. A real question replays the step instead of consuming it
+So that a scripted plan cannot roll over the learner.
+**Where:** code — `learner_asked_something`
+**Change:** `tutor.py`
+
+---
+
+## Hearing the learner
+
+### 23. Recording is hands-free
+Starts on speech, stops after 1.2 s of silence. No key, ever.
+**Where:** code
+**Change:** `listen.py` → `TRAILING_SILENCE_MS`
+
+### 23b. A frame is speech if the detector AND the loudness agree
+The loudness threshold is measured continuously — the 20th percentile of the
+last three seconds is the room noise, and a frame has to beat it by a factor of
+three.
+**Where:** code — `_speech_threshold`, in the recording callback
+**Why:** measured on a laptop with a loud fan, `webrtcvad` at its strictest
+called **93% of silence** speech, against 91% for a spoken word — silence scored
+higher than the voice. The same recording separated cleanly on loudness: 286 rms
+for the room, 1117 for the word, peaks 15× apart. Each is blind to a different
+family of noise: the fan passes the detector but not the loudness, a slamming
+door passes the loudness but not the detector.
+**Why measured and not fixed:** a threshold calibrated in one room would make
+the app deaf in another. Speech is the loud minority of recent frames, so a low
+percentile of them gives the room itself.
+**Change:** `listen.py` → `ENERGY_RATIO`, `ENERGY_ABSOLUTE_MIN`
+
+### 24. Silence is trimmed before upload
+Groq's transcription has no server-side silence filter, and Whisper invents
+whole sentences from near-silence.
+**Where:** code — `_trim_to_speech`
+**Change:** `listen.py` → `TRIM_PADDING_FRAMES`
+
+### 24b. Below five speech frames, nothing is sent at all
+Trimming is not enough: the padding builds a 630 ms window around a single
+frame, and one isolated frame is not a word. An empty transcription is returned,
+and the loop listens again without consuming the step.
+**Where:** code — `MIN_SPEECH_FRAMES`, in `record_until_silence`
+**Why:** Whisper does not return nothing on silence, it invents. Seen in session
+at 1 frame out of 126: "ありがとうございました" — Whisper's most common
+hallucination, learned from the silent ends of YouTube videos. The tutor counted
+it as a missed word and raised the level.
+**The threshold is measured:** a genuine one-word answer gives 13 frames or more
+("tôi" → 13/70, transcribed "Tua"). Five frames are 150 ms — far below any
+syllable, far above the noise that hallucinates.
+**Change:** `listen.py` → `MIN_SPEECH_FRAMES`
+
+### 25. The transcription knows which word it is expecting
+When the current step asks for a recall, a first pass with automatic detection;
+if it does not return the expected word, a second pass forcing Vietnamese. One
+extra request only when the first fails.
+**Where:** code — `transcribe(expected=..., matches=...)`
+**Why:** Whisper hears right and writes wrong. `tên` sounds like *ten* in
+English, and it transcribed it **`10`** — the right sound, unusable text.
+**If the second pass does not return the word either**, the first pass's text is
+kept — unless it had decoded in a language outside {vi, en}, in which case the
+forced pass is kept. Otherwise the tag lies about its own text: seen in session,
+an attempt at "tôi" arriving in Japanese under a `[lang:vi]` label.
+
+> **And the second pass NEVER runs on an English sentence.** Rule 25b applies
+> here too: more than three words of confident English means the learner is
+> talking to us, not attempting a word. We keep what they said.
 >
-> **Pourquoi :** le pire échec produit par ce système. Étape attendant « tôi »,
-> l'apprenant dit en anglais clair *« No, I'm asking for travel, listen, I don't
-> care what I am me. »* Ça ne contient pas « tôi », donc passe forcée en
-> vietnamien, qui rend *« Không, tôi đang chờ đề lý… »* — du vietnamien inventé
-> qui contient « tôi » par hasard. Le seul test de récupération étant « est-ce
-> que le mot attendu est dedans », l'invention a été acceptée, comptée comme
-> bonne réponse, niveau monté, leçon avancée. L'apprenant protestait et s'est
-> fait répondre « Exactly. »
+> **Why:** the worst failure this system has produced. A step waiting for "tôi",
+> the learner says in plain English *"No, I'm asking for travel, listen, I don't
+> care what I am me."* It does not contain "tôi", so a forced Vietnamese pass
+> ran, and returned *"Không, tôi đang chờ đề lý…"* — invented Vietnamese that
+> happens to contain "tôi". The only recovery test being "is the expected word
+> in there", the invention was accepted, counted as a right answer, the level
+> raised, the lesson advanced. The learner was protesting and was answered
+> "Exactly."
 >
-> Se tromper dans l'autre sens est bon marché : une longue tentative
-> vietnamienne prise pour de l'anglais est comptée ratée et redemandée. Se
-> tromper dans ce sens-là **écrase ce que l'apprenant a réellement dit.**
+> Getting it wrong the other way is cheap: a long Vietnamese attempt taken for
+> English is counted missed and asked again. Getting it wrong this way
+> **overwrites what the learner actually said.**
 
-**Changer :** `listen.py` → `is_learner_talking`, `transcribe`
+**Change:** `listen.py` → `is_learner_talking`, `transcribe`
 
-### 25b. Quand rien n'est attendu, la longueur décide de la langue
-Si la langue détectée sort de {vi, en} et qu'aucun mot n'est attendu : un ou
-deux mots sont une tentative de vocabulaire, on force le vietnamien ; une
-phrase est une question, on force l'anglais.
-**Où :** code — `SENTENCE_WORDS`
-**Pourquoi :** tout forcer en vietnamien a transformé « how do you say dog in
-Vietnamese ? » en « Cái cách nói đáy ở Việt Nam ? », et le tuteur a enseigné le
-mot pour « le fond ».
-**Changer :** `listen.py` → `SENTENCE_WORDS`
+### 25b. When nothing is expected, length decides the language
+If the detected language falls outside {vi, en} and no word is expected: one or
+two words are a vocabulary attempt, so Vietnamese is forced; a sentence is a
+question, so English is forced.
+**Where:** code — `SENTENCE_WORDS`
+**Why:** forcing everything to Vietnamese turned "how do you say dog in
+Vietnamese?" into "Cái cách nói đáy ở Việt Nam?", and the tutor taught the word
+for "the bottom".
+**Change:** `listen.py` → `SENTENCE_WORDS`
 
-### 26. La transcription n'est jamais réparée
-Ce qui a été dit est ce que le tuteur voit.
-**Où :** code — rien ne le fait, délibérément
-**Pourquoi :** deux tentatives ont été faites et retirées. Un indice de
-vocabulaire donné au décodeur faisait inventer du vietnamien à Whisper à partir
-de bruit pur. Rapprocher le texte du mot connu le plus proche réparait la
-mauvaise prononciation que le tuteur est justement censé entendre.
-
----
-
-## L'ouverture
-
-### 27. Trois points, une seule fois, tout au début
-Dire les choses à voix haute ; ne pas chercher à retenir ; suivre le cours ou
-demander son propre sujet. Puis Minh salue, puis une question, puis stop.
-**Où :** les deux — le code décide *quand* (`lesson["started"]`), le prompt dit
-quoi
-**Pourquoi :** un plan vide voulait dire à la fois « pas commencé » et
-« terminé », et le tuteur a ouvert une session neuve par « let's wrap up for
-today »
-**Changer :** `persona.toml` → OPENING
-
-> **Coût connu.** 55 secondes de synthèse avant qu'il se passe quoi que ce
-> soit. `--no-intro` la saute pendant qu'on travaille sur la leçon elle-même.
+### 26. A transcription is never repaired
+What was said is what the tutor sees.
+**Where:** code — nothing does it, deliberately
+**Why:** two attempts were made and withdrawn. A vocabulary hint given to the
+decoder had Whisper inventing Vietnamese out of pure noise. Snapping the text to
+the nearest known word repaired exactly the mispronunciation the tutor is
+supposed to hear.
 
 ---
 
-## La prononciation
+## The opening
 
-### 28. Le tuteur ne juge jamais comment l'apprenant sonne
-Aucun verdict sur un son : ni sur un ton, ni sur une voyelle, ni sur rien de ce
-qui a été dit. On réagit à **quel mot** c'était, jamais à comment il sonnait.
-**Où :** prompt — NEVER JUDGE HOW THEY SOUND
-**Pourquoi :** le tuteur n'entend jamais l'apprenant, seulement une
-transcription approximative — tout verdict est une devinette, et il en
-inventait de fausses (« tên » glosé « le a de bed »)
-**Changer :** `persona.toml` → NEVER JUDGE HOW THEY SOUND
+### 27. Three points, once, right at the start
+Say things out loud; do not try to memorise; follow the course or ask for your
+own subject. Then Minh greets, then one question, then stop.
+**Where:** both — the code decides *when* (`lesson["started"]`), the prompt says
+what
+**Why:** an empty plan meant both "not started" and "finished", and the tutor
+opened a brand-new session with "let's wrap up for today"
+**Change:** `persona.toml` → OPENING
 
-### 28b. Les tons SONT enseignés, comme n'importe quel item
-Six règles ancrées sur des mots déjà connus (`06_thanh_dieu.toml`) : le signe
-existe, il porte la hauteur, et son dessin est celui de la voix.
-**Où :** contenu — les règles ; le prompt autorise seulement
-**Historique :** le prompt interdisait *« ne nomme jamais un ton, n'explique
-jamais que le vietnamien a des tons »*. C'était un échafaudage temporaire, posé
-quand aucun contenu n'existait — pas une position pédagogique. Il est tombé avec
-l'arrivée des règles, et l'esquive qui allait avec (« ça viendra plus tard »)
-aussi : elle serait devenue un mensonge.
-**Ce qui n'a pas bougé :** 28. Enseigner un ton et diagnostiquer un ton sont
-deux choses ; seule la seconde est interdite, et elle l'est pour une raison qui
-tient toujours.
-**Changer :** `content/vietnamese/06_thanh_dieu.toml`
-
-### 28c. Un mot qui ne diffère d'un ancien que par le ton se présente en paire
-À l'introduction du **nouveau** mot seulement, et seulement si l'ancien est
-connu : les deux sont dits par Minh l'un derrière l'autre, dans le même souffle.
-`ba` puis `bà`, un seul clip, deux mots.
-**Où :** code — `tone_twin` calcule, `_INTRODUCE_TWIN` prononce
-**Pourquoi la paire :** le tuteur n'entend jamais l'apprenant (28), donc la seule
-pédagogie honnête est de rendre la différence **audible**. Deux mots collés sont
-le seul instant où la différence existe pour une oreille étrangère.
-**Pourquoi au second seulement :** deux sosies enseignés côte à côte
-s'entremêlent. Mesuré : presque 40 % du vocabulaire a un sosie, mais trois paires
-seulement parmi les mots enseignés aujourd'hui — le mécanisme sert peu et
-grandira avec le vocabulaire.
-**Calculé, jamais annoté :** le ton est dans le diacritique.
-**Changer :** `tutor.py` → `tone_twin`, `_INTRODUCE_TWIN`
+> **Known cost.** 55 seconds of synthesis before anything happens at all.
+> `--no-intro` skips it while working on the lesson itself.
 
 ---
 
-## Les outils
+## Pronunciation
 
-### 29. Trois outils, tous rares
-`set_session_focus` (l'apprenant demande un thème, quatre items sont générés),
-`remember_word` (il demande comment dire quelque chose hors programme),
-`deprioritize_item` (il demande d'abandonner quelque chose — enterré au niveau
-12, jamais supprimé).
-**Où :** le code exécute, le prompt décide quand
-**Portée :** uniquement sur les tours que le modèle écrit. Un tour scripté (4b)
-ne passe par aucun modèle, donc par aucun outil — sans conséquence, puisque les
-trois se déclenchent sur une demande explicite de l'apprenant, et que parler
-rend justement la main au modèle (4c).
-**Changer :** `tutor.py` → `TOOLS`
+### 28. The tutor never judges how the learner sounds
+No verdict on a sound: not on a tone, not on a vowel, not on anything that was
+said. We react to **which word** it was, never to how it sounded.
+**Where:** prompt — NEVER JUDGE HOW THEY SOUND
+**Why:** the tutor never hears the learner, only an approximate transcription —
+any verdict is a guess, and it was inventing false ones ("tên" glossed as "the a
+in bed")
+**Change:** `persona.toml` → NEVER JUDGE HOW THEY SOUND
 
-### 29b. Un outil qui échoue ne termine jamais la leçon
-La génération de thème est encapsulée : si elle casse, on l'écrit dans les logs
-et la séance continue sans le thème.
-**Où :** code — le `try` autour de `generate_theme_items`
-**Pourquoi :** la toute première fois que `set_session_focus` s'est déclenché,
-la génération a rendu un 400, l'exception est remontée hors du gestionnaire
-d'outil, et une séance par ailleurs saine est morte à son deuxième tour.
-**Changer :** `tutor.py` → `_run_turn`
+### 28b. Tones ARE taught, like any other item
+Six rules anchored on words already known (`06_thanh_dieu.toml`): the mark
+exists, it carries the pitch, and its shape is the shape of the voice.
+**Where:** content — the rules; the prompt only permits
+**History:** the prompt forbade *"never name a tone, never explain that
+Vietnamese has tones"*. That was temporary scaffolding, put in when no content
+existed — not a pedagogical position. It fell when the rules arrived, and so did
+the dodge that went with it ("that comes later"): it would have become a lie.
+**What has not moved:** 28. Teaching a tone and diagnosing a tone are two
+things; only the second is forbidden, and it is forbidden for a reason that
+still holds.
+**Change:** `content/vietnamese/06_thanh_dieu.toml`
 
-### 29c. La génération de thème n'est pas un tour parlé
-Elle émet du JSON, pas de la parole, et a son propre plafond de jetons.
-**Où :** code — `THEME_GENERATION_MAX_TOKENS` (2500) contre
+### 28c. A word differing from an older one only by tone is presented as a pair
+At the introduction of the **new** word only, and only if the older one is
+known: both are said by Minh one after the other, in the same breath. `ba` then
+`bà`, one clip, two words.
+**Where:** code — `tone_twin` computes, `_INTRODUCE_TWIN` speaks
+**Why the pair:** the tutor never hears the learner (28), so the only honest
+teaching is to make the difference **audible**. Two words back to back are the
+only moment the difference exists for a foreign ear.
+**Why at the second only:** two lookalikes taught side by side tangle. Measured:
+almost 40% of the vocabulary has a lookalike, but only three pairs among the
+words taught today — the mechanism does little now and grows with the
+vocabulary.
+**Computed, never annotated:** the tone is in the diacritic.
+**Change:** `tutor.py` → `tone_twin`, `_INTRODUCE_TWIN`
+
+---
+
+## The tools
+
+### 29. Three tools, all of them rare
+`set_session_focus` (the learner asks for a theme, four items are generated),
+`remember_word` (they ask how to say something off-syllabus),
+`deprioritize_item` (they ask to drop something — buried at level 12, never
+deleted).
+**Where:** the code executes, the prompt decides when
+**Scope:** only on turns the model writes. A scripted turn (4b) goes through no
+model, therefore through no tool — with no consequence, since all three fire on
+an explicit request from the learner, and speaking is exactly what hands the
+turn back to the model (4c).
+**Change:** `tutor.py` → `TOOLS`
+
+### 29b. A tool that fails never ends the lesson
+Theme generation is wrapped: if it breaks, it is written to the logs and the
+session carries on without the theme.
+**Where:** code — the `try` around `generate_theme_items`
+**Why:** the very first time `set_session_focus` fired, generation returned a
+400, the exception climbed out of the tool handler, and an otherwise healthy
+session died on its second turn.
+**Change:** `tutor.py` → `_run_turn`
+
+### 29c. Theme generation is not a spoken turn
+It emits JSON, not speech, and has its own token ceiling.
+**Where:** code — `THEME_GENERATION_MAX_TOKENS` (2500) against
 `MAX_TOKENS_PER_TURN` (500)
-**Pourquoi :** elle héritait du plafond des trois phrases parlées. Quatre items
-avec leurs notes en vietnamien font quatre fois ça, le JSON sortait tronqué, et
-Groq répondait 400 « tool_use_failed ». Une troncature n'est pas un résultat
-dégradé, c'est un refus.
-**Et le schéma accepte `null`** sur `pieces` et `literal` : ils sont documentés
-« constructions uniquement », donc sur un atome le modèle écrit `null` — ce
-qu'un schéma non-nullable transformait en 400, perdant le lot entier pour un
-champ qui ne s'appliquait pas.
+**Why:** it inherited the ceiling meant for three spoken sentences. Four items
+with their Vietnamese notes are four times that, the JSON came back truncated,
+and Groq answered 400 "tool_use_failed". A truncation is not a degraded result,
+it is a refusal.
+**And the schema accepts `null`** on `pieces` and `literal`: they are documented
+"constructions only", so on an atom the model writes `null` — which a
+non-nullable schema turned into a 400, losing the whole batch for a field that
+did not apply.
 
-### 29d. Un refus définitif n'est pas réessayé
-Un 4xx qui n'est pas 429 veut dire que la requête est fausse ; la répéter ne
-peut pas aider.
-**Où :** code — `PermanentAPIError`, `_permanent`
-**Pourquoi :** le 400 ci-dessus a été renvoyé cinq fois avant de planter,
-brûlant cinq fois le budget sur une requête qui ne pouvait pas aboutir.
-**Changer :** `tutor.py` → `_permanent`
+### 29d. A definitive refusal is not retried
+A 4xx that is not a 429 means the request is wrong; repeating it cannot help.
+**Where:** code — `PermanentAPIError`, `_permanent`
+**Why:** the 400 above was sent five times before crashing, burning the budget
+five times on a request that could not succeed.
+**Change:** `tutor.py` → `_permanent`
 
-> **La génération produit des phrases entières**, que la règle 9 repoussera
-> jusqu'à ce que leurs mots soient enseignés — peut-être indéfiniment.
+> **Generation produces whole sentences**, which rule 9 will defer until their
+> words are taught — possibly forever.
 
 ---
 
-## L'infrastructure
+## Infrastructure
 
-### 30. Un seul modèle, aucun secours
-Sur un 429, le code attend et réessaie le même modèle.
-**Où :** code
-**Pourquoi :** toutes les alternatives cassent le format — l'une écrit ses
-appels d'outils en texte que le tuteur lit à voix haute, l'une fuit ses jetons
-internes dans les noms d'outils, l'une déclenche des outils sans rien dire
-**Changer :** `tutor.py` → `MODEL`
+### 30. One model, no fallback
+On a 429, the code waits and retries the same model.
+**Where:** code
+**Why:** every alternative breaks the format — one writes its tool calls as text
+the tutor reads aloud, one leaks its internal tokens into tool names, one fires
+tools without saying anything
+**Change:** `tutor.py` → `MODEL`
 
-### 31. Le budget est de 8000 tokens par minute
-Mesuré, pas documenté. À ~3000 tokens la requête, cela fait environ deux
-requêtes et demie par minute — c'est pour ça que le prompt système reste petit.
-Depuis 4b, environ la moitié des tours n'envoie plus rien du tout.
-**Où :** le palier gratuit de Groq
-**Changer :** payer, ou réduire `persona.toml`
+### 31. The budget is 8000 tokens a minute
+Measured, not documented. At ~3000 tokens a request, that is about two and a
+half requests a minute — which is why the system prompt stays small. Since 4b,
+about half the turns send nothing at all.
+**Where:** Groq's free tier
+**Change:** pay, or shrink `persona.toml`
 
-### 32. La progression s'écrit au fil de la session, et se relit dans l'ordre
-Un plantage ne coûte rien. `--fresh` n'écrit rien du tout.
+### 32. Progress is written as the session goes, and read back in order
+A crash costs nothing. `--fresh` writes nothing at all.
 
-Et elle se **relit dans l'ordre où elle a été écrite**, pas dans celui du roster.
-**Où :** code — `taught_order` lit le fichier d'état, la reprise s'en sert
-**Pourquoi :** les contrôles d'espacement regardent les derniers items vus. Un
-historique reconstruit dans l'ordre du roster les fait décider autrement que la
-séance qui a produit l'état — `--at=120` ouvrait sur le mauvais item, et trois
-traits sur sept manquaient le leur. Une partie de ce qui ressemblait à du
-contenu qui dérive était l'état rebâti de travers avant le premier mot.
-**Changer :** `tutor.py` → `run_session` ; `srs.py` → `taught_order`
+And it is **read back in the order it was written**, not in roster order.
+**Where:** code — `taught_order` reads the state file, the resume uses it
+**Why:** the spacing checks look at the last few items seen. A history rebuilt
+in roster order makes them decide differently from the run that produced the
+state — `--at=120` opened on the wrong item, and three features out of seven
+missed theirs. Part of what looked like content drifting was the state rebuilt
+wrong before a word was spoken.
+**Change:** `tutor.py` → `run_session`; `srs.py` → `taught_order`
