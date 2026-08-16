@@ -396,6 +396,69 @@ propositions réelles.
 Rien dans le code ne les exécute. Chacune porte le tiroir qu'elle viserait et le
 test qui reste à faire avant d'y toucher.
 
+### La phrase est un véhicule, pas une destination
+*Proposé par Meo, 15 août.*
+
+**Ce qu'on suit, ce sont les mots et le réflexe de construire.** Une phrase doit
+être juste, mais elle est jetable : elle a servi dès qu'elle a fait produire
+quelque chose. On ne répète donc pas six fois `tôi ăn cơm` — on fait revenir `ăn`
+et `cơm` six fois, dans six phrases différentes : une avec un autre pronom, une
+au passé, une avec un adjectif en plus, une à la forme négative.
+
+**Ce qui l'a déclenchée — mesuré le 15 août.** Sur les 149 mots enseignés,
+**93 (62 %) ne figurent dans aucune phrase**. Ils ne peuvent revenir que par un
+rappel sec. Et le cours de référence fait l'inverse : `to` est entendu **60 fois
+en huit minutes** de japonais, parce qu'il voyage dans chaque phrase construite
+(`METHOD.md`).
+
+**Ce que ça annule.** La réponse évidente était d'écrire 93 phrases à la main.
+Si la phrase est jetable, elle n'a besoin ni de nom, ni de niveau, ni de tirage —
+donc il n'y a presque rien à écrire.
+
+**Ce que ça débloque.** L'objection sérieuse à la génération était que rien ne
+distingue `uống cà phê` de `uống cơm` — ni Wiktionary, qui n'atteste que les
+expressions figées, ni `vn_freqs.tsv`, qui ne contient que des mots isolés. Mais
+l'objection ne vaut que pour la **combinaison libre**. Une **transformation** de
+phrase déjà validée reste juste : `tôi ăn cơm` correct ⇒ `anh ăn cơm`,
+`tôi không ăn cơm`, `tôi đã ăn cơm` corrects.
+
+**Et les opérateurs existent déjà : ce sont les traits.**
+
+| trait | ce qu'il fait à une phrase |
+| --- | --- |
+| `không` | la nie |
+| `đã` · `rồi` · `đang` · `sẽ` | la déplacent dans le temps |
+| `có … không ?` | en fait une question |
+| `ấy` | change la personne dont on parle |
+| `rất` · `lắm` | intensifient |
+| adjectif sans `là` | permet de qualifier le sujet |
+
+Ce ne sont pas des règles à connaître, ce sont **des boutons pour fabriquer la
+variation suivante**. Le classement en tiers prend alors un second sens : le
+tier 1 est l'ensemble des boutons sans lesquels on ne peut rien varier.
+
+**L'étape `vary` est déjà cette idée, en tout petit** — elle ne varie que la
+personne, soit un bouton sur dix.
+
+**Tiroir :** un geste qui revient → une étape dans `build_plan`. Pas un nouveau
+`kind` : une phrase-souche reste une `construction`, et le carnet met en garde
+contre la taxonomie.
+
+**Ce qu'il faut avant d'y toucher :**
+
+1. **Des phrases-souches validées.** Peu, mais justes. Huit combinaisons sont
+   déjà écrites dans le contenu comme illustrations de règles et ne sont
+   enseignées nulle part : `ăn cơm`, `uống cà phê`, `uống nước`, `cà phê ngon`,
+   `cơm ngon`, `em mệt`, `tôi biết`, `cà phê của tôi`.
+2. **Savoir quel trait s'applique à quelle souche.** Nier `tôi biết` marche ;
+   mettre `cà phê ngon` au passé, non. C'est de la connaissance de vietnamien,
+   donc de l'annotation, pas du code.
+3. **Mesurer avant de câbler.** Combien de variations distinctes une souche
+   supporte-t-elle réellement ? Si c'est deux, l'idée ne vaut pas sa complexité.
+
+**Statut :** à mesurer d'abord — le point 3. Rien à câbler tant qu'on ne sait
+pas combien de variations une souche donne.
+
 ### Dire ce qu'un mot va construire, au moment où on l'apprend
 *Proposé par Meo, 13 août.*
 
