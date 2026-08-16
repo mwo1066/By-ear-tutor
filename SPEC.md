@@ -474,7 +474,7 @@ d'adresse n'a donc ni rappels de pièces (13b) ni rappels de clôture (17).
 
 ---
 
-## Comment les mots reviennent
+## Comment les items reviennent
 
 ### 14. Chaque mot porte un niveau
 Niveau 0 à l'introduction, +1 à chaque rappel. La chance d'être tiré vaut
@@ -498,7 +498,8 @@ Un mot raté a besoin de plus d'exposition, ce qu'un niveau bas organise déjà.
 ### 17. Des rappels isolés closent presque chaque item — en nombre variable
 Tirés par niveau, en excluant l'item qu'on vient d'enseigner et ses pièces.
 Leur **nombre** varie de 1 à 4 : une base qui suit ce que l'item vient de faire
-dire, plus ou moins un.
+dire, plus ou moins un. **Un de ces créneaux peut tomber sur un trait
+`discrete`** (17b) ; les autres restent des mots.
 **Où :** code — `rapidfire_count`
 **Pourquoi variable :** fixé à trois, chaque mot simple coûtait exactement cinq
 tours, et un apprenant attentif apprend la cadence — après le deuxième rappel il
@@ -525,6 +526,42 @@ revient par le plan des items suivants, tiré par niveau, indéfiniment (14).
 isolé, c'est-à-dire la moyenne mesurée ; les bases de la construction et du trait
 sont écrites en dur juste à côté, parce qu'elles se déduisent de ce que l'item
 vient de faire dire et non d'une mesure.
+
+
+### 17b. Un trait revient, sous forme d'application
+Un trait `discrete` entre dans le tirage au même titre qu'un mot et pondéré par
+le même niveau. Quand il sort, l'étape émise est une **application** — une phrase
+à produire — et jamais un rappel sec.
+**Où :** code — `drawable` décide qui peut être tiré, `build_plan` choisit la
+forme du tour, `MAX_APPLICATIONS_PER_ITEM` (1) plafonne
+**Pourquoi :** mesuré sur un cours entier, **33 traits sur 33 n'étaient jamais
+revus**, niveau final 0, contre 4,5 pour les mots. Un cinquième de ce qui est
+enseigné l'était une seule fois. Un apprenant l'a dit : « je n'ai rien compris à
+la règle, et elle n'est même pas utilisée ».
+**Pourquoi une application et pas un rappel :** personne ne récite une règle. On
+ne peut pas **redemander** un trait, on peut le **réappliquer** — et le tour
+existait déjà, il ne se déclenchait qu'à l'introduction.
+**Trois mots à ne pas confondre :** `is_teachable` (une leçon peut-elle se
+construire ?), `askable` (peut-il être la question sèche d'un rappel ?),
+`drawable` (peut-il occuper un créneau, sous une forme ou une autre ?). Un trait
+est le troisième sans être le second, et c'est cette confusion qui l'avait exclu.
+**Les `strand` ne sont jamais tirés :** ils se déclenchent depuis la matière —
+un mot a un jumeau de ton, une phrase contient une personne — donc les tirer
+demanderait une seconde copie, moins bonne, de ce qui tourne déjà.
+**Le niveau monte sans jugement.** Une application demande une phrase entière :
+il n'y a pas de cible à comparer, et faire juger le modèle rendrait une décision
+que le code a reprise. C'est donc l'**exposition** qui est comptée. Et ce n'est
+pas optionnel : `weight(0)` vaut treize fois `weight(4,5)`, donc un trait resté à
+zéro serait tiré indéfiniment de préférence à tous les mots.
+**Pourquoi le plafond d'une :** une application est un tour long là où un rappel
+est un mot. Simulé sur une clôture de trois avec les traits frais, **86 % des
+clôtures porteraient deux applications ou plus et 44 % en porteraient trois** —
+la forme exacte du défaut que 9b empêche. À l'équilibre ça retombe à 8 %, donc
+le plafond protège surtout la mise en service, et coûte peu ensuite : une
+application de moins par trait sur 120 items, un écart de 22 items au lieu de 17.
+**Mesuré après :** niveau médian des traits **4**, contre 4 pour les mots — les
+mots passent de 5 à 4, ce qui est le prix payé et il est assumé.
+**Changer :** `content.py` → `drawable` ; `tutor.py` → `MAX_APPLICATIONS_PER_ITEM`
 
 ---
 

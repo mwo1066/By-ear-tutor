@@ -76,6 +76,13 @@ class Item:
     # wait more than 30. So a learner meets a word, drills it as vocabulary, and
     # is told an hour later where it goes.
     after: str = ""
+    # Features only. "discrete" is a fact taught once that should come back;
+    # "strand" is one that never finishes -- tone attaches to every word, the
+    # address system to every sentence with a person in it -- so it fires from
+    # the material and must never be drawn as a recall target. Empty on atoms
+    # and constructions. See LEXIQUE.md.
+    nature: str = ""
+    tier: int = 0
     source: str = "roster"  # "roster" (curated TOML) or "personnel" (LLM-generated live)
     topic: str | None = None  # theme this item was generated for, if any -- lets a whole theme be deprioritized at once
 
@@ -101,6 +108,8 @@ def load_roster(content_dir: Path) -> list[Item]:
                 hook=raw.get("hook", ""),
                 steps=list(raw.get("steps", [])),
                 after=raw.get("after", ""),
+                nature=raw.get("nature", ""),
+                tier=int(raw.get("tier", 0)),
             ))
     return items
 
@@ -404,6 +413,33 @@ def askable(item: Item) -> bool:
     # authoring label is not: "câu hỏi có/không: ..." means "yes/no question:",
     # which is a note to the author and not something anyone says.
     return not _FORMULA.search(item.gloss) and ":" not in item.name
+
+
+def drawable(item: Item) -> bool:
+    """Whether this item can be DRAWN into a recall slot at all.
+
+    Three words, three different questions, and conflating them is what kept a
+    fifth of the course from ever coming back:
+
+      is_teachable  can a lesson be built from it?
+      askable       can it be the bare question of a recall slot?
+      drawable      can it fill a recall slot, in whatever form?
+
+    A discrete feature is drawable but not askable. Nobody recites "no plural",
+    so it cannot be a bare question -- but it can be APPLIED, and the code
+    already knows how to build that turn. Excluding it from the draw because it
+    failed `askable` was the right test asked of the wrong question: measured
+    over a whole course, 33 features out of 33 were never seen again, final
+    level 0 against 4.5 for words.
+
+    A strand is never drawable. Tone and the address system fire from the
+    material itself -- a word has a tone twin, a sentence has a person in it --
+    so drawing them would ask for a second, worse copy of something already
+    running.
+    """
+    if item.kind == "feature":
+        return item.nature == "discrete" and bool(item.gloss)
+    return askable(item)
 
 
 def unknown_pieces(item: Item, seen_items: list[Item]) -> list[str]:

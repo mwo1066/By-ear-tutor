@@ -30,7 +30,7 @@ sys.stdout.reconfigure(encoding="utf-8")
 
 from content import load_course, is_teachable, load_personal_items, load_roster, pick_next_index, pieces_of
 from srs import ProgressStore
-from tutor import CONTENT_DIR, STATE_PATH, _recall_targets, build_plan
+from tutor import CONTENT_DIR, STATE_PATH, RECALL_KINDS, _recall_targets, build_plan
 
 # Measured across the real sessions logged: a scripted turn runs 3-11s of speech
 # plus 3-5s of listening, a model turn 10-28s plus the same. Most turns are
@@ -141,13 +141,23 @@ def run(turns: int, seed: int = 7) -> ProgressStore:
             spent += 1
             if spent >= turns:
                 break
-            # Only recall steps score, exactly as the live loop does.
-            if step.kind in ("recall_piece", "rapidfire", "settle") and step.target:
+            # Scores exactly as the live loop does -- and the kinds come FROM
+            # the live loop rather than being listed again here. They were
+            # listed again here, and the copy went stale the day applications
+            # started counting: this simulation is what measured "33 features
+            # out of 33 never seen again", so a stale copy would have gone on
+            # reporting that after the fix landed.
+            if step.kind in RECALL_KINDS and step.target:
                 if random.random() < ACCURACY:
                     store.record_recall(step.target)
                 else:
                     spent += 1          # the retry costs a turn
                     store.record_recall(step.target)
+            elif step.kind == "apply" and step.target:
+                # Exposure, never a score: an application asks for a whole
+                # sentence, so there is nothing to mark. Same rule as the live
+                # loop, same reason.
+                store.record_recall(step.target)
     return store, taught, len(queue)
 
 

@@ -12,6 +12,16 @@ Une ligne par changement archivé, au format :
 
 ## Changements archivés
 
+`0005` — **faire revenir un trait sous forme d'application** — 2026-08-15 — le
+défaut mesuré est fermé : les traits passent d'un niveau de 1, jamais revus, à
+une médiane de 4, contre 4 pour les mots. Un trait `discrete` entre dans le
+tirage et en sort sous forme de phrase à produire, plafonné à une par clôture —
+sans quoi 86 % des clôtures en auraient porté deux ou plus pendant la transition.
+A fait apparaître trois choses invisibles : `askable` était une seconde barrière
+et il manquait le mot `drawable` ; le champ `nature` écrit par `0001` n'était pas
+chargé du tout ; et `simulate_progress.py` portait une copie de la règle de
+notation qui aurait continué à rapporter l'ancien chiffre après la correction.
+
 `0004` — **trois endroits où le code disait quelque chose de faux** — 2026-08-15
 — « Progress saved » annoncé sous `--fresh` alors que rien n'est écrit ; un trait
 sans glose signalé nulle part, l'exemption datant d'avant les tours scriptés ; et

@@ -29,6 +29,7 @@ sys.stdin.reconfigure(encoding="utf-8")
 from content import (load_course, 
     Item, load_persona_system_prompt, load_roster, load_personal_items,
     add_personal_items, address_situations, ADDRESS_TERMS, askable, check_roster, derive_pieces,
+    drawable,
     has_person_slot, is_teachable, pieces_of, pick_next_index, tone_twin,
 )
 from srs import ProgressStore
@@ -671,6 +672,56 @@ def rapidfire_count(item: Item, pieces: list[Item]) -> int:
         # SPEC 17 had to warn against editing it. Now it means what it says.
         base = N_RAPIDFIRE
     return max(1, base + random.choice((-1, 0, 0, 1)))
+# At most one application among an item's closing recalls. See _recall_targets
+# for the measurement that set it at one.
+MAX_APPLICATIONS_PER_ITEM = 1
+
+
+def _apply_material(item: Item, known: list[Item]) -> tuple[str, str]:
+    """What a feature's application works ON, and what it asks FOR, in English.
+
+    One place, because two turns need it: the application that follows a
+    feature's introduction, and the one drawn later as revision. They word the
+    turn differently -- the first can say "now put THOSE words together" because
+    the pieces were just re-asked, the second has to name its own material --
+    but the CHOICE of material is the same decision and must not drift apart.
+
+    Sorted by HOW MUCH is shared, not by who comes first. The yes/no question
+    rule (có, không) was pinned to "không phải là + [danh từ]", which shares
+    only "không" and is about negation -- so every rung asked for "not a
+    student" while the rule being taught was how to ask a question.
+
+    The ask side never contains Vietnamese: the instruction said "ask it in
+    English" in six wordings and the turn still ended on "How would you say
+    cơm ngon to Minh?".
+    """
+    by_name = {i.name: i for i in known}
+    related = sorted(
+        (c for c in known
+         if c.kind == "construction" and set(c.pieces) & set(item.pieces)),
+        key=lambda c: -len(set(c.pieces) & set(item.pieces)))
+    pinned = related[0] if related else None
+    if pinned:
+        return (f' Work on THIS sentence and no other: "{pinned.gloss}" ({pinned.name}).',
+                speakable(pinned.gloss))
+    if item.pieces:
+        # No taught sentence touches this feature, so its OWN words are the
+        # material. Handing over the list of sentences instead produced the
+        # worst turn of the session: asked to show that an adjective needs no
+        # "là", the model chose "I am not a student" -- a noun, which REQUIRES
+        # là, so the application demonstrated the opposite of the rule. Naming
+        # the words it must build from cannot do that.
+        words = ", ".join(f'"{p}"' for p in item.pieces)
+        glosses = [speakable(by_name[p].gloss) for p in item.pieces
+                   if p in by_name and by_name[p].gloss][:2]
+        return (f" Build the sentence out of these words, which are what this rule is about: "
+                f"{words}. Nothing else, and never a word they have not been taught.",
+                " and ".join(glosses) + ", put together the way the rule says"
+                if len(glosses) == 2 else "")
+    return (_known_sentences_note(known) +
+            " Pick ONE of them that this rule can visibly change, and stay on it.", "")
+
+
 N_VARIATIONS = 3
 
 
@@ -1053,26 +1104,7 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item],
         # asked for "not a student" while the rule being taught was how to ask a
         # question. The construction that shares both pieces was sitting right
         # there, later in the course order.
-        related = sorted(
-            (c for c in (known or [])
-             if c.kind == "construction" and set(c.pieces) & set(item.pieces)),
-            key=lambda c: -len(set(c.pieces) & set(item.pieces)))
-        pinned = related[0] if related else None
-        if pinned:
-            on_it = f' Work on THIS sentence and no other: "{pinned.gloss}" ({pinned.name}).'
-        elif item.pieces:
-            # No taught sentence touches this rule, so the rule's OWN words are
-            # the material. Handing over the list of sentences instead produced
-            # the worst turn of the session: asked to show that an adjective
-            # needs no "là", the model chose "I am not a student" -- a noun,
-            # which REQUIRES là, so the application demonstrated the opposite of
-            # the rule. Naming the words it must build from cannot do that.
-            words = ", ".join(f'"{p}"' for p in item.pieces)
-            on_it = (f" Build the sentence out of these words, which are what this rule is about: "
-                     f"{words}. Nothing else, and never a word they have not been taught.")
-        else:
-            on_it = (_known_sentences_note(known or []) +
-                     " Pick ONE of them that this rule can visibly change, and stay on it.")
+        on_it, apply_ask = _apply_material(item, known or [])
         # The pieces FIRST, one at a time, then the assembly -- which is what a
         # construction already does (a recall per piece, then the scaffold, then
         # the whole thing) and what Meo asked for twice: "we said we ask for the
@@ -1094,19 +1126,6 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item],
                 answer_is_target=True,
                 ask=speakable(piece.gloss),
             ))
-        # What the scripted question asks FOR, in English only. A pinned
-        # sentence has a gloss ready; otherwise the rule's own words are named
-        # by their glosses and the learner is asked to combine them the way the
-        # rule says. Either way no Vietnamese can appear, which is the whole
-        # point -- the instruction said "ask it in English" in six wordings and
-        # the turn still ended on "How would you say cơm ngon to Minh?".
-        if pinned:
-            apply_ask = speakable(pinned.gloss)
-        else:
-            glosses = [speakable(by_name[p].gloss) for p in item.pieces
-                       if p in by_name and by_name[p].gloss][:2]
-            apply_ask = (" and ".join(glosses) + ", put together the way the rule says"
-                         if len(glosses) == 2 else "")
         plan.append(Step(
             "apply", item.name,
             f"Now put those words together.{on_it} Ask for ONE sentence that uses the rule, on "
@@ -1122,6 +1141,26 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item],
         ))
 
     for target in recall_targets:
+        # A drawn feature comes back as an APPLICATION, never as a bare recall:
+        # nobody recites "no plural", which is exactly why features were left
+        # out of the draw entirely and never returned once (see drawable).
+        # Deliberately thinner than the application that follows an
+        # introduction: that one arrives after the feature's own pieces have
+        # just been re-asked one by one, so it can say "now put THOSE words
+        # together". Here nothing was recalled first -- this is a revision slot
+        # in someone else's item -- so it has to name its own material.
+        if target.kind == "feature":
+            on_it, apply_ask = _apply_material(target, known or [])
+            plan.append(Step(
+                "apply", target.name,
+                f"Bring back something they were taught earlier: {speakable(target.gloss)}.{on_it} "
+                f"Ask for ONE sentence that puts it to work. The change it makes has to be visible "
+                f"in the answer, or the turn teaches nothing."
+                f"{_known_words_note(known or [])} ASK IT IN ENGLISH and do not say the Vietnamese "
+                f"back: that is the answer. One question, then stop.",
+                ask=apply_ask,
+            ))
+            continue
         plan.append(Step(
             "rapidfire", target.name,
             f"Bare recall, no context: ask them in English for the Vietnamese for {_ask_for(target)}. "
@@ -1735,7 +1774,6 @@ def _recall_targets(store: ProgressStore, item: Item | None, pieces: list[Item],
     """
     by_name = {i.name: i for i in seen_items}
     exclude = {p.name for p in pieces}
-    exclude |= {i.name for i in seen_items if i.kind == "feature"}
     if item is not None:
         exclude.add(item.name)
 
@@ -1746,18 +1784,40 @@ def _recall_targets(store: ProgressStore, item: Item | None, pieces: list[Item],
     # existed. Correct spaced repetition, and it read as being ignored.
     # Fewer on-topic recalls beat three off-topic ones; the main course resumes
     # on its own once the theme's items run out.
-    # A target has to be ASKABLE. Its gloss is read aloud as the whole question,
-    # so a grammar formula becomes one live: measured, a rapidfire drew the item
-    # whose gloss is "do ... not?" and asked "and again -- what was do not?".
-    # Nothing the learner can answer, and the retry would have offered them the
-    # authoring label "câu hỏi có/không: ..." to repeat.
-    exclude |= {i.name for i in seen_items if not askable(i)}
+    # A target has to be DRAWABLE, which is not the same as askable. A word's
+    # gloss is read aloud as the whole question, so a grammar formula becomes
+    # one live: measured, a rapidfire drew the item whose gloss is "do ... not?"
+    # and asked "and again -- what was do not?". Nothing the learner can answer.
+    # A discrete feature fails that test and is drawn anyway, because the turn
+    # it produces is an APPLICATION and not a bare question -- see drawable().
+    exclude |= {i.name for i in seen_items if not drawable(i)}
 
     only = None
     if item is not None and item.topic:
         only = {i.name for i in seen_items if i.topic == item.topic}
     drawn = store.draw_recalls(count, exclude=exclude, only=only)
-    return [by_name[n] for n in drawn if n in by_name]
+    targets = [by_name[n] for n in drawn if n in by_name]
+
+    # At most ONE application per item. Applications are long turns -- a whole
+    # sentence produced -- where a bare recall is a single word, so stacking
+    # them flattens the rhythm the way nine features in a row once did (9b).
+    #
+    # Not a preference: features start at level 0, and weight(0) is thirteen
+    # times weight(4.5), so the transition period is the dangerous window.
+    # Simulated on a three-slot close with features fresh and words drilled,
+    # 86% of closes would carry two or more applications and 44% would carry
+    # three. At equilibrium it falls to 8%, so this guard matters most exactly
+    # when the change ships and costs almost nothing afterwards -- measured, one
+    # application per feature over 120 items, and a gap of 22 items instead of 17.
+    surplus = [t for t in targets if t.kind == "feature"][MAX_APPLICATIONS_PER_ITEM:]
+    if surplus:
+        keep = [t for t in targets if t not in surplus]
+        refill = store.draw_recalls(
+            len(surplus),
+            exclude=exclude | {t.name for t in targets} | {i.name for i in seen_items if i.kind == "feature"},
+            only=only)
+        targets = keep + [by_name[n] for n in refill if n in by_name]
+    return targets
 
 
 def _take_next(queue_items: list[Item], seen_items: list[Item]) -> Item | None:
@@ -2037,6 +2097,20 @@ def _conversation_loop(api_key, messages, store, roster, queue_items, themes_gen
                     store.record_recall(done.target, got_it)
                     print(f"  [level] {done.target} -> {store.level(done.target)}"
                           f"{'' if got_it else '  (missed — comes back sooner)'}")
+                elif done is not None and done.kind == "apply" and done.target:
+                    # An application counts as EXPOSURE, never as a score. It
+                    # asks for a whole sentence, so there is no single target to
+                    # compare against and nothing the code can honestly judge --
+                    # and handing that judgement to the model would give back a
+                    # decision this project spent weeks bringing into the code.
+                    #
+                    # Not optional, either. The draw is weighted by level and
+                    # weight(0) is thirteen times weight(4.5), so a feature that
+                    # never left zero would be drawn forever in preference to
+                    # every word. Counting the exposure is what makes "as often
+                    # as a word" true rather than "far more, permanently".
+                    store.record_recall(done.target, got_it=True)
+                    print(f"  [level] {done.target} -> {store.level(done.target)}  (applied)")
                 lesson["retried"] = False
                 # A step the MODEL wrote asked something only it can mark. Give
                 # it the next turn to react, before the plan moves on.
