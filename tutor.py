@@ -917,16 +917,54 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item],
                 answer_is_target=True,
                 ask=speakable(piece.gloss),
             ))
-        literal = f' Its literal word order is: "{item.literal}".' if item.literal else ""
-        plan.append(Step(
-            "scaffold", item.name,
-            f'They are about to build "{item.gloss}".{literal} Give that literal order out loud in '
-            f"English, word by word, then ask them for the whole sentence. Do not say any Vietnamese "
-            f"and do not assemble it for them.",
-            answer_is_target=True,
-            ask=speakable(item.gloss),
-            literal=item.literal,
-        ))
+        # A sentence is CLIMBED, not asked for whole. The method's own move,
+        # named by Meo while testing: "he always starts calm -- how do you say
+        # don't want, then I don't want, then I don't want to eat." It was
+        # written down for features and never applied here, so a construction
+        # still asked for four words in one go from someone who had just met
+        # the three pieces separately.
+        #
+        # Which rungs are valid is the one thing the code cannot work out:
+        # `pieces` gives tôi, tên, là and does not say that "tôi tên" is not a
+        # sentence. That knowledge is Vietnamese, so the rungs are model turns
+        # and the code supplies the boundary -- the same division `vary` makes
+        # just below.
+        #
+        # The literal order lands on the LAST rung, the whole sentence, because
+        # that is where the order matters. It also retires an instruction that
+        # asked the impossible: without a literal, the old single step still
+        # said "give that literal order out loud" having supplied none.
+        rungs = 1 if len(pieces) <= 1 else (2 if len(pieces) <= 3 else 3)
+        for n in range(rungs):
+            last = n == rungs - 1
+            literal = (f' Its literal word order is: "{item.literal}".'
+                       if last and item.literal else "")
+            if last:
+                what = (f'Now the whole thing: ask for "{item.gloss}".{literal}'
+                        + (" Give that order out loud in English, word by word, first."
+                           if literal else ""))
+            else:
+                # "One element fewer" alone sent it back to a single word, and
+                # live that meant re-asking "tôi" three turns after the recall
+                # that had just asked for it. Every piece was recalled on its
+                # own immediately before this: a rung that asks for one word
+                # repeats a turn instead of climbing. So the floor is TWO
+                # pieces put together -- the first thing in the chain that has
+                # never been said yet.
+                what = (f'They are climbing towards "{item.gloss}", and this is rung {n + 1} of '
+                        f'{rungs}. Ask for a SHORTER piece of it — at least TWO of its parts put '
+                        f'together, never a single word: they have just recalled each word on its '
+                        f'own and asking for one again repeats that turn instead of building. It '
+                        f'has to be something a person could actually say, not half a phrase.')
+            plan.append(Step(
+                "scaffold", item.name,
+                f'{what} Stay on THIS sentence: every rung is the same sentence with one more '
+                f'element.{_known_words_note(known or [])} Ask in English, one question, then stop. '
+                f'Do not say any Vietnamese and do not assemble it for them.',
+                answer_is_target=True,
+                ask=speakable(item.gloss),
+                literal=item.literal if last else "",
+            ))
         plan.append(Step(
             "answer", item.name,
             f'Have Minh say the full sentence twice — a real one with the blank filled in, never the '
@@ -992,7 +1030,13 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item],
                 f'do. One question, in English, then stop. Say no Vietnamese and do not have Minh '
                 f'speak — the Vietnamese sentence is the answer you are asking them for.'
             )
-        for _ in range(N_VARIATIONS - 1):
+        # The rungs come OUT of this budget, they are not added to it. Climbing
+        # adds turns, which is the wrong direction for a course that wants more
+        # sentences -- and in the reference method climbing IS the variation:
+        # "I want" then "I want to eat" then "I don't want to eat" is one
+        # gesture, not build-then-vary. So the count of turns where the learner
+        # produces the sentence stays what it was; only their shape changes.
+        for _ in range(max(1, N_VARIATIONS - rungs)):
             plan.append(Step("vary", item.name, vary_instruction, answer_is_target=True))
         plan.append(Step(
             "rule", item.name,

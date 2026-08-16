@@ -335,10 +335,27 @@ consigne qui les fait écrire
 
 ## Enseigner une construction
 
-### 12. Une construction déroule toute la chaîne
-Un rappel par pièce, un par tour, puis l'ordre littéral, puis la réponse, puis
-les variations, puis la règle énoncée en dernier.
-**Où :** code — `build_plan`
+### 12. Une construction se MONTE, elle ne se demande pas entière
+Un rappel par pièce, un par tour. Puis la phrase se monte en **barreaux** — un
+élément de plus à chaque fois, en restant sur la même phrase — le dernier
+barreau étant la phrase entière, avec l'ordre littéral s'il y en a un. Puis la
+réponse, les variations, et la règle énoncée en dernier.
+**Où :** code — `build_plan` ; le **contenu** de chaque barreau est laissé au
+modèle
+**Pourquoi monter :** c'est le geste de la méthode de référence, relevé en
+séance — « how do you say *don't want*, then *I don't want*, then *I don't want
+to eat* ». Demander quatre mots d'un bloc à quelqu'un qui vient de rencontrer
+les trois pièces séparément, c'est lui faire escalader ce qu'il peut gravir.
+**Pourquoi le modèle et pas le code :** `pieces` donne `tôi`, `tên`, `là` et ne
+dit pas que `tôi tên` n'est pas une phrase. Quels paliers existent est une
+connaissance de vietnamien — le code fournit la frontière (rester sur la même
+phrase, n'employer que des mots enseignés, chaque barreau doit être dicible), le
+modèle fournit les paliers. Même partage que la variation (12c).
+**Le nombre de tours ne bouge pas** pour une construction de trois pièces ou
+moins : les barreaux sont pris sur le budget des variations, parce que **monter
+EST une variation**. Au-delà de trois pièces, un tour s'ajoute — six items du
+cours — plutôt que de supprimer la dernière variation, qui porte le changement
+de personne (12d).
 **Changer :** `tutor.py` → `build_plan`, `N_VARIATIONS`
 
 Les étoiles marquent les tours que le code écrit lui-même (4b) ; les autres
@@ -346,8 +363,8 @@ partent au modèle.
 
 ```
 atome         introduce* -> settle* -> rapidfire* x3      (entièrement scripté)
-construction  recall_piece* (un par piece) -> scaffold -> answer
-              -> vary x2 -> rule -> rapidfire* x3
+construction  recall_piece* (un par piece) -> scaffold x1-3 (les barreaux)
+              -> answer -> vary -> rule -> rapidfire* x3
 ```
 
 Un mot simple ne passe donc plus par le modèle du tout. Il garde la chaîne de
