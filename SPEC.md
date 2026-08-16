@@ -228,17 +228,30 @@ consécutives** : un quart d'heure à compter et rien d'autre.
 catégorie fausse ou vide rend l'espacement aveugle sur cet item.
 **Changer :** `content.py` → `MIN_ITEMS_BETWEEN_FEATURES`, `MAX_SAME_CATEGORY_RUN`
 
-### 9c. Un trait qui nomme son mot passe devant l'espacement
-Le champ `after` porte le nom d'un mot. Tant que ce mot n'est pas enseigné, le
-trait attend ; dès qu'il l'est, le trait passe **avant toutes les règles
-d'espacement**, 9b comprise.
+### 9c. Un trait qui nomme ce qu'il suit passe devant l'espacement
+Le champ `after` porte le nom d'un **item**. Tant que cet item n'est pas
+enseigné, le trait attend ; dès qu'il l'est, le trait passe **avant toutes les
+règles d'espacement**, 9b comprise.
+
+**Le plus souvent c'est un mot**, et le trait finit ce mot. Mais un trait peut
+nommer **un autre trait**, et c'est ainsi qu'un ordre entre deux règles devient
+une garantie au lieu d'un hasard : « les verbes ne changent jamais » pose une
+question, `đã` y répond, et la seconde déclare qu'elle suit la première. Les
+deux étaient attachées au même mot et arrivaient dans le bon ordre par l'ordre
+des fichiers — un remaniement de contenu aurait donné la réponse avant la
+question, sans que rien ne le signale.
 **Où :** code — la branche `attached` de `pick_next_index` ; le champ `after`
 est **écrit dans le contenu**, sur 13 des 35 traits
 **Pourquoi contourner l'espacement :** l'espaceur existe pour empêcher les
 traits de faire grappe. Un trait attaché à un mot ne fait pas grappe — il
 **finit** le mot. Le contournement est l'intention du champ, pas un effet de
 bord.
-**Changer :** le champ `after` des items ; `content.py` → `pick_next_index`
+**La garde :** un `after` qui ne nomme aucun item existant est signalé au
+démarrage. Sans elle, une faute de frappe fait attendre l'item pendant tout le
+cours sans un mot de protestation — rien ne vérifiait ce champ avant qu'il ne
+serve à enchaîner deux règles.
+**Changer :** le champ `after` des items ; `content.py` → `pick_next_index`,
+`check_roster`
 
 ## Ce que le cours sait
 

@@ -157,6 +157,14 @@ def check_roster(items: list[Item]) -> list[str]:
             problems.append(f"{i.name}: gloss is empty — it is still taught, but its question falls "
                             f"back to the Vietnamese notes in `description`, which the model then has "
                             f"to speak English from")
+        # An `after` pointing at nothing starves in silence. pick_next_index only
+        # promotes an item once its `after` is in the taught set, so a name that
+        # no item carries is never satisfied and the item waits for the whole
+        # course without a word of complaint. Nothing checked this until a
+        # feature was made to follow another FEATURE rather than a word, which
+        # is what turned a typo into a lesson that never happens.
+        if i.after and i.after not in seen_names:
+            problems.append(f"{i.name}: after = {i.after!r} names no item — it would wait forever")
         # The code now speaks recall questions itself, built from the gloss and
         # from nothing else, so the gloss IS the guarantee that a question does
         # not state its own answer. A Vietnamese name that leaked into its own
