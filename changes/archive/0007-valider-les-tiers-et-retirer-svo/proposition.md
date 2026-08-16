@@ -1,99 +1,97 @@
-# Valider le classement en tiers, et retirer l'ordre sujet–verbe–objet du cours
+# Validate the tier ranking, and remove subject–verb–object from the course
 
-**Statut :** terminé
-**Ouvert le :** 2026-08-15
+**Status:** finished
+**Opened:** 2026-08-15
 
-## Pourquoi
+## Why
 
-Le classement des traits `discrete` en trois tiers d'utilité existait depuis le
-matin du 15 août et **n'avait jamais été validé** — c'était la proposition d'un
-assistant, jamais corrigée. Tant qu'il n'est pas validé, réordonner le cours
-d'après lui est bloqué.
+The ranking of `discrete` features into three tiers of usefulness had existed
+since the morning of 15 August and **had never been validated** — it was an
+assistant's proposal, never corrected. Until it is validated, reordering the
+course by it is blocked.
 
-## Ce qui change dans SPEC.md
+## What changes in SPEC.md
 
-Rien. Le champ `tier` n'est encore lu par aucun code : il attend le
-réordonnancement, qui est un autre changement.
+Nothing. The `tier` field is read by no code yet: it is waiting for the reorder,
+which is a different change.
 
-## Trois décisions de Meo
+## Three decisions by Meo
 
-**1. L'ordre sujet–verbe–objet sort du cours.** L'item est supprimé, pas
-déclassé.
+**1. Subject–verb–object leaves the course.** The item is deleted, not demoted.
 
-Sa propre fiche le présentait comme le filet du débutant — *« đây là chỗ dựa an
-toàn cho người mới: khi chưa chắc, cứ xếp như tiếng Anh thì thường đúng »*, le
-point d'appui sûr pour un débutant. C'est précisément l'argument contre :
-**un francophone place déjà sujet, verbe, objet sans y penser.** La règle
-occupait un créneau de leçon pour enseigner un réflexe acquis, et elle était en
-tête du tier 1.
+Its own entry presented it as the beginner's safety net — *"đây là chỗ dựa an
+toàn cho người mới: khi chưa chắc, cứ xếp như tiếng Anh thì thường đúng"*, the
+safe footing for a beginner. That is precisely the argument against it: **a
+French speaker already places subject, verb, object without thinking.** The rule
+occupied a lesson slot to teach a reflex they arrived with, and it headed tier 1.
 
-Vérifié avant suppression : aucun item ne la cite comme pièce ni comme `after`.
-Le cours passe de 35 à 34 traits.
+Checked before deletion: no item cites it as a piece or as an `after`. The course
+goes from 35 features to 34.
 
-**2. `đã` monte en tier 1.** Le passé fait partie de ce sans quoi on ne peut pas
-parler : c'est lui qui met de la variété dans les phrases, et l'apprendre tôt
-ouvre tout ce qui suit.
+**2. `đã` moves up to tier 1.** The past is part of what you cannot speak
+without: it is what puts variety into sentences, and learning it early opens
+everything that follows.
 
-**3. « Les verbes ne changent jamais » monte avec lui.** Elle était en tier 3,
-classée comme confort, alors qu'elle **pose la question** à laquelle `đã` répond
-— et elle s'explique en une phrase. Le raisonnement de Meo : on énonce la règle
-simple, l'apprenant la comprend immédiatement, et on enchaîne sur le passé.
+**3. "Verbs never change" moves up with it.** It was in tier 3, classed as
+comfort, while it **raises the question** `đã` answers — and it explains itself in
+one sentence. Meo's reasoning: state the simple rule, the learner has it
+immediately, then hand them the past.
 
-L'enchaînement obtenu, mesuré sur le séquencement réel :
+The sequence obtained, measured on the real sequencing:
 
 ```
-25  đã                     le mot
-26  động từ không chia     « les verbes ne changent jamais »
-27  đã: việc đã xong       « voilà comment on dit le passé »
+25  đã                     the word
+26  động từ không chia     "verbs never change"
+27  đã: việc đã xong       "here is how you say the past"
 ```
 
-Les deux règles sont attachées au mot `đã`, donc elles arrivent ensemble. **Leur
-ordre entre elles n'est pas garanti** : il vient de l'ordre des fichiers, et
-`pick_next_index` prend le premier attaché qu'il trouve. Il se trouve qu'il est
-bon. Si un remaniement de contenu l'inversait, l'apprenant recevrait la réponse
-avant la question, et rien ne le signalerait.
+Both rules are attached to the word `đã`, so they arrive together. **Their order
+between them is not guaranteed**: it comes from file order, and
+`pick_next_index` takes the first attached one it finds. It happens to be right.
+If a content reshuffle inverted it, the learner would get the answer before the
+question, and nothing would flag it.
 
-## Périmètre
+## Scope
 
-**Dedans :** la suppression de l'item SVO, deux champs `tier`, la section des
-tiers dans `STYLE.md`.
+**In:** deleting the SVO item, two `tier` fields, the tiers section of
+`STYLE.md`.
 
-**Dehors :**
+**Out:**
 
-- **`đang` et `sẽ`**, qui restent en tier 2. Ils occupent le même emplacement
-  dans la phrase que `đã` et leurs gloses le disent, donc les monter ensemble se
-  défendait. Décision de Meo : plus tard.
-- **le réordonnancement du cours d'après les tiers**, qui est le changement que
-  cette validation débloque et qu'elle ne fait pas.
+- **`đang` and `sẽ`**, which stay in tier 2. They occupy the same slot in the
+  sentence as `đã` and their glosses say so, so moving them up together was
+  defensible. Meo's decision: later.
+- **reordering the course by tier**, which is the change this validation unblocks
+  and does not itself perform.
 
-## Tâches
+## Tasks
 
-- [x] Vérifier que rien ne référence la règle SVO
-- [x] Supprimer l'item du contenu
-- [x] `đã` et « les verbes ne changent jamais » en tier 1
-- [x] Vérifier l'enchaînement réel sur la simulation
-- [x] Mettre `STYLE.md` d'accord avec les items, et noter la validation
+- [x] Check that nothing references the SVO rule
+- [x] Delete the item from the content
+- [x] `đã` and "verbs never change" into tier 1
+- [x] Check the real sequence on the simulation
+- [x] Bring `STYLE.md` in line with the items, and record the validation
 - [x] `python smoke_test.py`
 
-## Résultat
+## Result
 
-**Terminé le :** 2026-08-15. Tiers : **8 / 10 / 9**, 27 traits `discrete` sur 34.
+**Finished:** 2026-08-15. Tiers: **8 / 10 / 9**, 27 `discrete` features out of
+34.
 
-**Ce que ça débloque :** le classement est désormais validé, donc réordonner le
-cours d'après lui devient possible. C'est là qu'il prendra son sens — aujourd'hui
-le champ `tier` ne pilote rien, et l'ordre du cours reste décidé par l'ordre des
-fichiers, l'espacement, et `after`.
+**What it unblocks:** the ranking is validated now, so reordering the course by it
+becomes possible. That is where it will mean something — today the `tier` field
+drives nothing, and the course order is still decided by file order, spacing and
+`after`.
 
-**Une confusion levée en chemin, et elle valait la peine.** Meo pensait que
-« tier 1 » voulait dire « enseigné en premier ». C'est ce que ça devrait vouloir
-dire, et ça ne le veut pas encore : le classement existe et ne pilote rien. Le
-malentendu était le bon instinct sur une donnée inerte.
+**A confusion cleared on the way, and it was worth it.** Meo thought "tier 1"
+meant "taught first". That is what it ought to mean, and it does not yet: the
+ranking exists and drives nothing. The misunderstanding was the right instinct
+about inert data.
 
-**Un souvenir qui ne s'est pas confirmé.** Meo se rappelait avoir lié l'ordre des
-mots au passé, « ensemble ». La fouille des transcrits ne trouve pas ce lien —
-elle trouve celui entre « les verbes ne changent jamais » et `đã`, formulé le
-matin même : *« une règle de soulagement crée une question ; la question doit
-être répondue dans la foulée »*. La confusion tient probablement à ce que la
-règle sur les verbes **parle des verbes**, donc ressemble à une règle d'ordre.
-Le lien voulu existait, avec une autre partenaire — et il est maintenant dans le
-classement autant que dans la séquence.
+**A memory that did not check out.** Meo remembered linking word order with the
+past, "together". Digging through the transcripts does not find that link — it
+finds the one between "verbs never change" and `đã`, phrased that same morning:
+*"a relief rule creates a question; the question must be answered straight
+after"*. The confusion probably comes from the verb rule **being about verbs**,
+so it looks like a word-order rule. The intended link existed, with a different
+partner — and it is now in the ranking as much as in the sequence.

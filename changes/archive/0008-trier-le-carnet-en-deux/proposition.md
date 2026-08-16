@@ -1,69 +1,67 @@
-# Trier le carnet en deux : ce qui tourne, et ce qui n'est qu'une idée
+# Sort the notebook in two: what runs, and what is only an idea
 
-**Statut :** terminé
-**Ouvert le :** 2026-08-15
+**Status:** finished
+**Opened:** 2026-08-15
 
-## Pourquoi
+## Why
 
-`STYLE.md` mélangeait treize entrées dans trois sections organisées par
-provenance — « Idées en attente », « Les notes de Meo » — alors que la question
-qu'on lui pose est toujours la même : **est-ce que ça tourne, oui ou non ?**
+`STYLE.md` mixed thirteen entries across three sections organised by where they
+came from — "Ideas waiting", "Meo's notes" — while the question actually asked of
+it is always the same one: **does this run, yes or no?**
 
-La réponse existait, enfouie dans une ligne de statut au bas de chaque entrée.
-Il fallait lire treize entrées pour la reconstituer.
+The answer existed, buried in a status line at the bottom of each entry. Finding
+it meant reading all thirteen.
 
-## Ce qui change dans SPEC.md
+## What changes in SPEC.md
 
-Rien. `STYLE.md` n'est lu par personne à l'exécution, c'est sa première ligne.
+Nothing. `STYLE.md` is read by nobody at runtime, that is its first line.
 
-## Le tri
+## The sort
 
-**Partie 1 — ce qui tourne déjà (5).** Le profil de l'apprenant et les tons sont
-entiers. Trois ne couvrent qu'une partie de ce qu'elles proposaient : redire le
-mot (seulement quand l'apprenant s'est trompé), le rythme par la variation
-(seulement le nombre de rappels), la décomposition (la consigne d'annotation est
-câblée, aucune donnée n'a été écrite).
+**Part 1 — what already runs (5).** The learner profile and the tones are whole.
+Three cover only part of what they proposed: saying the word back (only when the
+learner got it wrong), rhythm through variation (only the number of recalls),
+decomposition (the annotation instruction is wired, no data has been written).
 
-Les partielles restent en partie 1 : ce qui compte est qu'un morceau **tourne**,
-et ce qui manque est nommé dans leur statut.
+The partial ones stay in part 1: what counts is that a piece of each **runs**,
+and what is missing is named in their status.
 
-**Partie 2 — ce qui n'est qu'une idée (8).** Rien dans le code ne les exécute.
+**Part 2 — what is only an idea (8).** Nothing in the code executes them.
 
-**La règle d'entrée en partie 1**, écrite en tête : une entrée doit dire **où**
-elle vit — une règle de `SPEC.md`, un symbole du code, ou un champ du contenu.
-Sinon on ne saura pas l'an prochain si elle tourne encore. C'est la même
-exigence que la ligne **Changer** de `SPEC.md`.
+**The entry condition for part 1**, written at the head: an entry must say
+**where** it lives — a rule of `SPEC.md`, a symbol in the code, or a field of the
+content. Otherwise nobody will know next year whether it still runs. It is the
+same demand as `SPEC.md`'s **Change** line.
 
-## Périmètre
+## Scope
 
-**Dedans :** le déplacement des treize entrées, deux en-têtes de section.
+**In:** moving the thirteen entries, two section headings.
 
-**Dehors :** le texte des entrées, inchangé — le tri doit se relire comme un
-déplacement, pas comme une révision.
+**Out:** the text of the entries, unchanged — the sort has to read as a move, not
+as a revision.
 
-## Ce que le tri a coûté
+## What the sort cost
 
-La section « Les notes de Meo » disparaît, ses entrées étant distribuées. Aucune
-information perdue : chacune porte déjà « *Proposé par Meo* » en sous-titre.
+The "Meo's notes" section disappears, its entries distributed. No information
+lost: each already carries "*Proposed by Meo*" as a subtitle.
 
-Et la synthèse « Ce que les trois idées de Meo ont en commun » relie trois
-entrées qui atterrissent désormais des deux côtés — la composition et le jumeau
-de ton tournent, l'homophone est une idée. Elle a besoin qu'elles soient
-trouvables, pas adjacentes : une ligne le dit, et le rapprochement qu'elle fait
-ne dépend pas de leur état.
+And the synthesis "What Meo's three ideas have in common" links three entries
+that now land on both sides — composition and the tone twin run, the homophone is
+an idea. It needs them findable, not adjacent: one line says so, and the
+connection it draws does not depend on their state.
 
-## Tâches
+## Tasks
 
-- [x] Extraire les treize entrées, y compris les deux cachées après la synthèse
-- [x] Trier en deux parties, écrire la règle d'entrée en partie 1
-- [x] Rattacher la synthèse aux entrées déplacées
-- [x] Vérifier qu'aucune entrée n'a disparu
+- [x] Extract the thirteen entries, including the two hidden after the synthesis
+- [x] Sort into two parts, write the entry condition for part 1
+- [x] Reconnect the synthesis to the moved entries
+- [x] Check that no entry disappeared
 
-## Résultat
+## Result
 
-**Terminé le :** 2026-08-15 — 5 qui tournent, 8 idées.
+**Finished:** 2026-08-15 — 5 that run, 8 ideas.
 
-**Vérifié plutôt que supposé :** seize titres avant, seize après, aucun disparu.
-La première tentative n'en avait extrait que **onze** — deux entrées vivaient
-après la synthèse, dans une section dont le titre ne les annonçait pas. Sans
-l'assertion sur le compte, le tri les aurait silencieusement supprimées.
+**Checked rather than assumed:** sixteen titles before, sixteen after, none
+missing. The first attempt had extracted only **eleven** — two entries lived
+after the synthesis, in a section whose heading did not announce them. Without
+the assertion on the count, the sort would have deleted them in silence.

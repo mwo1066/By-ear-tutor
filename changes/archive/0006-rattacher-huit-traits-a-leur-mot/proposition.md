@@ -1,32 +1,31 @@
-# Rattacher huit traits au mot dont ils parlent
+# Attach eight features to the word they are about
 
-**Statut :** terminé
-**Ouvert le :** 2026-08-15
+**Status:** finished
+**Opened:** 2026-08-15
 
-## Pourquoi
+## Why
 
-Le champ `after` nomme le mot avec lequel un trait va. Tant que ce mot n'est pas
-enseigné, le trait attend ; dès qu'il l'est, le trait passe devant les règles
-d'espacement (règle 9c). Sans `after`, un trait attend son tour dans la file,
-et sa position ne dépend que du nombre de traits qui le précèdent.
+The `after` field names the word a feature goes with. Until that word is taught
+the feature waits; as soon as it is, the feature goes ahead of the spacing rules
+(rule 9c). Without `after`, a feature waits its turn in the queue, and its
+position depends only on how many features precede it.
 
-Mesuré dans le code : **le trait médian arrive 47 items après le dernier de ses
-propres mots, et 21 sur 30 attendent plus de 30 items.** L'apprenant rencontre un
-mot, le travaille comme du vocabulaire, et apprend une heure plus tard où il se
-place.
+Measured in the code: **the median feature arrives 47 items after the last of its
+own words, and 21 out of 30 wait more than 30 items.** The learner meets a word,
+drills it as vocabulary, and learns an hour later where it goes.
 
-Treize traits portaient déjà un `after`. Vingt-deux ne l'avaient pas — et parmi
-eux, huit nomment leur mot **dans leur propre titre**.
+Thirteen features already carried an `after`. Twenty-two did not — and among
+them, eight name their word **in their own title**.
 
-## Ce qui change dans SPEC.md
+## What changes in SPEC.md
 
-Rien. La règle 9c décrit déjà le mécanisme ; ceci remplit un champ de contenu.
+Nothing. Rule 9c already describes the mechanism; this fills a content field.
 
-## Périmètre
+## Scope
 
-**Dedans :** huit champs `after` dans les fichiers de contenu.
+**In:** eight `after` fields in the content files.
 
-| trait | mot | tier |
+| feature | word | tier |
 | --- | --- | --- |
 | `phủ định: không + [...]` | `không` | 1 |
 | `câu hỏi có/không` | `có` | 1 |
@@ -37,57 +36,56 @@ Rien. La règle 9c décrit déjà le mécanisme ; ceci remplit un champ de conte
 | `rất trước, lắm sau` | `rất` | 3 |
 | `so sánh: tính từ + hơn` | `hơn` | 3 |
 
-**Dehors :**
+**Out:**
 
-- **sept traits `discrete` qui ne portent sur aucun mot** — l'ordre
-  sujet-verbe-objet, l'absence de genre, l'adjectif après le nom. Rien à
-  rattacher : ils parlent d'une forme, pas d'un mot.
-- **les sept `strand`**, qui ne sont pas séquencés comme des items.
+- **seven `discrete` features that are about no word** — subject-verb-object
+  order, the absence of gender, the adjective after the noun. Nothing to attach:
+  they are about a shape, not a word.
+- **the seven `strand`s**, which are not sequenced as items.
 
-## Vérification, faite avant d'écrire
+## Verification, done before writing
 
-**Rattacher peut retarder** si le mot arrive après le trait. Simulé sur les huit
-avant de toucher au contenu : aucun n'est retardé. C'est mécanique — un mot cité
-dans le titre est aussi une pièce, et un item n'est jamais enseigné avant ses
-pièces (règle 9).
+**Attaching can delay** if the word arrives after the feature. Simulated on all
+eight before touching the content: none is delayed. It is mechanical — a word
+named in the title is also a piece, and an item is never taught before its pieces
+(rule 9).
 
-**Effet mesuré**, même graine, `after` neutralisé puis actif :
+**Measured effect**, same seed, `after` neutralised then active:
 
 ```
-écart entre un trait et son mot, pour les huit
-   avant : médiane 46 items   (max 96)
-   après : médiane  1 item    (max 15)
+gap between a feature and its word, for the eight
+   before : median 46 items   (max 96)
+   after  : median  1 item    (max 15)
 ```
 
-Le maximum reste à 15 parce que `after` ne court-circuite pas les prérequis :
-`rất trước, lắm sau` attend aussi `lắm`, qui est une de ses pièces. C'est
-correct — un trait ne peut pas arriver avant les mots dont il est fait.
+The maximum stays at 15 because `after` does not short-circuit prerequisites:
+`rất trước, lắm sau` also waits for `lắm`, which is one of its pieces. That is
+correct — a feature cannot arrive before the words it is made of.
 
-## Tâches
+## Tasks
 
-- [x] Trouver les traits qui nomment leur mot sans le déclarer
-- [x] Vérifier qu'aucun ne serait retardé
-- [x] Écrire les huit champs `after`
-- [x] Mesurer l'écart avant / après
+- [x] Find the features naming their word without declaring it
+- [x] Check that none would be delayed
+- [x] Write the eight `after` fields
+- [x] Measure the gap before / after
 - [x] `python smoke_test.py`
 
-## Résultat
+## Result
 
-**Terminé le :** 2026-08-15 — huit items, cinq fichiers de contenu.
+**Finished:** 2026-08-15 — eight items, five content files.
 
-**Deux faux départs sur le tri, qui valent d'être notés.**
+**Two false starts on the sort, worth recording.**
 
-Le premier tri cherchait « un trait dont **une seule** pièce est un mot
-enseigné ». Il n'a trouvé qu'un candidat sur vingt-deux, et rangeait `cũng đứng
-trước động từ` parmi les cas légitimes — alors que son titre nomme `cũng`. Le bon
-critère était « un mot enseigné qui apparaît **dans le titre et dans les
-pièces** » : huit candidats, et aucun faux positif à l'inspection.
+The first sort looked for "a feature with exactly **one** piece that is a taught
+word". It found one candidate out of twenty-two, and filed `cũng đứng trước động
+từ` among the legitimate cases — while its title names `cũng`. The right
+criterion was "a taught word appearing **in the title and in the pieces**": eight
+candidates, and no false positive on inspection.
 
-Le second : le script a rapporté **neuf** rattachements pour huit items modifiés.
-La différence venait d'un nom de **construction** proche de celui d'un trait —
-`câu hỏi có/không: có + [động từ] ... không?` contre `câu hỏi có/không`. La
-recherche par fragment a touché les deux, l'insertion n'a eu lieu que sur le
-trait, et le compteur a compté les deux. Sans le `git diff`, la mesure de
-position qui a servi à décider portait sur la construction et non sur le trait.
-**Un compteur qui ne compte pas ce qu'on croit est plus dangereux qu'une erreur
-visible.**
+The second: the script reported **nine** attachments for eight changed items. The
+difference came from a **construction** whose name is close to a feature's —
+`câu hỏi có/không: có + [động từ] ... không?` against `câu hỏi có/không`. The
+fragment search hit both, the insertion happened only on the feature, and the
+counter counted both. Without the `git diff`, the position measurement used to
+decide had been reading the construction and not the feature. **A counter that
+does not count what you think is more dangerous than a visible error.**
