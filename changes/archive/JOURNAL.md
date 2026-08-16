@@ -12,6 +12,14 @@ Une ligne par changement archivé, au format :
 
 ## Changements archivés
 
+`0006` — **rattacher huit traits au mot dont ils parlent** — 2026-08-15 — le
+champ `after` fait passer un trait juste après son mot au lieu de le laisser
+attendre son tour. Huit traits nommaient leur mot dans leur titre sans le
+déclarer : écart médian entre un trait et son mot ramené de **46 items à 1**.
+Deux dont `không` et `có`, en tier 1. Vérifié avant écriture qu'aucun n'était
+retardé. Sept autres n'ont légitimement aucun mot d'attache — ils parlent d'une
+forme, pas d'un mot.
+
 `0005` — **faire revenir un trait sous forme d'application** — 2026-08-15 — le
 défaut mesuré est fermé : les traits passent d'un niveau de 1, jamais revus, à
 une médiane de 4, contre 4 pour les mots. Un trait `discrete` entre dans le
