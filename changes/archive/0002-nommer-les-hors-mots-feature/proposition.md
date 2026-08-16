@@ -1,99 +1,99 @@
-# Nommer les hors-mots `feature`, et leurs natures `discrete` / `strand`
+# Name a taught fact `feature`, and its natures `discrete` / `strand`
 
-**Statut :** terminé
-**Ouvert le :** 2026-08-15
+**Status:** finished
+**Opened:** 2026-08-15
 
-## Pourquoi
+## Why
 
-Le mot « règle » désignait deux choses, et la collision a coûté du temps à
-l'auteur du projet lui-même : au cours d'une seule séance, il a fallu s'arrêter
-deux fois pour redémêler « une règle de `SPEC.md` » (un comportement du
-programme) de « un item `kind = "rule"` » (un fait de vietnamien qu'on enseigne).
+The word "rule" meant two things, and the collision cost the project's own author
+time: within a single session it was necessary to stop twice to untangle "a rule
+of `SPEC.md`" (a behaviour of the program) from "an item with `kind = "rule"`" (a
+fact of Vietnamese being taught).
 
-Un avis extérieur a posé le diagnostic complet : plusieurs termes ont été
-inventés au fil des conversations, aucun n'est défini au même endroit, et rien
-ne dit lesquels sont du vocabulaire du domaine et lesquels sont propres à
-l'application. Le projet est illisible pour qui n'a pas assisté aux
-conversations — ce qui, à terme, inclut son auteur.
+An outside reader gave the full diagnosis: several terms were invented over the
+course of conversations, none is defined in one place, and nothing says which
+are field vocabulary and which are specific to the application. The project is
+unreadable to anyone who did not attend the conversations — which, in time,
+includes its author.
 
-**Et `A` / `B` n'aidait pas.** Deux lettres ne portent aucun sens : il faut la
-table pour savoir laquelle veut dire quoi, à chaque lecture.
+**And `A` / `B` was not helping.** Two letters carry no meaning: you need the
+table to know which is which, every time you read.
 
-## Ce qui change dans SPEC.md
+## What changes in SPEC.md
 
-Aucune règle ajoutée ni supprimée. Trois corrections de vocabulaire :
+No rule added or removed. Three vocabulary corrections:
 
-- règle 13, la note — le type d'item ne s'appelle plus `rule`
-- section « Les hors-mots », **Nom dans le code** — devient `kind = "feature"`,
-  avec la justification WALS et les deux valeurs de `nature`
-- règles 13b et 13c, ligne **Changer** — « la branche `rule` » devient « la
-  branche `feature` »
+- rule 13, the note — the item kind is no longer called `rule`
+- the "Features" section, **Name in the code** — becomes `kind = "feature"`,
+  with the WALS justification and the two values of `nature`
+- rules 13b and 13c, the **Change** line — "the `rule` branch" becomes "the
+  `feature` branch"
 
-**Où :** contenu et code, mais aucune garantie ne bouge. Ce sont des valeurs,
-pas des mécanismes.
+**Where:** content and code, but no guarantee moves. These are values, not
+mechanisms.
 
-## Le choix du nom
+## The choice of name
 
-`feature`, au sens de la **typologie linguistique**, et non « grammar point » :
-ce cours range parmi ses hors-mots les tons et la politesse, qui ne sont pas de
-la grammaire. La plupart des 35 correspondent à un trait nommé de l'atlas WALS —
-81A *Order of Subject, Object and Verb*, 13A *Tone*, 55A *Numeral Classifiers*,
-45A *Politeness Distinctions in Pronouns*.
+`feature`, in the sense of **linguistic typology**, and not "grammar point":
+this course files tone and politeness among them, which are not grammar. Most of
+the 35 correspond to a named feature of the WALS atlas — 81A *Order of Subject,
+Object and Verb*, 13A *Tone*, 55A *Numeral Classifiers*, 45A *Politeness
+Distinctions in Pronouns*.
 
-`strand` vient de la conception de curriculum : un fil qui traverse tout un
-programme sans jamais finir. `discrete` est son opposé naturel.
+`strand` comes from curriculum design: a thread running through a whole programme
+without ever finishing. `discrete` is its natural opposite.
 
-## Périmètre
+## Scope
 
-**Dedans :** les **valeurs** `kind = "rule"` → `"feature"` et `nature = "A"/"B"`
-→ `"discrete"/"strand"`, dans le contenu et dans le code ; les références
-correspondantes dans `SPEC.md`, `STYLE.md` et `README.md` ; l'écriture de
-`LEXIQUE.md`.
+**In:** the **values** `kind = "rule"` → `"feature"` and `nature = "A"/"B"` →
+`"discrete"/"strand"`, in the content and in the code; the corresponding
+references in `SPEC.md`, `STYLE.md` and `README.md`; writing `LEXIQUE.md`.
 
-**Dehors :**
+**Out:**
 
-- **les noms de symboles** — `MAX_RULE_PIECE_RECALLS`, `MIN_ITEMS_BETWEEN_RULES`,
-  `_rule_is_due`, `rules_due`. Les renommer aurait invalidé d'un coup les lignes
-  **Changer** de `SPEC.md`, qui nomment des symboles. À faire séparément, si un
-  jour ça vaut le coup.
-- **le tour `rule`** — l'étape qui nomme le motif à la fin d'une construction.
-  C'est une sorte de **tour**, pas une sorte d'**item** : une fois le type
-  d'item renommé, il n'y a plus de recouvrement.
+- **the symbol names** — `MAX_RULE_PIECE_RECALLS`, `MIN_ITEMS_BETWEEN_RULES`,
+  `_rule_is_due`, `rules_due`. Renaming them would have invalidated the
+  **Change** lines of `SPEC.md` in one go, since those name symbols. To be done
+  separately, if it ever proves worth it.
+- **the `rule` turn** — the step naming the pattern at the end of a construction.
+  It is a kind of **turn**, not a kind of **item**: once the item kind is
+  renamed, there is no overlap left.
 
-## Tâches
+## Tasks
 
-- [x] Renommer la valeur `kind` dans les 8 fichiers de contenu (35 items)
-- [x] Renommer `nature` : `A` → `discrete`, `B` → `strand`
-- [x] Renommer les 17 sites de code portant sur le `kind` d'un item
-- [x] Laisser intacts les 4 sites portant sur le `kind` d'une **étape**
-- [x] Corriger les références dans `SPEC.md` et `STYLE.md`
-- [x] Écrire `LEXIQUE.md` en anglais, groupé par origine du terme
-- [x] Ajouter la carte des documents au `README.md`
+- [x] Rename the `kind` value in the 8 content files (35 items)
+- [x] Rename `nature`: `A` → `discrete`, `B` → `strand`
+- [x] Rename the 17 code sites concerning an item's `kind`
+- [x] Leave untouched the 4 sites concerning a **step**'s `kind`
+- [x] Fix the references in `SPEC.md` and `STYLE.md`
+- [x] Write `LEXIQUE.md` in English, grouped by where the term comes from
+- [x] Add the map of documents to `README.md`
 - [x] `python smoke_test.py`
 
-## Vérification
+## Verification
 
-`smoke_test.py` charge le cours entier et joue une séance complète : il passe.
-La répartition est inchangée après renommage — 7 / 11 / 10 en `discrete`, 7 en
-`strand`, 35 au total. Aucun `kind` d'item ne porte plus la valeur `rule`.
+`smoke_test.py` loads the whole course and plays a full session: it passes. The
+distribution is unchanged after renaming — 7 / 11 / 10 in `discrete`, 7 in
+`strand`, 35 in total. No item `kind` carries the value `rule` any more.
 
-## Résultat
+## Result
 
-**Terminé le :** 2026-08-15 — 4 fichiers de code, 8 fichiers de contenu,
-3 documents, plus `LEXIQUE.md` créé.
+**Finished:** 2026-08-15 — 4 code files, 8 content files, 3 documents, plus
+`LEXIQUE.md` created.
 
-**Le lexique est en anglais alors que `SPEC.md` et `STYLE.md` sont en français.**
-Assumé : ces deux-là sont lus par une personne, le lexique est ce qu'on tend à
-quelqu'un d'extérieur. Le `README.md` le dit en une ligne.
+**The glossary is in English while `SPEC.md` and `STYLE.md` are in French.**
+Accepted: those two are read by one person, the glossary is what you hand to
+someone outside. `README.md` says so in one line. *(Both went to English later
+the same day, when the whole repo did.)*
 
-**Les termes y sont groupés par origine**, ce qui est l'apport principal et ne
-venait pas de la demande initiale : *standard* (13 termes du domaine, employés au
-sens du domaine), *borrowed and narrowed* (7 mots standards restreints ici), et
-*coined here* (8 sans équivalent). Un lecteur qui connaît la didactique des
-langues sait immédiatement quelles définitions il peut sauter.
+**The terms are grouped by origin**, which is the main contribution and was not
+part of the original request: *standard* (13 field terms used in the field's
+sense), *borrowed and narrowed* (7 standard words restricted here), and *coined
+here* (8 with no equivalent). A reader who knows language teaching immediately
+knows which definitions they can skip.
 
-**Une collision de vocabulaire trouvée en écrivant :** `tier` est aussi le nom
-d'une grille connue en enseignement du vocabulaire (Beck), qui range les mots par
-utilité **académique**. Ici la grille classe par utilité **conversationnelle**.
-Même mot, autre schéma — c'est écrit dans le lexique plutôt que renommé, parce
-que `tier` reste le mot que Meo emploie.
+**A vocabulary collision found while writing:** `tier` is also the name of a
+known scheme in vocabulary instruction (Beck), which ranks words by **academic**
+utility. Here the scheme ranks by **conversational** utility. Same word,
+different scheme — written into the glossary rather than renamed, because `tier`
+is the word Meo uses.

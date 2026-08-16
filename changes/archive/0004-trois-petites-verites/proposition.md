@@ -1,129 +1,128 @@
-# Trois endroits où le code disait quelque chose de faux
+# Three places where the code said something untrue
 
-**Statut :** terminé
-**Ouvert le :** 2026-08-15
+**Status:** finished
+**Opened:** 2026-08-15
 
-## Pourquoi
+## Why
 
-Trois défauts sans rapport entre eux, réunis parce qu'ils ont la même forme :
-**une phrase du programme qui ne correspond plus à ce qu'il fait.** Aucun n'est
-un bug de comportement ; tous les trois trompent celui qui lit.
+Three unrelated defects, gathered because they have the same shape: **a sentence
+of the program that no longer matches what it does.** None is a behaviour bug;
+all three mislead whoever reads.
 
-## Ce qui change dans SPEC.md
+## What changes in SPEC.md
 
-Une seule ligne, celle de la règle 17.
+A single line, rule 17's.
 
-## 1. « Progress saved » quand rien n'est sauvé
+## 1. "Progress saved" when nothing is saved
 
-Le message de fin lisait la constante `STATE_PATH` au lieu de demander au store
-ce qu'il avait fait. Sous `--fresh`, `ProgressStore` n'a pas de chemin et sort
-immédiatement de `save()` — mais la session annonçait quand même une sauvegarde.
+The end-of-session message read the constant `STATE_PATH` instead of asking the
+store what it had done. Under `--fresh`, `ProgressStore` has no path and returns
+immediately from `save()` — but the session announced a save anyway.
 
-La règle 32 dit « `--fresh` n'écrit rien du tout » : le comportement était juste,
-c'est le message qui mentait. Et c'est **la seule ligne de la séance que
-l'apprenant n'a aucun moyen de vérifier** — un fichier qu'il n'ouvrira pas.
+Rule 32 says "`--fresh` writes nothing at all": the behaviour was right, it was
+the message that lied. And it is **the one line of a session the learner has no
+way to check** — a file they will not open.
 
-Corrigé en demandant `store.path`.
+Fixed by asking `store.path`.
 
-## 2. Un trait sans glose n'était signalé nulle part
+## 2. A feature with no gloss was reported nowhere
 
-`check_roster` exemptait les traits du contrôle de glose. C'était **vrai quand
-ça a été écrit**, le 9 août : le tour d'un trait était rédigé par le modèle, qui
-pouvait travailler à partir de `description`. Le 11 août, le code s'est mis à
-composer les questions à partir de la glose et de rien d'autre, et l'exemption a
-survécu au changement qui la rendait fausse.
+`check_roster` exempted features from the gloss check. That was **true when it
+was written**, on 9 August: a feature's turn was composed by the model, which
+could work from `description`. On 11 August the code began building questions
+from the gloss and nothing else, and the exemption outlived the change that made
+it false.
 
-**La docstring de `_ask_for` promettait déjà la moitié manquante :** *« a missing
-gloss falls back to the item's own notes instead AND IS REPORTED AT STARTUP »*.
-Le repli marchait ; le signalement, non.
+**`_ask_for`'s docstring already promised the missing half:** *"a missing gloss
+falls back to the item's own notes instead AND IS REPORTED AT STARTUP"*. The
+fallback worked; the report did not.
 
-Ce n'est donc pas le repli qui a été retiré — il est délibéré, et son alternative
-était pire (utiliser le nom vietnamien, c'est-à-dire une question qui donne sa
-réponse). C'est le signalement qui a été rétabli.
+So it is not the fallback that was removed — it is deliberate, and its
+alternative was worse (using the Vietnamese name, that is, a question that gives
+its own answer). It is the report that was restored.
 
-**Signalé à part, et un par un.** Un *mot* sans glose est tenu hors des leçons et
-compté en une ligne — ils sont 1 915, les lister noierait tout le reste. Un
-*trait* sans glose est **quand même enseigné**, avec une question dégradée : ce
-n'est pas le même problème, il est nommé item par item.
+**Reported separately, and one by one.** A *word* with no gloss is held out of
+lessons and counted in one line — there are 1,915 of them, listing them would
+drown everything else. A *feature* with no gloss **is still taught**, with a
+degraded question: that is not the same problem, so it is named item by item.
 
-Mesuré avant d'écrire : 0 trait concerné aujourd'hui, donc zéro faux positif et
-zéro leçon changée. C'est une garde pour le prochain trait écrit, pas une
-correction du cours actuel.
+Measured before writing: 0 features affected today, so zero false positives and
+zero lessons changed. It is a guard for the next feature written, not a fix to
+the current course.
 
-**Laissé en place :** la seconde exemption, celle du contrôle « le nom apparaît
-dans sa propre glose ». Pour un trait, mettre le mot vietnamien dans la glose est
-**voulu** — c'est le commit `84c2104`. Retirer cette exemption-là entrerait en
-conflit avec une pratique délibérée.
+**Left in place:** the second exemption, on the "the name appears in its own
+gloss" check. For a feature, putting the Vietnamese word in the gloss is
+**deliberate** — that is commit `84c2104`. Removing that exemption would conflict
+with an intentional practice.
 
-## 3. La glose d'une construction énonçait de la grammaire
+## 3. A construction's gloss stated grammar
 
-`không phải là + [danh từ]` portait `gloss = "not be + [noun]"`, prononcé
-**« not be something »**. La règle 10 dit qu'une glose est dite telle quelle et
-n'est jamais une description grammaticale ; celle-ci était les deux à la fois.
-`STATUS.md` le signalait depuis des jours.
+`không phải là + [danh từ]` carried `gloss = "not be + [noun]"`, spoken as **"not
+be something"**. Rule 10 says a gloss is said as written and is never a
+grammatical description; this one was both at once. `STATUS.md` had been
+flagging it for days.
 
-- glose : `"not be + [noun]"` → `"I am not a ___"`, sur le modèle de
-  `"My name is ___"` et `"I am ___ years old"` déjà en place
-- littéral : `"not be + [noun]"` → `"not right is [noun]"`, qui est le vrai
-  mot-à-mot de `không phải là` (`không` pas, `phải` juste, `là` est) au lieu
-  d'une étiquette
+- gloss: `"not be + [noun]"` → `"I am not a ___"`, on the model of
+  `"My name is ___"` and `"I am ___ years old"` already in place
+- literal: `"not be + [noun]"` → `"not right is [noun]"`, which is the real
+  word-for-word of `không phải là` (`không` not, `phải` right, `là` is) instead
+  of a label
 
-**Jugement assumé, facile à défaire.** C'est du matériel de cours : si la
-formulation ne convient pas, elle se change en une ligne dans le TOML.
+**A judgement taken, easy to undo.** This is course material: if the wording does
+not suit, it changes in one line of TOML.
 
-**Pas touché :** `muốn + [động từ]` → `"want ___"`, que `STATUS.md` range dans le
-même lot. Prononcé « want something », ce n'est pas une étiquette grammaticale —
-c'est de l'anglais maigre. En inventer une meilleure sans mesure serait une
-préférence, pas une correction.
+**Not touched:** `muốn + [động từ]` → `"want ___"`, which `STATUS.md` files in
+the same batch. Spoken as "want something", it is not a grammatical label — it is
+thin English. Inventing a better one without a measurement would be a preference,
+not a correction.
 
-## Et un quatrième, trouvé en écrivant
+## And a fourth, found while writing
 
-`N_RAPIDFIRE = 3` documentait la moyenne mesurée sur le cours de référence, et
-ne servait plus à rien : `rapidfire_count` écrivait `3` en dur trois lignes plus
-bas, et la constante ne restait que comme défaut d'un paramètre que seul le
-smoke test emprunte. La règle 17 avait dû ajouter un avertissement — « **pas**
-`N_RAPIDFIRE` » — pour éviter qu'on la modifie en croyant changer quelque chose.
+`N_RAPIDFIRE = 3` documented the average measured on the reference course, and
+served no purpose any more: `rapidfire_count` wrote `3` literally three lines
+below it, and the constant survived only as the default of a parameter borrowed
+by the smoke test alone. Rule 17 had had to add a warning — "**not**
+`N_RAPIDFIRE`" — to stop anyone editing it thinking it changed something.
 
-**Rebranchée plutôt que supprimée.** La base du mot isolé *est* la moyenne
-mesurée ; les deux autres se déduisent de ce que l'item vient de faire dire. La
-constante dit maintenant ce qu'elle prétend dire, et l'avertissement de la règle
-17 a disparu avec sa raison d'être.
+**Rewired rather than deleted.** The single word's base *is* the measured
+average; the other two follow from what the item has just made the learner say.
+The constant now says what it claims, and rule 17's warning went with its reason
+for existing.
 
-Distribution vérifiée inchangée : 2–4 pour un mot, 1–2 pour une construction,
-1–3 pour un trait.
+Distribution verified unchanged: 2–4 for a word, 1–2 for a construction, 1–3 for
+a feature.
 
-## Périmètre
+## Scope
 
-**Dedans :** `tutor.py` (le message de fin, `rapidfire_count`), `content.py`
-(le contrôle de glose), un item de `02_xung_ho.toml`, la ligne **Changer** de la
-règle 17.
+**In:** `tutor.py` (the end message, `rapidfire_count`), `content.py` (the gloss
+check), one item of `02_xung_ho.toml`, the **Change** line of rule 17.
 
-**Dehors :** le repli sur `description` lui-même ; la seconde exemption de
-`check_roster` ; la glose de `muốn + [động từ]`.
+**Out:** the `description` fallback itself; the second exemption of
+`check_roster`; the gloss of `muốn + [động từ]`.
 
-## Tâches
+## Tasks
 
-- [x] Lire `store.path` au lieu de `STATE_PATH` pour le message de fin
-- [x] Signaler un trait sans glose, avec son propre message
-- [x] Vérifier zéro faux positif sur le roster réel, et que la garde se déclenche
-- [x] Réécrire la glose et le littéral de `không phải là + [danh từ]`
-- [x] Rebrancher `N_RAPIDFIRE` sur la base du mot isolé
-- [x] Corriger la ligne **Changer** de la règle 17
+- [x] Read `store.path` instead of `STATE_PATH` for the end message
+- [x] Report a feature with no gloss, with its own message
+- [x] Check zero false positives on the real roster, and that the guard fires
+- [x] Rewrite the gloss and literal of `không phải là + [danh từ]`
+- [x] Rewire `N_RAPIDFIRE` onto the single word's base
+- [x] Fix the **Change** line of rule 17
 - [x] `python smoke_test.py`
 
-## Vérification
+## Verification
 
-`smoke_test.py` passe après chaque étape. Les deux branches du message de fin
-testées séparément. La garde de glose testée sur un trait injecté sans glose, et
-sur le roster réel : 1 915 problèmes, tous du stock muet, zéro trait.
+`smoke_test.py` passes after each step. Both branches of the end message tested
+separately. The gloss guard tested on an injected feature with no gloss, and on
+the real roster: 1,915 problems, all from the mute stock, zero features.
 
-## Résultat
+## Result
 
-**Terminé le :** 2026-08-15.
+**Finished:** 2026-08-15.
 
-**Les quatre défauts ont la même forme**, et ce n'est visible qu'en les mettant
-côte à côte : un message qui lit une constante au lieu de l'état, une exemption
-vraie à l'écriture et fausse deux jours plus tard, une glose qui décrit au lieu
-de dire, une constante qui documente une valeur qu'elle ne pilote plus. Aucun ne
-casse une leçon. Tous les quatre trompent celui qui lit le code ou le contenu
-pour décider quoi faire ensuite — c'est-à-dire nous, tout au long de la journée.
+**All four defects have the same shape**, and that is only visible with them side
+by side: a message reading a constant instead of the state, an exemption true
+when written and false two days later, a gloss that describes instead of saying,
+a constant documenting a value it no longer drives. None breaks a lesson. All
+four mislead whoever reads the code or the content to decide what to do next —
+which is to say, us, all day long.
