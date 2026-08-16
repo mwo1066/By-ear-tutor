@@ -1,200 +1,198 @@
-# Faire revenir un trait sous forme d'application, aussi souvent qu'un mot
+# Bring a feature back as an application, as often as a word
 
-**Statut :** terminé
-**Ouvert le :** 2026-08-15
+**Status:** finished
+**Opened:** 2026-08-15
 
-## Pourquoi
+## Why
 
-Mesuré sur un cours entier joué jusqu'au bout :
+Measured over a whole course played to the end:
 
 ```
-33 traits enseignés
-niveau final ............ min 0, max 0
-jamais redemandés ....... 33 / 33
+33 features taught
+final level ............. min 0, max 0
+never asked again ....... 33 / 33
 ```
 
-Contre une moyenne de **4,5** pour les mots. Zéro ne veut pas dire « mal
-appris » : ça veut dire **jamais revu une seule fois**.
+Against an average of **4.5** for words. Zero does not mean "badly learned": it
+means **never seen again, not once**.
 
-La cause tient en une ligne, dans `_recall_targets` :
+The cause fits in one line, in `_recall_targets`:
 
 ```python
 exclude |= {i.name for i in seen_items if i.kind == "feature"}
 ```
 
-**Cette ligne est juste.** On ne peut pas demander « c'était quoi, le mot pour
-*pas de pluriel* ? ». Personne ne récite une règle. Ce qui est faux est la
-conclusion qu'on en a tirée — *« donc il n'y a rien à faire »*. On ne peut pas
-**redemander** un trait ; on peut le **réappliquer**.
+**That line is right.** You cannot ask "what was the word for *no plural*?".
+Nobody recites a rule. What is wrong is the conclusion drawn from it — *"so there
+is nothing to do"*. You cannot **re-ask** a feature; you can **re-apply** it.
 
-Aujourd'hui, l'exposition totale d'un trait sur toute la vie du cours est : un
-énoncé, une application. Puis le plan passe à l'item suivant et il ne reparaît
-dans aucune leçon. C'est **un cinquième de ce qui est enseigné** — 35 items sur
-170 — et un apprenant l'a rapporté dans ces termes : *« je n'ai rien compris à
-la règle, et elle n'est même pas utilisée »*.
+Today a feature's total exposure across the life of the course is: one statement,
+one application. Then the plan moves to the next item and it appears in no lesson
+again. That is **a fifth of what is taught** — 35 items out of 170 — and a
+learner reported it in these words: *"I understood nothing about the rule, and it
+is not even used"*.
 
-**Ce que ça ne coûte pas.** Un tour d'application n'est pas pris au vocabulaire :
-13c épingle la phrase qui partage le plus de pièces avec le trait, et
-l'instruction restreint la production aux mots déjà enseignés. La phrase produite
-est donc faite de mots dus à révision. Un tour, deux bénéfices.
+**What it does not cost.** An application turn is not taken from vocabulary: 13c
+pins the sentence sharing the most pieces with the feature, and the instruction
+restricts production to words already taught. The sentence produced is therefore
+made of words due for revision. One turn, two benefits.
 
-## Ce qui change dans SPEC.md
+## What changes in SPEC.md
 
-**Nouvelle règle — un trait revient, sous forme d'application.**
-**Où :** code. Un trait `discrete` entre dans le tirage des rappels au même titre
-qu'un mot, pondéré par le même niveau. Quand le tirage tombe sur lui, l'étape
-émise est une **application** (13c) et non un rappel sec, parce qu'il n'y a rien
-à réciter.
+**New rule — a feature comes back, as an application.**
+**Where:** code. A `discrete` feature enters the recall draw on the same footing
+as a word, weighted by the same level. When the draw lands on it, the step
+emitted is an **application** (13c) and not a bare recall, because there is
+nothing to recite.
 
-**Règle 17 — modifiée.** Elle décrit ce que les rappels de clôture excluent.
-Elle devra dire que les traits `discrete` y entrent désormais, et que les
-`strand` en restent exclus.
+**Rule 17 — modified.** It describes what the closing recalls exclude. It will
+have to say that `discrete` features now enter, and that `strand`s stay
+excluded.
 
-**Au passage, une garantie non écrite.** L'exclusion actuelle des traits du
-tirage n'est documentée nulle part dans `SPEC.md` — l'audit ne l'avait pas
-attrapée. Elle disparaît avec ce changement, mais il faut noter qu'elle
-existait sans règle.
+**And in passing, an unwritten guarantee.** The current exclusion of features
+from the draw is documented nowhere in `SPEC.md` — the audit had not caught it.
+It disappears with this change, but it is worth noting that it existed with no
+rule.
 
-## Périmètre
+## Scope
 
-**Dedans :**
+**In:**
 
-- les traits `discrete` entrent dans le tirage de `_recall_targets`
-- quand une cible tirée est un trait, `build_plan` émet une application au lieu
-  d'un `rapidfire`
-- l'exposition est enregistrée sur cette étape, pour que le niveau monte
+- `discrete` features enter the draw of `_recall_targets`
+- when a drawn target is a feature, `build_plan` emits an application instead of
+  a `rapidfire`
+- the exposure is recorded on that step, so the level rises
 
-**Dehors :**
+**Out:**
 
-- **les `strand`.** Ils se déclenchent depuis la matière — un mot a un jumeau de
-  ton, une phrase contient une personne — et n'ont rien à faire dans un tirage.
-  Ils restent exclus.
-- **le niveau des mots employés dans la phrase.** L'application les exerce, mais
-  le code n'enregistre rien pour eux : `record_recall` n'est appelé que là où il
-  a demandé un mot précis et peut comparer la réponse. Élargir le niveau à « le
-  mot était quelque part dans une phrase » lui ferait dire deux choses à la fois.
-  Les mots gardent leur calendrier ; l'application est un bonus non compté.
-- **tout jugement par le modèle.** Voir ci-dessous.
+- **the `strand`s.** They fire from the material — a word has a tone twin, a
+  sentence contains a person — and have no business in a draw. They stay
+  excluded.
+- **the level of the words used inside the sentence.** The application exercises
+  them, but the code records nothing for them: `record_recall` is only called
+  where it asked for a precise word and can compare the answer. Widening the
+  level to "the word was somewhere in a sentence" would make it mean two things
+  at once. Words keep their own schedule; the application is an uncounted bonus.
+- **any judgement by the model.** See below.
 
-## La décision qui structure le reste
+## The decision that structures the rest
 
-**Le niveau doit monter, et ce n'est pas optionnel.** Le tirage est pondéré par
-le niveau, et la courbe est raide :
+**The level has to rise, and it is not optional.** The draw is weighted by level,
+and the curve is steep:
 
-| niveau | tiré 1 fois sur… |
+| level | drawn 1 time in… |
 | --- | --- |
 | 0 | 1 |
 | 2 | 5 |
 | 4 | 11 |
 | 8 | 27 |
 
-Un item à 0 est **treize fois** plus probable qu'un mot consolidé à 4,5. Si les
-28 traits entrent dans le tirage et restent à 0 — ce qu'ils font aujourd'hui,
-rien ne faisant monter leur niveau — ils ne seront pas « autant répétés que les
-mots » : **ils écraseront tout le reste, en permanence.**
+An item at 0 is **thirteen times** more likely than a consolidated word at 4.5.
+If the 28 features enter the draw and stay at 0 — which they do today, nothing
+raising their level — they will not be "repeated as often as words": **they will
+crush everything else, permanently.**
 
-**Donc : compter l'exposition, sans juger.** Le niveau monte à chaque
-application, qu'elle ait été réussie ou non.
+**So: count the exposure, without judging.** The level rises on each application,
+whether it succeeded or not.
 
-L'alternative serait de faire juger le modèle, puisqu'une application demande une
-phrase entière et n'offre aucune cible à comparer. Elle est écartée : ce serait
-rendre au modèle une décision que ce projet a passé des semaines à ramener dans
-le code, et pour un gain de fidélité qu'aucune mesure ne réclame.
+The alternative would be to have the model judge, since an application asks for a
+whole sentence and offers no target to compare. It is set aside: it would hand
+back to the model a decision this project spent weeks bringing into the code, for
+a gain in fidelity no measurement is asking for.
 
-## À trancher avant d'implémenter
+## To settle before implementing
 
-**Faut-il plafonner à une application par item ?** Les rappels de clôture sont
-tirés par paquets de 1 à 4. Si deux ou trois tombent sur des traits, la clôture
-d'un mot devient deux ou trois productions de phrases d'affilée — long, et d'un
-tout autre rythme qu'une série de rappels secs.
+**Should it be capped at one application per item?** The closing recalls are
+drawn in batches of 1 to 4. If two or three land on features, closing a word
+becomes two or three sentence productions in a row — long, and of an entirely
+different rhythm from a run of bare recalls.
 
-Deux réponses possibles : plafonner à une application par item, ou laisser le
-tirage décider et regarder ce que ça donne en simulation. **Tranché : plafonné à une.**, quitte à relever le plafond après mesure — c'est le sens de
-la règle 17, qui module déjà le nombre selon ce que l'item vient de faire dire.
+Two possible answers: cap at one application per item, or let the draw decide and
+see what it gives in simulation. **Settled: capped at one**, with the option of
+raising the cap after measuring — which is the sense of rule 17, which already
+modulates the number according to what the item has just made the learner say.
 
-## Tâches
+## Tasks
 
-- [x] Retirer l'exclusion des `discrete` dans `_recall_targets`, garder celle des `strand`
-- [x] Émettre une application quand la cible tirée est un trait
-- [x] Enregistrer l'exposition sur cette étape
-- [x] Plafonner à une application par item, si c'est la décision retenue
-- [x] Écrire la nouvelle règle dans `SPEC.md`, et modifier la 17
+- [x] Remove the `discrete` exclusion in `_recall_targets`, keep the `strand` one
+- [x] Emit an application when the drawn target is a feature
+- [x] Record the exposure on that step
+- [x] Cap at one application per item, if that is the decision taken
+- [x] Write the new rule in `SPEC.md`, and modify 17
 - [x] `python smoke_test.py`
-- [x] `python simulate_progress.py` avant / après, et comparer les distributions
+- [x] `python simulate_progress.py` before / after, and compare the distributions
 
-## Vérification
+## Verification
 
-`simulate_progress.py` rejoue le vrai séquencement — `pick_next_index` choisit,
-`build_plan` construit, `record_recall` note — donc il produit un état auquel le
-tuteur aurait pu arriver. C'est l'outil qui a mesuré le 33/33 ; c'est lui qui
-doit montrer que le chiffre a bougé.
+`simulate_progress.py` replays the real sequencing — `pick_next_index` chooses,
+`build_plan` builds, `record_recall` scores — so it produces a state the tutor
+could have arrived at. It is the tool that measured the 33/33; it is the one that
+has to show the number has moved.
 
-**Ce que la vérification doit montrer :**
+**What the verification must show:**
 
-1. le niveau final des traits n'est plus 0, et se rapproche de celui des mots
-   — c'est l'objectif littéral : « autant répété qu'un simple mot »
-2. la distribution des tirages n'est pas dominée par les traits — vérifier qu'un
-   mot consolidé n'a pas cessé d'être tiré
-3. `smoke_test.py` passe, et une leçon ne se termine pas sur trois productions de
-   phrases d'affilée
+1. the final level of features is no longer 0, and approaches that of words —
+   that is the literal objective: "worked as often as a simple word"
+2. the draw distribution is not dominated by features — check that a consolidated
+   word has not stopped being drawn
+3. `smoke_test.py` passes, and a lesson does not end on three sentence
+   productions in a row
 
-## Résultat
+## Result
 
-**Terminé le :** 2026-08-15.
+**Finished:** 2026-08-15.
 
-| | traits | mots |
+| | features | words |
 | --- | --- | --- |
-| avant | tous à **1** — la seule exposition est l'introduction | médiane 5 |
-| après | médiane **4**, de 0 à 8 | médiane 4 |
+| before | all at **1** — the only exposure is the introduction | median 5 |
+| after | median **4**, from 0 to 8 | median 4 |
 
-**L'objectif est atteint au sens littéral :** un trait est désormais aussi
-travaillé qu'un mot. Le prix est visible et assumé — les mots passent de 5 à 4,
-puisqu'ils partagent maintenant les créneaux.
+**The objective is met in the literal sense:** a feature is now worked as much as
+a word. The price is visible and accepted — words go from 5 to 4, since they now
+share the slots.
 
-Plafond vérifié sur 400 clôtures : **jamais deux applications**, jamais deux
-d'affilée. 58 % des clôtures en portent une.
+Cap verified over 400 closes: **never two applications**, never two in a row. 58%
+of closes carry one.
 
-## Ce que l'implémentation a fait apparaître
+## What the implementation surfaced
 
-**Une troisième barrière que la proposition n'avait pas vue.** L'exclusion des
-traits n'était pas seule : `askable()` les rejetait aussi, et sa docstring disait
-déjà pourquoi — *« teachable and askable are different: such an item can still be
-TAUGHT, it just cannot be the bare question of a recall slot »*. C'est juste. Il
-manquait un troisième mot : **`drawable`**, « peut occuper un créneau, sous une
-forme ou une autre ». Les trois sont maintenant nommés côte à côte dans la
-docstring de `drawable`, parce que c'est leur confusion qui a coûté le 33/33.
+**A third gate the proposal had not seen.** The exclusion of features was not
+alone: `askable()` rejected them too, and its docstring already said why —
+*"teachable and askable are different: such an item can still be TAUGHT, it just
+cannot be the bare question of a recall slot"*. That is right. A third word was
+missing: **`drawable`**, "can it fill a slot, in one form or another". All three
+now sit side by side in `drawable`'s docstring, because their confusion is what
+cost the 33/33.
 
-**Le champ `nature` n'était pas chargé.** `0001` l'avait écrit dans les 35 items,
-mais le chargeur de `content.py` prend ses champs un par un et ignorait celui-là.
-Le code ne pouvait donc pas distinguer `discrete` de `strand` — la donnée était
-là, invisible. Ajoutée au dataclass et au chargement.
+**The `nature` field was not loaded.** `0001` had written it into all 35 items,
+but `content.py`'s loader picks its fields one by one and skipped that one. The
+code therefore could not tell `discrete` from `strand` — the data was there,
+invisible. Added to the dataclass and to the loading.
 
-**La règle de notation était dupliquée**, et la copie a dérivé le jour même.
-`simulate_progress.py` portait sa propre liste `("recall_piece", "rapidfire",
-"settle")` sous un commentaire disant « exactement comme la boucle réelle ».
-C'est l'outil qui a produit la mesure du 33/33 : laissé tel quel, il aurait
-continué à rapporter « traits à 0 » **après** la correction. Rebranché sur
-`RECALL_KINDS`, plus une branche pour les applications.
+**The scoring rule was duplicated**, and the copy drifted the same day.
+`simulate_progress.py` carried its own list `("recall_piece", "rapidfire",
+"settle")` under a comment saying "exactly as the live loop does". It is the tool
+that produced the 33/33 measurement: left as it was, it would have gone on
+reporting "features at 0" **after** the fix. Rewired onto `RECALL_KINDS`, plus a
+branch for applications.
 
-**Une extraction rendue nécessaire.** Le choix de la matière d'une application —
-la construction épinglée, sinon les mots propres du trait, sinon la liste des
-phrases connues — vivait dans la branche d'introduction. Les deux tours en ont
-besoin, et c'est la même décision : extraite dans `_apply_material`. Les deux
-tours formulent différemment (l'un peut dire « ces mots-là », que l'apprenant
-vient de redire ; l'autre doit nommer sa propre matière) mais choisissent
-pareil.
+**An extraction made necessary.** The choice of an application's material — the
+pinned construction, otherwise the feature's own words, otherwise the list of
+known sentences — lived in the introduction branch. Both turns need it, and it is
+the same decision: extracted into `_apply_material`. The two turns word it
+differently (one can say "those words", which the learner has just said back; the
+other has to name its own material) but choose alike.
 
-## Et la copie n'était pas seule
+## And the copy was not alone
 
-Après coup, une recherche des invariants recopiés en a trouvé **trois autres**,
-dont **deux dans le fichier qu'on venait de corriger** : `simulate_progress.py`
-écrivait la liste à trois endroits, `smoke_test.py` à un quatrième. J'avais
-réparé l'instance sur laquelle j'avais trébuché, pas la classe.
+Afterwards, a search for duplicated invariants found **three more**, **two of them
+in the file we had just fixed**: `simulate_progress.py` wrote the list in three
+places, `smoke_test.py` in a fourth. I had fixed the instance I tripped over, not
+the class.
 
-Les quatre renvoient maintenant à `SCORING_KINDS`, défini une fois dans
-`tutor.py` avec la raison écrite à côté. La seule occurrence littérale qui
-subsiste est la définition.
+All four now refer to `SCORING_KINDS`, defined once in `tutor.py` with the reason
+written beside it. The only literal occurrence left is the definition.
 
-**C'est la leçon la plus utile du lot** : trouver une prose périmée ne dit rien
-sur le nombre de ses jumelles. Ce qui les trouve n'est pas l'attention, c'est une
-recherche — et elle est mécanique, donc reproductible.
+**That is the most useful lesson of the batch**: finding one piece of stale prose
+says nothing about how many twins it has. What finds them is not attention, it is
+a search — and a search is mechanical, therefore repeatable.

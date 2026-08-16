@@ -1,133 +1,129 @@
-# Regrouper `SPEC.md` par sorte d'item, et aligner tout le vocabulaire sur le lexique
+# Regroup `SPEC.md` by item kind, and align the whole vocabulary on the glossary
 
-**Statut :** terminé
-**Ouvert le :** 2026-08-15
+**Status:** finished
+**Opened:** 2026-08-15
 
-## Pourquoi
+## Why
 
-Trois défauts de lisibilité, tous constatés en essayant de faire lire le projet
-à quelqu'un d'extérieur.
+Three readability defects, all found while trying to get someone outside to read
+the project.
 
-**`SPEC.md` avait une section de 14 règles** — « Ce qui est enseigné, et dans
-quel ordre » — qui mêlait quatre sujets sans rapport : l'ordre du cours, les
-données que porte un item, l'enseignement d'un mot, celui d'une construction.
-Et une section « Les hors-mots » séparée, alors qu'elle traite exactement la
-même question pour la troisième sorte d'item. 59 règles sans sommaire.
+**`SPEC.md` had a section of 14 rules** — "What is taught, and in what order" —
+mixing four unrelated subjects: the order of the course, the data an item
+carries, teaching a word, teaching a construction. And a separate "Features"
+section, when it answers exactly the same question for the third item kind. 59
+rules with no table of contents.
 
-**Le vocabulaire divergeait entre les fichiers.** `LEXIQUE.md` et le code
-disaient `feature` depuis 0002 ; `SPEC.md` disait « hors-mot » 23 fois, et six
-symboles du code portaient encore `RULE` dans leur nom.
+**The vocabulary diverged between files.** `LEXIQUE.md` and the code had said
+`feature` since 0002; `SPEC.md` said "hors-mot" 23 times, and six code symbols
+still carried `RULE` in their names.
 
-**Et des garanties du contenu restaient non écrites** — la suite de l'audit
-commencé en 9b/9c/11c.
+**And content guarantees remained unwritten** — the continuation of the audit
+started in 9b/9c/11c.
 
-## Ce qui change dans SPEC.md
+## What changes in SPEC.md
 
-**Aucun texte de règle n'est réécrit.** Ce sont des titres de section, un ordre
-de blocs, un sommaire, et deux paragraphes ajoutés à la règle 10.
+**No rule text is rewritten.** These are section headings, an order of blocks, a
+table of contents, and two paragraphs added to rule 10.
 
-Le bloc central se scinde en cinq sections, dont les trois dernières suivent les
-trois sortes d'item du lexique, dans l'ordre :
+The central block splits into five sections, the last three following the three
+item kinds of the glossary, in order:
 
-| section | règles |
+| section | rules |
 | --- | --- |
-| L'ordre du cours | 8, 9, 9b, 9c |
-| Ce que le cours sait | 10, 10b |
-| Enseigner un mot | 11, 11b, 11c |
-| Enseigner une construction | 12, 12b, 12c, 12d, 13 |
-| Enseigner un trait | 13b, 13c, 13d |
+| The order of the course | 8, 9, 9b, 9c |
+| What the course knows | 10, 10b |
+| Teaching a word | 11, 11b, 11c |
+| Teaching a construction | 12, 12b, 12c, 12d, 13 |
+| Teaching a feature | 13b, 13c, 13d |
 
-**Un seul renumérotage :** `12e` devient `10b`. Le profil de l'apprenant rejoint
-« chaque item porte ses propres données » — l'une dit ce que le cours sait des
-items, l'autre ce qu'il sait de l'apprenant. Laissé où il était, il coupait la
-section des constructions en deux.
+**One renumbering only:** `12e` becomes `10b`. The learner profile joins "every
+item carries its own data" — one says what the course knows about items, the
+other what it knows about the learner. Left where it was, it cut the construction
+section in half.
 
-**Le sommaire pose la convention** qui évitera la question la prochaine fois :
-les numéros de règle sont des **identifiants stables**, ils ne se renumérotent
-pas quand une section bouge. C'est ce qui permet de réorganiser sans invalider
-les renvois de `STYLE.md`, du `LEXIQUE.md` et des commentaires du code.
+**The table of contents sets the convention** that will avoid the question next
+time: rule numbers are **stable identifiers**, they do not renumber when a
+section moves. That is what makes it possible to reorganise without invalidating
+the cross-references from `STYLE.md`, `LEXIQUE.md` and the code comments.
 
-**Deux ajouts à la règle 10**, tirés de l'audit du contenu :
+**Two additions to rule 10**, from the content audit:
 
-- **le repli sur `description`** — sans gloss, deux endroits retombent sur les
-  notes d'écriture, rédigées en vietnamien. Aucun item enseigné n'a de gloss
-  vide, donc rien ne le déclenche ; mais c'est la forme latente du défaut que
-  `a6f5021` a corrigé dans `_lesson_note`, où des fragments de vietnamien
-  ressortaient au milieu de phrases anglaises.
-- **les champs inertes** — `type` sur les 2085 items, `senses` et
-  `frequency_rank` sur les 1915 du stock. Aucun ne pilote une décision.
+- **the `description` fallback** — with no gloss, two places fall back to the
+  authoring notes, written in Vietnamese. No taught item has an empty gloss, so
+  nothing triggers it; but it is the latent form of the defect `a6f5021` fixed in
+  `_lesson_note`, where fragments of Vietnamese came back out in the middle of
+  English sentences.
+- **the inert fields** — `type` on all 2085 items, `senses` and `frequency_rank`
+  on the 1915 of the stock. None drives a decision.
 
-## Périmètre
+## Scope
 
-**Dedans :** la structure et le sommaire de `SPEC.md` ; « hors-mot » → « trait »
-dans `SPEC.md` et `STYLE.md` ; les six symboles du code portant `RULE` ; les
-commentaires de `content.py` décrivant encore le type `rule` ; les deux
-paragraphes de la règle 10.
+**In:** the structure and table of contents of `SPEC.md`; "hors-mot" → "feature"
+in `SPEC.md` and `STYLE.md`; the six code symbols carrying `RULE`; the
+`content.py` comments still describing the `rule` kind; the two paragraphs of
+rule 10.
 
-**Dehors :**
+**Out:**
 
-- **le texte des règles.** Aucune n'est réécrite : ce changement doit pouvoir se
-  relire comme un déplacement, pas comme une révision.
-- **`Rule 9` dans un commentaire de `tutor.py`** — celui-là désigne bien une
-  règle de `SPEC.md`. C'est l'usage correct du mot, il reste.
-- **`LEXIQUE.md`**, déjà aligné puisqu'il est la source.
+- **the text of the rules.** None is rewritten: this change has to read as a
+  move, not as a revision.
+- **`Rule 9` in a `tutor.py` comment** — that one does mean a rule of `SPEC.md`.
+  It is the correct use of the word, it stays.
+- **`LEXIQUE.md`**, already aligned since it is the source.
 
-## Ce qui revient sur une décision de 0002
+## What this reverses from 0002
 
-`0002` avait **exclu explicitement** le renommage des symboles, au motif que les
-lignes **Changer** de `SPEC.md` nomment des symboles et qu'un renommage les
-aurait toutes invalidées d'un coup.
+`0002` had **explicitly excluded** renaming the symbols, on the grounds that the
+**Change** lines of `SPEC.md` name symbols and a rename would have invalidated
+them all at once.
 
-C'était juste à ce moment-là. Ici les deux se font dans le même passage : les
-symboles et les lignes qui les nomment changent ensemble, donc l'argument tombe.
-Six noms concernés — `MAX_RULE_PIECE_RECALLS`, `MIN_ITEMS_BETWEEN_RULES`,
-`_rule_is_due`, `rules_due`, `first_rule`,
-`check_rule_glosses_name_their_word` — c'est-à-dire peu, ce qu'on ne savait pas
-avant de compter.
+That was right at the time. Here the two happen in the same pass: the symbols and
+the lines naming them move together, so the argument falls. Six names concerned —
+`MAX_RULE_PIECE_RECALLS`, `MIN_ITEMS_BETWEEN_RULES`, `_rule_is_due`,
+`rules_due`, `first_rule`, `check_rule_glosses_name_their_word` — which is to say
+few, something nobody knew before counting.
 
-## Tâches
+## Tasks
 
-- [x] Déplacer le bloc `12e` et le renuméroter `10b`
-- [x] Scinder le bloc central en cinq sections
-- [x] Renommer « Les hors-mots » en « Enseigner un trait »
-- [x] Écrire le sommaire, avec la convention sur les numéros stables
-- [x] « hors-mot » → « trait » dans `SPEC.md` et `STYLE.md`
-- [x] Renommer les six symboles, et les lignes **Changer** qui les nomment
-- [x] Aligner les commentaires de `content.py`
-- [x] Ajouter le repli `description` et les champs inertes à la règle 10
-- [x] `python smoke_test.py` après chaque étape
+- [x] Move the `12e` block and renumber it `10b`
+- [x] Split the central block into five sections
+- [x] Rename "Features" to "Teaching a feature"
+- [x] Write the table of contents, with the stable-numbers convention
+- [x] "hors-mot" → "feature" in `SPEC.md` and `STYLE.md`
+- [x] Rename the six symbols, and the **Change** lines naming them
+- [x] Align the `content.py` comments
+- [x] Add the `description` fallback and the inert fields to rule 10
+- [x] `python smoke_test.py` after each step
 
-## Vérification
+## Verification
 
-`smoke_test.py` passe après chacune des quatre étapes. Zéro occurrence de
-« hors-mot » dans les trois documents, zéro symbole contenant `rule` hors des
-mentions en prose qui désignent une règle de `SPEC.md`. 59 règles avant, 59
-après.
+`smoke_test.py` passes after each of the four steps. Zero occurrences of
+"hors-mot" across the three documents, zero symbols containing `rule` outside
+prose mentions that mean a rule of `SPEC.md`. 59 rules before, 59 after.
 
-## Résultat
+## Result
 
-**Terminé le :** 2026-08-15 — commit `a1f3285`, six fichiers : `SPEC.md`,
-`STATUS.md`, `STYLE.md`, `content.py`, `tutor.py`, `smoke_test.py`.
+**Finished:** 2026-08-15 — commit `a1f3285`, six files: `SPEC.md`, `STATUS.md`,
+`STYLE.md`, `content.py`, `tutor.py`, `smoke_test.py`.
 
-**Ce dossier a été écrit après le commit, pas avant.** Le changement a été
-commité tel quel, avec un message d'une ligne — « Cleanup spec, align with
-content and add section » — qui ne dit ni le renumérotage de `12e` en `10b`, ni
-la convention sur les numéros stables, ni le retour sur l'exclusion posée par
-`0002`. Comme `a1f3285` était déjà poussé, le message n'a pas été réécrit :
-c'est ce dossier qui porte le détail, et le commit suivant y renvoie.
+**This folder was written after the commit, not before.** The change was
+committed as it stood, with a one-line message — "Cleanup spec, align with
+content and add section" — which says neither the renumbering of `12e` to `10b`,
+nor the stable-numbers convention, nor the reversal of the exclusion set by
+`0002`. Since `a1f3285` was already pushed, the message was not rewritten: this
+folder carries the detail, and the following commit points at it.
 
-C'est exactement le cas que le rituel doit rendre visible plutôt qu'empêcher. Il
-n'empêche rien — il laisse une trace quand on le saute, et la trace ici est un
-dossier daté d'après son commit.
+That is exactly the case the ritual is meant to make visible rather than prevent.
+It prevents nothing — it leaves a trace when it is skipped, and the trace here is
+a folder dated after its commit.
 
-**Le sommaire n'était pas demandé** et c'est probablement l'apport le plus utile
-du lot : 59 règles sans table des matières se parcourent mal, quel que soit leur
-regroupement.
+**The table of contents was not asked for** and is probably the most useful part
+of the batch: 59 rules read badly without one, whatever their grouping.
 
-**Une trouvaille du tri des champs de contenu.** La recherche initiale donnait
-`description` lu 29 fois et `type` 31 fois dans le code, ce qui suggérait deux
-mécanismes non documentés. En réalité la quasi-totalité de ces occurrences sont
-des clés de schéma JSON pour la définition des outils, sans rapport avec les
-champs d'un item. Compter des occurrences ne dit pas ce qu'elles font — il a
-fallu regarder chacune. Le vrai usage tient en trois lignes, et une seule
-méritait d'être écrite.
+**A finding from sorting the content fields.** The initial search gave
+`description` read 29 times and `type` 31 times in the code, which suggested two
+undocumented mechanisms. In reality almost all those occurrences are JSON schema
+keys for the tool definitions, unrelated to an item's fields. Counting
+occurrences does not tell you what they do — each one had to be looked at. The
+real usage fits in three lines, and only one deserved writing down.
