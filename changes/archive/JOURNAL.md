@@ -12,6 +12,21 @@ One line per archived change, in the form:
 
 ## Archived changes
 
+`0011` — **a turn never asks for the word it has just said** — 2026-08-17 —
+**REFUSED, never implemented.** Written after a diagnostic fired four times in
+two sessions: the tutor hands the answer back and then asks for it. Meo listened
+to those same sessions and it did not register as broken — a defect only a
+`[diag]` line can see is not worth a change. Reopen only if a real session
+annoys him.
+
+Worth keeping anyway: the proposal's own diagnosis was **wrong**. It blamed
+persona rule 2. The real cause is one instruction contradicting itself —
+*"do not ask them to produce it again this turn"* followed by *"then do the
+instruction below"*, which for a recall step is *ask them to produce it*. The
+session tripped both `gave_up` and `missed → one more go`, so the step was
+retried instead of consumed and the model obeyed two opposite orders. The fix
+would be in the code, not the prompt.
+
 `0010` — **believe the learner spoke, without counting the words** — 2026-08-17 —
 the guard protecting the right to interrupt required more than three words, so
 *"I forgot"*, *"I didn't understand"* and *"too fast"* were translated into

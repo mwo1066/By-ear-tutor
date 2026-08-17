@@ -1,6 +1,6 @@
 # A turn never asks for the word it has just said
 
-**Status:** proposed
+**Status:** refused 2026-08-17 — never implemented
 **Opened:** 2026-08-17
 
 ## Why
@@ -117,3 +117,41 @@ guard fires on a crafted turn but cannot prove the real model stops doing it.
    again. This is the number that says whether it worked.
 3. One real session with a deliberate *"I forgot"*, listened to: the word is
    given, Minh says it, and the turn **stops**.
+
+
+---
+
+## Refused
+
+**2026-08-17, by Meo:** *"honnêtement j'ai rien vu de ça dans mes tests donc on
+skip. Tu reviendrais si ça m'énerve dans mes tests."*
+
+Fair, and it decides this. The four occurrences came out of **diagnostic lines in
+a log**, not out of the lesson as it is lived — Meo listened to those same
+sessions and the turns did not register as broken. A defect that only a `[diag]`
+line can see is not worth a change. **Reopen only if a session actually annoys
+him.**
+
+### What was found while proposing it, and should not be lost
+
+The proposal above blames persona rule 2 and "a rule losing to another". **That
+diagnosis is wrong.** The real cause is a single instruction contradicting itself,
+in `_lesson_note`:
+
+```
+THEY SAID THEY DO NOT KNOW. Give them the answer to what you just asked…
+Do not ask them to produce it again this turn, and do not act disappointed.
+Then do the instruction below.
+```
+
+*Do not ask them to produce it again this turn* — and then *do the instruction
+below*, which for a recall step is **ask them to produce it**. The session
+tripped both mechanisms at once, `(learner said they don't know)` and
+`(missed 'tôi' -- one more go)`, so the step was retried rather than consumed and
+the model received two opposite orders in one breath. **It did not disobey; it
+obeyed both.**
+
+So if this is ever reopened, the fix is not a prompt line: it is that a step is
+not retried in the same turn in which the answer was handed back. And
+`_lesson_note` line 1538 assigns `step = current_step(lesson)` and never uses it,
+which suggests someone already started down this path.

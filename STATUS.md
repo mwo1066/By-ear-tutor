@@ -108,13 +108,19 @@ instead of what filling it would do.*
 
 ### C · Not content — code and prompt
 
-Observed in real sessions on 2026-08-17. **Two of the three turned out not to be
-work at all** — one closed by Meo listening to it, one was the instruction being
-followed correctly. Only the first is real, and it is held as `0011`.
+**All three are closed, none of them by writing code.** Observed in real sessions
+on 2026-08-17: one was the instruction being followed correctly, and the other
+two were refused by the person who hears the lessons. Every one of them was found
+by reading `[diag]` output rather than by a lesson going wrong — which is the
+lesson worth keeping from the whole set.
 
-- **The tutor says the word it is asking for.** `!! the answer was given away:
-  this turn asked FOR 'tôi' and said it` — four times across two sessions. A
-  prompt conflict, not a bug in the planner.
+- ~~**The tutor says the word it is asking for.**~~ `!! the answer was given away:
+  this turn asked FOR 'tôi' and said it` — four times across two sessions.
+  **Refused 2026-08-17: Meo heard those same sessions and it did not register as
+  broken.** A defect only a `[diag]` line can see is not worth a change. Written
+  up as `0011` in the archive, including the cause, which turned out to be one
+  instruction contradicting itself rather than the persona. Reopen only if a real
+  session annoys him.
 - ~~**Vietnamese lands inside an English sentence**, so the voice switches
   mid-phrase~~ — `!! Vietnamese landed mid-sentence (2 voice switches)`, three
   times. **Closed 2026-08-17 without a fix: Meo listened to it and does not mind
