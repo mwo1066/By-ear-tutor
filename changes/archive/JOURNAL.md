@@ -12,6 +12,25 @@ One line per archived change, in the form:
 
 ## Archived changes
 
+`0010` — **believe the learner spoke, without counting the words** — 2026-08-17 —
+the guard protecting the right to interrupt required more than three words, so
+*"I forgot"*, *"I didn't understand"* and *"too fast"* were translated into
+Vietnamese and **scored as correct answers**: `"Tôi không hiểu."` contains both
+`tôi` and `không`. Swept over 129 targets × 43 interruptions: **60.5% → 0.1%**.
+Length turned out to be anti-correlated, not mistuned — a 2-word interruption was
+read as an attempt and a 4-word answer as speech. Replaced by resemblance to the
+target, one word-floor for every language (the decoder called one voice nine
+different languages), and the target passed on every asking step instead of only
+a recall.
+
+Three attempts, two wrong. Forcing Vietnamese first was refuted by
+`smoke_test.py` in an hour — the counterexamples were already in the tests.
+Trusting `lang == "en"` was refuted by a real session: *"too fast"* came back
+**Italian**, and the 5-of-5 measurement behind it had only used full sentences.
+`no_speech_prob` and `avg_logprob` tested and rejected — Whisper is more
+confident on room noise than on a voice. Six new transcription cases guard both
+directions, two of them replaying whole turns with the network mocked.
+
 `0009` — **climb a construction instead of asking for it whole** — 2026-08-15 —
 the reference method's move, written in the code for weeks and applied to one
 branch out of three. The `scaffold` step becomes two or three rungs, each adding

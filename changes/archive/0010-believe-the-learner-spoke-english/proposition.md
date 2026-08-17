@@ -1,6 +1,6 @@
 # Believe the learner spoke English without demanding four words of it
 
-**Status:** attempted 17 August, reverted — **needs a decision before a second attempt**
+**Status:** done
 **Opened:** 2026-08-17
 
 ## Why
@@ -253,3 +253,58 @@ What verifies it:
    `không`, say *"I didn't understand"* out loud. Today it is scored correct and
    the lesson advances. It must instead answer you and come back to the same step
    — rule 4c-bis.
+
+
+---
+
+## Result
+
+**Finished:** 2026-08-17 — commits `d288d37`, `1bf6cd4`, `bc62622`, `50a38f0`,
+`d70d018`
+
+**What it gave.** Interruptions wrongly scored as correct answers, swept over all
+129 targets a recall step can ask for against 43 real interruptions:
+**3354 of 5547 before (60.5%), 5 after (0.1%)**. Confirmed by voice: *"Too
+fast."* — two words, the exact case that failed — now gets *"I hear you—let's
+take it a bit slower"* and **the step waits**.
+
+**Three attempts, two of them wrong, and that is the useful part.**
+
+**Attempt 1 — force Vietnamese on the first pass.** Refuted by `smoke_test.py`
+within the hour: `'toi'`, `'Fen Bey.'` and `'and Bay'` are real attempts that come
+back tagged English, and all three were already recorded in the tests before this
+was proposed. It would have made the bug systematic. **Reading the tests was the
+cheapest possible refutation and it was skipped.**
+
+**Attempt 2 — trust `lang == "en"`, with a two-word floor.** Shipped, and
+Meo's session broke it the same evening: *"too fast"* came back tagged
+**Italian**, so an English-only floor never fired. The measurement behind it —
+"English detected 5 of 5" — was taken on full sentences only. At two words the
+label is a coin toss.
+
+**Attempt 3, which holds.** One floor for every language the decoder names,
+because the name carries nothing — this microphone was called Italian, Russian,
+German, Spanish, Turkish, Korean, Dutch, Portuguese and Chinese for a voice
+speaking two languages. Every asking step passes its target, not only a recall.
+The English reading is re-checked before being believed, which recovers
+`'Totten-Lay-Anna.'` as *"Tôi tên là Anna"*. And resemblance accepts a slot.
+
+**What the length rule really was.** Not mistuned — **anti-correlated**. Meo's two
+failures pulled opposite ways: `"too fast"` (2 words) is speech and was called an
+attempt; `"Tôi tên là Anna"` (4 words) is the answer and was called speech. No
+threshold fits, because length was never the property.
+
+**Tested and rejected, with numbers:** `no_speech_prob` and `avg_logprob`.
+`avg_logprob` runs backwards — Whisper is six to eight times more confident on
+room noise than on a real voice.
+
+**Found on the way out.** Making resemblance ignore a slot left the scorer still
+reading it, so saying the Vietnamese for "verb" or "noun" scored as the answer on
+five of the eleven slotted constructions. Closed in `d70d018`.
+
+**Still open, deliberately.** One word of English is unprotected — that is where
+a badly heard attempt lives, and the trade was accepted explicitly. Five
+combinations of 5547 remain, named in `SPEC.md`. Noise becoming text — the
+`La La School` outro — is a different failure, observed once and **never
+reproduced**: the probe that made Whisper invent from room noise bypassed the
+microphone gate. Reproduce it before proposing Silero.
