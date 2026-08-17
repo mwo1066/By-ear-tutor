@@ -110,14 +110,53 @@ description = "Chữ 'bốn' có thể đổi thành 'tư' khi đứng CUỐI t�
 
 [[items]]
 type = "procedure"
-name = "đếm từ 11 đến 99"
+name = "ghép số: chữ số + đơn vị"
 kind = "feature"
 nature = "strand"
-gloss = "past ten you stack two words you already know — but the word for ten changes shape on the way"
+gloss = "numbers here are built, not memorised — you stack words you already know, so ten digits carry you far past a hundred with nothing new to learn"
 category = "rules"
 language = "vi"
-description = "Quy tắc: từ 11 đến 19 là 'mười' cộng chữ số — mười một, mười hai, mười ba. Từ 20 trở lên đảo lại: chữ số đứng trước, rồi 'mươi', rồi chữ số cuối — 'hai mươi ba' (23), 'chín mươi bảy' (97). Chỗ bẫy là 'mười' thành 'mươi' khi có số đứng trước: 10 là mười, 20 là hai MƯƠI. Một dấu thanh, hai từ khác nhau. Biết mười chữ số là đếm được tới 99 — không có chữ nào mới."
-pieces = ["mười", "mươi", "hai", "ba"]
+description = "Sợi chỉ xuyên suốt, không bao giờ hết: mọi số trong tiếng Việt là các chữ đã biết xếp cạnh nhau — 'năm trăm nghìn' là ba chữ người học đã có. Đúng ở 11, đúng ở 100, đúng ở một triệu. Từng quy tắc cụ thể (11-19, từ 20, mười thành mươi, nghìn, triệu) là feature discrete riêng, dạy từng lát một."
+pieces = ["mười", "mươi"]
+
+[[items]]
+type = "procedure"
+name = "mười một đến mười chín: mười + chữ số"
+kind = "feature"
+nature = "discrete"
+tier = 2
+after = "mười"
+gloss = "for eleven up to nineteen you say mười first and then the digit, in that order and with nothing added"
+category = "rules"
+language = "vi"
+description = "Lát thứ nhất của sợi ghép số. Từ 11 đến 19 là 'mười' cộng chữ số — mười một, mười hai, mười ba. Không có chữ mới nào cả. Đây là lát dễ nhất, dạy trước khi đảo thứ tự ở 20."
+pieces = ["mười"]
+
+[[items]]
+type = "procedure"
+name = "hai mươi trở lên: chữ số + mươi + chữ số"
+kind = "feature"
+nature = "discrete"
+tier = 2
+after = "mươi"
+gloss = "from twenty on, the order flips — the digit comes first, then mươi, then the last digit: hai mươi ba is twenty-three"
+category = "rules"
+language = "vi"
+description = "Lát thứ hai. Từ 20 trở lên đảo lại: chữ số đứng trước, rồi 'mươi', rồi chữ số cuối — 'hai mươi ba' (23), 'chín mươi bảy' (97). Biết mười chữ số là đếm được tới 99 — không có chữ nào mới."
+pieces = ["mươi", "hai", "ba"]
+
+[[items]]
+type = "procedure"
+name = "mười thành mươi khi có số đứng trước"
+kind = "feature"
+nature = "discrete"
+tier = 2
+after = "mươi"
+gloss = "ten on its own is mười, but put a number in front of it and it turns into mươi — one tone mark apart, and two different words"
+category = "rules"
+language = "vi"
+description = "Lát thứ ba, chỗ bẫy. 10 là 'mười', nhưng 20 là 'hai MƯƠI'. Một dấu thanh, hai từ khác nhau. Đây là lỗi hay gặp nhất khi đếm, nên tách riêng thành một lát chứ không nhét vào quy tắc từ 20."
+pieces = ["mười", "mươi"]
 
 [[items]]
 type = "procedure"
