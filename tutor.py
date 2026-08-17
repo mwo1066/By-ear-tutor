@@ -1758,6 +1758,34 @@ def answered_target(user_text: str, target: str) -> bool:
     return difflib.SequenceMatcher(None, said, want).ratio() >= floor
 
 
+# Looser than ANSWER_MATCH_THRESHOLD on purpose. This one answers a different
+# question: not "is this the answer" but "is this an ATTEMPT at the answer, badly
+# spelled" -- which is what tells a mangled word apart from the learner speaking.
+#
+# Set by the expensive direction. Measured 17 August: the attempts recorded in
+# smoke_test.py score 0.571 ('Fen Bey.' for sân bay), 0.857 ('and Bay') and 1.000
+# ('toi'), while English of two words or more tops out at 0.308 ("I forgot"
+# against không). 0.45 sits in that gap with margin on the side that matters.
+RESEMBLES_TARGET_THRESHOLD = 0.45
+
+
+def resembles_target(user_text: str, target: str) -> bool:
+    """Whether what was heard is a mangled shot at the word the lesson asked for.
+
+    Used only to protect the learner's right to interrupt: a step waiting for
+    `không` and a learner saying "I didn't understand" must not have that
+    translated into "Tôi không hiểu." and scored correct. What separates the two
+    is that an attempt looks like the word and a sentence does not.
+
+    Never used to score an answer -- `answered_target` does that, at its own
+    stricter floor. Confusing the two would let 0.45 record a word as known.
+    """
+    said, want = _bare(_LANG_TAG.sub("", user_text)), _bare(target)
+    if not want or not said:
+        return False
+    return difflib.SequenceMatcher(None, said, want).ratio() >= RESEMBLES_TARGET_THRESHOLD
+
+
 _QUESTION_MARK = re.compile(r"\?\s*$")
 
 
@@ -2089,7 +2117,8 @@ def _conversation_loop(api_key, messages, store, roster, queue_items, themes_gen
             # English spelling ("tên" came back as the digits "10").
             step = current_step(lesson)
             expected = step.target if step and step.kind in RECALL_KINDS else None
-            user_input = listen_and_transcribe(expected=expected, matches=answered_target)
+            user_input = listen_and_transcribe(expected=expected, matches=answered_target,
+                                               resembles=resembles_target)
             print(f"  [timing] listen+transcribe: {time.monotonic() - t0:.1f}s")
             if not user_input:
                 print("  (nothing heard, listening again)")

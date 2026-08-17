@@ -300,10 +300,21 @@ def _run_transcribe_groq(wav_bytes: bytes, language: str | None, prompt: str | N
 # a vocabulary item -- almost always a question in the learner's own language.
 SENTENCE_WORDS = 3
 
+# How many words of ENGLISH count as the learner speaking rather than attempting
+# a word. Two, not four: "I forgot" and "I didn't understand" are the commonest
+# interruptions there are. It is only this low because the similarity veto in
+# is_learner_talking catches the attempts that would otherwise fall in.
+EN_SPEECH_WORDS = 2
 
-def is_learner_talking(text: str, lang: str) -> bool:
-    """A confident sentence in anything but Vietnamese: they are addressing the
-    tutor, not attempting the Vietnamese word the lesson is waiting for.
+
+def is_learner_talking(text: str, lang: str, expected: str = "", resembles=None) -> bool:
+    """The learner is addressing the tutor, not attempting the word the lesson
+    is waiting for.
+
+    `resembles(text, expected)` is passed in, like `matches`, so this module
+    stays unaware of the tutor. Without it the similarity veto below cannot run
+    and a mangled two-word attempt is kept as heard instead of recovered -- the
+    cheap direction, but say so rather than let it pass silently.
 
     Guards the worst failure this system has produced. Live, on a step
     expecting "tôi": the learner said, in clear English, "No, I'm asking for
@@ -326,15 +337,49 @@ def is_learner_talking(text: str, lang: str) -> bool:
     invented "Tôi... Chị... Giờ giải thích cho tôi", and the lesson received
     that behind a [lang:vi] tag as though it were an attempt.
 
-    The length test is what actually separates a question from an attempt, and
-    it does not care which language the decoder guessed. Every recorded case
-    still lands where it did: the short ones ("toi", "Fen Bey.", "and Bay") are
-    attempts whatever the label, and confident Vietnamese is never touched.
+    So the label was not trusted on its own and a length test was put in front of
+    it -- more than three words. That protected the attempts by sacrificing the
+    short interruptions, and the cost was never written down. Measured 17 August
+    into this microphone: "I forgot" (2 words), "I didn't understand" (3), "Can
+    you repeat that?" read as "You repeat that." (3). None fired the guard, so
+    the forced pass ran and TRANSLATED them -- "I didn't understand" came back
+    "Toi khong hieu.", which contains both `toi` and `khong` and scores a correct
+    answer on any step asking for either. The learner says they did not
+    understand and is told "Exactly."
+
+    Neither length nor language separates the two groups: what has to be
+    protected is 2-3 words ("I forgot.", "You repeat that.") and what has to be
+    recovered is 1-2 ("toi", "Fen Bey.", "and Bay"), all tagged English.
+
+    What does separate them is that **an attempt looks like the word that was
+    asked for** and a sentence does not. Recorded attempts score 0.571, 0.857 and
+    1.000 against their target; English of two words or more tops out at 0.308.
+    So similarity is the veto, and the length test only sets the floor at which
+    English counts as speech at all.
+
+    That floor is two words, not one, and deliberately: single-word English is
+    left exactly as it was. It is where a badly heard attempt lives -- "Bye!" for
+    tôi scores 0.000, resembling nothing, and must still reach the forced pass.
+    The course asks for single words constantly, so one-word recovery is worth
+    more than protecting a one-word interruption.
+
+    Both mistakes stay possible; they do not cost the same, and the threshold is
+    set by the expensive one:
+
+        attempt taken for speech -> marked missed, asked again (rules 20, 4c-bis)
+        speech taken for an attempt -> translated, SCORED CORRECT, level raised
     """
-    return lang != "vi" and len(text.split()) > SENTENCE_WORDS
+    if lang == "vi":
+        return False
+    if expected and resembles is not None and resembles(text, expected):
+        return False
+    if lang == "en":
+        return len(text.split()) >= EN_SPEECH_WORDS
+    return len(text.split()) > SENTENCE_WORDS
 
 
-def transcribe(audio: np.ndarray, expected: str | None = None, matches=None) -> tuple[str, str]:
+def transcribe(audio: np.ndarray, expected: str | None = None, matches=None,
+               resembles=None) -> tuple[str, str]:
     """Returns (text, language_code), language_code always in ALLOWED_LANGUAGES.
 
     `expected` is the Vietnamese word the lesson is waiting for, when it is
@@ -361,7 +406,7 @@ def transcribe(audio: np.ndarray, expected: str | None = None, matches=None) -> 
     # "tên" was heard correctly but written with English spelling, and came out
     # as the digits "10" -- right sound, unusable text.
     if expected and matches and not matches(text, expected):
-        if is_learner_talking(text, lang):
+        if is_learner_talking(text, lang, expected or "", resembles):
             # They are speaking to the tutor, not attempting the word. Forcing
             # this into Vietnamese does not recover anything -- it destroys the
             # only true record of what was said.
@@ -408,10 +453,10 @@ def _forced(wav_bytes: bytes, language: str, since: float) -> str:
     return text
 
 
-def listen_and_transcribe(expected: str | None = None, matches=None) -> str:
+def listen_and_transcribe(expected: str | None = None, matches=None, resembles=None) -> str:
     """Full turn: listen hands-free, transcribe, return a [lang:xx]-tagged string."""
     audio = record_until_silence()
-    text, lang = transcribe(audio, expected=expected, matches=matches)
+    text, lang = transcribe(audio, expected=expected, matches=matches, resembles=resembles)
     if not text:
         return ""
     return f"[lang:{lang}] {text}"

@@ -717,9 +717,21 @@ kept — unless it had decoded in a language outside {vi, en}, in which case the
 forced pass is kept. Otherwise the tag lies about its own text: seen in session,
 an attempt at "tôi" arriving in Japanese under a `[lang:vi]` label.
 
-> **And the second pass NEVER runs on an English sentence.** Rule 25b applies
-> here too: more than three words of confident English means the learner is
-> talking to us, not attempting a word. We keep what they said.
+> **And the second pass never runs when the learner was speaking to us.** Two
+> words of English or more, *and* what was heard does not resemble the word the
+> step asked for: we keep what they said.
+>
+> **The resemblance is what decides; the word count only sets a floor.** An
+> attempt is the target word spelled wrong, so it looks like it — the recorded
+> ones score 0.571 (`'Fen Bey.'` for `sân bay`), 0.857 (`'and Bay'`) and 1.000
+> (`'toi'`), while English of two words or more tops out at 0.308. A sentence
+> never resembles a word.
+>
+> **Why not one word of English.** That is where a badly heard attempt lives —
+> `'Bye!'` for `tôi` resembles nothing at all, 0.000, and must still reach the
+> forced pass. The course asks for single words constantly, so recovering them
+> is worth more than protecting a one-word interruption. Single-word English is
+> left exactly as it was.
 >
 > **Why:** the worst failure this system has produced. A step waiting for "tôi",
 > the learner says in plain English *"No, I'm asking for travel, listen, I don't
@@ -730,11 +742,22 @@ an attempt at "tôi" arriving in Japanese under a `[lang:vi]` label.
 > raised, the lesson advanced. The learner was protesting and was answered
 > "Exactly."
 >
-> Getting it wrong the other way is cheap: a long Vietnamese attempt taken for
-> English is counted missed and asked again. Getting it wrong this way
-> **overwrites what the learner actually said.**
+> Getting it wrong the other way is cheap: a Vietnamese attempt taken for
+> English is counted missed and asked again — rules 20 and 4c-bis. Getting it
+> wrong this way **overwrites what the learner actually said.** The thresholds
+> are set by that asymmetry, not by the midpoint.
+>
+> **The guard used to demand more than three words, and that was the defect.**
+> It predicted how someone phrases an interruption, which cannot be done.
+> Measured 17 August into the real microphone: *"I forgot"* (2 words), *"I
+> didn't understand"* (3), *"Can you repeat that?"* read as *"You repeat that."*
+> (3). None of the three fired it, so the forced pass ran and **translated**
+> them — *"I didn't understand"* came back *"Tôi không hiểu."*, which contains
+> both `tôi` and `không` and scored a correct answer on any step asking for
+> either. The learner says they did not understand, and is told "Exactly."
 
-**Change:** `listen.py` → `is_learner_talking`, `transcribe`
+**Change:** `listen.py` → `is_learner_talking`, `EN_SPEECH_WORDS`, `transcribe`;
+`tutor.py` → `resembles_target`, `RESEMBLES_TARGET_THRESHOLD`
 
 ### 25b. When nothing is expected, length decides the language
 If the detected language falls outside {vi, en} and no word is expected: one or

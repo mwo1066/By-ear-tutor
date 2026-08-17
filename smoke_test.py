@@ -153,23 +153,38 @@ ERROR_CASES = [
 ]
 
 
-# (what pass 1 heard, the language it reported, is this the learner talking).
+# (what pass 1 heard, the language it reported, the word the step was waiting
+# for, is this the learner talking).
 # The first line is the one that mattered: it was overwritten by a forced
 # Vietnamese second pass, scored as a correct answer, and the lesson carried on.
 TALKING_CASES = [
-    ("No, I'm asking for travel, listen, I don't care what I am me.", "en", True),
-    ("Can we do a lesson about ordering food?", "en", True),
-    ("toi", "en", False),          # an attempt, badly spelled
-    ("Fen Bey.", "en", False),     # an attempt at sân bay
-    ("and Bay", "en", False),
-    ("Tôi tên là Nam", "vi", False),  # Vietnamese: never treated as talking
+    ("No, I'm asking for travel, listen, I don't care what I am me.", "en", "tôi", True),
+    ("Can we do a lesson about ordering food?", "en", "tôi", True),
+    ("toi", "en", "tôi", False),          # an attempt, badly spelled
+    ("Fen Bey.", "en", "sân bay", False), # an attempt at sân bay
+    ("and Bay", "en", "sân bay", False),
+    # 2026-08-17 -- said aloud into the microphone. All three are shorter than
+    # the four words the guard used to demand, so the forced pass ran and
+    # TRANSLATED them: "I didn't understand" came back "Tôi không hiểu.", which
+    # contains both tôi and không and scored a correct answer. The learner says
+    # they did not understand and is told "Exactly."
+    ("I forgot.", "en", "không", True),
+    ("I don't understand.", "en", "không", True),
+    ("You repeat that.", "en", "tôi", True),
+    ("We work on number nine.", "en", "không", True),
+    # …and a badly heard one-word attempt must STILL reach the forced pass, even
+    # resembling nothing at all: "Bye!" against tôi scores 0.000. This is why
+    # English counts as speech from two words, not one.
+    ("Bye!", "en", "tôi", False),
+    ("Huh.", "en", "không", False),
+    ("Tôi tên là Nam", "vi", "tôi", False),  # Vietnamese: never treated as talking
     # 2026-08-13 -- the learner asked out loud for the answer to be given to
     # them. Pass 1 decoded it as KOREAN, so a guard testing lang == "en" never
     # fired, and a forced-Vietnamese pass invented "Tôi... Chị... Giờ giải
     # thích cho tôi" which reached the lesson behind a [lang:vi] tag. Only the
     # language and the length were recorded, not pass 1's own text.
-    ("neun jeoneun seonsaengnim kke jilmun", "ko", True),
-    ("Tôi cũng muốn ăn", "vi", False),  # …and a long real attempt still is not talking
+    ("neun jeoneun seonsaengnim kke jilmun", "ko", "tôi", True),
+    ("Tôi cũng muốn ăn", "vi", "ăn", False),  # …and a long real attempt still is not talking
 ]
 
 
@@ -208,8 +223,8 @@ def check_answer_cases() -> int:
 
 def check_talking_cases() -> int:
     failed = 0
-    for text, lang, expected in TALKING_CASES:
-        if listen.is_learner_talking(text, lang) != expected:
+    for text, lang, target, expected in TALKING_CASES:
+        if listen.is_learner_talking(text, lang, target, tutor.resembles_target) != expected:
             verb = "kept as heard" if expected else "left to the second pass"
             print(f"FAIL — {text!r} ({lang}) should be {verb}")
             failed += 1
@@ -554,7 +569,7 @@ def main(NO_INTRO=False) -> int:
         yield ("content", "Ready to dive in?" if turns["n"] == 1 else "In Vietnamese, that's tôi.")
         yield ("tool_calls", [])
 
-    def fake_listen(expected=None, matches=None):
+    def fake_listen(expected=None, matches=None, resembles=None):
         # Signature mirrors the real one on purpose: this test exists to catch
         # exactly the kind of mismatch that only shows up mid-lesson otherwise.
         expectations.append(expected)
