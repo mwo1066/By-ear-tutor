@@ -300,11 +300,18 @@ def _run_transcribe_groq(wav_bytes: bytes, language: str | None, prompt: str | N
 # a vocabulary item -- almost always a question in the learner's own language.
 SENTENCE_WORDS = 3
 
-# How many words of ENGLISH count as the learner speaking rather than attempting
-# a word. Two, not four: "I forgot" and "I didn't understand" are the commonest
-# interruptions there are. It is only this low because the similarity veto in
-# is_learner_talking catches the attempts that would otherwise fall in.
-EN_SPEECH_WORDS = 2
+# How many words count as the learner speaking rather than attempting a word.
+# ONE number, for every language the decoder might name -- because the name
+# carries no information either way. Measured 17 August: "too fast" was tagged
+# ITALIAN, so a floor that only applied to English never fired, and it was
+# forced into Vietnamese as "TÙ PHÁST". The tags this microphone produced across
+# two sessions: Italian, Russian, German, Spanish, Turkish, Korean, Dutch,
+# Portuguese, Chinese -- for a voice speaking only English and Vietnamese.
+#
+# Two, not four: "I forgot" and "too fast" are the commonest interruptions there
+# are. It is only this low because the resemblance veto in is_learner_talking
+# catches the attempts that would otherwise fall in.
+SPEECH_WORDS = 2
 
 
 def is_learner_talking(text: str, lang: str, expected: str = "", resembles=None) -> bool:
@@ -373,9 +380,7 @@ def is_learner_talking(text: str, lang: str, expected: str = "", resembles=None)
         return False
     if expected and resembles is not None and resembles(text, expected):
         return False
-    if lang == "en":
-        return len(text.split()) >= EN_SPEECH_WORDS
-    return len(text.split()) > SENTENCE_WORDS
+    return len(text.split()) >= SPEECH_WORDS
 
 
 def transcribe(audio: np.ndarray, expected: str | None = None, matches=None,
@@ -416,6 +421,17 @@ def transcribe(audio: np.ndarray, expected: str | None = None, matches=None,
                 # tutor Korean. Decoding as English is what the no-expected
                 # branch below already does with a long utterance.
                 text = _forced(wav_bytes, "en", t0)
+            # …and now that we have a reading in a language we can judge, ask
+            # again whether it is really speech. An English decode of a
+            # Vietnamese SENTENCE comes back as English-looking nonsense that
+            # still traces the target: seen in session, "Tôi tên là Anna" was
+            # tagged Korean, decoded to "Totten-Lay-Anna." and handed to the
+            # tutor as a question -- so it answered with the sentence the
+            # learner had just produced correctly.
+            if expected and resembles is not None and resembles(text, expected):
+                second = _forced(wav_bytes, "vi", t0)
+                print(f"  [diag] English reading traces {expected!r} -- it was the answer: {text!r} -> {second!r}")
+                return second, "vi"
             print(f"  [diag] a sentence, not an attempt at {expected!r} -- kept as heard")
             return text, "en"
         second = _forced(wav_bytes, "vi", t0)

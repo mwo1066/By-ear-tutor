@@ -1766,6 +1766,15 @@ def answered_target(user_text: str, target: str) -> bool:
 # smoke_test.py score 0.571 ('Fen Bey.' for sân bay), 0.857 ('and Bay') and 1.000
 # ('toi'), while English of two words or more tops out at 0.308 ("I forgot"
 # against không). 0.45 sits in that gap with margin on the side that matters.
+_SLOT = re.compile(r"\+?\s*\[[^\]]*\]")
+
+
+def _has_slot(target: str) -> bool:
+    """A construction the learner fills in, so their answer is longer than the
+    pattern: `tôi tên là + [tên riêng]` is answered "Tôi tên là Anna"."""
+    return bool(_SLOT.search(target))
+
+
 RESEMBLES_TARGET_THRESHOLD = 0.45
 
 
@@ -1780,7 +1789,7 @@ def resembles_target(user_text: str, target: str) -> bool:
     Never used to score an answer -- `answered_target` does that, at its own
     stricter floor. Confusing the two would let 0.45 record a word as known.
     """
-    said, want = _bare(_LANG_TAG.sub("", user_text)), _bare(target)
+    said, want = _bare(_LANG_TAG.sub("", user_text)), _bare(_SLOT.sub("", target))
     if not want or not said:
         return False
     # Vietnamese is monosyllabic: one token per syllable, so an attempt at a word
@@ -1789,7 +1798,15 @@ def resembles_target(user_text: str, target: str) -> bool:
     # Swept over all 129 targets a recall step can ask for against 43 real
     # interruptions: this alone takes the ones still wrongly eaten from 15 to 5,
     # and loses no attempt at all.
-    if len(said.split()) != len(want.split()):
+    #
+    # Unless the target has a SLOT, in which case the answer is longer than the
+    # pattern by whatever fills it -- "Tôi tên là Anna" against
+    # "tôi tên là + [tên riêng]". Eleven constructions in the course have one,
+    # and the count then only has to be at least the fixed part.
+    if _has_slot(target):
+        if len(said.split()) < len(want.split()):
+            return False
+    elif len(said.split()) != len(want.split()):
         return False
     return difflib.SequenceMatcher(None, said, want).ratio() >= RESEMBLES_TARGET_THRESHOLD
 
@@ -2130,7 +2147,13 @@ def _conversation_loop(api_key, messages, store, roster, queue_items, themes_gen
             # auto-detect hears the sound correctly and then writes it with
             # English spelling ("tên" came back as the digits "10").
             step = current_step(lesson)
-            expected = step.target if step and step.kind in RECALL_KINDS else None
+            # Every step that asks the learner to produce something knows what
+            # it asked for -- a recall names its word, and `vary`, `apply` and
+            # `scaffold` carry the item they are building. Passing it is what
+            # lets the recogniser compare rather than count: without it, rule
+            # 25b guessed by length, and "Tôi tên là Anna" (four words) fell on
+            # the "that is a sentence, decode it as English" side.
+            expected = step.target if step and step.kind in RECALL_KINDS + _ASKING_KINDS else None
             user_input = listen_and_transcribe(expected=expected, matches=answered_target,
                                                resembles=resembles_target)
             print(f"  [timing] listen+transcribe: {time.monotonic() - t0:.1f}s")

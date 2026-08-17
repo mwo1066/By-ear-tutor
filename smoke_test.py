@@ -221,6 +221,43 @@ def check_answer_cases() -> int:
     return failed
 
 
+# Two real turns, replayed end to end with the network replaced by what Groq
+# actually returned. Both were failures on 17 August, and neither is visible at
+# the level of is_learner_talking alone -- they are decided by the whole chain.
+# (title, expected word, {forced language: what Groq returned}, wanted outcome)
+TRANSCRIBE_CASES = [
+    ("'too fast' said aloud on a step asking for tôi", "tôi",
+     {None: ("Tu fast", "it"), "vi": ("TÙ PHÁST", "vi"), "en": ("too fast", "en")},
+     ("too fast", "en")),
+    # Pass 1 called it Korean, so length decided: four words, therefore "a
+    # sentence", therefore decoded as English -> "Totten-Lay-Anna.", handed over
+    # as a question, and the tutor answered with the sentence the learner had
+    # just produced correctly.
+    ("'Tôi tên là Anna' said correctly, tagged Korean", "tôi tên là + [tên riêng]",
+     {None: ("neun jeoneun", "ko"), "en": ("Totten-Lay-Anna.", "en"),
+      "vi": ("Tôi tên là Anna", "vi")},
+     ("Tôi tên là Anna", "vi")),
+]
+
+
+def check_transcribe_cases() -> int:
+    import numpy as np
+    failed = 0
+    real = listen._run_transcribe_groq
+    try:
+        for title, expected, script, want in TRANSCRIBE_CASES:
+            listen._run_transcribe_groq = lambda wav, language, prompt, s=script: s[language]
+            got = listen.transcribe(np.ones(16000, dtype=np.int16), expected=expected,
+                                    matches=tutor.answered_target,
+                                    resembles=tutor.resembles_target)
+            if got != want:
+                print(f"FAIL — {title}: got {got}, wanted {want}")
+                failed += 1
+    finally:
+        listen._run_transcribe_groq = real
+    return failed
+
+
 def check_talking_cases() -> int:
     failed = 0
     for text, lang, target, expected in TALKING_CASES:
@@ -552,7 +589,8 @@ def main(NO_INTRO=False) -> int:
     roster = content.load_roster(tutor.CONTENT_DIR)
     vocab = tutor._vocab_words(roster)
     if (check_voice_cases(vocab) + check_leak_cases() + check_error_cases()
-            + check_talking_cases() + check_derived_pieces(roster)
+            + check_talking_cases() + check_transcribe_cases()
+            + check_derived_pieces(roster)
             + check_spoken_targets() + check_answer_cases()
             + check_prerequisite_order()
             + check_every_plan_builds() + check_choppy_cases(vocab) + check_answer_aloud_cases(roster) + check_pieces_exist(roster) + check_speaker_cues() + check_feature_glosses_name_their_word(roster)

@@ -742,11 +742,31 @@ an attempt at "tôi" arriving in Japanese under a `[lang:vi]` label.
 > 0.55 would close them and leave `'Fen Bey.'` two hundredths of margin — not
 > worth it.
 >
-> **Why not one word of English.** That is where a badly heard attempt lives —
-> `'Bye!'` for `tôi` resembles nothing at all, 0.000, and must still reach the
-> forced pass. The course asks for single words constantly, so recovering them
-> is worth more than protecting a one-word interruption. Single-word English is
-> left exactly as it was.
+> **Why not one word.** That is where a badly heard attempt lives — `'Bye!'` for
+> `tôi` resembles nothing at all, 0.000, and must still reach the forced pass.
+> The course asks for single words constantly, so recovering them is worth more
+> than protecting a one-word interruption.
+>
+> **One number, for every language the decoder names.** Not one floor for
+> English and another for the rest: the name carries no information either way.
+> Measured 17 August — *"too fast"* was tagged **Italian**, so an English-only
+> floor never fired and it was forced into Vietnamese as `'TÙ PHÁST'` and scored
+> a missed word. Across two sessions this microphone was called Italian,
+> Russian, German, Spanish, Turkish, Korean, Dutch, Portuguese and Chinese, for
+> a voice speaking only English and Vietnamese.
+>
+> **And the English reading is checked again before it is believed.** Decoding a
+> Vietnamese SENTENCE as English gives English-looking nonsense that still
+> traces the target, so if it resembles what was asked for, the forced
+> Vietnamese pass is taken instead. Seen in session: *"Tôi tên là Anna"*, said
+> correctly, came back tagged Korean, was decoded to `'Totten-Lay-Anna.'` and
+> handed over as a question — and the tutor answered with the sentence the
+> learner had just produced.
+>
+> **A construction with a slot is answered longer than its pattern.** `tôi tên
+> là + [tên riêng]` is answered *"Tôi tên là Anna"*, so resemblance requires at
+> least the fixed part, not exactly it. Eleven constructions in the course have
+> a slot.
 >
 > **Why:** the worst failure this system has produced. A step waiting for "tôi",
 > the learner says in plain English *"No, I'm asking for travel, listen, I don't
@@ -771,10 +791,15 @@ an attempt at "tôi" arriving in Japanese under a `[lang:vi]` label.
 > both `tôi` and `không` and scored a correct answer on any step asking for
 > either. The learner says they did not understand, and is told "Exactly."
 
-**Change:** `listen.py` → `is_learner_talking`, `EN_SPEECH_WORDS`, `transcribe`;
-`tutor.py` → `resembles_target`, `RESEMBLES_TARGET_THRESHOLD`
+**Change:** `listen.py` → `is_learner_talking`, `SPEECH_WORDS`, `transcribe`;
+`tutor.py` → `resembles_target`, `RESEMBLES_TARGET_THRESHOLD`, `_has_slot`, and
+the `expected` handed to `listen_and_transcribe` (every asking step, not only a
+recall)
 
-### 25b. When nothing is expected, length decides the language
+### 25b. When nothing is expected at all, length decides the language
+*Rarely, since rule 25: every step that asks the learner to produce something
+now names its target, so only `introduce`, `answer` and `rule` reach here.*
+
 If the detected language falls outside {vi, en} and no word is expected: one or
 two words are a vocabulary attempt, so Vietnamese is forced; a sentence is a
 question, so English is forced.
