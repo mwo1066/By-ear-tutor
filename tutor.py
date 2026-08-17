@@ -1814,7 +1814,13 @@ def learner_asked_something(user_text: str) -> bool:
 # which word is due. Set low on purpose: the cost of being wrong one way is a
 # model call we did not need, and the other way is a robot asking its next
 # question over someone who just said "I don't know".
-FREE_SPEECH_WORDS = 3
+# Two, to meet listen.py's EN_SPEECH_WORDS at the same number. They are the two
+# halves of one decision and they used to disagree: the ear kept two words of
+# English intact and this side ignored anything under three, so "hold on", "go
+# back", "too fast" and "start again" were saved and then answered by nobody.
+# "I forgot" only escaped because it is in _GAVE_UP -- a list, where a property
+# was available.
+FREE_SPEECH_WORDS = 2
 
 # Saying so is not an attempt, and it is short. "I forgot" is two words, so it
 # fell under the threshold above and the lesson carried on as if nothing had

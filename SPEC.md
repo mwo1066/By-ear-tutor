@@ -149,13 +149,18 @@ instead.
 **Change:** `tutor.py` → `_GAVE_UP`
 
 ### 4c. A learner who really speaks hands the turn back to the model
-A question, or more than two words of English: the turn goes back to the model,
-even if the step was mechanical. A scripted sentence only knows how to ask its
-question.
+A question, or **two words of English or more**: the turn goes back to the
+model, even if the step was mechanical. A scripted sentence only knows how to
+ask its question.
 **Where:** code — `learner_spoke_freely`
 **Why:** it is also the only path left to the tools (29) — all of them fire on
 something the learner said.
-**Change:** `tutor.py` → `FREE_SPEECH_WORDS` (3)
+**Why two and not three:** it has to meet rule 25 at the same number. The ear
+now keeps two words of English intact, and this side ignored anything under
+three — so *"hold on"*, *"go back"*, *"too fast"*, *"start again"* were rescued
+from being translated and then answered by nobody. *"I forgot"* escaped only by
+being in `_GAVE_UP`, a list standing in for a property that was available.
+**Change:** `tutor.py` → `FREE_SPEECH_WORDS` (2)
 
 ### 4c-bis. And the step is not consumed — twice at most
 The turn answers the learner, then the lesson **returns to the same step**. On
