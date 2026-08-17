@@ -19,7 +19,8 @@ from pathlib import Path
 
 sys.stdout.reconfigure(encoding="utf-8")
 
-from content import load_course, load_persona_system_prompt, load_roster, load_personal_items
+from content import (load_course, load_persona_system_prompt, load_roster,
+                     load_personal_items, is_teachable, pick_next_index)
 from srs import ProgressStore
 from tutor import (
     CONTENT_DIR, STATE_PATH, MODEL_FALLBACKS, TOOLS,
@@ -65,15 +66,47 @@ def learner_reply(api_key: str, transcript: list[str]) -> str:
     return " ".join("".join(out).split())[:120] or "..."
 
 
-def main(n_exchanges: int) -> None:
+def teaching_order(roster: list) -> list:
+    """The sequence the real lesson would follow, replayed offline.
+
+    File order is not teaching order -- `pick_next_index` spaces categories and
+    honours the `after` anchors -- so jumping to an item means replaying the
+    sequencer, not slicing the file.
+    """
+    q, seen, order = [i for i in roster if is_teachable(i)], [], []
+    while q:
+        item = q.pop(pick_next_index(q, seen))
+        seen.append(item)
+        order.append(item)
+    return order
+
+
+def main(n_exchanges: int, start_from: str | None = None) -> None:
     api_key = load_api_key()
     roster = load_course(CONTENT_DIR)
     store = ProgressStore(STATE_PATH)  # read-only: save() is never called
     all_names = [i.name for i in roster]
     by_name = {i.name: i for i in roster}
 
-    queue = [by_name[n] for n in store.select_new(all_names)]
-    seen = [i for i in roster if not store.is_new(i.name)]
+    if start_from:
+        # Everything up to the named item counts as already met, so a slice of
+        # the course deep in the sequence can be heard without playing the
+        # hundred items in front of it. Progress is untouched either way.
+        order = teaching_order(roster)
+        matches = [n for n, i in enumerate(order) if start_from.lower() in i.name.lower()]
+        if not matches:
+            print(f"No item matches {start_from!r}. Try one of:")
+            for i in order[:0] + [x for x in order if x.kind == "feature"][:12]:
+                print(f"   {i.name}")
+            return
+        at = matches[0]
+        seen, queue = order[:at], order[at:]
+        print(f"--- starting at item {at + 1}: {order[at].name} "
+              f"({len(seen)} items counted as already met) ---")
+        print()
+    else:
+        queue = [by_name[n] for n in store.select_new(all_names)]
+        seen = [i for i in roster if not store.is_new(i.name)]
     # Same shape as the real lesson dict. Still an approximation in one place:
     # nothing here computes a verdict or a retry, so a scripted line printed by
     # the simulator carries its question but not the "that's it" in front of it.
@@ -150,4 +183,8 @@ def _tutor_turns(api_key: str, messages: list[dict], transcript: list[str], less
 
 
 if __name__ == "__main__":
-    main(int(sys.argv[1]) if len(sys.argv) > 1 else 12)
+    # python simulate_session.py 14
+    # python simulate_session.py 14 --from=nghìn      jump to a slice deep in the course
+    frm = next((a.split("=", 1)[1] for a in sys.argv[1:] if a.startswith("--from=")), None)
+    n = next((int(a) for a in sys.argv[1:] if a.isdigit()), 12)
+    main(n, frm)
