@@ -114,9 +114,15 @@ and all three are **print-only diagnostics: the code notices and does nothing**.
 - **The tutor says the word it is asking for.** `!! the answer was given away:
   this turn asked FOR 'tôi' and said it` — four times across two sessions. A
   prompt conflict, not a bug in the planner.
-- **Vietnamese lands inside an English sentence**, so the voice switches
-  mid-phrase: `!! Vietnamese landed mid-sentence (2 voice switches)`, three
-  times.
+- ~~**Vietnamese lands inside an English sentence**, so the voice switches
+  mid-phrase~~ — `!! Vietnamese landed mid-sentence (2 voice switches)`, three
+  times. **Closed 2026-08-17 without a fix: Meo listened to it and does not mind
+  it.** What it sounds like was checked before deciding — `You'll hear "tôi"
+  again later.` is spoken as three fragments in two voices, and
+  `"Tôi tên là Anna."` is torn in half, Minh saying `Tôi tên là` and the English
+  voice saying `Anna` (a name is not in the Vietnamese vocabulary, so the router
+  hands it back). Judged acceptable. **Do not propose again** without a new
+  observation — the person who hears the lessons has ruled on this one.
 - **A line spoken twice** — `Minh: Tôi tên là Lan.` printed twice in a row, once.
   Not investigated; it may be a display artefact of streaming.
 
