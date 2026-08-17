@@ -108,8 +108,9 @@ instead of what filling it would do.*
 
 ### C · Not content — code and prompt
 
-Nobody else needed. All three were **observed in real sessions on 2026-08-17**,
-and all three are **print-only diagnostics: the code notices and does nothing**.
+Observed in real sessions on 2026-08-17. **Two of the three turned out not to be
+work at all** — one closed by Meo listening to it, one was the instruction being
+followed correctly. Only the first is real, and it is held as `0011`.
 
 - **The tutor says the word it is asking for.** `!! the answer was given away:
   this turn asked FOR 'tôi' and said it` — four times across two sessions. A
@@ -123,8 +124,11 @@ and all three are **print-only diagnostics: the code notices and does nothing**.
   voice saying `Anna` (a name is not in the Vietnamese vocabulary, so the router
   hands it back). Judged acceptable. **Do not propose again** without a new
   observation — the person who hears the lessons has ruled on this one.
-- **A line spoken twice** — `Minh: Tôi tên là Lan.` printed twice in a row, once.
-  Not investigated; it may be a display artefact of streaming.
+- ~~**A line spoken twice**~~ — `Minh: Tôi tên là Lan.` twice in a row. **Not a
+  defect: it is the instruction.** The `answer` step tells the model *"Have Minh
+  say the full sentence twice"*, so hearing it twice is the design — the learner
+  gets the finished sentence in their ear before being asked to vary it. It was
+  listed here as a suspected bug without reading the step that produces it.
 
 ### And one that is neither
 
