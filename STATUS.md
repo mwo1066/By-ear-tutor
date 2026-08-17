@@ -77,25 +77,34 @@ the files on 2026-08-17, not from memory.
 - **7 features carry no tier.** Not translation — a ranking by usefulness, which
   is Meo's call.
 
-### B · Content, but by machine and then reviewed
+### B · The 1915 missing glosses are not a task — do not fill them
 
-**1915 of the 2120 items have no gloss, so they are held out of lessons** —
-only 205 are teachable and 169 askable. That number looks like the wall of the
-project and it is not one:
+**Every one of the 1915 sits in a single file, `90_frequency_stock.toml`. The
+eight hand-written lesson files are glossed 100%.** The stock file says what it
+is in its own header:
 
-```bash
-python fill_item_metadata.py
+```
+# Vocabulary imported by corpus frequency -- raw material, not a lesson.
+# gloss is EMPTY on purpose
 ```
 
-`fill_item_metadata.py` fills `kind`, `gloss`, `hook` and `literal` in batch, is
-re-runnable, and only ever touches a field that is missing. Its own docstring
-says **"review the diff, not the items one by one"**. So the work is not
-authoring 1915 entries, it is one command and then deciding whether to trust
-what came back. That decision is Meo's and it is real — a wrong gloss teaches a
-wrong meaning — but it is nothing like 1915 hours.
+`fill_item_metadata.py` would fill them in one command, and it would not even be
+guessing — each entry already carries its dictionary `senses`, so the model only
+picks one. It is cheap and it is available.
 
-**This is the highest-leverage item in the whole project.** It takes the course
-from 205 usable items to potentially 2120.
+**Do it and the course breaks.** Measured: **0 of the 1915 appear in any
+sentence.** Fill them and the roster becomes 2120 words that can be asked and
+**28 that have a sentence to live in** — 1915 words drilled in isolation, which
+is the exact opposite of the model this course is built on: a word is met
+because a sentence needs it.
+
+So the stock file is a **shopping list**, not a backlog. It is where you go to
+choose the next word worth building a lesson around — which is task A. The count
+at startup (`1915 item(s) awaiting a gloss`) is noise, not debt.
+
+*This entry replaces an earlier one calling the fill "the highest-leverage item
+in the whole project". That was wrong: it measured the size of the number
+instead of what filling it would do.*
 
 ### C · Not content — code and prompt
 
@@ -120,9 +129,10 @@ that Whisper invents *if noise reaches it*.
 
 ### What this says about order
 
-**B first** — one command, and it unblocks 90% of the course. **C next** — short,
-and it is the tutor handing out the answers it is asking for, which wastes every
-lesson it touches. **A last and forever** — it is the only part that does not end.
+**C first** — short, needs nobody else, and it is the tutor handing out the
+answers it is asking for, which spoils every lesson it touches. **A after, and
+forever** — sentences are the only real work, and `90_frequency_stock.toml` is
+the shelf to pick words off while writing them. **B is not a task at all.**
 
 ---
 
