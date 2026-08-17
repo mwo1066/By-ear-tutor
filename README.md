@@ -6,6 +6,25 @@ your microphone opens on its own, and it stops recording when you go quiet.
 It teaches Vietnamese today. The engine is language-agnostic — the language
 lives entirely in `content/`.
 
+```
+tutor   So, I or me?
+you     tôi
+tutor   Exactly. And again — what was the word for name?
+you     tên
+tutor   That's it. Once more — what was to be?
+you     là
+
+tutor   So how would you say "I am" in Vietnamese?
+you     tôi là
+tutor   Literally, it goes: I name is something.
+        Give me the whole thing — My name is something?
+you     tôi tên là
+Minh    Tôi tên là An.
+```
+
+*A real excerpt. Three words, then the sentence climbed out of them — the tutor
+never says the Vietnamese it is asking for.*
+
 ## The method
 
 Modelled on audio courses like Michel Thomas's and Paul Noble's, and on what
@@ -133,3 +152,6 @@ The glossary is in English. The rest is in French — those documents are read, 
 | [`changes/`](changes/) | one folder per change, written before the code; `changes/archive/JOURNAL.md` indexes what was already tried. |
 | [`notes/`](notes/) | working drafts — sentences waiting to be validated, a simulated lesson. Not part of the spec. |
 
+## Licence
+
+MIT — see [LICENSE](LICENSE). Take it, change it, keep the notice.
