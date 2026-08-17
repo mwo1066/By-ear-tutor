@@ -11,7 +11,11 @@ token bucket, so playing the learner does not eat the tutor's budget.
 
 Read-only -- never touches state.json.
 
-Run: python simulate_session.py [number_of_exchanges]
+Run: python simulate_session.py [number_of_exchanges] [--from=<item>]
+
+--from= counts everything up to a named item as already met and starts there, so
+a slice deep in the course can be heard without playing the hundred items in
+front of it. The match ignores accents, so --from=nghin reaches "nghìn".
 """
 import sys
 import time
@@ -24,7 +28,7 @@ from content import (load_course, load_persona_system_prompt, load_roster,
 from srs import ProgressStore
 from tutor import (
     CONTENT_DIR, STATE_PATH, MODEL_FALLBACKS, TOOLS,
-    _lesson_note, _take_next, current_step, learner_asked_something,
+    _bare, _lesson_note, _take_next, current_step, learner_asked_something,
     learner_spoke_freely, scripted_turn, start_item,
     load_api_key, stream_llm_reply,
 )
@@ -93,7 +97,11 @@ def main(n_exchanges: int, start_from: str | None = None) -> None:
         # the course deep in the sequence can be heard without playing the
         # hundred items in front of it. Progress is untouched either way.
         order = teaching_order(roster)
-        matches = [n for n, i in enumerate(order) if start_from.lower() in i.name.lower()]
+        # Accent-insensitive, so "nghin" reaches "nghìn" without anyone having to
+        # type Vietnamese into a terminal. `_bare` is the tutor's own stripper,
+        # borrowed rather than reimplemented.
+        probe = _bare(start_from)
+        matches = [n for n, i in enumerate(order) if probe in _bare(i.name)]
         if not matches:
             print(f"No item matches {start_from!r}. Try one of:")
             for i in order[:0] + [x for x in order if x.kind == "feature"][:12]:
