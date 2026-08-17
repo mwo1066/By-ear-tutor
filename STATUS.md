@@ -61,6 +61,71 @@ review time.
 
 ---
 
+## Sorting the rest: is it content, or is it not
+
+The question that decides who can do a thing, and therefore what order things
+happen in. **The test: does fixing it require writing Vietnamese?** Counted from
+the files on 2026-08-17, not from memory.
+
+### A · Content — someone has to write Vietnamese
+
+- **121 teachable words appear in no sentence at all** — `ăn`, `uống`, `đã`,
+  `rồi`, `chưa`, `nước`, `cơm`, `thích`… The course has **22 constructions for
+  2064 words**. Sentences have to be authored; nothing writes them.
+- **52 candidate sentences** in `notes/SENTENCES-TO-VALIDATE.md` waiting to be
+  accepted or thrown out.
+- **7 features carry no tier.** Not translation — a ranking by usefulness, which
+  is Meo's call.
+
+### B · Content, but by machine and then reviewed
+
+**1915 of the 2120 items have no gloss, so they are held out of lessons** —
+only 205 are teachable and 169 askable. That number looks like the wall of the
+project and it is not one:
+
+```bash
+python fill_item_metadata.py
+```
+
+`fill_item_metadata.py` fills `kind`, `gloss`, `hook` and `literal` in batch, is
+re-runnable, and only ever touches a field that is missing. Its own docstring
+says **"review the diff, not the items one by one"**. So the work is not
+authoring 1915 entries, it is one command and then deciding whether to trust
+what came back. That decision is Meo's and it is real — a wrong gloss teaches a
+wrong meaning — but it is nothing like 1915 hours.
+
+**This is the highest-leverage item in the whole project.** It takes the course
+from 205 usable items to potentially 2120.
+
+### C · Not content — code and prompt
+
+Nobody else needed. All three were **observed in real sessions on 2026-08-17**,
+and all three are **print-only diagnostics: the code notices and does nothing**.
+
+- **The tutor says the word it is asking for.** `!! the answer was given away:
+  this turn asked FOR 'tôi' and said it` — four times across two sessions. A
+  prompt conflict, not a bug in the planner.
+- **Vietnamese lands inside an English sentence**, so the voice switches
+  mid-phrase: `!! Vietnamese landed mid-sentence (2 voice switches)`, three
+  times.
+- **A line spoken twice** — `Minh: Tôi tên là Lan.` printed twice in a row, once.
+  Not investigated; it may be a display artefact of streaming.
+
+### And one that is neither
+
+**Noise becoming text** — the `La La School` YouTube outro invented from silence.
+Code, but it stays closed until it is **reproduced**: the probe that made Whisper
+invent from room noise bypassed the microphone gate entirely, so it proves only
+that Whisper invents *if noise reaches it*.
+
+### What this says about order
+
+**B first** — one command, and it unblocks 90% of the course. **C next** — short,
+and it is the tutor handing out the answers it is asking for, which wastes every
+lesson it touches. **A last and forever** — it is the only part that does not end.
+
+---
+
 ## What works
 
 A full lesson runs end to end by voice. Measured on real sessions:
