@@ -110,15 +110,15 @@ strand, splitting its four facts into slices, and the two missing words.
 - [x] split its four facts into slices, one item each, each with a gloss short
       enough to be said in one turn: 11-19; 20-99 with the reversal; `mười` →
       `mươi`
-- [ ] give `đồng` a gloss so it becomes teachable, and one slice for the fact
+- [x] give `đồng` a gloss so it becomes teachable, and one slice for the fact
       that it is **dropped** in speech — a rule of omission, not a word to recite
-- [ ] add `nghìn`'s combining rule: digit + `nghìn`. **After this slice alone the
+- [x] add `nghìn`'s combining rule: digit + `nghìn`. **After this slice alone the
       learner can buy a coffee** — `hai mươi lăm nghìn`
-- [ ] add the `trăm nghìn` slice — the banknotes, 100k / 200k / 500k
-- [ ] add `triệu` as an atom, and its slice
-- [ ] the banknote slices come **after** the digits, per Meo: the material before
+- [x] add the `trăm nghìn` slice — the banknotes, 100k / 200k / 500k
+- [x] add `triệu` as an atom, and its slice
+- [x] the banknote slices come **after** the digits, per Meo: the material before
       the rule that combines it, which is the ordering the course already follows
-- [ ] check `bao nhiêu tiền?` now has an answerable reply, and consider a
+- [x] check `bao nhiêu tiền?` now has an answerable reply, and consider a
       construction for it
 
 **Every Vietnamese string above needs Meo's validation.** The native speaker's
@@ -168,7 +168,7 @@ per category.)
 read fine as a consolidation — *"and this keeps working all the way up"* — but it
 was not chosen, `MIN_ITEMS_BETWEEN_FEATURES` put it there. Worth a decision.
 
-## STOPPED — task 4 cannot be done as written
+## Task 4 was refused, not solved — and that was the right answer
 
 `- [ ] give đồng a gloss so it becomes teachable` does not work, three ways:
 
@@ -190,3 +190,59 @@ Nothing after task 4 was attempted: `nghìn`, `trăm nghìn` and `triệu` all s
 the same file and hit the same wall the moment they need `đồng` — and `triệu`
 would be a fourth duplicate, since it is not in the stock file at all, so only
 that one is free.
+
+
+---
+
+## What the block turned into
+
+Task 4 said *give `đồng` a gloss so it becomes teachable*. All three routes were
+dead ends, and Meo's answer was to delete the task rather than pick one:
+
+> **"on ne l'enseigne pas on s'en fout"**
+
+Which is what the native speaker had already said — *"I just say the number and
+then don't"*. In a course with no reading, where a price is spoken as
+`một trăm nghìn` and stops there, making the currency a recall target teaches a
+word nobody says. So the currency is **not an item**, and the fact about it
+became a rule of **omission**: `nói giá: chỉ cần con số`, tier 1.
+
+**And the code enforces the decision by itself.** `check_glosses_cite_only_taught_words`
+allows a feature's gloss to quote only Vietnamese the course teaches, so `đồng`
+cannot appear in one even by accident. The guard was already there.
+
+Left for later, not done: `import_frequency_words.py` has no exclusion list, so
+any word promoted from the frequency shelf into a lesson file becomes a duplicate
+that the generated file silently wins. It will happen again. `check_roster` reports
+it at startup, so it is visible rather than silent — enough to leave it.
+
+## Verification, run
+
+```
+python smoke_test.py                     exit 0
+check_roster problems (excl. the shelf)  0
+longest single-category run              3   (cap 3)
+```
+
+The spacing worry was the real risk — six items added to two categories in one
+file — and it holds. The money thread is taught in the order it has to be:
+
+```
+101  atom     trăm
+102  atom     nghìn
+103  feature  nghìn: chữ số + nghìn            tier 1
+104  feature  trăm nghìn: tờ tiền hay cầm      tier 1
+105  atom     triệu
+106  feature  triệu: hàng của tiền thuê…       tier 2
+111  construction  bao nhiêu tiền?
+123  feature  nói giá: chỉ cần con số          tier 1
+```
+
+**`bao nhiêu tiền?` is answerable.** It is taught at 111, after the money rules at
+103-104 — before this change it was a question taught with no sayable reply.
+
+Features at 103 and 104 are adjacent, which rule 9c permits: an `after` anchor
+goes ahead of every spacing rule.
+
+**Not yet done: one real spoken session** reaching the money slices. Until then
+this is verified offline only.

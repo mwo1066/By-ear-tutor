@@ -83,6 +83,15 @@ description = "Số 1000: 'một nghìn'. Trong Nam nói 'ngàn', ngoài Bắc n
 
 [[items]]
 type = "concept"
+name = "triệu"
+kind = "atom"
+gloss = "million"
+category = "numeral"
+language = "vi"
+description = "Số 1 000 000: 'một triệu'. Cần thật, không phải để cho đủ: tiền thuê nhà, tiền học, tiền xe máy đều tính bằng triệu. 'Năm triệu' là 5 000 000. Thanh nặng — giọng nặng, ngắn."
+
+[[items]]
+type = "concept"
 name = "mốt"
 kind = "atom"
 gloss = "one, as in twenty-one"
@@ -157,6 +166,57 @@ category = "rules"
 language = "vi"
 description = "Lát thứ ba, chỗ bẫy. 10 là 'mười', nhưng 20 là 'hai MƯƠI'. Một dấu thanh, hai từ khác nhau. Đây là lỗi hay gặp nhất khi đếm, nên tách riêng thành một lát chứ không nhét vào quy tắc từ 20."
 pieces = ["mười", "mươi"]
+
+[[items]]
+type = "procedure"
+name = "nghìn: chữ số + nghìn"
+kind = "feature"
+nature = "discrete"
+tier = 1
+after = "nghìn"
+gloss = "thousands stack exactly the same way — a digit and then nghìn, so mười nghìn is ten thousand, which is about what a coffee costs"
+category = "rules"
+language = "vi"
+description = "Lát đầu của phần tiền, và là lát đáng giá nhất: giá cả ở Việt Nam đếm bằng nghìn. 'Mười nghìn' = 10 000, 'hai mươi lăm nghìn' = 25 000. Chỉ cần lát này là mua được một ly cà phê. Cách ghép y như số thường — chữ số rồi 'nghìn' — nên không có gì mới ngoài chỗ đặt."
+pieces = ["nghìn", "mười"]
+
+[[items]]
+type = "procedure"
+name = "nói giá: chỉ cần con số"
+kind = "feature"
+nature = "discrete"
+tier = 1
+gloss = "to say a price you stop at the number — mười nghìn and nothing after it, because the name of the currency is left out and everyone still understands"
+category = "rules"
+language = "vi"
+description = "Quy tắc BỎ, không phải quy tắc thêm: người Việt nói giá rồi dừng, không nói tên tiền. '100k' nói là 'một trăm nghìn'. Vì vậy tên đơn vị tiền KHÔNG được dạy như một từ phải nói — người học chỉ cần nghe hiểu. Quyết định của Meo, 2026-08-17."
+pieces = ["nghìn"]
+
+[[items]]
+type = "procedure"
+name = "trăm nghìn: tờ tiền hay cầm"
+kind = "feature"
+nature = "discrete"
+tier = 1
+after = "trăm"
+gloss = "the notes you actually hold are hundreds of thousands — một trăm nghìn, hai trăm nghìn, năm trăm nghìn"
+category = "rules"
+language = "vi"
+description = "Tờ tiền Việt Nam lên tới 500 000, nên hàng trăm nghìn là hàng gặp mỗi ngày, không phải hàng lớn. Ghép vẫn như cũ: chữ số + 'trăm' + 'nghìn'. Nguồn: người bản ngữ, 2026-08-17 — 100k = 'một trăm nghìn', 200k = 'hai trăm nghìn', 500k = 'năm trăm nghìn'."
+pieces = ["trăm", "nghìn", "một", "hai", "năm"]
+
+[[items]]
+type = "procedure"
+name = "triệu: hàng của tiền thuê và tiền xe"
+kind = "feature"
+nature = "discrete"
+tier = 2
+after = "triệu"
+gloss = "above a thousand thousands comes triệu, a million — một triệu, hai triệu, mười triệu"
+category = "rules"
+language = "vi"
+description = "Trên hàng nghìn là 'triệu'. Nguồn: người bản ngữ, 2026-08-17 — 1 triệu = 'một triệu', 2 triệu = 'hai triệu', 10 triệu = 'mười triệu'. Tier 2 chứ không phải 1: mua bán hằng ngày dừng ở trăm nghìn, triệu là khi thuê nhà hay mua xe."
+pieces = ["triệu", "một", "hai", "mười"]
 
 [[items]]
 type = "procedure"
