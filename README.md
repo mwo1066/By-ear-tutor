@@ -122,6 +122,16 @@ skips the opening speech — 55 seconds of synthesis standing between you and
 whatever you are trying to test. Use both while iterating.
 
 ```bash
+.\session.ps1 --no-intro
+```
+
+Runs a lesson and keeps the transcript in `logs\`, so a session can be read
+afterwards instead of copied out of the terminal by hand. Anything after the
+script name is passed to `tutor.py`. It exists because piping Python's output
+buffers it — measured, three lines a second apart all arrived together at 3.5s —
+so the flags that keep the lesson live on screen are easy to get wrong by hand.
+
+```bash
 python smoke_test.py
 ```
 

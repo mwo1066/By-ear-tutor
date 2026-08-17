@@ -10,3 +10,4 @@ voices/test_text*.txt
 .cache/
 *.bak
 learner.json
+logs/
