@@ -147,7 +147,7 @@ The glossary is in English. The rest is in French — those documents are read, 
 | [`GLOSSARY.md`](GLOSSARY.md) | **the glossary** — every term defined once, grouped by whether it is standard field vocabulary, a narrowed borrowing, or coined here. Read this first. In English. |
 | [`SPEC.md`](SPEC.md) | what the code does today. 59 rules, each naming where it is enforced and what to edit. |
 | [`METHOD.md`](METHOD.md) | the counts from the real recordings that the rules are derived from. |
-| [`STATUS.md`](STATUS.md) | where the project stands, what is still open. |
+| [`STATUS.md`](STATUS.md) | where the project stands — **the three axes the work is organised on**, what holds, what is still open. |
 | [`STYLE.md`](STYLE.md) | ideas not yet activated, and the measurements behind them. |
 | [`changes/`](changes/) | one folder per change, written before the code; `changes/archive/JOURNAL.md` indexes what was already tried. |
 | [`notes/`](notes/) | working drafts — sentences waiting to be validated, a simulated lesson. Not part of the spec. |

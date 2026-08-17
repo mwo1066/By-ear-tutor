@@ -5,6 +5,62 @@ Last updated after the session that moved the mechanical turns into code.
 working state — what holds, what is still open, and why certain things are the
 way they are.
 
+## The three axes
+
+Decided 15 August, after a day in which every session was derailed by something
+other than the teaching. **This is the frame the work is organised on** — a
+pending item belongs to one of these three, and saying which changes who can do
+it and when.
+
+### 1 · The mechanism — nearly done
+
+The turn planner, the levels, the guarantees. Fifteen days of work, 60 rules,
+and a smoke test that catches wiring breaks. What is left: wiring the
+sentence-as-vehicle model, and two or three known defects.
+
+**Who:** the code. No content knowledge needed.
+
+### 2 · The content — barely started
+
+93 of the 149 taught words appear in no sentence. One hook out of 205. 1,915
+words still without a gloss. Three of the eighteen goals blocked by content that
+does not exist — the numbers past ten, serial verbs, the final particles.
+
+**Who:** Meo, or a Vietnamese speaker. This is the long pole and no amount of
+code shortens it.
+
+### 3 · The ear — never worked on
+
+The weakest link, and the one that has no pending work. From two real sessions on
+15 August:
+
+```
+"Hãy subscribe cho kênh La La School"    a YouTube outro invented from silence
+"Totem Latin"                            an attempt at tôi tên là Bình
+"Tot en labin."                          the same attempt, second try
+```
+
+And the languages detected for one voice in one session: English, Korean,
+Vietnamese, Korean, Finnish, Korean, Spanish, Hungarian, German.
+
+**No session failed because of the teaching.** The plan was right every time.
+They failed because the tutor did not hear what was said — and the fallout lands
+on axis 1: the three-word free-speech threshold, `Hồng` accepted for `không`, a
+step consumed by a hallucination.
+
+**Who:** the code, and it is short.
+
+### The order, and why
+
+**Axis 3 first.** It is short, and it unblocks the other two: you cannot judge a
+teaching method you cannot get through, and you cannot validate content the
+microphone deforms.
+
+Then axis 1, which is a few sessions. Axis 2 runs alongside whenever there is
+review time.
+
+---
+
 ## What works
 
 A full lesson runs end to end by voice. Measured on real sessions:
