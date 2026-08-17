@@ -1741,7 +1741,13 @@ def answered_target(user_text: str, target: str) -> bool:
     onto the nearest known word, which repaired the mispronunciation the tutor
     is supposed to hear.
     """
-    said, want = _bare(_LANG_TAG.sub("", user_text)), _bare(target)
+    # The slot is a hole to fill, not something to say: `muốn + [động từ]` is
+    # answered "tôi muốn ăn", never "động từ". Left in, the words NAMING the
+    # slot became part of the target -- saying "động từ", "danh từ" or "tên
+    # riêng" out loud scored as the answer on five of the eleven constructions
+    # that have one. Same target as resembles_target sees, which is the point:
+    # the two disagreed until now.
+    said, want = _bare(_LANG_TAG.sub("", user_text)), _bare(_SLOT.sub("", target))
     if not want:
         return True
     # Padded, so the match is on whole words. Unpadded, "ăn" was found inside
@@ -1831,7 +1837,7 @@ def learner_asked_something(user_text: str) -> bool:
 # which word is due. Set low on purpose: the cost of being wrong one way is a
 # model call we did not need, and the other way is a robot asking its next
 # question over someone who just said "I don't know".
-# Two, to meet listen.py's EN_SPEECH_WORDS at the same number. They are the two
+# Two, to meet listen.py's SPEECH_WORDS at the same number. They are the two
 # halves of one decision and they used to disagree: the ear kept two words of
 # English intact and this side ignored anything under three, so "hold on", "go
 # back", "too fast" and "start again" were saved and then answered by nobody.
