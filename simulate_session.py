@@ -33,7 +33,11 @@ from tutor import (
     load_api_key, stream_llm_reply,
 )
 
-LEARNER_MODEL = "llama-3.1-8b-instant"
+# Checked against the account's own model list on 2026-08-17: the previous
+# choice, llama-3.1-8b-instant, had been withdrawn by Groq and every run died on
+# HTTP 404 model_not_found. A 404 is treated as permanent by stream_llm_reply, so
+# it does not fall through to another model -- the list is not a safety net here.
+LEARNER_MODEL = "openai/gpt-oss-20b"
 LEARNER_PROMPT = """You are ROLE-PLAYING a complete beginner taking a spoken Vietnamese lesson. You are the STUDENT, never the teacher.
 
 Output ONLY the words you say out loud. One short line. No stage directions, no explanations, no markdown.
@@ -112,6 +116,8 @@ def main(n_exchanges: int, start_from: str | None = None) -> None:
         print(f"--- starting at item {at + 1}: {order[at].name} "
               f"({len(seen)} items counted as already met) ---")
         print()
+        jump_to = queue.pop(0)
+        seen.append(jump_to)
     else:
         queue = [by_name[n] for n in store.select_new(all_names)]
         seen = [i for i in roster if not store.is_new(i.name)]
@@ -120,6 +126,11 @@ def main(n_exchanges: int, start_from: str | None = None) -> None:
     # the simulator carries its question but not the "that's it" in front of it.
     lesson = {"item": None, "plan": [], "i": 0, "started": False, "retried": False,
               "verdict": None, "verdict_target": None, "phrasing": {}}
+    if start_from:
+        # Start the item straight away. Without this the first exchange is the
+        # opening speech -- which is nonsense a hundred items into the course,
+        # and costs a turn out of the handful being previewed.
+        start_item(lesson, jump_to, seen, store)
 
     messages = [{"role": "system", "content": load_persona_system_prompt(CONTENT_DIR)}]
     messages.append({"role": "user", "content": "[lang:en] Hi, I'm ready."})
@@ -133,7 +144,11 @@ def main(n_exchanges: int, start_from: str | None = None) -> None:
         # recall to the model would be rehearsing a lesson the real loop no
         # longer runs, which is the whole thing this file exists to avoid.
         line = None
-        if exchange > 0 and not learner_spoke_freely(last_learner_turn):
+        # Exchange 0 normally belongs to the model, because it is the opening
+        # speech. When jumping, there is no opening and the item has already
+        # started, so a scripted turn must be allowed from the first exchange --
+        # otherwise the preview sends the model a turn the code writes itself.
+        if (exchange > 0 or start_from) and not learner_spoke_freely(last_learner_turn):
             line = scripted_turn(lesson)
         if line is not None:
             print(f"TUTEUR : {line}   [ecrit par le code]\n")
