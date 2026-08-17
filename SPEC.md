@@ -724,8 +724,18 @@ an attempt at "tôi" arriving in Japanese under a `[lang:vi]` label.
 > **The resemblance is what decides; the word count only sets a floor.** An
 > attempt is the target word spelled wrong, so it looks like it — the recorded
 > ones score 0.571 (`'Fen Bey.'` for `sân bay`), 0.857 (`'and Bay'`) and 1.000
-> (`'toi'`), while English of two words or more tops out at 0.308. A sentence
-> never resembles a word.
+> (`'toi'`), while English of two words or more tops out at 0.308. It must also
+> have **as many syllables as the target**: Vietnamese is monosyllabic, so an
+> attempt at a two-syllable word arrives in two tokens. `'no idea'` is not a
+> shot at `nói`, however the letters fall.
+>
+> **Swept, not sampled.** All 129 targets a recall step can ask for, against 43
+> real interruptions — 5547 combinations. Interruptions still wrongly eaten:
+> **3354 before (60.5%), 5 after (0.1%)**. The five are two-word English against
+> two-syllable words scoring 0.46–0.50: `'no idea'` on a step asking `bao nhiêu`
+> or `có thể`, `'no clue'` on `có thể` or `Đến từ`. Raising the threshold to
+> 0.55 would close them and leave `'Fen Bey.'` two hundredths of margin — not
+> worth it.
 >
 > **Why not one word of English.** That is where a badly heard attempt lives —
 > `'Bye!'` for `tôi` resembles nothing at all, 0.000, and must still reach the
