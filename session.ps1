@@ -21,6 +21,13 @@
 # own streams, not a child process's console output, so the file came back
 # without a single line of the lesson in it.
 
+# WITHOUT THIS the Vietnamese is destroyed before it ever reaches the file.
+# PowerShell decodes a child process's bytes using [Console]::OutputEncoding,
+# which is a legacy codepage on a default Windows install -- Python writes utf-8
+# and PowerShell reads it as cp850, so "chị" arrives as "chß╗ï". Seen live on
+# 2026-08-17, in both the console and the log.
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+
 $stamp = Get-Date -Format "yyyy-MM-dd_HHmm"
 $log   = "logs\$stamp.log"
 $err   = "logs\$stamp.err.log"
@@ -29,6 +36,11 @@ if (-not (Test-Path logs)) { New-Item -ItemType Directory logs | Out-Null }
 
 Write-Host "  session -> $log" -ForegroundColor DarkGray
 python -u tutor.py $args 2> $err | Tee-Object -FilePath $log
+
+# Tee-Object writes UTF-16 in PowerShell 5.1 and has NO -Encoding parameter --
+# tried, it errors. PowerShell reads its own UTF-16 back fine, but grep and
+# Python do not, so the file is rewritten as plain utf-8 once the lesson ends.
+(Get-Content $log) | Set-Content $log -Encoding utf8
 
 if ((Get-Item $err).Length -eq 0) { Remove-Item $err }
 Write-Host "`n  saved: $log" -ForegroundColor DarkGray
