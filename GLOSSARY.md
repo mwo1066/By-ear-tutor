@@ -55,7 +55,7 @@ Standard words, deliberately restricted here.
 | **atom** | — (this project's word for a **lexical item**) | a single word. `ngon`, delicious. 127 in the course. |
 | **piece** | *constituent*, a unit of syntactic analysis | an item **already taught** that another is built from. `tôi tên là` has pieces `tôi`, `tên`, `là`. Pedagogical, not syntactic: it tracks what the learner already has. Stored as `pieces`. |
 | **category** | part of speech | the item's word class (`verb`, `numeral`, `feature`…). Used for **spacing**, not for teaching: three items of one category in a row is a theme, a fourth is a drill. Stored as `category`. |
-| **tier** | in vocabulary instruction, Beck's tiers rank words by academic utility | here, a ranking of discrete features by **conversational** utility: 7 you cannot speak without, 11 very frequent, 10 comfort. **Not Beck's tiers** — same word, different scheme. Stored as `tier`. |
+| **tier** | in vocabulary instruction, Beck's tiers rank words by academic utility | here, a ranking of discrete features by **conversational** utility: 8 you cannot speak without, 10 very frequent, 9 comfort. **Not Beck's tiers** — same word, different scheme. Stored as `tier`. |
 | **level** | — | a word's consolidation counter. Rises on each successful recall, decides how often it returns. Wrong answers are never counted down. |
 | **hook** | — | a true fact about a word, spoken **before** the word is given, so the fact earns the word. Filled on 1 item of 170 today. When it takes a compound apart, it is **morphological analysis**. |
 
@@ -67,7 +67,7 @@ No equivalent outside this project. Defined nowhere else.
 
 | term | definition |
 | --- | --- |
-| **discrete feature** | a feature that is taught once and should come back — "`không` before a verb negates it". The opposite of a **strand**. 28 items. Stored as `nature = "discrete"`. The binary itself is this project's: syllabus design implies it, but never as a field on an item. |
+| **discrete feature** | a feature that is taught once and should come back — "`không` before a verb negates it". The opposite of a **strand**. 27 items. Stored as `nature = "discrete"`. The binary itself is this project's: syllabus design implies it, but never as a field on an item. |
 | **scripted turn** | a turn whose two halves the code already holds — the meaning to ask from, and the word that must not be said. Composed by the code and sent straight to speech synthesis, with no model call. Six of the nine turn kinds qualify. |
 | **settle** | re-asking the same word one turn later, short and marked as a repeat. Neither spaced retrieval (the gap is one turn) nor repetition (the question changes shape). |
 | **apply** | asking the learner to put a feature to work on material they have just recalled. |
