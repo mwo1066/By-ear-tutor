@@ -7,23 +7,28 @@ It teaches Vietnamese today. The engine is language-agnostic — the language
 lives entirely in `content/`.
 
 ```
-tutor   So, I or me?
-you     tôi
-tutor   Exactly. And again — what was the word for name?
-you     tên
-tutor   That's it. Once more — what was to be?
-you     là
+tutor   So — you?
+you     bạn
+tutor   Exactly. And again — what was healthy?
+you     khỏe
+tutor   That's it. Once more — what was not?
+you     không
 
-tutor   So how would you say "I am" in Vietnamese?
-you     tôi là
-tutor   Literally, it goes: I name is something.
-        Give me the whole thing — My name is something?
-you     tôi tên là
-Minh    Tôi tên là An.
+tutor   Put two of them together — you healthy?
+you     bạn khỏe
+tutor   Literally, it goes: you healthy not?
+        Give me the whole thing — how are you?
+you     bạn khỏe không
+Minh    Bạn khỏe không?
 ```
 
-*A real excerpt. Three words, then the sentence climbed out of them — the tutor
-never says the Vietnamese it is asking for.*
+*Three words, then the sentence climbed out of them one rung at a time — and the
+tutor never says the Vietnamese it is asking for.*
+
+*"How are you?" is `bạn khỏe không?` — literally **you healthy not?**. Nobody
+guesses that, which is what the literal line is for: it is given out loud one
+beat before the learner is asked to produce a sentence they have never heard.
+The items, the glosses and the tutor's phrasings above are the course's own.*
 
 ## The method
 
@@ -36,13 +41,13 @@ you say ___?", never "repeat after me" — a phrase that appears zero times in
 twenty-five minutes of the reference course.
 
 **Words are taught because a sentence needs them.** Nothing is introduced for
-its own sake. `tôi`, `tên` and `là` arrive because `tôi tên là Nam` is about to
-be built out of them, and the code guarantees a phrase never surfaces before
+its own sake. `bạn`, `khỏe` and `không` arrive because `bạn khỏe không?` is about
+to be built out of them, and the code guarantees a phrase never surfaces before
 the words it is made of.
 
 **The literal scaffold.** Before asking for a sentence whose word order differs
 from yours, the tutor gives that order out loud — "literally you'll be saying:
-I name is Nam" — which is what lets a beginner produce a sentence they have
+you healthy not?" — which is what lets a beginner produce a sentence they have
 never heard.
 
 **Nothing is ever "learned" and retired.** Each word carries a level: fresh
