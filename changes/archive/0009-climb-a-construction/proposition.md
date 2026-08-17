@@ -1,6 +1,6 @@
 # Climb a construction, instead of asking for it whole
 
-**Status:** applied, not archived — one task left
+**Status:** finished
 **Opened:** 2026-08-15
 
 ## Why
@@ -117,7 +117,7 @@ before it is kept.**
 - [x] Modify rule 12 of `SPEC.md`
 - [x] `python smoke_test.py`
 - [x] **Hear a session** on a construction — done 15 August, it found a defect
-- [ ] **Hear it again** after the rung-1 fix, before archiving
+- [x] **Hear it again** after the rung-1 fix — done 15 August, the ladder climbs
 
 ## Verification
 
@@ -146,3 +146,36 @@ before.
 the learner spoke freely, the step waited (4c-bis), and the model took over as
 far as teaching `sinh viên`, which is outside the course. The plan never resumed.
 That is a separate defect, outside this folder.
+
+## Result
+
+**Finished:** 2026-08-15 — `tutor.py` (`build_plan`), rule 12 of `SPEC.md`.
+
+**The second listening confirmed the fix.** Same construction, same plan
+`recall_piece ×3 → scaffold ×2 → answer → vary → rule → rapidfire`:
+
+```
+turn 4   "So how would you say 'I am' in Vietnamese?"     → tôi là
+turn 5   "Literally, it goes: I name is something.
+          Give me the whole thing — My name is something?" → tôi tên là
+```
+
+Rung 1 now asks for **two pieces assembled**, not a single word, and the learner
+answered both rungs. The ladder climbs.
+
+**What the same session exposed, and it is not this folder's:** the plan was
+abandoned a few turns later. A garbled attempt at `tôi tên là Bình` was
+transcribed "Tot en labin." — three words, which `learner_spoke_freely` reads as
+the learner talking to us rather than attempting an answer. The step waited, the
+model took the turn, and with an instruction that says "do not ask them to say
+anything" against a standing rule that says every turn ends on a question, it
+invented "What would you like to practice next?" — handing the learner a choice
+the architecture refuses (rule 8).
+
+That threshold, `FREE_SPEECH_WORDS = 3`, was calibrated when the course only ever
+asked for single words. **It gets worse with everything decided today:** rungs,
+feature applications and the sentence-as-vehicle model all ask for sentences, and
+a mistranscribed Vietnamese sentence looks exactly like three words of English.
+The correct sentence `tôi tên là` is itself three words.
+
+Filed as the next change, and it is more urgent than this one was.

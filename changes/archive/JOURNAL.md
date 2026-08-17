@@ -12,6 +12,19 @@ One line per archived change, in the form:
 
 ## Archived changes
 
+`0009` — **climb a construction instead of asking for it whole** — 2026-08-15 —
+the reference method's move, written in the code for weeks and applied to one
+branch out of three. The `scaffold` step becomes two or three rungs, each adding
+one element, the literal order landing on the last. The rungs come out of the
+variation budget, so a construction of three pieces or fewer costs the same
+number of turns. Which rungs are valid is Vietnamese knowledge, so they are model
+turns with a code-supplied boundary — the same division `vary` makes.
+
+Verified by listening, twice. The first session found rung 1 asking for a single
+word three turns after the recall that had just asked for it; the floor is now
+two pieces assembled, and the second session climbed correctly. **No test could
+have caught either** — the plan had the right number of steps both times.
+
 `0008` — **sort the notebook in two** — 2026-08-15 — `STYLE.md` was filed by
 where the ideas came from, while the question actually asked of it is always
 "does this run?". Two parts: 5 that run (3 of them half, with what is missing
