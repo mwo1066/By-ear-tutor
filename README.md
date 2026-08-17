@@ -131,4 +131,5 @@ The glossary is in English. The rest is in French — those documents are read, 
 | [`STATUS.md`](STATUS.md) | where the project stands, what is still open. |
 | [`STYLE.md`](STYLE.md) | ideas not yet activated, and the measurements behind them. |
 | [`changes/`](changes/) | one folder per change, written before the code; `changes/archive/JOURNAL.md` indexes what was already tried. |
+| [`notes/`](notes/) | working drafts — sentences waiting to be validated, a simulated lesson. Not part of the spec. |
 

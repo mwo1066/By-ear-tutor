@@ -1,5 +1,6 @@
 .env
 state.json
+state.json.*
 __pycache__/
 voices/*.wav
 voices/*.onnx
