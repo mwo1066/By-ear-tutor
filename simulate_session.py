@@ -145,10 +145,15 @@ def main(n_exchanges: int, start_from: str | None = None) -> None:
         # longer runs, which is the whole thing this file exists to avoid.
         line = None
         # Exchange 0 normally belongs to the model, because it is the opening
-        # speech. When jumping, there is no opening and the item has already
-        # started, so a scripted turn must be allowed from the first exchange --
-        # otherwise the preview sends the model a turn the code writes itself.
-        if (exchange > 0 or start_from) and not learner_spoke_freely(last_learner_turn):
+        # speech. When jumping there is no opening and the item has already
+        # started, so the first turn must be the scripted one -- and the seeded
+        # "Hi, I'm ready." must NOT be consulted: it is three words, so
+        # learner_spoke_freely calls it free speech and hands the turn to the
+        # model. That produced "How would you say nghìn?" -- a question naming
+        # its own answer, from a step the code writes correctly by itself.
+        if exchange == 0 and start_from:
+            line = scripted_turn(lesson)
+        elif exchange > 0 and not learner_spoke_freely(last_learner_turn):
             line = scripted_turn(lesson)
         if line is not None:
             print(f"TUTEUR : {line}   [ecrit par le code]\n")
