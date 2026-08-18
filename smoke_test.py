@@ -12,6 +12,7 @@ Not a test of behaviour -- it asserts the machine turns over, nothing more.
 Run: python smoke_test.py
 """
 import random
+import re
 import sys
 from pathlib import Path
 
@@ -255,6 +256,35 @@ def check_transcribe_cases() -> int:
                 failed += 1
     finally:
         listen._run_transcribe_groq = real
+    return failed
+
+
+_GLOSS_BLANK = re.compile(r"_+|\[[^\]]*\]|\.\.\.")
+
+
+def check_asked_glosses_trail_into_their_blank(roster) -> int:
+    """A gloss that becomes a question may only carry its blank at the END.
+
+    The gloss IS the question, spoken aloud, and a blank in the middle has to be
+    filled with a word to keep the sentence standing -- which produced "So, My
+    name is something?" and "I am something years old". Meo heard both in a
+    simulated lesson: it reads as asking whether the name IS "something".
+
+    At the end, the question simply trails into it -- "so how would you say, my
+    name is…?" -- and nothing has to be invented. So the rule is about where the
+    blank sits, and it is enforced here rather than trusted: two glosses had
+    drifted, one of them written by a live session into personal_items.json.
+    """
+    failed = 0
+    for item in roster:
+        if not content.askable(item) or not item.gloss:
+            continue
+        for m in _GLOSS_BLANK.finditer(item.gloss):
+            if item.gloss[m.end():].strip(" ?.!,"):
+                print(f"FAIL — {item.name!r} is asked as {item.gloss!r}, whose blank is not at "
+                      f"the end: it would be spoken {tutor.speakable(item.gloss)!r}")
+                failed += 1
+                break
     return failed
 
 
@@ -590,6 +620,7 @@ def main(NO_INTRO=False) -> int:
     vocab = tutor._vocab_words(roster)
     if (check_voice_cases(vocab) + check_leak_cases() + check_error_cases()
             + check_talking_cases() + check_transcribe_cases()
+            + check_asked_glosses_trail_into_their_blank(roster)
             + check_derived_pieces(roster)
             + check_spoken_targets() + check_answer_cases()
             + check_prerequisite_order()
