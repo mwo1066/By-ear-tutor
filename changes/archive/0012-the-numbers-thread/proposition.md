@@ -1,6 +1,6 @@
 # Make the numbers a thread that reaches money, in slices
 
-**Status:** in progress
+**Status:** done
 **Opened:** 2026-08-17
 
 ## Why
@@ -246,3 +246,80 @@ goes ahead of every spacing rule.
 
 **Not yet done: one real spoken session** reaching the money slices. Until then
 this is verified offline only.
+
+
+---
+
+## Result
+
+**Finished:** 2026-08-17 — commits `cb7d481`, `ef8d5b8`, plus `8e231c8` and
+`fdee92b` for what verifying it turned up.
+
+**What it gave.** The counting strand said four facts in one turn and now says
+one; three `discrete` slices carry the rest. The money thread exists where there
+was none: `nghìn` and its rule, the banknotes, `triệu`, and the rule that a price
+stops at the number. `bao nhiêu tiền?` — taught at slot 111 — has an answer for
+the first time, since the money rules land at 103 and 104.
+
+Heard in simulation, `--from=nghin`:
+
+```
+TUTEUR : When you talk about numbers in the thousands, you use exactly the same
+         pattern as before — a digit followed by nghìn. For example, mười nghìn
+         means ten thousand, which is about what a coffee costs.
+ELEVE  : mười nghìn
+```
+
+and `--from="tram nghin"`:
+
+```
+TUTEUR : the notes you actually hold are hundreds of thousands — một trăm nghìn.
+         Two hundred thousand is hai trăm nghìn. Five hundred thousand is
+         năm trăm nghìn.
+ELEVE  : Một trăm nghìn.
+```
+
+Against the old strand, which said *"the word for ten changes shape on the way"*
+and stopped.
+
+**Task 4 was deleted, not solved.** `đồng` could not be made teachable: glossing
+it in the generated shelf file puts it four hundred slots after the slices that
+need it and a feature waits for its pieces; adding it to the lesson file makes a
+duplicate the shelf silently wins; deleting it from the shelf edits a generated
+file. Meo's answer — *"on ne l'enseigne pas on s'en fout"* — matches what the
+native speaker had already said, *"I just say the number and then don't"*. So the
+currency is not an item and the fact became a rule of omission,
+`nói giá: chỉ cần con số`. **And the code already enforced the decision:**
+`check_glosses_cite_only_taught_words` lets a feature's gloss quote only taught
+Vietnamese, so `đồng` cannot slip into one.
+
+**No SPEC rule changed for the change itself**, which was the point: each slice
+is an item, and the existing machinery already gives every item its own rule turn
+and already spaces them. The instinct that a strand needs several rule turns
+would have touched all seven strands and was not needed.
+
+### What verifying it turned up, and cost two more commits
+
+**`speakable` filled a blank with the word "something".** Heard as *"And My name
+is something — what was that?"*. A trailing blank is now dropped and the question
+trails into it; a medial one still keeps a word or the sentence breaks. English
+forces the blank into the middle of "I am ___ years old", so that gloss carries a
+number instead. **Rule 10c is new**, and `SPEC.md` rule 10 was corrected: it
+still documented `"My name is ___" → "My name is something"` as current
+behaviour.
+
+**Three defects in the simulator itself**, all found by running it: its learner
+model had been withdrawn by Groq and every run died on a 404; `--from=` played
+the opening speech, absurd a hundred items in; and exchange 0 handed the model a
+turn the code writes itself, which produced *"How would you say nghìn?"* — a
+question naming its own answer, and nothing to do with the content.
+
+**Seen and not fixed.** A `rule` turn ends on *"Your turn now."* while asking
+nothing — the step's instruction says *"this is the turn where you TELL rather
+than ask"* and the persona says a turn ends at its question. Same root as the
+refused `0011`. Meo raised it; it is recorded here, not acted on.
+
+Also seen: the model spent a whole turn's budget reasoning and said nothing —
+`!! budget spent WITHOUT a word said` — and the step was consumed anyway, so the
+banknote rule was silently skipped. A rerun said it correctly. There is no
+equivalent of rule 4c-bis for a turn the MODEL leaves empty.

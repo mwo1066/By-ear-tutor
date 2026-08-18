@@ -72,10 +72,29 @@ the files on 2026-08-17, not from memory.
 - **121 teachable words appear in no sentence at all** — `ăn`, `uống`, `đã`,
   `rồi`, `chưa`, `nước`, `cơm`, `thích`… The course has **22 constructions for
   2064 words**. Sentences have to be authored; nothing writes them.
+- **54 candidate sentences wait in `notes/SENTENCES-TO-VALIDATE.md`**, and they
+  are ready: checked on 2026-08-17, **all 54 are built entirely from words the
+  course already teaches**, no new word needed. Eight seeds, each pressed with
+  the course's own features as buttons — one seed yields about six sentences and
+  three words. Meo has to cross out what is not said. **This is the next thing on
+  this axis, and it costs reading rather than writing.**
+- The arithmetic, so the target is chosen and not assumed: a seed buys ~3 words,
+  so **~43 seeds cover the 149 words the course already teaches**, ~143 cover the
+  500 commonest, and ~590 cover every word in the files. The last is a book, not
+  a chantier.
 - **52 candidate sentences** in `notes/SENTENCES-TO-VALIDATE.md` waiting to be
   accepted or thrown out.
-- **7 features carry no tier.** Not translation — a ranking by usefulness, which
-  is Meo's call.
+- ~~**7 features carry no tier.**~~ **Not a gap**: `tier` ranks *discrete*
+  features, and a `strand` never finishes so it holds no position in a sequence —
+  the glossary's own definition. The seven without one are correct. Checked
+  2026-08-17, along with the 27 discrete features: all complete, 21 anchored to
+  their word.
+- **Two strands have no mechanism to bring them back**, though the rule that
+  exempts them from the draw (17b) says they "fire from the material":
+  `ghép hai từ đã biết thành từ mới` and `đếm từ 11 đến 99` — the latter now
+  renamed and sliced by `0012`. Nothing fires the first. `STYLE.md` holds the
+  design for it, measured and never built. Four of the remaining five are the
+  address system under four names, which may be one thread split four ways.
 
 ### B · The 1915 missing glosses are not a task — do not fill them
 

@@ -264,9 +264,9 @@ no gloss, "ask what là was" came out as "so how would you say là?": a question
 that gives its own answer.
 **The `gloss` is now spoken as written** on scripted turns (4b), with no model
 between it and the synthesis: `speakable` translates what is written but not
-said — "I / me" → "I or me", "My name is ___" → "My name is something". And
-`check_roster` refuses an item carrying its own Vietnamese name inside its
-gloss, which would hand over the answer at the moment of the question.
+said — "I / me" → "I or me". And `check_roster` refuses an item carrying its own
+Vietnamese name inside its gloss, which would hand over the answer at the moment
+of the question.
 **The accepted fallback, and its risk:** when an item has no gloss, two places
 fall back to `description` — the authoring notes, written **in Vietnamese** for
 whoever writes the content. No taught item has an empty gloss today, so nothing
@@ -278,6 +278,28 @@ Vietnamese came back out in the middle of sentences that had to be English.
 decision — keeping them costs nothing, relying on them would be a mistake.
 **Change:** the item files; `fill_item_metadata.py` fills the missing fields;
 `tutor.py` → `speakable`, `_ask_for`
+
+### 10c. A blank in a gloss sits at the END, and the question trails into it
+`speakable` drops a trailing blank rather than filling it, so "My name is ___"
+is asked as *"So, my name is…?"*. A blank anywhere else still has to be filled
+with a word, or the sentence collapses.
+**Where:** code — `speakable`, `_GLOSS_TRAILING_BLANK`; content — where the
+glosses are written
+**Why:** the blank used to become the word "something", and the result was heard
+in a simulated lesson on 2026-08-17: *"And My name is something — what was
+that?"* and *"I am something years old"*. The first reads as asking whether the
+name IS "something".
+**Why it is a content rule and not only a substitution:** English word order
+forces the blank into the middle of "I am ___ years old", and no rewording moves
+it. That gloss carries a number instead — "I am twenty years old" — while the
+slot stays in the item's name, `Tôi ... tuổi`, which is what the code reads.
+**Enforced, not remembered:** `check_asked_glosses_trail_into_their_blank` fails
+any gloss that becomes a question with words after its blank, and prints what it
+would have been spoken as. Two glosses had drifted, and one of them was written
+into `personal_items.json` by a live session rather than by hand — which is the
+argument for a check over a convention.
+**Change:** `tutor.py` → `speakable`, `_GLOSS_TRAILING_BLANK`;
+`smoke_test.py` → `check_asked_glosses_trail_into_their_blank`
 
 ### 10b. The course knows who the learner is, and teaches THEIR person-words
 An age bracket and a gender are enough: they decide whether the learner is

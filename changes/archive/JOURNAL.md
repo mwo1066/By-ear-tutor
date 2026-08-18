@@ -12,6 +12,26 @@ One line per archived change, in the form:
 
 ## Archived changes
 
+`0012` — **make the numbers a thread that reaches money, in slices** —
+2026-08-17 — one strand said four facts in a single turn and now says one, with
+three `discrete` slices carrying 11-19, the reversal from 20, and the
+`mười`→`mươi` trap. The money thread exists where there was none: `nghìn` and its
+rule (tier 1 — after that slice alone a coffee can be bought), the banknotes,
+`triệu`, and the rule that a price **stops at the number**. `bao nhiêu tiền?` had
+been taught with no sayable answer.
+
+**No SPEC rule changed for it**, which was the shape: each slice is an item, and
+the machinery already gives every item its own rule turn and already spaces them.
+Spacing measured after adding six items to one file — longest single-category run
+still 3, exactly the cap.
+
+`đồng` was **not** made teachable and the task was deleted rather than solved:
+the currency is dropped in speech, so a course with no reading has no use for it
+as a recall target. Verifying this cost two more commits — `speakable` was
+filling a blank with the word "something" (*"And My name is something — what was
+that?"*), now rule 10c — and exposed three defects in the simulator itself,
+including a learner model Groq had withdrawn.
+
 `0011` — **a turn never asks for the word it has just said** — 2026-08-17 —
 **REFUSED, never implemented.** Written after a diagnostic fired four times in
 two sessions: the tutor hands the answer back and then asks for it. Meo listened
