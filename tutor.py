@@ -778,12 +778,26 @@ def _ask_for(item: Item) -> str:
 # between, and Azure reads exactly what it is given: "I / me" comes out as a
 # slash or as nothing at all, "My name is ___" as an underscore.
 _GLOSS_PLACEHOLDER = re.compile(r"_{2,}|\[[^\]]*\]")
+# A blank that ends the gloss, with whatever punctuation trails it.
+_GLOSS_TRAILING_BLANK = re.compile(r"\s*(?:_{2,}|\[[^\]]*\])\s*[?.!]?\s*$")
 _GLOSS_ELLIPSIS = re.compile(r"\s*\.\.\.\s*")
 
 
 def speakable(gloss: str) -> str:
-    """A gloss as a sentence can pronounce it."""
-    text = _GLOSS_PLACEHOLDER.sub("something", gloss)
+    """A gloss as a sentence can pronounce it.
+
+    A blank at the END is simply dropped, because a question trails off into it
+    naturally -- "so how would you say: my name is…?" Filling it produced "My
+    name is something" and "I am not a something", which Meo heard in a
+    simulated lesson and called weird, rightly: it reads as asking whether the
+    name IS "something".
+
+    A blank in the MIDDLE has to keep a word, or the sentence breaks: "I am ___
+    years old" would become "I am years old". So the substitution stays there,
+    and only the trailing case changes.
+    """
+    text = _GLOSS_TRAILING_BLANK.sub("", gloss)
+    text = _GLOSS_PLACEHOLDER.sub("something", text)
     text = _GLOSS_ELLIPSIS.sub(" ", text)
     text = " or ".join(part.strip() for part in text.split("/"))
     return " ".join(text.replace("+", " ").split()).strip(" ?.!,")
