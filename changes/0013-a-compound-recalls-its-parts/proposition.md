@@ -1,6 +1,6 @@
 # A compound word recalls its parts before it is presented
 
-**Status:** proposed
+**Status:** applied — awaiting a session before archiving
 **Opened:** 2026-08-17
 
 ## Why
@@ -71,15 +71,15 @@ becomes *ask for the parts → hook → the word*.
 
 ## Tasks
 
-- [ ] in `build_plan`'s atom branch, when the item's name is multi-syllable and
+- [x] in `build_plan`'s atom branch, when the item's name is multi-syllable and
       every part `derive_pieces` returns is already taught, prepend one
       `recall_piece` per part, in the order they appear in the word
-- [ ] leave the plan untouched when any part is missing — `xin lỗi`, `có thể`
+- [x] leave the plan untouched when any part is missing — `xin lỗi`, `có thể`
       and 22 others have only one half taught, and asking for the other would
       ask for a word that does not exist in the course
-- [ ] check the turn count: `không sao` goes from 4 turns to 6, and rule 9b's
+- [x] check the turn count: `không sao` goes from 4 turns to 6, and rule 9b's
       spacing still holds
-- [ ] `SPEC.md` rule 11d
+- [x] `SPEC.md` rule 11d
 
 ## Verification
 
@@ -93,3 +93,30 @@ becomes *ask for the parts → hook → the word*.
    measurement that says the condition is right, and it is checkable offline for
    all 213 items.
 4. One real or simulated session reaching `không sao`, listened to.
+
+
+---
+
+## Notes while applying
+
+Done as written, no divergence.
+
+```
+[recall_piece] So, no or not?
+[recall_piece] Once more — what was for what reason?
+[introduce]    This one you can almost work out: it is the word for not, and the
+               word for why, side by side — so it says, literally, there is
+               nothing the matter. In Vietnamese, the word for no problem is
+               không sao. không sao. Now you say it.
+[settle]       And again — what was no problem?
+```
+
+**Verification 3, the one that mattered:** one atom gained recalls, **24
+unchanged**. The condition — parts reconstruct the word exactly, and all are
+taught — holds across all 213 items.
+
+`smoke_test.py` at exit 0; `check_every_plan_builds` covers every item, so a plan
+that could not be built would have failed there.
+
+Not done: a session reaching `không sao`. It is taught late in the course, so this
+waits for a simulated run rather than holding the change.

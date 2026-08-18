@@ -279,6 +279,28 @@ decision — keeping them costs nothing, relying on them would be a mistake.
 **Change:** the item files; `fill_item_metadata.py` fills the missing fields;
 `tutor.py` → `speakable`, `_ask_for`
 
+### 11d. A compound word is asked for its halves before it is handed over
+When a word is made of two or more words the course **already teaches**, one
+recall per part comes first, then the hook, then the word.
+**Where:** code — `build_plan`, the atom branch; the parts come from
+`derive_pieces`, which already read them
+**Why:** `không sao` carries a hook saying *"it is the word for not, and the word
+for why, side by side"* — naming two words the learner has, and asking for
+neither. The fact was handed over where it could have been produced, which is the
+course's central move used backwards. Meo, hearing it: *ask me what "not" is
+first.*
+**The condition is strict, and that is the point:** the parts must reconstruct
+the word exactly and every one of them must already be taught. **24 of the
+course's 25 compounds have a half it does not teach** — `sân bay` is `sân` (yard)
++ `bay` (to fly) and neither is on the roster — so asking would ask for a word
+that does not exist. Measured after the change: one item gained recalls,
+twenty-four are untouched.
+**What it is worth later:** across the 2065 words in the files, **893 are
+compounds and 411 have every part present**, 242 of them already ordered after
+their parts. So this fires once today and has room for hundreds, without a single
+new word being added.
+**Change:** `tutor.py` → `build_plan`, the atom branch
+
 ### 10c. A blank in a gloss sits at the END, and the question trails into it
 `speakable` drops a trailing blank rather than filling it, so "My name is ___"
 is asked as *"So, my name is…?"*. A blank anywhere else still has to be filled

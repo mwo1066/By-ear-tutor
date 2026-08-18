@@ -1058,6 +1058,28 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item],
             "last question.",
         ))
     else:
+        # A COMPOUND is asked for its halves before it is handed over. Vietnamese
+        # builds words by putting two known words side by side, and a hook that
+        # says so -- "it is the word for not, and the word for why" -- names two
+        # words the learner has without ever asking for either. The parts are
+        # recalled first, so the compound arrives as something they assembled.
+        #
+        # Only when the parts EXACTLY reconstruct the word and every one of them
+        # is already taught: 24 of the course's 25 compounds have a half it does
+        # not teach, and asking for one would ask for a word that does not exist.
+        by_name = {i.name: i for i in (known or [])}
+        parts = [by_name[p] for p in derive_pieces(item.name, known or []) if p in by_name]
+        if len(item.name.split()) > 1 and " ".join(p.name for p in parts) == item.name:
+            for piece in parts:
+                plan.append(Step(
+                    "recall_piece", piece.name,
+                    f"Ask them, in English, for the Vietnamese for {_ask_for(piece)}. One question, "
+                    f"then stop. Do not say the Vietnamese word yourself and do not have Minh say "
+                    f"it, and do not hint that it is part of anything.",
+                    answer_is_target=True,
+                    ask=speakable(piece.gloss),
+                ))
+
         # Two turns, not one. A single turn meant a word was revealed, heard
         # once and gone -- three of them stacked back to back before anything
         # was combined, which is what made the lesson feel like it was skimming.
