@@ -677,6 +677,21 @@ def rapidfire_count(item: Item, pieces: list[Item]) -> int:
 MAX_APPLICATIONS_PER_ITEM = 1
 
 
+def _is_comprehension(item: Item) -> bool:
+    """A rule exercised by understanding, not by producing.
+
+    Marked by the item carrying worked cases in `steps`, each written as
+    `part + part → whole, meaning`. Only the compounding rule is one today, and
+    its own note says why: "chỉ dùng để HIỂU, không dùng để tự chế từ".
+
+    Both halves of the test are load-bearing. The arrow alone caught the address
+    rule too, whose steps map a situation to a word — `đàn ông hơn tuổi mình →
+    anh` — and its application would then have been told to name the two halves
+    of a word that has none. The `+` is what says the left side is an assembly.
+    """
+    return bool(item.steps) and all("+" in s and "→" in s for s in item.steps)
+
+
 def _apply_material(item: Item, known: list[Item]) -> tuple[str, str]:
     """What a feature's application works ON, and what it asks FOR, in English.
 
@@ -704,6 +719,25 @@ def _apply_material(item: Item, known: list[Item]) -> tuple[str, str]:
     if pinned:
         return (f' Work on THIS sentence and no other: "{pinned.gloss}" ({pinned.name}).',
                 speakable(pinned.gloss))
+    if _is_comprehension(item):
+        # A rule that describes COMPREHENSION is exercised by comprehension. The
+        # compounding rule's own note says it: "NHƯNG chỉ dùng để HIỂU, không
+        # dùng để tự chế từ" -- only to understand, never to invent words. Its
+        # counter-examples are the argument: `cho nên` is `cho` + `nên` and means
+        # therefore, `bà con` is `bà` + `con` and means relatives, and neither is
+        # guessable. A learner trained to BUILD compounds produces words that do
+        # not exist, with the confidence of someone following a rule.
+        #
+        # So the application asks what a compound MEANS, in English, and the
+        # worked cases come from the item's own `steps` rather than from
+        # anything the model reaches for.
+        return (f" This rule is UNDERSTOOD, never produced: do NOT ask them to build a word. "
+                f"Take ONE case below. Name its two halves by their English meanings, say that "
+                f"Vietnamese joins THOSE TWO into a single word — never that any two words can be "
+                f"joined — and ask what they think it means. Their answer is in English. "
+                f'"No idea" is a fine answer: give them the meaning and move on. '
+                f"The cases: {'; '.join(item.steps)}", "")
+
     if item.pieces:
         # No taught sentence touches this feature, so its OWN words are the
         # material. Handing over the list of sentences instead produced the
@@ -1206,16 +1240,22 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item],
                 answer_is_target=True,
                 ask=speakable(piece.gloss),
             ))
+        # A comprehension rule brings its own instruction and must NOT be asked
+        # for a sentence on top of it -- that is the contradiction this whole
+        # branch exists to remove.
+        wants_a_sentence = not _is_comprehension(item)
+        opening = "Now put those words together." if wants_a_sentence else "Now have them work one out."
+        # The ở rule asked for "I am at home", then "at school", then "at the
+        # market" -- none of nhà, trường or chợ has been taught, so every rung
+        # was unanswerable. An application may only use words the learner has.
+        sentence_ask = (
+            " Ask for ONE sentence that uses the rule, on material they have just recalled. The "
+            "change this rule makes has to be visible in the answer, or the turn teaches nothing."
+            f"{_known_words_note(known or [])}"
+        ) if wants_a_sentence else ""
         plan.append(Step(
             "apply", item.name,
-            f"Now put those words together.{on_it} Ask for ONE sentence that uses the rule, on "
-            f"material they have just recalled. The change this rule makes has to be visible in "
-            f"the answer, or the turn teaches nothing."
-            # The ở rule asked for "I am at home", then "at school", then "at
-            # the market" -- none of nhà, trường or chợ has been taught, so
-            # every rung was unanswerable. An application may only use words
-            # the learner has.
-            f"{_known_words_note(known or [])} ASK IT IN ENGLISH and do not say the Vietnamese "
+            f"{opening}{on_it}{sentence_ask} ASK IT IN ENGLISH and do not say the Vietnamese "
             f"back: that is the answer. One question, then stop.",
             ask=apply_ask,
         ))

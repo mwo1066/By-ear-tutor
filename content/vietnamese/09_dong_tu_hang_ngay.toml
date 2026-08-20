@@ -271,3 +271,7 @@ category = "rules"
 language = "vi"
 description = "Quy tắc: tiếng Việt tạo từ mới bằng cách đặt hai từ đã biết cạnh nhau, không thêm gì ở giữa — không có 'của', không có 'để', không có gì cả. 'đi' + 'học' = đi học, đi tới trường. 'ăn' + 'uống' = ăn uống. 'chị' + 'em' = chị em. 'máy' + 'bay' = máy bay, cái máy bay được trên trời. Đây là chỗ tiếng Việt cho không một món quà: nghe một từ lạ, tách ra, nếu hai phần quen thì đoán được nghĩa — mà chưa ai dạy từ đó cả. NHƯNG chỉ dùng để HIỂU, không dùng để tự chế từ. 'cho nên' (vì vậy) và 'bà con' (họ hàng) cũng ghép từ hai từ quen, mà nghĩa không đoán ra được. Nghe thì cứ tách thử; nói thì dùng từ đã học."
 pieces = ["đi", "học", "ăn", "uống"]
+steps = [
+    "đi (to go) + học (to study) → đi học, to go to school",
+    "ăn (to eat) + uống (to drink) → ăn uống, eating and drinking",
+]

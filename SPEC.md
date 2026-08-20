@@ -382,6 +382,29 @@ word being added, only pulled off the frequency shelf, which is what `0014` is
 for.
 **Change:** `tutor.py` → `build_plan`, the atom branch
 
+### 13e. A rule that describes understanding is exercised by understanding
+Where a feature's application would have the learner **produce** what the rule
+says only to **recognise**, the turn gives the material and asks what it MEANS.
+The answer is in the learner's own language, and "no idea" is a complete answer —
+the tutor gives the meaning and moves on.
+**Where:** code — `_is_comprehension`, `_apply_material`, and the `apply` step in
+`build_plan`; the worked cases live in the item's `steps`
+**Why:** the compounding rule was given the ordinary application — *"ask for ONE
+sentence that uses the rule"* — and a sentence cannot use a word-formation rule.
+Worse, its own authoring note forbids exactly that: *"NHƯNG chỉ dùng để HIỂU,
+không dùng để tự chế từ"*, only to understand, never to invent. The note's
+counter-examples are the argument: `cho nên` is `cho` + `nên` and means
+*therefore*, `bà con` is `bà` + `con` and means *relatives*, and neither is
+guessable from its halves. A learner trained to build compounds produces words
+that do not exist, with the confidence of someone following a rule.
+**The wording is part of the rule:** the turn says the language joins **those
+two**, never that any two words may be joined.
+**How an item declares it:** `steps` written as `part + part → whole, meaning`.
+Both marks are load-bearing — the arrow alone also caught the address rule, whose
+steps map a situation to a word, and its application would have been told to name
+the two halves of a word that has none.
+**Change:** `tutor.py` → `_is_comprehension`, `_apply_material`, `build_plan`
+
 ## Teaching a construction
 
 ### 12. A construction is CLIMBED, it is not asked for whole
