@@ -279,28 +279,6 @@ decision — keeping them costs nothing, relying on them would be a mistake.
 **Change:** the item files; `fill_item_metadata.py` fills the missing fields;
 `tutor.py` → `speakable`, `_ask_for`
 
-### 11d. A compound word is asked for its halves before it is handed over
-When a word is made of two or more words the course **already teaches**, one
-recall per part comes first, then the hook, then the word.
-**Where:** code — `build_plan`, the atom branch; the parts come from
-`derive_pieces`, which already read them
-**Why:** `không sao` carries a hook saying *"it is the word for not, and the word
-for why, side by side"* — naming two words the learner has, and asking for
-neither. The fact was handed over where it could have been produced, which is the
-course's central move used backwards. Meo, hearing it: *ask me what "not" is
-first.*
-**The condition is strict, and that is the point:** the parts must reconstruct
-the word exactly and every one of them must already be taught. **24 of the
-course's 25 compounds have a half it does not teach** — `sân bay` is `sân` (yard)
-+ `bay` (to fly) and neither is on the roster — so asking would ask for a word
-that does not exist. Measured after the change: one item gained recalls,
-twenty-four are untouched.
-**What it is worth later:** across the 2065 words in the files, **893 are
-compounds and 411 have every part present**, 242 of them already ordered after
-their parts. So this fires once today and has room for hundreds, without a single
-new word being added.
-**Change:** `tutor.py` → `build_plan`, the atom branch
-
 ### 10c. A blank in a gloss sits at the END, and the question trails into it
 `speakable` drops a trailing blank rather than filling it, so "My name is ___"
 is asked as *"So, my name is…?"*. A blank anywhere else still has to be filled
@@ -362,6 +340,20 @@ worth telling"). It was produced **zero times** across every logged session — 
 were paying the turn's guarantee for an ornament never delivered.
 **Change:** `tutor.py` → `_INTRODUCE`
 
+### 11c. A true fact about the word comes BEFORE its presentation
+When an item carries a `hook`, it is said first, then the sentence giving the
+word. The fact earns the word, then the word lands.
+**Where:** code — `scripted_turn` puts `step.hook` at the front; the `hook`
+itself is **written in the content**, one item at a time
+**Why in front and not behind:** on `phở` or `cà phê` the presentation sentence
+alone runs empty — it announces to someone who already knows the thing that the
+Vietnamese word is the one they are about to hear.
+**What it demands of the content:** a **true** fact. The annotation instruction
+says "never guess"; an invented etymology spoken aloud is worse than no hook at
+all. Today one item of the course carries one.
+**Change:** the `hook` field of items; `fill_item_metadata.py` for the
+instruction that has them written
+
 ### 11d. A compound is asked for its halves before it is handed over
 When a word is made of two or more words the course **already teaches**, each
 part is recalled first, one question at a time, and only then does the word
@@ -379,23 +371,16 @@ draw because it "fires from the material". This is the material. A compound whos
 halves are never asked for demonstrates that rule to nobody.
 **Only when every part is taught, and the parts reconstruct the word exactly.**
 Of the course's 25 compounds, **24 have a half it does not teach** — `sân bay` is
-`sân` + `bay` and neither is on the roster — so asking would ask for a word that
-does not exist. Those plans are untouched, checked across all 213 items.
+`sân` (yard) + `bay` (to fly) and neither is on the roster — so asking would ask
+for a word that does not exist. Measured after the change across all 213 items:
+**one plan gained recalls, twenty-four are untouched.** That the condition leaves
+them alone is what says it is right.
+**What it is worth later:** across the 2065 words in the files, **893 are
+compounds and 411 have every part present**, 242 of them already ordered after
+their parts. So it fires once today and has room for hundreds — without a single
+word being added, only pulled off the frequency shelf, which is what `0014` is
+for.
 **Change:** `tutor.py` → `build_plan`, the atom branch
-
-### 11c. A true fact about the word comes BEFORE its presentation
-When an item carries a `hook`, it is said first, then the sentence giving the
-word. The fact earns the word, then the word lands.
-**Where:** code — `scripted_turn` puts `step.hook` at the front; the `hook`
-itself is **written in the content**, one item at a time
-**Why in front and not behind:** on `phở` or `cà phê` the presentation sentence
-alone runs empty — it announces to someone who already knows the thing that the
-Vietnamese word is the one they are about to hear.
-**What it demands of the content:** a **true** fact. The annotation instruction
-says "never guess"; an invented etymology spoken aloud is worse than no hook at
-all. Today one item of the course carries one.
-**Change:** the `hook` field of items; `fill_item_metadata.py` for the
-instruction that has them written
 
 ## Teaching a construction
 

@@ -120,3 +120,54 @@ that could not be built would have failed there.
 
 Not done: a session reaching `không sao`. It is taught late in the course, so this
 waits for a simulated run rather than holding the change.
+
+
+---
+
+## Result
+
+**Finished:** 2026-08-17 — commits `3b55d6d`, `f4c0295`
+
+**What it gave.** `không sao` runs `recall(không) → recall(sao) → introduce →
+settle`, so the hook that says *"it is the word for not, and the word for why"*
+lands after the learner has produced both halves instead of naming two words they
+have and asking for neither.
+
+**Exactly one plan changed, out of 213.** That is the result, not a footnote: 24
+of the 25 compounds have a half the course does not teach, and the condition
+leaving them alone is what says it is right. Checked item by item.
+
+**What it is worth later.** Of the 2065 words in the files, 893 are compounds and
+**411 have every part present**, 242 of them already ordered after their parts.
+Broken down over what is teachable *today*: 1 works, **8 have their missing half
+sitting on the frequency shelf** — `sân bay` = `sân` (yard) + `bay` (to fly),
+`hôm nay` = `hôm` (day) + `nay` (this), `xin lỗi` = `xin` (to ask) + `lỗi`
+(fault) — and the rest are either sentences mislabelled as atoms or genuinely
+indivisible, like `cà phê`, which came from French and already carries an
+etymological hook instead.
+
+So this fires once now and has room for hundreds, **without one word being
+added** — only pulled off the shelf, which is `0014`.
+
+### Found while verifying, and fixed separately
+
+**All six question words were unaskable.** The simulated lesson produced *"And
+for what reason — what was that?"*, which Meo did not understand and the learner
+model answered with gibberish. The same break on all six: `gì` glossed "what
+thing", `ai` "what person", `thế nào` "in what way" — a paraphrase written to
+stop a bare word being ambiguous, which stacks a second question word onto the
+template.
+
+Giving them their natural glosses — `why`, `what`, `who`, `where`, `how` — fixed
+it with **no code change**, because the rule that frames a one-word gloss as
+*"the word for why"* already existed. The code had even recorded the failure: the
+comment above `_REPEAT_ASK` describes a template deleted for breaking "outright
+on a gloss that is itself a question word". The template went; the glosses that
+triggered it stayed. Commit `f4c0295`.
+
+### Written twice, by accident
+
+Rule 11d was inserted into `SPEC.md` twice — a command replayed during a
+connection retry — once in the wrong section entirely. Deduplicated on archiving,
+the two versions merged, and 11c put back in front of 11d since 11d refers to the
+hook that 11c defines.

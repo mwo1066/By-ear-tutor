@@ -89,12 +89,21 @@ the files on 2026-08-17, not from memory.
   the glossary's own definition. The seven without one are correct. Checked
   2026-08-17, along with the 27 discrete features: all complete, 21 anchored to
   their word.
-- **Two strands have no mechanism to bring them back**, though the rule that
-  exempts them from the draw (17b) says they "fire from the material":
-  `ghép hai từ đã biết thành từ mới` and `đếm từ 11 đến 99` — the latter now
-  renamed and sliced by `0012`. Nothing fires the first. `STYLE.md` holds the
-  design for it, measured and never built. Four of the remaining five are the
-  address system under four names, which may be one thread split four ways.
+- ~~**Two strands have no mechanism to bring them back**~~ — both now have one.
+  `đếm từ 11 đến 99` was renamed and sliced by `0012`; `ghép hai từ đã biết thành
+  từ mới` fires through the **hook**, by `0013`, which was built and idle all
+  along — the course carried **two hooks out of 205 items**. A compound now
+  recalls its halves before it arrives.
+  **But it fires exactly once today.** Of 25 compounds, one has both halves
+  taught. **Eight more are waiting on the frequency shelf** — `sân bay` = `sân`
+  (yard) + `bay` (to fly), `xin lỗi` = `xin` (to ask) + `lỗi` (fault) — and 411
+  of the 2065 words in the files have every part present. **No word needs
+  adding; they need pulling off the shelf.**
+- Four of the remaining five strands are the address system under four names,
+  which may be one thread split four ways. Meo has not ruled on it.
+- **`_needs_fill` never asks for a hook.** An item with a `kind` and a `gloss`
+  counts as complete, so `fill_item_metadata.py` will never revisit the 203 items
+  carrying none. Found on 2026-08-17; not opened as a change.
 
 ### B · The 1915 missing glosses are not a task — do not fill them
 

@@ -12,6 +12,28 @@ One line per archived change, in the form:
 
 ## Archived changes
 
+`0013` — **a compound is asked for its halves before it is handed over** —
+2026-08-17 — `không sao` carried a hook saying *"it is the word for not, and the
+word for why, side by side"*, naming two words the learner has and asking for
+neither. Its parts are now recalled first, so the word arrives as something they
+assembled. The machinery existed and was simply not applied to words:
+`derive_pieces` already returned the parts, but `build_plan` splits on kind, so a
+construction recalls its pieces and an atom did not.
+
+**Exactly one plan changed out of 213**, and that is the result: 24 of 25
+compounds have a half the course does not teach — `sân bay` is `sân` + `bay`,
+neither on the roster — and the condition leaving them alone is what says it is
+right. Room for hundreds later: 411 of the 2065 words have every part present,
+242 already ordered after them, **no new word needed**, only pulled off the
+frequency shelf.
+
+Verifying it exposed a second defect, fixed on its own: **all six question words
+were unaskable.** "And for what reason — what was that?" — a paraphrase gloss
+stacking a second question word onto the template. Natural glosses fixed it with
+no code change, because the rule framing a one-word gloss as "the word for why"
+already existed, and the code had already recorded this exact failure in a
+comment.
+
 `0012` — **make the numbers a thread that reaches money, in slices** —
 2026-08-17 — one strand said four facts in a single turn and now says one, with
 three `discrete` slices carrying 11-19, the reversal from 20, and the
