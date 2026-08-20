@@ -362,6 +362,27 @@ worth telling"). It was produced **zero times** across every logged session — 
 were paying the turn's guarantee for an ornament never delivered.
 **Change:** `tutor.py` → `_INTRODUCE`
 
+### 11d. A compound is asked for its halves before it is handed over
+When a word is made of two or more words the course **already teaches**, each
+part is recalled first, one question at a time, and only then does the word
+arrive. The construction's opening move, applied to a word.
+**Where:** code — `build_plan`, the atom branch; the parts come from
+`derive_pieces`, which already read them
+**Why:** `không sao` carries a hook saying *"it is the word for not, and the word
+for why, side by side"* — naming two words the learner has, and asking for
+neither. The fact was handed over where it could have been produced, which is the
+one move this course is built on. Meo, hearing it: *"j'aimerais bien qu'avant
+qu'on dise cette phrase on redemande c'est quoi not et c'est quoi sao"*.
+**Why it also matters to a rule:** the strand `ghép hai từ đã biết thành từ mới`
+says Vietnamese builds words out of words you know, and 17b exempts it from the
+draw because it "fires from the material". This is the material. A compound whose
+halves are never asked for demonstrates that rule to nobody.
+**Only when every part is taught, and the parts reconstruct the word exactly.**
+Of the course's 25 compounds, **24 have a half it does not teach** — `sân bay` is
+`sân` + `bay` and neither is on the roster — so asking would ask for a word that
+does not exist. Those plans are untouched, checked across all 213 items.
+**Change:** `tutor.py` → `build_plan`, the atom branch
+
 ### 11c. A true fact about the word comes BEFORE its presentation
 When an item carries a `hook`, it is said first, then the sentence giving the
 word. The fact earns the word, then the word lands.
