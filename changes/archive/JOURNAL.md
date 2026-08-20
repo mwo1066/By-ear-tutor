@@ -12,6 +12,26 @@ One line per archived change, in the form:
 
 ## Archived changes
 
+`0014` — **the gloss filler never saw the dictionary senses** — 2026-08-17 — the
+frequency shelf's own header says to run `fill_item_metadata.py` "to choose a
+gloss from the senses listed on each item". The word `senses` appeared **nowhere
+in that script**. Each shelf item was sent as its Vietnamese name, a part of
+speech, and an empty note — so 1915 words were to be glossed from the word alone,
+with the dictionary four lines away in the same file. `import_frequency_words.py`
+had refused to pick a sense itself, precisely because Wiktionary orders them by
+etymology ("là" comes back as "fine silk"), and left the choosing to a script
+that was never given the list.
+
+Buys a real choice on **1050 of 1915 (54%)**; 850 carry a single sense. And the
+measurement found what the proposal had missed: for sixteen items the sole sense
+is simply wrong with nothing better below it — `ngày` listed only as "Alternative
+letter-case form of Chúa nhật", `sáng` only as "a unisex given name" — and they
+are disproportionately the common words the course needs next. The instruction
+now names that pattern and says to override it.
+
+Not run: filling the 1915 is Meo's decision, and the words this course needs are
+still behind `0015`.
+
 `0013` — **a compound is asked for its halves before it is handed over** —
 2026-08-17 — `không sao` carried a hook saying *"it is the word for not, and the
 word for why, side by side"*, naming two words the learner has and asking for

@@ -112,6 +112,15 @@ INSTRUCTIONS = (
     "gloss is spoken aloud to the learner as the question. Write the meaning, not the grammar: "
     "'I / me', not 'first person pronoun'. For a construction with a placeholder, keep the "
     "placeholder in English: 'my name is ___'.\n\n"
+    "Where dictionary senses are listed, PICK ONE OF THEM rather than inventing a gloss. They come "
+    "from Wiktionary and are ordered by etymology, not by use, so the FIRST is regularly the "
+    "archaic or marginal reading: 'sáng' is listed first as 'a unisex given name' when it means "
+    "morning, 'ngày' as a letter-case variant when it means day. Read the whole list and take the "
+    "sense a beginner actually needs. Write your own only if no listed sense is usable, and some "
+    "are not: a lone sense reading 'a unisex given name', 'a surname', 'Alternative letter-case "
+    "form of ...' or 'onomatopoeic' is Wiktionary describing a homograph, not the word -- override "
+    "it. Sixteen shelf items are in exactly that state, among them ngày (day), sáng (morning), "
+    "vui (happy) and thành (to become).\n\n"
     "hook is almost always empty. Write one only when the item is a word the learner already "
     "knows in English, or a name that means something, or has an origin worth a sentence -- and only "
     "when you are certain it is true. A wrong fact spoken aloud is worse than a plain introduction.\n\n"
@@ -161,8 +170,17 @@ def _ask(api_key: str, targets: list[dict], all_names: list[str]) -> dict[str, d
 
 def _ask_batch(api_key: str, targets: list[dict], all_names: list[str]) -> dict[str, dict]:
     catalogue = "\n".join(f"{n}. {name}" for n, name in enumerate(all_names, 1))
+    # The senses come from Wiktionary via import_frequency_words.py, which
+    # deliberately does NOT pick one -- its docstring explains they are ordered
+    # by etymology, so the first is routinely the archaic reading ("là" as "fine
+    # silk", "tôi" as "slave; domestic servant"). It left the choosing to this
+    # script, and this script was never given the list: `senses` appeared nowhere
+    # here, so 1915 shelf items were being glossed from the Vietnamese word and a
+    # part of speech, with the dictionary four lines away in the same file.
     described = "\n\n".join(
-        f"{t['name']}\n  category: {t.get('category', '?')}\n  notes (Vietnamese): {t.get('description', '')}"
+        f"{t['name']}\n  category: {t.get('category', '?')}\n"
+        f"  dictionary senses: {' | '.join(t.get('senses') or []) or '(none listed)'}\n"
+        f"  notes (Vietnamese): {t.get('description', '')}"
         for t in targets
     )
     response = call_llm(
