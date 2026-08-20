@@ -3,11 +3,29 @@
 **What I am asking for:** cross out what is wrong, correct what is said
 differently. Tick what is good.
 
-**Why you and not me:** the frequency dictionary in this repo deliberately
-**excludes every word the course already teaches** — `import_frequency_words.py`
-skips them so an import never duplicates the course. So for the words below I
-have **no independent source at all**. Not one of them is confirmed by anything
-except whoever typed it.
+**This was written when there was no second source, and there is one now.**
+The frequency file excludes every word the course teaches — the importer skips
+them so an import never duplicates the course — which is why nothing here had
+ever been checked. But the importer also **cached the whole Wiktionary dump** on
+11 August, 40000 headwords, and nobody had looked a taught word up in it.
+
+```bash
+python check_glosses_against_dictionary.py
+```
+
+**142 of the 150 taught words are in it**, and 17 of the 25 compounds below.
+Their glosses hold. Four are worth your eye, where the dictionary says something
+slightly different:
+
+| word | the course says | the dictionary says |
+| --- | --- | --- |
+| `có thể` | to be able to | *(before verbs) possibly* |
+| `cảm ơn` | thank you | *to thank* |
+| `chúc mừng` | congratulations | *to congratulate* |
+| `Tạm biệt` | goodbye | *(formal or literary) farewell* |
+
+The eight absent ones are the sentences in part 2 — a dictionary has no entry for
+a sentence, which is the diagnosis confirming itself.
 
 We already caught one: the compounding rule illustrated itself with `đi học`,
 which is not in the 2000-word list, and no `đi` + something compound is — so it
