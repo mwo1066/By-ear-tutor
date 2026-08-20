@@ -1,6 +1,6 @@
 # The compounding rule is guessed, never produced
 
-**Status:** proposed
+**Status:** done
 **Opened:** 2026-08-17
 
 ## Why
@@ -74,13 +74,13 @@ the second licenses invention, which is what the note forbids.
 
 ## Tasks
 
-- [ ] give the strand `steps` with worked decompositions, taken from its own
+- [x] give the strand `steps` with worked decompositions, taken from its own
       authoring note: `đi + học`, `ăn + uống`
-- [ ] `_apply_material`: when the rule carries `steps` of that shape, the
+- [x] `_apply_material`: when the rule carries `steps` of that shape, the
       application asks for the MEANING of one compound instead of a sentence
-- [ ] the instruction must name the two words and say the language joins **those
+- [x] the instruction must name the two words and say the language joins **those
       two**, and must not invite the learner to build others
-- [ ] `SPEC.md` rule 13e
+- [x] `SPEC.md` rule 13e
 
 ## Verification
 
@@ -92,3 +92,42 @@ the second licenses invention, which is what the note forbids.
    checkable across all 34.
 3. `python simulate_session.py 8 --from="ghep hai tu"`, read: the learner is
    asked what a compound means and answers in English, never in Vietnamese.
+
+
+---
+
+## Result
+
+**Finished:** 2026-08-17 — commit `2c94b52`
+
+The application no longer contains the word "sentence". It reads:
+
+> *Now have them work one out. This rule is UNDERSTOOD, never produced: do NOT
+> ask them to build a word. Name its two halves by their English meanings, say
+> that Vietnamese joins THOSE TWO into a single word — never that any two words
+> can be joined — and ask what they think it means. Their answer is in English.
+> "No idea" is a fine answer.*
+
+**No word was added to the course.** The worked cases live in `steps`, a field
+that already existed and is already used this way by the address rule.
+
+**A regression, caught by the check that exists for it.** The first test for a
+comprehension rule was "every step contains an arrow", and the **address rule**
+carries steps too — `đàn ông hơn tuổi mình → anh`. It was flagged, and its
+application would have been told to name the two halves of a word that has none.
+The test now requires the arrow **and** a `+`, which is what says the left side is
+an assembly. Found by the proposal's own verification point 2, *no other feature
+moves* — the reason it was written down.
+
+**Where this leaves the strand.** Three defects, three fixed:
+
+```
+the gloss announced the fact and never showed it   fixed, content only
+it was said once and never came back               fixed by 0013, the hook
+the exercise asked for the opposite of the rule    fixed here
+```
+
+**Still true, and out of scope:** it fires on one compound. `không sao` is the
+only word in the course whose two halves it also teaches. Eight more are waiting
+on the frequency shelf, and 411 of the 2065 words in the files have every part
+present. None of that needs a word written — only a word moved.

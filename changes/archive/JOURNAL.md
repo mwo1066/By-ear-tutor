@@ -12,6 +12,24 @@ One line per archived change, in the form:
 
 ## Archived changes
 
+`0015` — **the compounding rule is guessed, never produced** — 2026-08-17 — its
+application asked for "ONE sentence that uses the rule", and a sentence cannot use
+a word-formation rule. Worse, the item's own note forbids the attempt: *only to
+understand, never to invent* — `cho nên` is `cho` + `nên` and means *therefore*,
+`bà con` is `bà` + `con` and means *relatives*, neither guessable. The turn now
+names two halves by their English meanings and asks what the word means; the
+answer is in English and "no idea" is a complete answer. No word added: the worked
+cases live in `steps`, a field the address rule already used the same way.
+
+Caught by its own verification: the first test, "every step has an arrow", also
+flagged the address rule, whose steps map a situation to a word — its application
+would have been told to name the two halves of a word that has none. The test
+needs the arrow **and** a `+`. SPEC rule 13e.
+
+With `0013` and a gloss that now shows the compounding instead of announcing it,
+the strand is finished — and fires on the one compound the course teaches both
+halves of.
+
 `0014` — **the gloss filler never saw the dictionary senses** — 2026-08-17 — the
 frequency shelf's own header says to run `fill_item_metadata.py` "to choose a
 gloss from the senses listed on each item". The word `senses` appeared **nowhere
