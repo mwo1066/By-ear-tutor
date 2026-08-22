@@ -141,3 +141,55 @@ stage 3.
 
 Nothing here needs a word invented: every item above is either already taught or
 sitting in `90_frequency_stock.toml` with a dictionary sense.
+
+---
+
+## Corrections from Meo, 2026-08-17 — lived, not read
+
+A source that outranks the dictionary for a spoken course, because it is what
+actually happened in a room.
+
+**1 · `chị` is reciprocal between women of similar age.** Meo, in a restaurant:
+his girlfriend and a woman of roughly the same age spoke Vietnamese, and **both
+used `chị` for the other.** Neither was older.
+
+The course teaches the opposite. Its table says `phụ nữ hơn tuổi mình → chị` — a
+woman **older than me** — and glosses `chị` as *"address for an older female"*.
+In the situation observed it would send the learner to `bạn` or `tôi`, and that
+is the commonest situation an adult learner meets: talking to an adult woman of
+roughly their own age.
+
+**This is the single most valuable correction on this page.** It says the axis is
+not raw age but something closer to adult standing: two adult women address each
+other as `chị` regardless of who is older by a year.
+
+**2 · `tôi` is not the safe default with strangers.** Meo: it comes across as
+impolite. The dictionary disagrees — *"formal in all dialects, regardless of the
+difference in status"* — but the course already agrees with Meo in its own words
+and then contradicts itself in the same sentence:
+
+> *"you have been saying tôi for I, and **Vietnamese people hardly ever say it in
+> real life**; … **keep tôi for strangers**, for formal moments, and whenever you
+> are not sure"*
+
+It states that nobody uses it, then makes it the fallback. One of the two halves
+has to go, and Meo's observation says which.
+
+**3 · `bạn` is both genders.** The course glosses it *"you"*, which is already
+neutral, so nothing to change — but it must not drift into being taught as a
+male or female word.
+
+**4 · `tớ` is out.** Rank 128, and Meo says it is not used enough to be worth a
+slot. It was never proposed for the course, only listed in the register ladder
+above; it stays there as recognition and nothing more.
+
+### What is still unresolved
+
+If `tôi` is not the fallback, **what is?** The plan cannot answer that from the
+dictionary: it lists registers, not what a foreigner should reach for when they
+cannot read someone's age. That is the next question for Meo, and it decides
+stage 1 of the whole plan.
+
+A PDF was supplied — `Vietnamese Choups.pdf` — and could not be read: its text
+sits in a subsetted font, so extraction returns glyph data. It needs pasting as
+text before anything in it can be used.
