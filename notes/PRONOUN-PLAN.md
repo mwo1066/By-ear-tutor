@@ -290,17 +290,30 @@ dì ↑ (1661) · cậu ↑ (47)
 
 nó ↑ (37) · mày ↑ (126) · tao ↑ (144)
 
-  RULE 8 — recognise, never say
-  You will hear them. nó about an elderly person is an insult. ✎ to write
+  RULE 8 — recognise, never say — and this is also where "it" lives
+  You will hear them: nó is rank 37. But the danger is not the word, it is who
+  it points at. The source: nó is normal for "children, close friends, animals,
+  people you're talking about casually", and the dictionary adds "(colloquial)
+  it, used to refer to inanimate objects". **nó about a thing is ordinary
+  Vietnamese. nó about a person you owe respect is an insult.** That split is
+  the rule; mày and tao have no safe side at all. ✎ to write
 
 chúng ta ↑ (51) · chúng tôi ✎ · họ ↑ (63)
 
   RULE 9 — "we", with you or without you
   chúng ta includes you, chúng tôi does not. The course can currently say
   neither "we" nor "they". ✎ to write
+
+các ✓            the plural marker — already taught
+
+  RULE 10 — "you" to more than one person
+  các in front of an address word: các anh, các bạn. The marker is taught and a
+  rule already says nouns do not change in the plural, but nothing says the
+  marker builds a plural YOU. This is the last gap against Meo's original list
+  of axes — I, you, he, she, it, we, you-plural. ✎ to write
 ```
 
-**The count:** one rule to rework (2), six to write (3, 4, 5, 6, 8, 9), eleven
+**The count:** one rule reworked (2, done), seven to write (3, 4, 5, 6, 8, 9, 10), eleven
 words to bring off the shelf, one to write (`chúng tôi`).
 
 **Left out on purpose:** `thím`, `mợ`, `dượng`, `má` — too rare for a beginner.
