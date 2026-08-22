@@ -232,6 +232,17 @@ description = "Quy tắc: 'năm' đổi thành 'lăm' khi đứng CUỐI một s
 pieces = ["lăm", "năm", "mười"]
 
 [[items]]
+type = "procedure"
+name = "thanh sắc và thanh nặng: giọng lên nhanh và giọng nặng"
+kind = "feature"
+nature = "strand"
+gloss = "two more tunes. One shoots up, like an English What??? — nước is one of those. The other is the lowest and the shortest, stopped in the throat, said with a really heavy voice — chị is one"
+category = "rules"
+language = "vi"
+description = "Cặp thứ hai (23 và 8 từ có ghi chú). Sắc: 'starts at a lower pitch, hangs flat for just a moment, and then quickly rises' — so sánh tiếng Anh: 'What???'. Nặng là thanh thấp nhất và ngắn nhất, kết bằng tắc thanh hầu; KHÔNG có so sánh tiếng Anh nào trong các nguồn đã đọc, chỉ có 'say a word with a really heavy and low voice'. Đừng hứa sáu so sánh khi chỉ có năm."
+pieces = ["nước", "chị"]
+
+[[items]]
 type = "concept"
 name = "tuổi"
 kind = "atom"

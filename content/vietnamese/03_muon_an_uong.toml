@@ -89,6 +89,17 @@ language = "vi"
 description = "Danh từ: đồ uống quen thuộc — mượn từ tiếng Pháp 'café', nghe là nhận ra ngay. 'Cà' thanh huyền, 'phê' thanh ngang. 'Tôi muốn uống cà phê.'"
 
 [[items]]
+type = "procedure"
+name = "thanh ngang và thanh huyền: giọng đều và giọng xuống"
+kind = "feature"
+nature = "strand"
+gloss = "two of the six tunes, and the two you meet most. One is flat, like the word sing in an ordinary English sentence — tên is one of those. The other falls away, like the Uhm you make when you agree with someone — chào is one. Say them one after the other and hear the drop"
+category = "rules"
+language = "vi"
+description = "Cặp thứ nhất, hai thanh thường gặp nhất trong khoá này (38 và 18 từ có ghi chú). Chọn chúng trước vì nguồn định nghĩa huyền BẰNG ngang: 'somewhat flat, like ngang, but drops in pitch gradually'. So sánh với tiếng Anh là chỉ dẫn cho MIỆNG, không phải cho nghĩa: 'sing' trong câu khẳng định cho ngang, 'Uhm' khi đồng ý cho huyền (ling-app.com). Không bao giờ nhận xét thanh điệu của người học — quy tắc 28."
+pieces = ["tên", "chào"]
+
+[[items]]
 type = "concept"
 name = "nước"
 kind = "atom"

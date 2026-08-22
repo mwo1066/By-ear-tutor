@@ -12,6 +12,28 @@ One line per archived change, in the form:
 
 ## Archived changes
 
+`0018` — **the tones: an announcement early, then two at a time** — 2026-08-17 —
+the course said tones exist and never said which. Measured first, which is what
+justified the work: of 1171 one-syllable words in the files, **600 — 51% — differ
+from another word only by tone**. `bạn` against `bán`, `là` against `lá`. The lone
+tone rule moved from slot 79 to slot 8 and became an announcement; three new rules
+teach the six two at a time, at 89, 147 and 189. The pairing is not arbitrary —
+one source defines the falling tone BY the flat one, and those two are also the
+commonest here; the two dippers are the rarest, the hardest, and the two the south
+merges, which is why a northern course keeps them apart. Each rule carries the
+English sound to imitate; five of the six have one, and the missing one is
+recorded so nobody writes a lesson promising six.
+
+`check_glosses_cite_only_taught_words` refused the first draft for naming the
+tones, and was right: this is a voice-only course, the learner never sees writing,
+and tone names are metalanguage they will never say. The glosses describe the
+tunes by sound and name a taught word carrying each.
+
+**Written after the code**, like `0017`. Ships with known debt on Meo's call: the
+three rules inherit an exercise pinned to an unrelated sentence, and no tone
+exercise can ever be scored anyway — `_bare` strips tone marks, so a tone answer
+matches its own twin by design.
+
 `0017` — **the plurals: one rule, not three** — 2026-08-17 — the course could say
 neither *we* nor *they* nor plural *you*; it taught the plural marker and not one
 plural pronoun. Meo refused three separate rules for nous/vous/ils, and the

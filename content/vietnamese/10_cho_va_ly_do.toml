@@ -192,3 +192,14 @@ category = "rules"
 language = "vi"
 description = "Quy tắc: đặt 'sẽ' NGAY TRƯỚC động từ để nói việc sắp tới. 'Tôi sẽ ăn cơm'. Vẫn cùng một chỗ trống với 'đã' và 'đang' — chỗ thứ ba và cuối cùng, không có gì mới ngoài chữ. Và như hai cái kia, không bắt buộc: 'ngày mai' một mình là đủ."
 pieces = ["sẽ", "ăn"]
+
+[[items]]
+type = "procedure"
+name = "thanh hỏi và thanh ngã: hai giọng võng"
+kind = "feature"
+nature = "strand"
+gloss = "the last two tunes, and the hardest. One dips down then comes back up, like an English really? said a bit faster — tuổi is one of those. The other also rises, but it breaks in the middle, as if someone punched you in the belly while you were speaking — nữa is one"
+category = "rules"
+language = "vi"
+description = "Cặp cuối, hai thanh hiếm nhất trong khoá (7 và 2 từ có ghi chú) và khó nhất. Nguồn gọi cả hai là 'dipping tones'. Hỏi: 'similar to really? but a bit faster'. Ngã: 'similar to when you say something at a high tone but someone punches your belly so your voice is broken' — chỗ vỡ giọng chính là điều tách nó khỏi sắc. QUAN TRỌNG: ở miền Nam hai thanh này ĐÃ NHẬP làm một; khoá này dạy giọng Bắc nên giữ riêng."
+pieces = ["tuổi", "nữa"]

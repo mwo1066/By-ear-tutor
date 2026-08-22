@@ -59,6 +59,17 @@ language = "vi"
 description = "Từ xưng hô với đàn ông bằng tuổi hoặc hơn tuổi mình một chút — nghĩa gốc là 'anh trai'. Thanh ngang. Dùng cho cả người nói lẫn người nghe tùy vai: người lớn tuổi hơn tự xưng 'anh'; người nghe lớn tuổi hơn được gọi là 'anh'. 'Chào anh! Anh tên là gì?'"
 
 [[items]]
+type = "procedure"
+name = "thanh điệu: nghe và bắt chước"
+kind = "feature"
+nature = "strand"
+gloss = "Vietnamese changes the meaning of a word by the pitch you say it at — so when Minh speaks, copy the tune and not only the sounds. Which tunes there are comes later; for now, just listen for them"
+category = "rules"
+language = "vi"
+description = "ANNOUNCE, không dạy. Đặt rất sớm để người học biết ngay rằng độ cao giọng mang nghĩa, và biết rằng sẽ học cụ thể sau. Người học KHÔNG nhìn thấy chữ viết ở đây, nên đừng mô tả dấu — sáu cái dấu chỉ có ích khi có chữ trước mắt. Không bao giờ nhận xét về thanh điệu của người học: tuteur không nghe được họ, chỉ đọc bản ghi gần đúng (quy tắc 28)."
+pieces = ["tôi", "là"]
+
+[[items]]
 type = "concept"
 name = "chị"
 kind = "atom"
@@ -202,14 +213,3 @@ category = "rules"
 language = "vi"
 description = "Quy tắc: thêm 'ạ' ở cuối câu khi nói với người lớn tuổi hoặc trong hoàn cảnh trang trọng. 'Chào anh ạ.' 'Cảm ơn ạ.' Không đổi nghĩa, chỉ đổi thái độ — và người Việt để ý điều này ngay."
 pieces = ["ạ", "cảm ơn"]
-
-[[items]]
-type = "procedure"
-name = "thanh điệu: nghe và bắt chước"
-kind = "feature"
-nature = "strand"
-gloss = "the same sounds said at a different pitch are different words — so copy the pitch, not just the sounds"
-category = "rules"
-language = "vi"
-description = "Quy tắc duy nhất về thanh điệu trong khoá học chỉ bằng giọng nói. Tiếng Việt dùng độ cao giọng để phân biệt từ: cùng một chuỗi âm, đổi độ cao là đổi hẳn nghĩa. Người học KHÔNG nhìn thấy chữ viết ở đây, nên đừng mô tả dấu — sáu cái dấu chỉ có ích khi có chữ trước mắt. Điều cần nói: khi nghe Minh, nghe cả độ cao, không chỉ các âm. Không bao giờ nhận xét về thanh điệu của người học: tuteur không nghe được họ."
-pieces = ["tôi", "là"]
