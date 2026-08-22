@@ -14,7 +14,7 @@ type = "procedure"
 name = "xưng hô thay đổi theo người đối diện"
 kind = "feature"
 nature = "strand"
-gloss = "Vietnamese swaps the word for 'I' depending on who you are talking to — you will meet those soon, and tôi is always safe in the meantime"
+gloss = "Vietnamese swaps the word for 'I' depending on who you are talking to — you will meet those words soon, and tôi will carry you until then, though it keeps its distance and a Vietnamese person would rarely pick it"
 category = "rules"
 language = "vi"
 description = "Quy tắc à dire TÔT, ngay sau 'tôi'. Người học vừa nhận 'tôi' như thể nó tương đương với 'I' trong tiếng Anh — nó không phải. Tiếng Việt đổi từ xưng hô theo quan hệ giữa hai người nói: cùng một người vừa là 'anh', vừa là 'em', tuỳ đối diện là ai. KHÔNG dạy bảng chọn ở đây — các từ đó chưa được dạy. Chỉ nói ba điều: điều này tồn tại, các từ sẽ đến sớm, và 'tôi' không bao giờ sai trong lúc chờ. Mục đích là để người học không xây thói quen 'tôi = I' rồi phải défaire sau."
@@ -81,11 +81,11 @@ type = "procedure"
 name = "cách chọn từ xưng hô"
 kind = "feature"
 nature = "strand"
-gloss = "you have been saying tôi for I, and Vietnamese people hardly ever say it in real life; which word you use depends on who is in front of you, so with Minh — the Vietnamese voice, a man older than you — you are em and he is anh, while your tutor is a woman and would never be anh; keep tôi for strangers, for formal moments, and whenever you are not sure"
+gloss = "which word you use depends on who is in front of you, so with Minh — the Vietnamese voice, a man older than you — you are em and he is anh, while your tutor is a woman and would never be anh. When you cannot tell someone's age, guess OLDER: anh or chị is respectful, and em would be presumptuous."
 category = "rules"
 language = "vi"
 description = "Quy tắc chọn từ xưng hô theo tuổi và giới tính của người đối diện so với mình. Cùng một người có thể là 'anh' với người này và 'em' với người kia — xưng hô đổi theo từng cặp người nói chuyện. Người mới học chọn sai không ai giận, nhưng chọn đúng nghe ấm và tự nhiên hơn nhiều so với 'tôi' — 'tôi' đúng ngữ pháp nhưng lạnh."
-steps = ["đàn ông hơn tuổi mình → anh", "phụ nữ hơn tuổi mình → chị", "người ít tuổi hơn mình → em", "chưa chắc, hoặc trang trọng → bạn / tôi"]
+steps = ["đàn ông hơn tuổi mình → anh", "phụ nữ hơn tuổi mình → chị", "người ít tuổi hơn mình → em", "không rõ tuổi → đoán LỚN HƠN: anh / chị"]
 pieces = ["anh", "chị", "em"]
 
 [[items]]
