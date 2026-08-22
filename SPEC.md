@@ -279,6 +279,20 @@ decision — keeping them costs nothing, relying on them would be a mistake.
 **Change:** the item files; `fill_item_metadata.py` fills the missing fields;
 `tutor.py` → `speakable`, `_ask_for`
 
+### 10c-bis. A rule is given its own declared material
+When a rule's application draws on a table the content declares, the items
+searched include **the rule itself**, not only what was taught before it.
+**Where:** code — `build_plan`, the `address_situations` call
+**Why:** the address rule declares the address table and was the one item denied
+it. `build_plan` receives `known` — what is already taught — and the rule being
+taught is not in it. Measured: `address_situations` returned four rows when the
+rule was included and none when it was not, so the rule fell through to the
+generic application and asked the learner to say *"anh chị"*, gluing together the
+two words it exists to teach them to choose between. **Every later address rule
+worked**, because by then the table was behind them; only the rule that owns it
+was refused.
+**Change:** `tutor.py` → `build_plan`
+
 ### 10c. A blank in a gloss sits at the END, and the question trails into it
 `speakable` drops a trailing blank rather than filling it, so "My name is ___"
 is asked as *"So, my name is…?"*. A blank anywhere else still has to be filled

@@ -85,7 +85,7 @@ gloss = "which word you use depends on who is in front of you, so with Minh — 
 category = "rules"
 language = "vi"
 description = "Quy tắc chọn từ xưng hô theo tuổi và giới tính của người đối diện so với mình. Cùng một người có thể là 'anh' với người này và 'em' với người kia — xưng hô đổi theo từng cặp người nói chuyện. Người mới học chọn sai không ai giận, nhưng chọn đúng nghe ấm và tự nhiên hơn nhiều so với 'tôi' — 'tôi' đúng ngữ pháp nhưng lạnh."
-steps = ["đàn ông hơn tuổi mình → anh", "phụ nữ hơn tuổi mình → chị", "người ít tuổi hơn mình → em", "không rõ tuổi → đoán LỚN HƠN: anh / chị"]
+steps = ["a man older than you → he is anh, you are em", "a woman older than you → she is chị, you are em", "someone younger than you → they are em, and you are anh if you are a man, chị if you are a woman", "you cannot tell how old they are → guess older, anh or chị, never em"]
 pieces = ["anh", "chị", "em"]
 
 [[items]]

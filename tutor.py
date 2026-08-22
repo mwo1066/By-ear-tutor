@@ -1195,7 +1195,10 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item],
         address_pieces = sum(1 for p in item.pieces if p in ADDRESS_TERMS)
         about_address = address_pieces >= 2 and address_pieces * 2 >= len(item.pieces)
         profile = learner_module.load(LEARNER_PATH)
-        rows = profile.address_rows() or address_situations(known or [])
+        # The rule that OWNS the table is the one being taught, so it is not in
+        # `known` -- and every later address rule got its situation exercises
+        # while this one fell through to "say anh and chị glued together".
+        rows = profile.address_rows() or address_situations((known or []) + [item])
         if about_address and rows:
             situations = "; ".join([learner_module.pair_with_minh()] + rows)
             for rung in ("someone this rule is easiest on", "a different person entirely",
