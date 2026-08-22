@@ -332,3 +332,55 @@ các ✓            the plural marker — already taught
 words to bring off the shelf, one to write (`chúng tôi`).
 
 **Left out on purpose:** `thím`, `mợ`, `dượng`, `má` — too rare for a beginner.
+
+---
+
+## From the academic paper — Nguyen & Le Ho, *Pragmatics* 23:4 (2013)
+
+Supplied by Meo as `vietnamese for choups.pdf`. **It does not touch the plural
+pronouns at all** — zero mentions of `chúng ta`, `chúng tôi`, `các` or `họ` in
+302000 characters. It is a study of requests and politeness. But it says three
+things about the address system that the course does not, and one of them is a
+rule in its own right.
+
+**1 · Address terms are obligatory, not strategic.** The paper's contrast with
+English is exact:
+
+> *"a speaker can make choice of address terms either to mark group identity
+> (e.g. mate, buddy, brother, sister) or to give [deference] (e.g. Sir) to the
+> hearer … the usage is merely [driven by] intentions. **In contrast, in the
+> Vietnamese language address terms are an indispensable index of social
+> relationships** and express respect for and conformity to power and the social
+> hierarchy. Their usage [is dictated by] social role and obligations rather than
+> by his or her intention."*
+
+In English you pick an address word **to do something**. In Vietnamese you use
+one **because your position requires it**. That is a better opening for the whole
+strand than anything currently written: it is not politeness, it is grammar with
+a social subject.
+
+**2 · The mechanism has a name: fictive kinship.** *"address terms using fictive
+kinship terms"* — you address a stranger as family. Worth having as the one-line
+summary of why `chị` works on someone you have never met.
+
+**3 · Leaving the address term OUT has a name, and it is a rule the course
+lacks.** The paper: speaking that way *"could severely violate social norms,
+especially when one communicates with his or her superiors in the formal
+context."* The Vietnamese is `nói trống không`, and the dictionary confirms it
+independently:
+
+```
+trống không   "(figuratively, of speaking, especially that of a child or a
+               junior) without proper pronouns, kinship terms"
+```
+
+So omission is not a smaller mistake than choosing wrong — **it marks you as a
+child.** And it is the mistake a European learner makes by default, because
+English lets you say "can you help me" with no address term at all.
+
+  RULE 11 — you cannot leave it out
+  A sentence with no address term is `nói trống không`, and the dictionary says
+  it is how a child or a junior speaks. English allows "can you help me" with
+  nobody named; Vietnamese does not. ✎ to write — and it may belong first,
+  before which word to choose, since a learner gets this wrong by default rather
+  than by mistake.
