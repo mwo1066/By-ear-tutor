@@ -84,6 +84,48 @@ in the files at all; `chúng ta` is on the shelf at rank 51.**
 **7 — talking about someone.** `anh ấy`, `chị ấy`. *The machinery exists — `ấy`
 is taught and there is a rule for it.*
 
+## The second axis: politeness
+
+Age and family decide **which** person-word. Register decides **how far down or
+up** you are speaking, and it is a separate scale — the dictionary marks it on
+every entry. Read from the pronoun section, not the first sense: Wiktionary's
+first sense for `tôi` is *"slave; domestic servant"*, for `mình` *"a torso"*, for
+`mày` *"eyebrows"*. Taking sense one here would teach anatomy.
+
+**Saying "I":**
+
+```
+tao     rank 144   "(impolite, familiar, disrespectful or hostile) I/me"
+tớ      rank 128   "(familiar, chiefly Northern Vietnam) I; me"
+mình    TAUGHT     "(friendly, polite) I/me (used when talking to someone
+                    roughly of the speaker's age)"
+tôi     TAUGHT     "(formal in all dialects) I/me (used in formal contexts,
+                    regardless of the difference in status)"
+```
+
+**Saying "you":**
+
+```
+mày     rank 126   "(impolite, familiar, disrespectful or hostile) you"
+bạn     TAUGHT     "you (used for young person in their twenties)"
+anh…    TAUGHT     the kinship words — respectful because they place the person
+ngài    rank 192   "(highly formal, respectful) you"
+quý vị  rank 1617  "(polite, respectful) you"
+```
+
+**What this says for the course.** The learner already has the two ends they
+need: `tôi` (never wrong, sometimes stiff) and `mình` (friendly, same age). The
+warm middle is covered. What is missing is not more politeness — it is knowing
+that `tao` and `mày` exist and what they carry, because ranks 144 and 126 mean
+they will be heard.
+
+**And politeness is not only in the pronoun.** The course already teaches the
+other half: `ạ` — *"(polite) a particle at the end of the sentence to express
+formal politeness, especially to seniors"* — plus `dạ`, `vâng`, `ơi` and `xin`.
+The strand `lịch sự nằm trong từ xưng hô, không phải trong giọng` states it:
+politeness is the word you pick plus two small words, never a tone of voice.
+**That part of the system is done.**
+
 **8 — one warning, never a production.** `nó` is *"(impolite, colloquial) he;
 him; she; her"*; `mày` is *"(impolite, familiar, disrespectful or hostile) you"*;
 `tao` the same for I. They are ranks 37, 126 and 144 — the learner **will** hear
