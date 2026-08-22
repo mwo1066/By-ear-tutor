@@ -30,12 +30,35 @@ ngã     "drops a bit, then rises" — and breaks in the         2
 The counts are how often each appears among the annotated items in **this**
 course, not in the language.
 
-## The English comparison, and the trap in it
+## The English sound to imitate, tone by tone
 
-The useful half: English speakers **already** move pitch — the source uses *dude*
-said eight different ways. So nobody has to learn to make the sounds.
+**This is the useful kind of comparison, and it is what Meo meant** — not "this
+tone means what a rising intonation means in English", but "make the shape your
+mouth already makes here". Quoted from `ling-app.com/blog/vietnamese-tones`:
 
-The trap, and it is why this cannot be taught carelessly:
+```
+ngang   "similar to 'sing' in an affirmative sentence in English"
+huyền   "similar to 'Uhm' in English when you agree with someone"
+sắc     "similar to 'What???' in English"
+hỏi     "similar to 'really?' but a bit faster"
+ngã     "similar to when you say something at a high tone but someone punches
+         your belly so your voice is broken"
+nặng    no comparison offered — only "say a word with a really heavy and low
+         voice"
+```
+
+Five of the six have one. `nặng` does not, in this source or the others read —
+worth knowing before writing a lesson that promises six.
+
+`ngã`'s is the best of them: the punch in the belly is exactly the glottal break
+that separates it from `sắc`, and it is a body instruction rather than a
+description.
+
+## The trap, which is a different thing
+
+English speakers **already** move pitch — one source uses *dude* said eight
+different ways. So nobody has to learn to make the sounds. What they have to learn
+is that it means something else here:
 
 > *"Vietnamese uses tones to change the meaning of the word. English does not.
 > In English, people use intonation to show feelings."*
