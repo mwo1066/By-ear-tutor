@@ -23,7 +23,7 @@ are speaking to. `chúng tôi` decomposes by itself, because rule 11d from that
 morning fires the moment both halves are taught. Promoting off the frequency shelf
 worked first time — the importer already skips what the course teaches, so the
 operation I twice called impossible was never blocked. **Written after the code:
-the ritual was skipped and the folder made afterwards.** Not verified by voice.
+the ritual was skipped and the folder made afterwards.** Not verified by voice. **Revised the same day by the native speaker** — see the addendum: `chúng` dropped as a taught word, `các` found to swing three ways (`các cháu` is *we* to an elderly person), `họ` found not to mean "they" at all, and the course recorded as teaching NORTHERN Vietnamese.
 
 `0016` — **the address rule teaches the pair, and can see its own table** —
 2026-08-17 — in Vietnamese, choosing what to call someone chooses what you call

@@ -97,3 +97,47 @@ is worth saying to a French speaker who goes looking for the difference.
 
 **No session has reached slot 131.** Everything above is offline: the plans build,
 the smoke test passes at exit 0, `check_roster` is clean. Nobody has heard it.
+
+
+---
+
+## Addendum, same day — the native speaker changed it after archiving
+
+Three corrections arrived after this folder was closed. Recorded here rather than
+in a new folder, because they revise this change rather than follow it.
+
+**`chúng` is gone as a taught word.** Her call: *"forget the word chúng and
+explain the word các more specifically."* The dictionary backs it — `chúng` alone
+is *"they/them (used for animals)"* and *"for people whom one holds in low
+regard"* — so teaching it as a detachable particle invites `chúng anh`, which is
+not a thing. `chúng tôi` and `chúng ta` are taught as **whole words**, and the
+rule built on the particle is deleted. Side effect: `chúng tôi` no longer
+decomposes, since rule 11d needs both halves taught.
+
+**`các` is not "you, plural".** Her sentence settled it:
+
+> *Các cháu không thích ăn cái này* — said to an elderly person, meaning **we**,
+> me and my friends, do not want to eat this.
+
+So `các` + an address word **swings three ways exactly as the singular does**:
+`các cháu` is *we* to an elderly person, *you* to a group of children, *them* when
+speaking about either. Direction of the conversation decides, not the word. That
+is the pair rule one level up, and the rule now says so in her words. `các` also
+gained its own explanation and its own table, on her request that it be taught as
+a tool rather than a line inside another rule.
+
+**`họ` is not "they".** *"Stop thinking họ is only they."* It works for ONE person
+and its job is not number at all — it is how you speak about someone when you do
+not know them, or will not commit to their age or gender. The escape hatch from
+the address system. Re-glossed *"someone you do not know, one or several"*.
+
+**And a project constraint that had never been written down.** *"Don't forget
+that we're learning north Vietnamese"*, said after I asked about southern usage.
+It is now the first section of `STATUS.md`, because it settles choices that are
+otherwise a coin toss — `nghìn` not `ngàn`, `quả` not `trái` — and decides what to
+do with any dictionary entry marked for one region.
+
+**Still open, parked not answered:** `các` against `những`. The course claims
+`những` means part of a group where `các` means all of it; the dictionary gives
+both the same definition, and `những` is rank 21 where `các` is not in the top
+2000.
