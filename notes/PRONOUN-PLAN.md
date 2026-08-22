@@ -384,3 +384,52 @@ English lets you say "can you help me" with no address term at all.
   nobody named; Vietnamese does not. ✎ to write — and it may belong first,
   before which word to choose, since a learner gets this wrong by default rather
   than by mistake.
+
+
+---
+
+## Rules 9 and 10 — done, 2026-08-17
+
+**They collapsed into one idea, and the dictionary wrote it.** `chúng`'s first
+listed sense is *"pluralizing particle for pronouns"* and `các`'s is *"Plural
+marker"*. So nous, vous and ils are not three categories:
+
+> **Vietnamese has no plural pronouns. It puts a word in front of a singular one.**
+> `chúng` before a pronoun, `các` before an address word. `họ` is the one
+> exception, already plural.
+
+```
+tôi → chúng tôi     nó  → chúng nó     anh → các anh
+ta  → chúng ta      mày → chúng mày    bạn → các bạn
+```
+
+Taught as slots 131-136, with `các` already at 41:
+
+```
+131  chúng        the word you put in front of a pronoun to make it plural
+132  RULE         chúng before a pronoun, các before an address word
+133  chúng tôi    we, not counting you
+134  chúng ta     we, counting you
+135  RULE         which "we" — with you in it or not
+136  họ           they
+```
+
+**And `chúng tôi` decomposes on its own.** Its halves are `chúng` and `tôi`, both
+taught by then, so rule 11d fires without anyone arranging it:
+
+```
+Once more — what was the word you put in front of a pronoun to make it plural?
+And again — what was I or me?
+The Vietnamese for we, not counting you is chúng tôi.
+```
+
+`chúng ta` does not, because `ta` alone is archaic and not taught. The code
+notices and introduces it plainly.
+
+**Set aside, on Meo's call:** `chúng nó`, too specific. `họ` is the word for when
+you know neither the gender nor the age — it does not distinguish *ils* from
+*elles*, which is worth saying to a French speaker looking for the difference.
+
+**Careful with `họ`:** the frequency shelf lists only its NOUN senses — *"family
+name; surname", "extended family"*. The pronoun sense is in the Wiktionary dump
+under `pron`. Taking the shelf's first sense would have taught "surname".

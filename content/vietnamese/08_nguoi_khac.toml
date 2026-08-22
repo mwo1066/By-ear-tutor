@@ -159,3 +159,65 @@ category = "rules"
 language = "vi"
 description = "Quy tắc: đặt 'đang' NGAY TRƯỚC động từ để nói việc đang xảy ra lúc này. 'Tôi ăn cơm' thành 'Tôi đang ăn cơm'. Đúng cái chỗ trống mà 'đã' đã dùng — không phải chỗ mới, chỉ đổi chữ. Biết một chỗ là biết cả ba."
 pieces = ["đang", "ăn"]
+
+[[items]]
+type = "concept"
+name = "chúng"
+kind = "atom"
+gloss = "the word you put in front of a pronoun to make it plural"
+category = "function_word"
+language = "vi"
+description = "Tiểu từ số nhiều dành cho ĐẠI TỪ — từ điển ghi đúng như vậy: 'pluralizing particle for pronouns'. Đặt trước tôi, ta, nó là thành số nhiều. Khác với 'các', vốn đứng trước danh từ và từ xưng hô. Đứng một mình 'chúng' cũng có nghĩa 'chúng nó', nhưng nghĩa đó mang sắc thái coi thường — không dạy."
+
+[[items]]
+type = "concept"
+name = "chúng tôi"
+kind = "atom"
+gloss = "we, not counting you"
+category = "function_word"
+language = "vi"
+description = "Số nhiều LOẠI TRỪ người nghe: 'chúng tôi' là tôi và những người khác, KHÔNG có bạn. Từ điển: 'we/us (exclusive); compare chúng ta (including you)'. Tiếng Anh và tiếng Pháp không phân biệt điều này, nên đây là chỗ người học phải CHỌN, không thể tránh."
+
+[[items]]
+type = "concept"
+name = "chúng ta"
+kind = "atom"
+gloss = "we, counting you"
+category = "function_word"
+language = "vi"
+description = "Số nhiều BAO GỒM người nghe: 'chúng ta đi' nghĩa là cả bạn cùng đi. Từ điển: 'we/us (inclusive); compare chúng tôi (not including you)'. Đây là từ dùng khi rủ ai đó."
+
+[[items]]
+type = "concept"
+name = "họ"
+kind = "atom"
+gloss = "they"
+category = "function_word"
+language = "vi"
+description = "Đại từ ngôi thứ ba số nhiều, dùng cho NGƯỜI. Từ điển (mục đại từ): 'they/them (used in formal situations or towards people)'. Không phân biệt giống — 'họ' dùng cho cả nam lẫn nữ, nên người học không cần đoán giới tính. Chú ý: 'họ' còn là danh từ nghĩa 'họ hàng, dòng họ' — đó là từ khác."
+
+[[items]]
+type = "procedure"
+name = "số nhiều: chúng đứng trước đại từ, các đứng trước từ xưng hô"
+kind = "feature"
+nature = "discrete"
+tier = 1
+after = "chúng"
+gloss = "Vietnamese has no plural pronouns — it puts a word in front of a singular one: chúng before a pronoun, các before an address word"
+category = "rules"
+language = "vi"
+description = "Quy tắc gộp cả 'chúng tôi', 'các anh' và 'họ' vào MỘT ý: tiếng Việt không có đại từ số nhiều riêng, mà đặt một từ chỉ số nhiều ở phía trước. Từ điển ghi rõ: 'chúng' là 'pluralizing particle for pronouns', 'các' là 'plural marker'. Vì vậy: tôi → chúng tôi, nó → chúng nó, anh → các anh, bạn → các bạn. Cùng cơ chế ghép hai từ đã biết mà người học đã gặp. Ngoại lệ duy nhất: 'họ' vốn đã là số nhiều."
+pieces = ["chúng", "các"]
+
+[[items]]
+type = "procedure"
+name = "chúng tôi hay chúng ta: có bạn trong đó không?"
+kind = "feature"
+nature = "discrete"
+tier = 1
+after = "chúng ta"
+gloss = "there is no neutral we — chúng tôi leaves the person you are talking to out, chúng ta puts them in, and you must pick one"
+category = "rules"
+language = "vi"
+description = "Tiếng Việt buộc phải chọn: 'chúng tôi' KHÔNG gồm người nghe, 'chúng ta' CÓ gồm người nghe. 'Chúng ta đi' là rủ; 'chúng tôi đi' là thông báo. Tiếng Anh và tiếng Pháp gộp cả hai vào một chữ, nên người học sẽ quên mất là có một lựa chọn phải làm. Đây không phải quy tắc về số nhiều mà về việc người nghe có ở trong nhóm hay không."
+pieces = ["chúng tôi", "chúng ta"]

@@ -140,17 +140,6 @@ description = ""
 
 [[items]]
 type = "concept"
-name = "chúng ta"
-kind = "atom"
-gloss = ""
-category = "pronoun"
-language = "vi"
-frequency_rank = 51
-senses = ["we/us ; compare chúng tôi", "you guys; y'all"]
-description = ""
-
-[[items]]
-type = "concept"
 name = "chỉ"
 kind = "atom"
 gloss = ""
@@ -191,17 +180,6 @@ category = "adverb, determiner, particle"
 language = "vi"
 frequency_rank = 60
 senses = ["which", "come on; come on now", "not"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "họ"
-kind = "atom"
-gloss = ""
-category = "adjective, noun"
-language = "vi"
-frequency_rank = 63
-senses = ["family name; surname", "extended family", "family", "being a cousin"]
 description = ""
 
 [[items]]
@@ -576,17 +554,6 @@ category = "adverb"
 language = "vi"
 frequency_rank = 111
 senses = ["do; let's", "still; yet"]
-description = ""
-
-[[items]]
-type = "concept"
-name = "chúng"
-kind = "atom"
-gloss = ""
-category = "particle, pronoun"
-language = "vi"
-frequency_rank = 112
-senses = ["pluralizing particle for pronouns", "they/them", "To hit"]
 description = ""
 
 [[items]]
