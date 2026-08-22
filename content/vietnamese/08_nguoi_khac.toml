@@ -162,21 +162,12 @@ pieces = ["đang", "ăn"]
 
 [[items]]
 type = "concept"
-name = "chúng"
-kind = "atom"
-gloss = "the word you put in front of a pronoun to make it plural"
-category = "function_word"
-language = "vi"
-description = "Tiểu từ số nhiều dành cho ĐẠI TỪ — từ điển ghi đúng như vậy: 'pluralizing particle for pronouns'. Đặt trước tôi, ta, nó là thành số nhiều. Khác với 'các', vốn đứng trước danh từ và từ xưng hô. Đứng một mình 'chúng' cũng có nghĩa 'chúng nó', nhưng nghĩa đó mang sắc thái coi thường — không dạy."
-
-[[items]]
-type = "concept"
 name = "chúng tôi"
 kind = "atom"
 gloss = "we, not counting you"
 category = "function_word"
 language = "vi"
-description = "Số nhiều LOẠI TRỪ người nghe: 'chúng tôi' là tôi và những người khác, KHÔNG có bạn. Từ điển: 'we/us (exclusive); compare chúng ta (including you)'. Tiếng Anh và tiếng Pháp không phân biệt điều này, nên đây là chỗ người học phải CHỌN, không thể tránh."
+description = "Số nhiều LOẠI TRỪ người nghe: 'chúng tôi' là tôi và những người khác, KHÔNG có bạn. Từ điển: 'we/us (exclusive); compare chúng ta (including you)'. Tiếng Anh và tiếng Pháp không phân biệt điều này, nên đây là chỗ người học phải CHỌN. Dạy như MỘT từ trọn vẹn: 'chúng' đứng riêng mang sắc thái coi thường, nên không dạy tách ra (quyết định của Meo, 2026-08-17)."
 
 [[items]]
 type = "concept"
@@ -195,19 +186,6 @@ gloss = "someone you do not know, one or several"
 category = "function_word"
 language = "vi"
 description = "KHÔNG phải chỉ là 'they'. Người bản ngữ (2026-08-17): dùng 'họ' khi nói VỀ một người hoặc nhiều người mà mình không quen, hoặc không muốn nói rõ tuổi và giới tính. Vì vậy 'họ' dùng được cho MỘT người, không bắt buộc số nhiều — đây là chỗ bản dịch tiếng Anh 'they' làm hiểu sai. Từ điển cũng ghi 'towards people whom the speaker feels neutral about'. Đây là cách TRÁNH phải chọn từ xưng hô khi chưa đủ thông tin — công cụ rất hữu ích cho người mới học."
-
-[[items]]
-type = "procedure"
-name = "số nhiều: chúng đứng trước đại từ, các đứng trước từ xưng hô"
-kind = "feature"
-nature = "discrete"
-tier = 1
-after = "chúng"
-gloss = "Vietnamese has no plural pronouns — it puts a word in front of a singular one: chúng before a pronoun, các before an address word"
-category = "rules"
-language = "vi"
-description = "Quy tắc gộp cả 'chúng tôi', 'các anh' và 'họ' vào MỘT ý: tiếng Việt không có đại từ số nhiều riêng, mà đặt một từ chỉ số nhiều ở phía trước. Từ điển ghi rõ: 'chúng' là 'pluralizing particle for pronouns', 'các' là 'plural marker'. Vì vậy: tôi → chúng tôi, nó → chúng nó, anh → các anh, bạn → các bạn. Cùng cơ chế ghép hai từ đã biết mà người học đã gặp. Ngoại lệ duy nhất: 'họ' vốn đã là số nhiều."
-pieces = ["chúng", "các"]
 
 [[items]]
 type = "procedure"
