@@ -225,3 +225,82 @@ family nouns where the course needs them as address words:
 dictionary lists each in **both directions** — `cháu` is *"I/me, your nephew"*
 and *"you, my nephew"* — so a single gloss cannot say what the word does without
 saying which end of the conversation you are on. They need Meo.
+
+---
+
+# The validated sequence
+
+**Approved by Meo, 2026-08-17.** Rule, then the words, then the next rule.
+`✓` taught · `↑` on the frequency shelf · `✎` to write.
+
+```
+tôi ✓            I, provisional
+anh ✓            an older man
+
+  RULE 1 — the word for "I" changes with who is in front of you
+  ✓ exists. Corrected today: tôi carries you, but it keeps its distance and a
+  Vietnamese person would rarely pick it. Meo: it needs that disclaimer.
+
+chị ✓            an older woman
+em ✓             a younger person
+
+  RULE 2 — THE PAIR
+  Choosing their word chooses yours. anh → em, chị → em, em → anh/chị.
+  When you cannot read the age, go one step up. Never across a generation.
+  ← the big one. The table is already coded in learner.py and unreachable.
+
+bạn ✓            a friend, or someone your own age
+
+  RULE 3 — which word you pick places the person
+  A nuance rule, not a big one — "un peu de détail ou de variance".
+  Built on Meo's two lived cases and nothing else:
+    · a restaurant: two women who did not know each other's age, and BOTH said
+      chị. Not bạn. Age unknown is not a reason to level, it is a reason to
+      respect.
+    · never call a chị a cô — that is not more polite, it ages her.
+  And the framing must be careful: **em does not diminish anyone who IS
+  younger** — there it is simply the right word. It only lands badly when
+  applied to someone who is not. bạn is for friends, and that is all it is.
+  ✎ to write
+
+cô ✓ · chú ✓     a woman / a man your parents' age
+bác ↑ (594)      a parent's older sibling
+cháu ✓           ← the reciprocal of all three
+
+  RULE 4 — the generation above
+  cô, chú, bác → you are cháu. ✎ to write
+
+ông ✓ · bà ✓     grandparents' generation
+nội ↑ (1422) · ngoại ↑ (1450)
+
+  RULE 5 — father's side or mother's side
+  ông nội against ông ngoại. ✎ to write
+
+ba ✓ · bố ↑ (160) · mẹ ↑ (109)
+con ✓            ← the reciprocal
+
+  RULE 6 — with your parents
+  ba / mẹ → you are con. ✎ to write
+
+dì ↑ (1661) · cậu ↑ (47)
+
+  RULE 7 — talking ABOUT someone: anh ấy, chị ấy
+  ✓ EXISTS as a discrete, tier 1 — do not touch. Same for gọi ai đó: xưng hô
+  + ơi (discrete, tier 1) and ạ (discrete, tier 2).
+
+nó ↑ (37) · mày ↑ (126) · tao ↑ (144)
+
+  RULE 8 — recognise, never say
+  You will hear them. nó about an elderly person is an insult. ✎ to write
+
+chúng ta ↑ (51) · chúng tôi ✎ · họ ↑ (63)
+
+  RULE 9 — "we", with you or without you
+  chúng ta includes you, chúng tôi does not. The course can currently say
+  neither "we" nor "they". ✎ to write
+```
+
+**The count:** one rule to rework (2), six to write (3, 4, 5, 6, 8, 9), eleven
+words to bring off the shelf, one to write (`chúng tôi`).
+
+**Left out on purpose:** `thím`, `mợ`, `dượng`, `má` — too rare for a beginner.
