@@ -5,6 +5,24 @@ Last updated after the session that moved the mechanical turns into code.
 working state — what holds, what is still open, and why certain things are the
 way they are.
 
+## The course teaches NORTHERN Vietnamese
+
+**Decided by Meo, 2026-08-17**, after being asked one question too many about the
+south. It is a constraint, not a preference: it settles word choices that are
+otherwise a coin toss, and it should be checked before any of them is made again.
+
+```
+nghìn   not ngàn      thousand
+quả     not trái      the classifier for round things
+bố      not ba / má   father
+```
+
+The content already respects it in places — `nghìn`'s own note says *"Trong Nam
+nói 'ngàn', ngoài Bắc nói 'nghìn'"* — but nothing said so at the top, so it kept
+being re-asked. It also decides what to make of a dictionary entry marked
+*"chiefly Northern Vietnam"* (take it) or *"Southern Vietnam"* (leave it), which
+comes up on almost every person-word.
+
 ## The three axes
 
 Decided 15 August, after a day in which every session was derailed by something

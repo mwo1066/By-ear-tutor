@@ -18,32 +18,33 @@ em   → các em
 
 ## The questions we cannot answer from a dictionary
 
-**1. `các` vs `những`.**
-Our course claims `những` means only *part* of a group, while `các` means *all*
-of it. **The dictionary gives both the same definition** — "plural marker" — and
-does not separate them. `những` is far more common (rank 21 against `các`, which
-is not even in the top 2000).
-
-- [ ] Is the "all vs some" distinction real? If not, what is the difference?
-- [ ] Which one should a beginner learn first?
+**1. `các` vs `những`.** ~~Asked~~ — **set aside for now, on Meo's call.** The
+dictionary gives both the same definition and the course claims a distinction; it
+is parked, not answered.
 
 **2. Does `các` work in front of everything?**
 
 - [ ] Only in front of words for people, or in front of ordinary nouns too?
 - [ ] Is there anything it does **not** go in front of?
 
-**3. `tụi`.**
-The dictionary lists it as a "pluralizing particle for pronouns", rank 729.
+**3. `tụi`.** ~~Asked~~ — **withdrawn.** It was a question about southern usage,
+and this course teaches **northern** Vietnamese. That was not written down
+anywhere, which is why it got asked at all; it is now the first thing in
+`STATUS.md`.
 
-- [ ] Is `tụi` what people actually say in the south — `tụi tôi`, `tụi mình`?
-- [ ] Should a beginner learn `tụi` instead of `chúng`? We have dropped `chúng`
-      on your advice and kept `chúng tôi` / `chúng ta` as whole words.
+**4. `các cháu`, including yourself.** ~~Asked~~ — **answered, and it changed the
+rule.**
 
-**4. `các cháu`, including yourself.**
-You said `các cháu` can be used when you include yourself as well. We did not
-understand this well enough to write it.
+> *Các cháu không thích ăn cái này.* — said to an elderly person, meaning **we**,
+> me and my friends, do not want to eat this.
 
-- [ ] Could you give one example sentence?
+So `các` + an address word is not "you, plural". It swings three ways exactly as
+the singular does: **`các cháu` is *we* to an elderly person, *you* to a group of
+children, and *them* when you speak about either.** Which one it is comes from the
+direction of the conversation, not from the word. That is the pair rule again, one
+level up, and the course now says so.
+
+- [ ] Is that a fair way to put it?
 
 ## Formal vs informal
 
