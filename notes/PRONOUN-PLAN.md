@@ -193,3 +193,35 @@ stage 1 of the whole plan.
 A PDF was supplied — `Vietnamese Choups.pdf` — and could not be read: its text
 sits in a subsetted font, so extraction returns glyph data. It needs pasting as
 text before anything in it can be used.
+
+### The boundary on "guess older" — Meo, same conversation
+
+> *never call a chị a cô*
+
+Rounding up has a ceiling, and it is the generation line:
+
+```
+em    younger than you          your generation
+chị   older than you            your generation
+cô    your parents' generation  ← crossing this does not flatter, it ages
+bà    grandparents' generation
+```
+
+**One step up, inside your own generation.** Going from `em` to `chị` is
+respect. Going from `chị` to `cô` moves a woman into her parents' age bracket,
+and that is an insult wearing politeness. Written into the rule.
+
+**And it exposed the same defect a third time.** Three items are glossed as
+family nouns where the course needs them as address words:
+
+| word | was glossed | what it is when you speak to someone |
+| --- | --- | --- |
+| `cô` | aunt | address for a woman your parents' age — **fixed** |
+| `chú` | uncle | address for a man your parents' age — **fixed** |
+| `cháu` | nephew or niece | I/you, the much younger one — **still wrong** |
+| `con` | one, for animals | I/you, the child — **still wrong** |
+
+`cháu` and `con` are left alone because they are harder than a rewording: the
+dictionary lists each in **both directions** — `cháu` is *"I/me, your nephew"*
+and *"you, my nephew"* — so a single gloss cannot say what the word does without
+saying which end of the conversation you are on. They need Meo.
