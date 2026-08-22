@@ -191,10 +191,10 @@ description = "Số nhiều BAO GỒM người nghe: 'chúng ta đi' nghĩa là 
 type = "concept"
 name = "họ"
 kind = "atom"
-gloss = "they"
+gloss = "someone you do not know, one or several"
 category = "function_word"
 language = "vi"
-description = "Đại từ ngôi thứ ba số nhiều, dùng cho NGƯỜI. Từ điển (mục đại từ): 'they/them (used in formal situations or towards people)'. Không phân biệt giống — 'họ' dùng cho cả nam lẫn nữ, nên người học không cần đoán giới tính. Chú ý: 'họ' còn là danh từ nghĩa 'họ hàng, dòng họ' — đó là từ khác."
+description = "KHÔNG phải chỉ là 'they'. Người bản ngữ (2026-08-17): dùng 'họ' khi nói VỀ một người hoặc nhiều người mà mình không quen, hoặc không muốn nói rõ tuổi và giới tính. Vì vậy 'họ' dùng được cho MỘT người, không bắt buộc số nhiều — đây là chỗ bản dịch tiếng Anh 'they' làm hiểu sai. Từ điển cũng ghi 'towards people whom the speaker feels neutral about'. Đây là cách TRÁNH phải chọn từ xưng hô khi chưa đủ thông tin — công cụ rất hữu ích cho người mới học."
 
 [[items]]
 type = "procedure"
