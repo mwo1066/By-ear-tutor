@@ -1,6 +1,6 @@
 # The address rule teaches the pair, and can see its own table
 
-**Status:** proposed
+**Status:** done
 **Opened:** 2026-08-17
 
 ## Why
@@ -83,15 +83,15 @@ of the pair.
 
 ## Tasks
 
-- [ ] `build_plan`: pass the item itself alongside `known` when looking for the
+- [x] `build_plan`: pass the item itself alongside `known` when looking for the
       address table, so a rule can declare its own material
-- [ ] rewrite the item's `steps` as pairs, in the shape `learner.py` already
+- [x] rewrite the item's `steps` as pairs, in the shape `learner.py` already
       produces — *"a man older than you → he is anh, you are em"* — so the
       generic fallback teaches the same thing as the personalised one
-- [ ] check the situation exercises now fire on the rule itself
-- [ ] check slots 79 and 94 are unchanged: they already worked, and this must not
+- [x] check the situation exercises now fire on the rule itself
+- [x] check slots 79 and 94 are unchanged: they already worked, and this must not
       move them
-- [ ] `SPEC.md` rule 10c-bis
+- [x] `SPEC.md` rule 10c-bis
 
 ## Verification
 
@@ -102,3 +102,43 @@ of the pair.
    every other feature's plan must be identical — checkable offline across all 41.
 4. `python simulate_session.py 10 --from="cach chon"`, read: the learner is asked
    who the person is **and** what they call themselves.
+
+
+---
+
+## Result
+
+**Finished:** 2026-08-17
+
+The rule now runs `rule → apply → apply → apply`, three situation exercises where
+there was one generic one, and the table it hands the model has both columns:
+
+```
+with Minh, right here: you are em and he is anh;
+a man older than you → he is anh, you are em;
+a woman older than you → she is chị, you are em;
+someone younger than you → they are em, and you are anh if you are a man,
+  chị if you are a woman;
+you cannot tell how old they are → guess older, anh or chị, never em
+```
+
+That last row is Meo's restaurant, and `pair_with_minh()` had already written the
+same judgement in its own words months before he saw it happen.
+
+**Exactly one item changed**, checked across all 41 features by counting
+situation exercises before and after. The four other rules that read the address
+table — including `nói VỀ ai đó` and `gọi ai đó`, which Meo asked to leave alone —
+are identical.
+
+**What it cost that the proposal did not mention.** The rule lost its three
+`recall_piece` steps and two `rapidfire`s: the address branch returns its plan
+early, so a rule that takes it gets rule + three applies and nothing else. That is
+how slots 79 and 94 have always worked, so slot 9 now matches them rather than
+diverging — but the words `anh`, `chị`, `em` are no longer re-asked one by one
+before the exercise. They come back through the ordinary draw instead.
+
+**Still broken, and out of scope.** Slot 3, the early warning, has no table of its
+own and the one at slot 9 comes after it — so it still falls through to the
+generic application and asks the learner to say *"tôi anh"*. It needs either its
+own rows or no application at all, and that is a decision about what a teaser
+should do, not a bug in this change.

@@ -12,6 +12,34 @@ One line per archived change, in the form:
 
 ## Archived changes
 
+`0017` — **the plurals: one rule, not three** — 2026-08-17 — the course could say
+neither *we* nor *they* nor plural *you*; it taught the plural marker and not one
+plural pronoun. Meo refused three separate rules for nous/vous/ils, and the
+dictionary agreed with him in its own first senses: `chúng` is a *"pluralizing
+particle for pronouns"*, `các` a *"Plural marker"*. **Vietnamese has no plural
+pronouns — it puts a word in front of a singular one.** Four words added, two
+rules: the marker, and the one English lacks, whether *we* includes the person you
+are speaking to. `chúng tôi` decomposes by itself, because rule 11d from that
+morning fires the moment both halves are taught. Promoting off the frequency shelf
+worked first time — the importer already skips what the course teaches, so the
+operation I twice called impossible was never blocked. **Written after the code:
+the ritual was skipped and the folder made afterwards.** Not verified by voice.
+
+`0016` — **the address rule teaches the pair, and can see its own table** —
+2026-08-17 — in Vietnamese, choosing what to call someone chooses what you call
+yourself: `anh` obliges `em`. It is the first thing on Meo's source and the course
+never said it, teaching the two words separately. Two things stopped it. The rule
+could not see its own table — `address_situations` searches what is already
+taught, and the rule that DECLARES the table is the one being taught, so four rows
+became none and it fell through to an exercise asking the learner to say
+*"anh chị"*, gluing together the two words it exists to teach them to choose
+between. **Every later address rule worked**, because by then the table was behind
+them; only the owner was refused it. And the fallback table had one column.
+`learner.py` had written the two-column form all along, gated behind a learner
+profile never filled in — including the round-up rule Meo brought back from a
+restaurant, already recorded there in its own words. SPEC rule 10c-bis. Exactly
+one item changed, checked across all 41 features.
+
 `0015` — **the compounding rule is guessed, never produced** — 2026-08-17 — its
 application asked for "ONE sentence that uses the rule", and a sentence cannot use
 a word-formation rule. Worse, the item's own note forbids the attempt: *only to
