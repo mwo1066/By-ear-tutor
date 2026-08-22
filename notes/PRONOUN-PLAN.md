@@ -288,15 +288,30 @@ dì ↑ (1661) · cậu ↑ (47)
   ✓ EXISTS as a discrete, tier 1 — do not touch. Same for gọi ai đó: xưng hô
   + ơi (discrete, tier 1) and ạ (discrete, tier 2).
 
+  Two precisions from Meo, worth keeping even though the rule stays closed:
+  · **`anh` + the person's NAME also works** — `anh Minh` — not only `anh ấy`.
+  · **It climbs with age, exactly like the address system.** Confirmed word for
+    word by the dictionary:
+        anh ấy   "he (man of equal or slightly greater social status)"
+        ông ấy   "he (older or respected man)"
+        chị ấy   "she (older than the speaker)"
+        bà ấy    "she (woman of higher social status, e.g., older)"
+    So the pair rule does not stop at "I" and "you": the third person is the
+    same address word with `ấy` on the end, and you pick it the same way.
+
 nó ↑ (37) · mày ↑ (126) · tao ↑ (144)
 
   RULE 8 — recognise, never say — and this is also where "it" lives
-  You will hear them: nó is rank 37. But the danger is not the word, it is who
-  it points at. The source: nó is normal for "children, close friends, animals,
-  people you're talking about casually", and the dictionary adds "(colloquial)
-  it, used to refer to inanimate objects". **nó about a thing is ordinary
-  Vietnamese. nó about a person you owe respect is an insult.** That split is
-  the rule; mày and tao have no safe side at all. ✎ to write
+  You will hear them: nó is rank 37. **Meo, correcting an earlier draft of this
+  page: `nó` is very impolite, and it is used above all DOWNWARD — for people
+  younger than you.** That is the headline, not "it also means it".
+
+  The earlier draft led with objects, which made it sound like a neutral word
+  that happens to be rude sometimes. It is the reverse: it is a person-word
+  aimed down, and pointing it at an elderly or respected person is an insult.
+  The dictionary agrees — its first pronoun sense is "(impolite, colloquial)
+  he; him; she; her", and the inanimate use comes further down the list.
+  mày and tao have no safe side at all. ✎ to write
 
 chúng ta ↑ (51) · chúng tôi ✎ · họ ↑ (63)
 
