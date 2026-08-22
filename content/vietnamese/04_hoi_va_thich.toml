@@ -280,10 +280,10 @@ description = "Loại từ dùng cho đồ vật, chen giữa số và danh từ
 type = "concept"
 name = "các"
 kind = "atom"
-gloss = "the plural marker"
+gloss = "the word you put in front of an address word to speak to several people"
 category = "function_word"
 language = "vi"
-description = "Đặt TRƯỚC danh từ để chỉ số nhiều: 'các bạn'. Danh từ tự nó không đổi. 'Những' cũng làm việc này nhưng chỉ một phần trong nhóm."
+description = "Đặt TRƯỚC danh từ hoặc TỪ XƯNG HÔ để chỉ số nhiều: 'các bạn', 'các anh'. Danh từ tự nó không đổi. Điểm quan trọng người bản ngữ nhấn mạnh (2026-08-17): 'các' ghép được với MỌI từ xưng hô, không phải chỉ vài từ — nên nó đáng được dạy như một công cụ, không phải một chi tiết. 'Những' cũng làm việc này nhưng chỉ một phần trong nhóm."
 
 [[items]]
 type = "concept"

@@ -677,6 +677,16 @@ def rapidfire_count(item: Item, pieces: list[Item]) -> int:
 MAX_APPLICATIONS_PER_ITEM = 1
 
 
+def _declares_a_table(item: Item) -> bool:
+    """The item carries worked rows of its own, each written `before → after`.
+
+    Authored material, so it outranks any construction the code finds by shared
+    pieces. Two kinds sit under this: a comprehension table, marked by a `+` on
+    the left (see `_is_comprehension`), and a production table without one.
+    """
+    return bool(item.steps) and all("→" in s for s in item.steps)
+
+
 def _is_comprehension(item: Item) -> bool:
     """A rule exercised by understanding, not by producing.
 
@@ -716,6 +726,19 @@ def _apply_material(item: Item, known: list[Item]) -> tuple[str, str]:
          if c.kind == "construction" and set(c.pieces) & set(item.pieces)),
         key=lambda c: -len(set(c.pieces) & set(item.pieces)))
     pinned = related[0] if related else None
+
+    # A DECLARED table beats a construction the code merely found. `pinned`
+    # used to come first, and it picked by shared pieces -- a coincidence. The
+    # rule "các goes in front of every address word" shares `bạn` with
+    # "bạn tên là gì?", so its exercise came out as "how would you say What is
+    # your name?", which has nothing to do with plurals. Steps are authored
+    # intent and win.
+    if _declares_a_table(item) and not _is_comprehension(item):
+        return (f" Use ONE row of the rule's own table and nothing else. Each row is written "
+                f"`before → after`: name the BEFORE in English, then ask for the AFTER. Say what "
+                f"changed and nothing more. Never say the Vietnamese: that is the answer. "
+                f"The rows, and only these: {'; '.join(item.steps)}", "")
+
     if pinned:
         return (f' Work on THIS sentence and no other: "{pinned.gloss}" ({pinned.name}).',
                 speakable(pinned.gloss))
@@ -1246,8 +1269,13 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item],
         # A comprehension rule brings its own instruction and must NOT be asked
         # for a sentence on top of it -- that is the contradiction this whole
         # branch exists to remove.
-        wants_a_sentence = not _is_comprehension(item)
-        opening = "Now put those words together." if wants_a_sentence else "Now have them work one out."
+        # A rule with its own table brings its own question, whichever kind of
+        # table it is -- asking for a sentence on top produced "give me the
+        # plural of anh … and also one sentence that uses the rule".
+        wants_a_sentence = not _declares_a_table(item)
+        opening = ("Now put those words together." if wants_a_sentence
+                   else ("Now have them work one out." if _is_comprehension(item)
+                         else "Now put it to work."))
         # The ở rule asked for "I am at home", then "at school", then "at the
         # market" -- none of nhà, trường or chợ has been taught, so every rung
         # was unanswerable. An application may only use words the learner has.

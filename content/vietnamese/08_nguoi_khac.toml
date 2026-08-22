@@ -221,3 +221,17 @@ category = "rules"
 language = "vi"
 description = "Tiếng Việt buộc phải chọn: 'chúng tôi' KHÔNG gồm người nghe, 'chúng ta' CÓ gồm người nghe. 'Chúng ta đi' là rủ; 'chúng tôi đi' là thông báo. Tiếng Anh và tiếng Pháp gộp cả hai vào một chữ, nên người học sẽ quên mất là có một lựa chọn phải làm. Đây không phải quy tắc về số nhiều mà về việc người nghe có ở trong nhóm hay không."
 pieces = ["chúng tôi", "chúng ta"]
+
+[[items]]
+type = "procedure"
+name = "các + bất kỳ từ xưng hô nào"
+kind = "feature"
+nature = "discrete"
+tier = 1
+after = "các"
+gloss = "các works in front of every address word there is — các anh, các chị, các em, các bạn, các cháu — so one word gives you the plural of all of them"
+category = "rules"
+language = "vi"
+description = "Người bản ngữ nhấn mạnh (2026-08-17): 'các' liên kết được với TẤT CẢ các từ xưng hô, nên phải dạy nó như một công cụ mở, không phải một ví dụ lẻ. Học một từ là có số nhiều của cả hệ thống: các anh, các chị, các em, các bạn, các cháu, các cô, các chú. Không có ngoại lệ nào cần nhớ. Đây là lý do 'các' đáng một quy tắc riêng chứ không chỉ một dòng trong quy tắc số nhiều."
+pieces = ["các", "bạn"]
+steps = ["anh → các anh", "chị → các chị", "em → các em", "bạn → các bạn", "cháu → các cháu"]
