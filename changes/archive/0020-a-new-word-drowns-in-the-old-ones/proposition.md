@@ -133,9 +133,34 @@ whose entire job is the long tail that `METHOD.md` sources. An early word also
 genuinely faces less competition, which is not a defect. What was a defect was
 the collapse having no floor, and that is what is fixed.
 
-**And the 2000-word regime was not measured.** The course holds ~270 teachable
-items, all introduced within seven hours, so there is no late regime to simulate.
-The projection in the "Why" above stands as a projection.
+## The 2000-word regime, measured after all
+
+Meo, the same evening: *"on crée un modèle sur quelques heures qui fonctionne
+sur un temps illimité."* He is right that this was the missing half, and it is
+tractable — the content runs out at ~270 items, but the DRAW does not need
+content. `model_draw.py` runs the real store, the real weights and the real
+`draw_recalls` over synthetic names, on two numbers measured from the real
+sequencing: 5.7 turns and 4.46 recalls an item.
+
+```
+  recalls in the 84 items after introduction
+
+  word #      no reserve   with the reserve
+      50           4.3            4.5
+     200           3.0            3.6
+     500           1.8            3.6
+    1000           1.2            3.0
+    1500           0.9            3.0
+```
+
+**Without the reserve the 1500th word gets under one recall in two hours, and
+the fall does not stop.** With it the rate settles at 3.0. And early words pay
+nothing for it — 4.3 against 4.5 at word 50.
+
+So the projection in the "Why" above is now a measurement of the mechanism, and
+the floor holds where it was only argued to before. The absolute numbers sit
+below the content replay (3.0 against 4.1) because only the draw is modelled: an
+item also recalls its own pieces, and those are not in the model.
 
 ## Explicitly NOT in this change
 

@@ -25,6 +25,12 @@ task — calibrate K against Noble's counts — was done and **failed**: a word 
 being spoken aloud twice in 120 minutes, so the two systems are not comparable.
 That failure became `0022`. The hour-1/hour-4 gap narrows (4.0 → 2.5) and does
 not close, which is correct: a quarter of the draw is still rule 14's long tail.
+**Extended the same evening on Meo's idea** — "un modèle sur quelques heures qui
+fonctionne sur un temps illimité". The content runs out at ~270 items but the
+draw does not need content, so `model_draw.py` runs the real store and weights
+over synthetic names: at word 1500 the old draw gives **0.9** recalls in two
+hours and still falling, the reserved one **3.0** and settled, with early words
+unaffected (4.3 against 4.5). The projection became a measurement.
 
 `0022` — **Minh says the word back, every time** — 2026-08-23 — measured on a
 120-minute replay, counting only the runs Minh actually speaks: a taught word was

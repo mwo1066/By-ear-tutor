@@ -616,6 +616,21 @@ represented. Measured: in the two hours after its own introduction a word got
 first column collapses and does not stop. **The floor is the result**, and it
 holds at any course size because the reservation is a fixed number.
 
+**And it holds past the size of the real course.** The content runs out after
+~270 items, so the draw is modelled on its own — `model_draw.py`, on the two
+numbers measured from real sequencing (5.7 turns and 4.46 recalls an item).
+Recalls in the 84 items after a word's introduction:
+
+```
+  word #      no reserve   with the reserve
+      50           4.3            4.5
+     500           1.8            3.6
+    1500           0.9            3.0
+```
+
+Without it the 1500th word gets under one recall and the fall does not stop.
+With it the rate settles. Early words pay nothing: 4.3 against 4.5.
+
 **What it does not do:** close the hour-1/hour-4 gap (4.0 → 2.5). It cannot, and
 should not — a quarter of every draw is still the long tail rule 14 exists for,
 and an early word genuinely faces less competition. The defect was a collapse
