@@ -729,6 +729,15 @@ right. Confirm and move on. Never re-ask the question you have just asked.
 **Where:** both — `answered_target` decides, the prompt sets the tone
 **Change:** `tutor.py` → `ANSWER_MATCH_THRESHOLD` (0.5)
 
+**A number said aloud is written in digits, and counts all the same.** Whisper
+returns `10.000` for "mười nghìn", and `_bare` turns a digit into a separator —
+so the answer reduced to the empty string and no number could be answered by
+anyone. A native speaker was told she had missed it, three times in one session
+(2026-08-23). Numbers are spelled back into Vietnamese before comparing, in the
+forms the course teaches, `mốt` / `tư` / `lăm` included. A matching aid only: it
+never reaches the learner.
+**Change:** `tutor.py` → `_spell_numbers`, `_spell_int`
+
 ### 20. A genuinely different word earns exactly one second chance
 Minh says it again, the question is re-asked short, then the lesson moves on
 whatever the answer.

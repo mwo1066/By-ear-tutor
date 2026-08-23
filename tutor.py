@@ -1789,6 +1789,53 @@ ANSWER_MATCH_THRESHOLD = 0.5
 _LANG_TAG = re.compile(r"^\s*\[lang:[a-z-]+\]\s*", re.IGNORECASE)
 
 
+# Whisper writes spoken numbers as DIGITS. A native speaker said "mười nghìn"
+# on 23 August and the transcription came back "10.000" -- three times in one
+# session. `_bare` turns a digit into a separator, so "10.000" reduces to the
+# empty string and no comparison can ever succeed: the course answered "missed"
+# to a correct answer from a Vietnamese speaker. Every number recall in the
+# course was unscoreable, and the money thread is nothing but numbers.
+#
+# Spelled back out before comparing, so the existing match works unchanged.
+# This is a matching aid and not course content -- it never reaches the
+# learner, and only has to contain the words the target is looking for.
+_NUM_UNITS = ("không", "một", "hai", "ba", "bốn", "năm", "sáu", "bảy", "tám", "chín")
+# Grouped digits only: "10.000", "10,000", "10 000" and "10000" are one number,
+# while "5, 6" stays two. A separator counts only before a full group of three.
+_NUMERAL = re.compile(r"\d+(?:[.,  ]\d{3})*")
+_NUMERAL_CEILING = 10 ** 12
+
+
+def _spell_int(n: int) -> str:
+    """A number as the course teaches it said. Northern forms throughout."""
+    if n < 10:
+        return _NUM_UNITS[n]
+    if n < 20:
+        rest = n - 10
+        return "mười" if not rest else f"mười {'lăm' if rest == 5 else _NUM_UNITS[rest]}"
+    if n < 100:
+        tens, rest = divmod(n, 10)
+        out = f"{_NUM_UNITS[tens]} mươi"
+        # The three that change shape after a ten -- taught as their own words.
+        return out + {0: "", 1: " mốt", 4: " tư", 5: " lăm"}.get(rest, f" {_NUM_UNITS[rest]}")
+    if n < 1000:
+        hundreds, rest = divmod(n, 100)
+        out = f"{_NUM_UNITS[hundreds]} trăm"
+        return out + (f" {_spell_int(rest)}" if rest else "")
+    for value, word in ((10 ** 9, "tỷ"), (10 ** 6, "triệu"), (1000, "nghìn")):
+        if n >= value:
+            big, rest = divmod(n, value)
+            return f"{_spell_int(big)} {word}" + (f" {_spell_int(rest)}" if rest else "")
+    return str(n)
+
+
+def _spell_numbers(text: str) -> str:
+    def spelled(m: re.Match) -> str:
+        n = int(re.sub(r"\D", "", m.group(0)))
+        return f" {_spell_int(n)} " if n < _NUMERAL_CEILING else m.group(0)
+    return _NUMERAL.sub(spelled, text)
+
+
 def _bare(text: str) -> str:
     """Letters only, no tone marks -- what a beginner and a recogniser both lose
     first -- but word boundaries KEPT.
@@ -1854,7 +1901,7 @@ def answered_target(user_text: str, target: str) -> bool:
     # riêng" out loud scored as the answer on five of the eleven constructions
     # that have one. Same target as resembles_target sees, which is the point:
     # the two disagreed until now.
-    said, want = _bare(_LANG_TAG.sub("", user_text)), _bare(_SLOT.sub("", target))
+    said, want = _bare(_spell_numbers(_LANG_TAG.sub("", user_text))), _bare(_SLOT.sub("", target))
     if not want:
         return True
     # Padded, so the match is on whole words. Unpadded, "ăn" was found inside
@@ -1902,7 +1949,7 @@ def resembles_target(user_text: str, target: str) -> bool:
     Never used to score an answer -- `answered_target` does that, at its own
     stricter floor. Confusing the two would let 0.45 record a word as known.
     """
-    said, want = _bare(_LANG_TAG.sub("", user_text)), _bare(_SLOT.sub("", target))
+    said, want = _bare(_spell_numbers(_LANG_TAG.sub("", user_text))), _bare(_SLOT.sub("", target))
     if not want or not said:
         return False
     # Vietnamese is monosyllabic: one token per syllable, so an attempt at a word

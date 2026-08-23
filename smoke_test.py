@@ -209,6 +209,16 @@ ANSWER_CASES = [
     ("Chí", "chị", True),
     ("moon", "muốn", True),
     ("Tết", "thích", False),
+    # 2026-08-23 -- a native speaker said "mười nghìn" and Whisper wrote the
+    # numeral. `_bare` turns digits into separators, so the answer reduced to
+    # nothing and the course told a Vietnamese speaker she had missed it. Every
+    # number recall was unscoreable, and the money thread is all numbers.
+    ("[lang:vi] 10.000", "nghìn", True),
+    ("[lang:vi] 10.000", "mười", True),
+    ("[lang:vi] 10.000", "mười nghìn", True),
+    ("[lang:vi] 200.000", "trăm", True),
+    ("[lang:vi] 5", "năm", True),
+    ("[lang:vi] 10.000", "thích", False),   # spelling numbers must not make everything match
 ]
 
 

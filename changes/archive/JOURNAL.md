@@ -12,6 +12,16 @@ One line per archived change, in the form:
 
 ## Archived changes
 
+`0019` — **Whisper writes numbers as digits, so no number could ever be answered**
+— 2026-08-23 — a native speaker said `mười nghìn` correctly and the course
+answered "missed", three times in one session. `_bare` turns a digit into a
+separator, so `10.000` reduced to the **empty string**: every number recall in
+the course was unanswerable, at every threshold, for every speaker. The money
+thread — the slice verified most carefully offline — was the worst affected, and
+offline verification could not have seen it. Numbers are now spelled back into
+Vietnamese before comparing. Six smoke cases, one negative so the spelling
+cannot become a universal accepter.
+
 `0018` — **the tones: an announcement early, then two at a time** — 2026-08-17 —
 the course said tones exist and never said which. Measured first, which is what
 justified the work: of 1171 one-syllable words in the files, **600 — 51% — differ
