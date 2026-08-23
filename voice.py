@@ -5,9 +5,12 @@ Everything else -> the tutor's own (English) voice.
 Splits the LLM's response into runs of consecutive same-language text so
 each run is spoken by the correct voice, matching the two-voice cast rule.
 """
+import io
 import queue
 import re
+import subprocess
 import threading
+import wave
 from concurrent.futures import Future, ThreadPoolExecutor
 import winsound
 import urllib.request
@@ -19,6 +22,20 @@ ENV_PATH = Path(__file__).parent / ".env"
 
 TUTOR_VOICE = ("en-US-AmandaMultilingualNeural", "Female", "en-US")
 TEACHER_VOICE = ("vi-VN-NamMinhNeural", "Male", "vi-VN")
+
+# The same voices as served by Edge's read-aloud endpoint, which needs no key
+# and so cannot expire -- which is the whole point, after an Azure free trial
+# ended mid-lesson on 23 August and left the course silent. Minh is the SAME
+# voice, by name; Amanda is not offered there, so Ava stands in for the tutor.
+#
+# It is a fallback and not the engine. Edge hands back 48 kbit/s mp3 with no
+# way to ask for better, against the lossless 24kHz PCM Azure is configured
+# for here. Pitch -- which carries the tones -- sits low and survives that
+# compression; the creak separating ngã from sắc does not, and those are two
+# tones this course teaches. So: better than silence, worse than Azure.
+BACKUP_TUTOR_VOICE = "en-US-AvaMultilingualNeural"
+BACKUP_TEACHER_VOICE = "vi-VN-NamMinhNeural"
+BACKUP_RATE_HZ = 24000  # matches riff-24khz-16bit-mono-pcm below, so playback is unchanged
 
 # Slower than default -- found live: the intro (3 rules) went by too fast to
 # actually absorb. Negative percentage = slower via SSML prosody rate.
@@ -273,6 +290,101 @@ def _warn_if_choppy(text: str, known_vn_words: frozenset[str]) -> None:
 _TTS_ERRORS = (urllib.error.URLError, TimeoutError, OSError)
 
 
+# Azure answers 401 for a key it will never accept: revoked, wrong region, or
+# -- what actually happened on 23 August -- a free trial that ended and paused
+# the subscription. Retrying that is pointless, and the old message ("TTS
+# unavailable after 2 attempts") read like a network hiccup, which sent the
+# search in the wrong direction for an hour. Latched, so it is said ONCE and
+# every later passage goes quietly to the backup voice.
+_azure_refused = threading.Event()
+_azure_refused_said = threading.Lock()
+
+
+def azure_key_status() -> tuple[bool, str]:
+    """Synthesize one syllable and see whether Azure allows it.
+
+    NOT the issueToken endpoint, which was the first thing tried here and is
+    the wrong witness: measured on 23 August, a paused subscription still
+    HANDED OUT a token (HTTP 200, real JWT) while every synthesis came back
+    401. The identity still resolves; the billable operation is what is cut
+    off. Only the endpoint the lesson actually uses can answer this.
+
+    Costs one word against a 500,000-character monthly allowance."""
+    env = _load_env()
+    key, region = env.get("AZURE_SPEECH_KEY", ""), env.get("AZURE_SPEECH_REGION", "")
+    if not key or not region:
+        return False, "AZURE_SPEECH_KEY or AZURE_SPEECH_REGION is missing from .env"
+    ssml = ("<speak version='1.0' xml:lang='en-US'>"
+            f"<voice name='{TUTOR_VOICE[0]}'>ok</voice></speak>")
+    req = urllib.request.Request(
+        f"https://{region}.tts.speech.microsoft.com/cognitiveservices/v1",
+        data=ssml.encode("utf-8"),
+        headers={"Ocp-Apim-Subscription-Key": key,
+                 "Content-Type": "application/ssml+xml",
+                 "X-Microsoft-OutputFormat": "riff-24khz-16bit-mono-pcm",
+                 "User-Agent": "viet-tutor"},
+        method="POST")
+    try:
+        with urllib.request.urlopen(req, timeout=10):
+            return True, ""
+    except urllib.error.HTTPError as e:
+        if e.code == 401:
+            _azure_refused.set()  # so no lesson turn pays for the same 401 again
+            return False, (f"Azure refused the key for region {region!r} (401). Revoked key, wrong "
+                           f"region, or -- what happened here on 23 August -- a free trial that "
+                           f"ended and paused the subscription. portal.azure.com > your Speech "
+                           f"resource > Keys and Endpoint, and create it at pricing tier F0.")
+        return False, f"Azure answered HTTP {e.code} {e.reason}"
+    except _TTS_ERRORS as e:
+        # No network is not a dead key, and must not be reported as one.
+        return True, f"could not reach Azure to check the key ({e}) -- carrying on"
+
+
+def _synthesize_backup(text: str, voice_key: str) -> bytes | None:
+    """Edge's read-aloud, decoded to the same PCM shape Azure is asked for.
+
+    ffmpeg emits raw samples rather than a wav, and the header is written here
+    with the stdlib: a wav piped out of ffmpeg carries an unknown length in its
+    header, which winsound is entitled to refuse."""
+    try:
+        import edge_tts  # optional: absent means no backup, not a crash
+    except ImportError:
+        return None
+    import asyncio
+
+    name = BACKUP_TEACHER_VOICE if voice_key == "teacher" else BACKUP_TUTOR_VOICE
+
+    async def collect() -> bytes:
+        out = bytearray()
+        async for chunk in edge_tts.Communicate(text, name).stream():
+            if chunk["type"] == "audio":
+                out.extend(chunk["data"])
+        return bytes(out)
+
+    try:
+        mp3 = asyncio.run(collect())
+        if not mp3:
+            return None
+        pcm = subprocess.run(
+            ["ffmpeg", "-hide_banner", "-loglevel", "error", "-i", "pipe:0",
+             "-f", "s16le", "-acodec", "pcm_s16le",
+             "-ar", str(BACKUP_RATE_HZ), "-ac", "1", "pipe:1"],
+            input=mp3, capture_output=True, check=True,
+            creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0)).stdout
+        if not pcm:
+            return None
+        buf = io.BytesIO()
+        with wave.open(buf, "wb") as w:
+            w.setnchannels(1)
+            w.setsampwidth(2)
+            w.setframerate(BACKUP_RATE_HZ)
+            w.writeframes(pcm)
+        return buf.getvalue()
+    except (OSError, subprocess.SubprocessError, RuntimeError) as e:
+        print(f"  (backup voice unavailable too: {e})")
+        return None
+
+
 def synthesize(text: str, voice_key: str, retries: int = 2) -> bytes | None:
     """Returns None (instead of raising) once all retries are exhausted --
     a transient Azure hiccup should skip that one chunk of speech, not
@@ -297,18 +409,42 @@ def synthesize(text: str, voice_key: str, retries: int = 2) -> bytes | None:
         },
         method="POST",
     )
+    # Once Azure has refused the key, every later passage skips it entirely.
+    # Otherwise a dead key costs two round trips per passage, all session.
+    if _azure_refused.is_set():
+        return _synthesize_backup(text, voice_key)
+
     for attempt in range(retries):
         try:
             # 15s, not 8: measured cold-connection clips legitimately take
             # 4-5s, and an 8s ceiling was dropping real speech on the floor.
             with urllib.request.urlopen(req, timeout=15) as resp:
                 return resp.read()
+        except urllib.error.HTTPError as e:
+            if e.code != 401:
+                # Anything else -- 429, 503 -- may well pass. HTTPError is a
+                # URLError, so falling through reaches the retry below.
+                if attempt < retries - 1:
+                    print(f"  (Azure TTS: HTTP {e.code} {e.reason} -- retrying...)")
+                    continue
+                print(f"  (Azure TTS: HTTP {e.code} {e.reason} -- trying the backup voice)")
+                return _synthesize_backup(text, voice_key)
+            first = not _azure_refused.is_set()
+            _azure_refused.set()
+            audio = _synthesize_backup(text, voice_key)
+            if first:
+                with _azure_refused_said:
+                    print("  (Azure refused the key (401). Not retrying -- this does not fix itself.)")
+                    print("   portal.azure.com > Speech resource > Keys and Endpoint, tier F0.")
+                    print("   Falling back to the keyless backup voice." if audio else
+                          "   No backup voice (pip install edge-tts) -- the session will be silent.")
+            return audio
         except _TTS_ERRORS as e:
             if attempt < retries - 1:
                 print(f"  (Azure TTS: {e} -- retrying...)")
                 continue
-            print(f"  (Azure TTS unavailable after {retries} attempts ({e}) -- this passage will not be spoken)")
-            return None
+            print(f"  (Azure TTS unavailable after {retries} attempts ({e}) -- trying the backup voice)")
+            return _synthesize_backup(text, voice_key)
 
 
 _WAV_MIN_BYTES = 128  # a RIFF header alone is 44; anything near that carries no speech

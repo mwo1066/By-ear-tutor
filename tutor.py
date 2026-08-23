@@ -2405,6 +2405,17 @@ def run_session(fresh: bool = False, no_intro: bool = False, start_from: str | N
                              (f"from {start_from!r}: rehearsal, nothing saved", start_from)) if on]
     print("Starting session..." + (f"  [{', '.join(flags)}]" if flags else ""))
     api_key = load_api_key()
+    # Before anything else: this course IS its voice, so a key Azure will not
+    # accept means the whole session is worthless. One syllable synthesized
+    # settles it in about a second. Found the hard way on 23 August -- a free
+    # trial had ended, and it surfaced as a retry message forty turns in.
+    ok, note = voice_module.azure_key_status()
+    if not ok:
+        print(f"  [voice] {note}")
+        print("  [voice] The lesson will run on the keyless backup voice if edge-tts is "
+              "installed, and be silent otherwise.")
+    elif note:
+        print(f"  [voice] {note}")
     persona_prompt = load_persona_system_prompt(CONTENT_DIR)
     # Curated roster FIRST. It is a composed progression -- atoms, then the
     # construction that assembles them -- whereas live-generated personal items

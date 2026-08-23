@@ -86,7 +86,7 @@ content/       the course itself: items and the tutor's persona
 Python 3.13+.
 
 ```bash
-pip install numpy sounddevice webrtcvad
+pip install numpy sounddevice webrtcvad edge-tts
 ```
 
 Create a `.env` file next to the code:
@@ -102,6 +102,11 @@ two voices. Groq's free tier allows about 8000 tokens a minute for the model
 used here, which works out to roughly two and a half turns a minute — enough
 for a real lesson, tight enough that the system prompt is kept small on
 purpose.
+
+`edge-tts` is the backup voice, and is optional. It needs no key, cannot
+expire, and serves the same `vi-VN-NamMinhNeural` this course teaches with, so
+a dead Azure key costs a little audio quality instead of the whole lesson. It
+decodes through `ffmpeg`, which must be on PATH for the backup to work.
 
 ## Running
 
