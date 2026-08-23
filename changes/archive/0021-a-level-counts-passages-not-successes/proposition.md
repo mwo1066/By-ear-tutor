@@ -1,6 +1,8 @@
 # A level counts passages, not successes
 
-**Status:** proposed — awaiting Meo. **No code written.**
+**Status:** accepted, option 2. Meo, 2026-08-23: *"je veux que notre système de
+repetition sois bon et marche est dans le code. puis on rajoute des detail plus
+tard."*
 **Opened:** 2026-08-23
 
 The second half of the pair opened with `0020`. That one is about a word
@@ -105,12 +107,45 @@ So the shape to decide between:
 **Recommended: 2.** It is what Meo described, it costs one condition, and the
 signal it reads is the only one in this system that is not noisy.
 
-## What must not be assumed
+## Checked before writing anything, and it changed the answer
 
-Whether the `chị` case still reproduces at all. It was seen on 13 August, before
-`_should_retry`, before the forced-`vi` second pass, and before `0019`. **First
-task, before any code: replay it.** If the retry path now catches it, option 1
-may be enough and option 2 is a complication we do not need.
+**The `chị` case reproduces, and it is not a bug that might have been fixed — it
+is arithmetic.** Under always-+1 a level *is* the number of passages, so a word
+answered wrong eight times has still been through eight times and lands at level
+8, drawn 1 in 27. Exactly as on 13 August. Option 1 alone would therefore ship a
+known regression, which is not "bon et marche".
+
+**And option 2 was under-specified above.** Two corrections:
+
+*Silence never reaches the scoring branch.* On an empty transcription the loop
+prints "(nothing heard, listening again)" and `continue`s, so nothing is
+recorded. The "learner produced nothing" trigger named above was already covered
+by doing nothing at all.
+
+*So the real remaining case is narrower:* the learner said something, it was not
+the word, rule 20 gave them a second chance with Minh saying it, and they still
+did not produce it. That is what "ne sait rien répondre" means here, and it is
+the only case that reaches the branch with `got_it=False`.
+
+**It still reads the noisy verdict — but the noise can no longer bury
+anything**, which is the point:
+
+```
+false "correct"  (đói for tôi)      +1, same as option 1. No new harm.
+false "missed"   (right answer
+                  rejected)         level holds. A little extra practice.
+```
+
+That asymmetry is the whole argument: act on an unreliable measurement only in
+the direction where being wrong is cheap.
+
+## Why the level HOLDS rather than dropping
+
+Meo also said *"les mots qu'on a faux peuvent être redemandés un peu plus"*.
+Holding delivers that without a penalty term: every other word keeps climbing,
+so a held word becomes **relatively** more frequent on its own. Dropping two
+levels — what the code does today — is the thing rule 16 refuses, and it is not
+needed to get the effect he asked for.
 
 ## Residual cost, named rather than buried
 

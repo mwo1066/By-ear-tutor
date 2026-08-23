@@ -12,6 +12,18 @@ One line per archived change, in the form:
 
 ## Archived changes
 
+`0021` — **a level counts passages, not successes** — 2026-08-23 — Meo: *"je
+veux juste un ratio de rappel des mots peu importe si t'as juste ou faux."*
+`SPEC.md` rules 14 and 16 said exactly that already; the code had taken two
+levels off every miss since 13 August and the spec was never folded back, so
+this was a `/derive` finding as much as a change. A miss now **holds** the
+level. Not a bare +1, which would return the `chị` case by arithmetic — a word
+answered wrong eight times has still been through eight times. The check
+guarding it needed two attempts: the first asserted the extremes, which the old
+rule also satisfied because `max(0, level-2)` floors at zero, and it was only
+caught by restoring the 13 August code and watching the test still pass. The
+discriminating case is climb-then-miss.
+
 `0019` — **Whisper writes numbers as digits, so no number could ever be answered**
 — 2026-08-23 — a native speaker said `mười nghìn` correctly and the course
 answered "missed", three times in one session. `_bare` turns a digit into a

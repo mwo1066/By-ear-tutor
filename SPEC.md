@@ -601,7 +601,30 @@ go or spread over a month give the same lesson.
 **Change:** `srs.py`
 
 ### 16. Wrong answers are not counted
-A missed word needs more exposure, which a low level already arranges.
+A missed word needs more exposure, which a low level already arranges. A level
+counts **passages, not successes**, so answering correctly never makes a word
+rarer than answering wrongly would have.
+
+**A miss holds the level; it never lowers it.** Taking two levels off was the
+code's behaviour from 13 August until `0021`, and this rule refused it the whole
+time without anyone noticing. Holding is enough: every other word keeps
+climbing, so a held word becomes *relatively* more frequent on its own, with no
+penalty term.
+
+**Why holding rather than a bare +1.** Under a bare +1 a level IS the number of
+passages, so a word answered wrongly eight times still lands at level 8, drawn
+once in twenty-seven — which is what happened to `chị` on 13 August, and is what
+made the code diverge. Silence never reaches here at all: an empty transcription
+makes the loop listen again. What arrives with a miss is a learner who spoke,
+was given rule 20's second chance with Minh saying the word, and still did not
+produce it.
+
+**Why an unreliable verdict is tolerable here.** 150 of the 153 taught words can
+be answered by some *other* taught word, so `answered_target` is wrong often. It
+is survivable only because of which way the error runs: a false "correct" costs
+nothing this rule did not already accept, and a false "miss" only buys extra
+practice. The measurement is acted on solely in the direction where being wrong
+is cheap.
 **Where:** code — `record_recall` only increments
 **Change:** `srs.py` → `record_recall`
 

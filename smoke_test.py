@@ -588,6 +588,42 @@ def check_pieces_exist(roster) -> int:
     return failed
 
 
+def check_a_level_counts_passages() -> int:
+    """A miss holds the level. It does not take any of it away.
+
+    The discriminating case is climb-then-miss, and finding it took a failed
+    attempt: an earlier version of this check asserted that a word answered
+    wrong eight times stays at level 0, which the OLD rule also satisfied --
+    `max(0, level - 2)` floors at zero, so both rules agree at the extremes and
+    the test proved nothing. Restoring the 13 August code and watching the check
+    still pass is what showed it up.
+
+    Guarded from both sides: a correct answer must still advance the word, or
+    nothing ever spaces out and rule 14 is broken in the other direction.
+    """
+    failed = 0
+    climbed = srs.ProgressStore(None)
+    climbed.mark_introduced("chị")
+    for _ in range(4):
+        climbed.record_recall("chị", got_it=True)
+    for _ in range(2):
+        climbed.record_recall("chị", got_it=False)
+    if climbed.level("chị") != 4:
+        print(f"  !! four right then two wrong left level {climbed.level('chị')}, "
+              f"expected 4 -- a miss must hold the level, never lower it")
+        failed += 1
+
+    advancing = srs.ProgressStore(None)
+    advancing.mark_introduced("tôi")
+    for _ in range(8):
+        advancing.record_recall("tôi", got_it=True)
+    if advancing.level("tôi") != 8:
+        print(f"  !! eight passages reached level {advancing.level('tôi')}, "
+              f"expected 8 -- every passage must count")
+        failed += 1
+    return failed
+
+
 def check_prerequisite_order() -> int:
     """Nothing may be taught before the words it is made of -- run over the
     WHOLE course, not a sample.
@@ -634,6 +670,7 @@ def main(NO_INTRO=False) -> int:
             + check_derived_pieces(roster)
             + check_spoken_targets() + check_answer_cases()
             + check_prerequisite_order()
+            + check_a_level_counts_passages()
             + check_every_plan_builds() + check_choppy_cases(vocab) + check_answer_aloud_cases(roster) + check_pieces_exist(roster) + check_speaker_cues() + check_feature_glosses_name_their_word(roster)
             + check_glosses_cite_only_taught_words(roster)):
         return 1
