@@ -2416,6 +2416,10 @@ def run_session(fresh: bool = False, no_intro: bool = False, start_from: str | N
               "installed, and be silent otherwise.")
     elif note:
         print(f"  [voice] {note}")
+    else:
+        spent, ceiling = voice_module.usage_this_month()
+        print(f"  [voice] Azure ready — {spent:,} of {ceiling:,} characters spoken this month "
+              f"({spent * 100 // max(ceiling, 1)}%).")
     persona_prompt = load_persona_system_prompt(CONTENT_DIR)
     # Curated roster FIRST. It is a composed progression -- atoms, then the
     # construction that assembles them -- whereas live-generated personal items

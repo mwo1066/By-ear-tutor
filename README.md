@@ -103,10 +103,18 @@ used here, which works out to roughly two and a half turns a minute — enough
 for a real lesson, tight enough that the system prompt is kept small on
 purpose.
 
+Create the Azure Speech resource at pricing tier **F0**. It allows 500,000
+characters of neural speech a month, resets monthly, and never expires — and
+when the allowance runs out it refuses the request rather than billing for it.
+Pay-As-You-Go has no spending limit that cuts: budgets send mail, they stop
+nothing. F0 is the only hard stop Azure offers.
+
 `edge-tts` is the backup voice, and is optional. It needs no key, cannot
 expire, and serves the same `vi-VN-NamMinhNeural` this course teaches with, so
 a dead Azure key costs a little audio quality instead of the whole lesson. It
 decodes through `ffmpeg`, which must be on PATH for the backup to work.
+`voice.py` also enforces its own monthly character ceiling, below the F0
+allowance, so a resource created at S0 by mistake cannot run up a bill.
 
 ## Running
 

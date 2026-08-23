@@ -6,10 +6,12 @@ Splits the LLM's response into runs of consecutive same-language text so
 each run is spoken by the correct voice, matching the two-voice cast rule.
 """
 import io
+import json
 import queue
 import re
 import subprocess
 import threading
+import time
 import wave
 from concurrent.futures import Future, ThreadPoolExecutor
 import winsound
@@ -290,6 +292,56 @@ def _warn_if_choppy(text: str, known_vn_words: frozenset[str]) -> None:
 _TTS_ERRORS = (urllib.error.URLError, TimeoutError, OSError)
 
 
+# A ceiling we enforce ourselves, because Azure will not.
+#
+# Pay-As-You-Go has no spending limit that CUTS: budgets send mail, they stop
+# nothing. The blocking limit exists only on credit-based subscriptions -- the
+# free trial that expired here on 23 August. So the real protection is the F0
+# pricing tier, which refuses work rather than billing for it.
+#
+# This guards the case F0 does not: a Speech resource created at S0 by a
+# mis-click, quietly charging per character. Below the F0 allowance by design,
+# so it trips first and the lesson drops to the keyless voice instead of
+# spending money. Measured: a session speaks about 3,000 characters, so this
+# is well over a hundred sessions a month.
+MONTHLY_CHAR_CEILING = 400_000  # F0 gives 500,000; this leaves headroom
+USAGE_PATH = Path(__file__).parent / ".tts_usage.json"
+_usage_lock = threading.Lock()
+_over_budget_said = threading.Event()
+
+
+def _this_month() -> str:
+    return time.strftime("%Y-%m")
+
+
+def _read_usage() -> int:
+    """Characters billed to Azure so far this calendar month. A new month, a
+    corrupt file, or no file at all all mean the same thing: start from zero."""
+    try:
+        data = json.loads(USAGE_PATH.read_text(encoding="utf-8"))
+        return int(data["chars"]) if data.get("month") == _this_month() else 0
+    except (OSError, ValueError, KeyError, TypeError):
+        return 0
+
+
+def _charge(n: int) -> None:
+    """Counted only after Azure actually answers, so a refused or failed
+    request never eats the allowance."""
+    with _usage_lock:
+        try:
+            USAGE_PATH.write_text(
+                json.dumps({"month": _this_month(), "chars": _read_usage() + n}),
+                encoding="utf-8")
+        except OSError:
+            pass  # a budget we cannot write is not a reason to lose the lesson
+
+
+def usage_this_month() -> tuple[int, int]:
+    """(characters spoken, ceiling) -- for anything that wants to report it."""
+    return _read_usage(), MONTHLY_CHAR_CEILING
+
+
+
 # Azure answers 401 for a key it will never accept: revoked, wrong region, or
 # -- what actually happened on 23 August -- a free trial that ended and paused
 # the subscription. Retrying that is pointless, and the old message ("TTS
@@ -414,12 +466,25 @@ def synthesize(text: str, voice_key: str, retries: int = 2) -> bytes | None:
     if _azure_refused.is_set():
         return _synthesize_backup(text, voice_key)
 
+    # The ceiling is checked BEFORE the request, so the first passage that
+    # would cross it is the first one spoken by the backup -- not the one
+    # after. Said once; the lesson then carries on quietly on the free voice.
+    spent = _read_usage()
+    if spent + len(text) > MONTHLY_CHAR_CEILING:
+        if not _over_budget_said.is_set():
+            _over_budget_said.set()
+            print(f"  (Azure budget reached: {spent:,} of {MONTHLY_CHAR_CEILING:,} characters "
+                  f"this month. Switching to the keyless voice -- nothing further will be billed.)")
+        return _synthesize_backup(text, voice_key)
+
     for attempt in range(retries):
         try:
             # 15s, not 8: measured cold-connection clips legitimately take
             # 4-5s, and an 8s ceiling was dropping real speech on the floor.
             with urllib.request.urlopen(req, timeout=15) as resp:
-                return resp.read()
+                audio = resp.read()
+            _charge(len(text))  # only what Azure actually served
+            return audio
         except urllib.error.HTTPError as e:
             if e.code != 401:
                 # Anything else -- 429, 503 -- may well pass. HTTPError is a

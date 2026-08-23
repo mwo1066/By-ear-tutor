@@ -11,3 +11,4 @@ voices/test_text*.txt
 *.bak
 learner.json
 logs/
+.tts_usage.json
