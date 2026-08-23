@@ -24,6 +24,13 @@ rule also satisfied because `max(0, level-2)` floors at zero, and it was only
 caught by restoring the 13 August code and watching the test still pass. The
 discriminating case is climb-then-miss.
 
+**Corrected the same day, before anyone ran it.** The first application held the
+level on a miss, which still let the verdict decide — Meo had asked for a rate
+that does not look at the answer *at all*: *"on s'en fout des faux correct et
+faux raté."* `record_recall` now takes **no verdict parameter**, so no caller can
+make it matter again, and rule 16 is two lines instead of the argument that was
+bolted onto it.
+
 `0019` — **Whisper writes numbers as digits, so no number could ever be answered**
 — 2026-08-23 — a native speaker said `mười nghìn` correctly and the course
 answered "missed", three times in one session. `_bare` turns a digit into a

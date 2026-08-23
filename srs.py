@@ -93,42 +93,19 @@ class ProgressStore:
     def mark_introduced(self, name: str) -> None:
         self._states.setdefault(name, ItemState(name=name))
 
-    def record_recall(self, name: str, got_it: bool = True) -> None:
-        """One more exposure, and whether it actually landed.
+    def record_recall(self, name: str) -> None:
+        """One more passage through the word. Right or wrong is not asked.
 
-        Called when a recall the CODE asked for has been answered, so it counts
-        what actually happened rather than what a grader thought it saw.
+        A level counts PASSAGES, not successes -- SPEC rules 14 and 16. The rate
+        at which a word comes back follows where that word is in its own life,
+        and nothing else. Meo, 23 August: "je veux juste un ratio de rappel des
+        mots peu importe si t'as juste ou faux."
 
-        A level counts PASSAGES, not successes, so a correct answer never makes a
-        word rarer than a wrong one -- Meo, 23 August: "je veux juste un ratio de
-        rappel des mots peu importe si t'as juste ou faux." Rules 14 and 16 said
-        this all along; the code stopped doing it on 13 August and the spec was
-        never folded back.
-
-        `got_it=False` holds the level instead. It does NOT drop it, which is
-        what the code did until now and what rule 16 refuses. Holding is enough
-        to get the effect asked for: every other word keeps climbing, so a held
-        word becomes RELATIVELY more frequent without any penalty term.
-
-        This is the one exception to "whatever the answer", and it is narrow.
-        Silence never arrives here at all -- an empty transcription makes the
-        loop listen again, so nothing is recorded. What reaches this branch with
-        got_it=False is a learner who said something, was given the second
-        chance of rule 20 with Minh saying the word, and still did not produce
-        it. Without it the "chị" case returns by arithmetic: under a bare +1 a
-        level IS the number of passages, so a word answered wrong eight times
-        lands at level 8, drawn once in twenty-seven, exactly as on 13 August.
-
-        The verdict reaching here is unreliable -- 150 of 153 taught words can be
-        answered by some OTHER taught word. That is survivable only because of
-        which way the error runs: a false "correct" costs nothing this rule did
-        not already accept, and a false "miss" only buys extra practice. An
-        unreliable measurement is acted on solely in the direction where being
-        wrong is cheap.
+        The verdict is not a parameter, so no caller can quietly make it one
+        again. It was one until 13 August, when a miss started costing two
+        levels; the spec never carried that and nobody ran /derive.
         """
-        state = self._states.setdefault(name, ItemState(name=name))
-        if got_it:
-            state.level += 1
+        self._states.setdefault(name, ItemState(name=name)).level += 1
 
     def deprioritize(self, name: str) -> None:
         """The learner asked to stop working on this. Buried, never deleted."""

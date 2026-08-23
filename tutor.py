@@ -2376,9 +2376,8 @@ def _conversation_loop(api_key, messages, store, roster, queue_items, themes_gen
                     got_it = answered_target(user_input, done.target)
                     lesson["verdict"] = "correct" if got_it else "missed_twice"
                     lesson["verdict_target"] = done.target
-                    store.record_recall(done.target, got_it)
-                    print(f"  [level] {done.target} -> {store.level(done.target)}"
-                          f"{'' if got_it else '  (missed — comes back sooner)'}")
+                    store.record_recall(done.target)
+                    print(f"  [level] {done.target} -> {store.level(done.target)}")
                 elif done is not None and done.kind == "apply" and done.target:
                     # An application counts as EXPOSURE, never as a score. It
                     # asks for a whole sentence, so there is no single target to
@@ -2391,7 +2390,7 @@ def _conversation_loop(api_key, messages, store, roster, queue_items, themes_gen
                     # never left zero would be drawn forever in preference to
                     # every word. Counting the exposure is what makes "as often
                     # as a word" true rather than "far more, permanently".
-                    store.record_recall(done.target, got_it=True)
+                    store.record_recall(done.target)
                     print(f"  [level] {done.target} -> {store.level(done.target)}  (applied)")
                 lesson["retried"] = False
                 # A step the MODEL wrote asked something only it can mark. Give

@@ -589,37 +589,29 @@ def check_pieces_exist(roster) -> int:
 
 
 def check_a_level_counts_passages() -> int:
-    """A miss holds the level. It does not take any of it away.
+    """Six recalls is level six, however they went.
 
-    The discriminating case is climb-then-miss, and finding it took a failed
-    attempt: an earlier version of this check asserted that a word answered
-    wrong eight times stays at level 0, which the OLD rule also satisfied --
-    `max(0, level - 2)` floors at zero, so both rules agree at the extremes and
-    the test proved nothing. Restoring the 13 August code and watching the check
-    still pass is what showed it up.
-
-    Guarded from both sides: a correct answer must still advance the word, or
-    nothing ever spaces out and rule 14 is broken in the other direction.
+    The level must not be able to see the verdict at all -- so the check is
+    that `record_recall` takes no verdict to give it. Asserting on numbers
+    alone was not enough: an earlier version asserted that a word answered
+    wrong eight times stays at level 0, which the OLD rule satisfied too,
+    because `max(0, level - 2)` floors at zero. Restoring the 13 August code
+    and watching the test pass is what exposed it.
     """
     failed = 0
-    climbed = srs.ProgressStore(None)
-    climbed.mark_introduced("chị")
-    for _ in range(4):
-        climbed.record_recall("chị", got_it=True)
-    for _ in range(2):
-        climbed.record_recall("chị", got_it=False)
-    if climbed.level("chị") != 4:
-        print(f"  !! four right then two wrong left level {climbed.level('chị')}, "
-              f"expected 4 -- a miss must hold the level, never lower it")
+    import inspect
+    params = list(inspect.signature(srs.ProgressStore.record_recall).parameters)
+    if params != ["self", "name"]:
+        print(f"  !! record_recall takes {params} -- the level must not be handed "
+              f"a verdict, or a caller will make it matter again")
         failed += 1
 
-    advancing = srs.ProgressStore(None)
-    advancing.mark_introduced("tôi")
-    for _ in range(8):
-        advancing.record_recall("tôi", got_it=True)
-    if advancing.level("tôi") != 8:
-        print(f"  !! eight passages reached level {advancing.level('tôi')}, "
-              f"expected 8 -- every passage must count")
+    store = srs.ProgressStore(None)
+    store.mark_introduced("chị")
+    for _ in range(6):
+        store.record_recall("chị")
+    if store.level("chị") != 6:
+        print(f"  !! six passages reached level {store.level('chị')}, expected 6")
         failed += 1
     return failed
 
