@@ -600,11 +600,11 @@ go or spread over a month give the same lesson.
 **Where:** code — nothing anywhere records a date
 **Change:** `srs.py`
 
-### 16. The level never looks at the answer
-A recall counts as a passage whether it was right or wrong. How often a word
-comes back follows where that word is in its own life, and nothing else.
-**Where:** code — `record_recall` increments and is not given the verdict
-**Change:** `srs.py` → `record_recall`
+### 16. — withdrawn 2026-08-23
+It said wrong answers are not counted. Rule 14 already says a level rises **on
+each recall**, so there was nothing left for 16 to add once `record_recall`
+stopped being handed the verdict. The number is kept empty rather than reused:
+rule numbers are stable identifiers.
 
 ### 17. Bare recalls close almost every item — in a variable number
 Drawn by level, excluding the item just taught and its pieces. Their **number**
