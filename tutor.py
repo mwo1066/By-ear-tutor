@@ -2387,15 +2387,22 @@ def _conversation_loop(api_key, messages, store, roster, queue_items, themes_gen
         turns_done += 1
 
 
-def run_session(fresh: bool = False, no_intro: bool = False):
+def run_session(fresh: bool = False, no_intro: bool = False, start_from: str | None = None):
     """Runs one lesson.
 
-    Both flags exist for working ON the tutor rather than with it. `fresh`
+    All three flags exist for working ON the tutor rather than with it. `fresh`
     starts from the first word and saves nothing, so runs are comparable.
     `no_intro` skips the opening speech, which is 55 seconds of synthesis
     standing between you and the thing you are trying to test.
+
+    `start_from` counts everything up to a named item as already met, so a slice
+    a hundred items into the course can be HEARD without playing the hundred in
+    front of it. It never saves, for the same reason `fresh` does not: it would
+    mark a hundred items as taught that never were. Accent-insensitive, so
+    --from=nghin reaches "nghìn" without typing Vietnamese into a terminal.
     """
-    flags = [n for n, on in (("fresh: nothing saved", fresh), ("no intro", no_intro)) if on]
+    flags = [n for n, on in (("fresh: nothing saved", fresh), ("no intro", no_intro),
+                             (f"from {start_from!r}: rehearsal, nothing saved", start_from)) if on]
     print("Starting session..." + (f"  [{', '.join(flags)}]" if flags else ""))
     api_key = load_api_key()
     persona_prompt = load_persona_system_prompt(CONTENT_DIR)
@@ -2406,7 +2413,7 @@ def run_session(fresh: bool = False, no_intro: bool = False):
     # words had never been taught. pick_next_index guards this properly now;
     # the order here just stops the guard from having to fight the queue.
     roster = load_course(CONTENT_DIR)
-    store = ProgressStore(None if fresh else STATE_PATH)
+    store = ProgressStore(None if (fresh or start_from) else STATE_PATH)
 
     today = date.today()
     by_name = {i.name: i for i in roster}
@@ -2417,12 +2424,28 @@ def run_session(fresh: bool = False, no_intro: bool = False):
     # Unteachable items are kept in the roster but never queued: an imported
     # word with no gloss yet is real vocabulary, just not a lesson.
     queue_items = [by_name[n] for n in store.select_new(all_names) if is_teachable(by_name[n])]
+    jumped_seen: list[Item] = []
+    if start_from:
+        # Replay the real sequencer rather than slicing the file: file order is
+        # not teaching order, and a slice of the file would rehearse a lesson
+        # this loop never runs.
+        order, q, s2 = [], [i for i in roster if is_teachable(i)], []
+        while q:
+            it = q.pop(pick_next_index(q, s2)); s2.append(it); order.append(it)
+        probe = _bare(start_from)
+        at = next((n for n, i in enumerate(order) if probe in _bare(i.name)), None)
+        if at is None:
+            print(f"No item matches {start_from!r} — nothing to start from.")
+            return
+        jumped_seen, queue_items = order[:at], order[at:]
+        print(f"--- starting at item {at + 1}: {order[at].name} "
+              f"({len(jumped_seen)} counted as already met, nothing will be saved) ---")
     # In TEACHING order, read back from the state file, not roster order: the
     # spacing checks look at the last few items seen, so a history rebuilt in
     # the wrong order makes them pick a different next item than the run that
     # wrote the state.
     by_name = {i.name: i for i in roster}
-    seen_items = [by_name[n] for n in store.taught_order() if n in by_name]
+    seen_items = jumped_seen or [by_name[n] for n in store.taught_order() if n in by_name]
     # An empty plan means the opening turn: the tutor greets, and the first
     # item is loaded only once that turn is behind us.
     lesson = {"item": None, "plan": [], "i": 0, "started": False, "retried": False,
@@ -2483,4 +2506,6 @@ def run_session(fresh: bool = False, no_intro: bool = False):
 
 
 if __name__ == "__main__":
-    run_session(fresh="--fresh" in sys.argv, no_intro="--no-intro" in sys.argv)
+    run_session(fresh="--fresh" in sys.argv, no_intro="--no-intro" in sys.argv,
+                start_from=next((a.split("=", 1)[1] for a in sys.argv[1:]
+                                 if a.startswith("--from=")), None))

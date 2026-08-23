@@ -114,7 +114,14 @@ Talk when it asks. Ctrl+C ends the session and saves your progress to
 
 ```bash
 python tutor.py --fresh --no-intro
+python tutor.py --no-intro --from=nghin
 ```
+
+Three flags for working ON the tutor rather than with it. `--from=` counts
+everything up to a named item as already met and starts there, so a slice a
+hundred items into the course can be **heard** without playing the hundred in
+front of it. It saves nothing, for the same reason `--fresh` does not: it would
+mark a hundred items as taught that never were. The match ignores accents.
 
 Two flags for working ON the tutor rather than with it. `--fresh` starts from
 the first word and saves nothing, so two runs are comparable. `--no-intro`
