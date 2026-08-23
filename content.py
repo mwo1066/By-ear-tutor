@@ -118,6 +118,12 @@ def load_roster(content_dir: Path) -> list[Item]:
 # sit in a question. Measured on the roster: everything above this was a
 # definition that had been written into the wrong field.
 MAX_GLOSS_WORDS = 6
+# Openings that describe the word rather than translate it. Each one leaves the
+# recall question ungrammatical, because the frame already supplies the noun.
+METALINGUISTIC_FRAMES = {
+    "address for", "term for", "name for", "title for",
+    "way of", "way to", "used when", "used for", "used to",
+}
 
 
 def check_roster(items: list[Item]) -> list[str]:
@@ -182,6 +188,18 @@ def check_roster(items: list[Item]) -> list[str]:
             if "word" in i.gloss.lower():
                 problems.append(f"{i.name}: gloss {i.gloss!r} describes the word instead of translating it — "
                                 f'it would be read as "the word for {i.gloss}"')
+            # Length is not the disease, it is a symptom. A gloss is dropped
+            # into "what was ___?", so one naming a CATEGORY of word instead of
+            # a meaning comes out without its article: "what was address for an
+            # older male?". Five glosses did this on 23 August, all four or five
+            # words long, so MAX_GLOSS_WORDS never saw them and the smoke test
+            # printed them for a week without anyone reading the sentence. The
+            # cure is the same as the "word" check above -- say what it MEANS,
+            # not what kind of word it is.
+            first_two = " ".join(i.gloss.lower().split()[:2])
+            if first_two in METALINGUISTIC_FRAMES:
+                problems.append(f"{i.name}: gloss {i.gloss!r} names a kind of word instead of a meaning — "
+                                f'it would be read as "what was {i.gloss}?", with no article')
             if len(i.gloss.split()) > MAX_GLOSS_WORDS:
                 problems.append(f"{i.name}: gloss {i.gloss!r} is {len(i.gloss.split())} words — "
                                 f"too long to sit inside a spoken question")
