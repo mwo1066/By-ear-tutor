@@ -589,6 +589,13 @@ therefore gets neither piece recalls (13b) nor closing recalls (17).
 ### 14. Every word carries a level
 Level 0 at introduction, +1 on each recall. The chance of being drawn is
 `1/(level+1)^1.5` — constant at first, rare later, never zero.
+
+**Said plainly: a level is the number of times Minh has said the word back to
+you.** Since 18c makes him echo once per recall, counting echoes and counting
+recalls are the same number — and this is the sentence to reach for when the
+mechanism needs explaining. What does NOT count: the introduction, where the
+word is said twice to present it, and 18c's give-back on a word missed twice.
+Both are exposure. Neither is a passage.
 **Where:** code — `srs.weight`, `srs.draw_recalls`
 **Why:** measured on the reference course, nothing is ever "learned" and then
 retired; a word simply appears less and less
@@ -703,12 +710,24 @@ turn's instruction: "correct", "missed twice", or nothing.
 transcription and contradicts the code. Seen in session: three turns running
 where the word's level went up and the tutor said "I didn't catch that" in the
 same breath.
-**What the scripted turn says about it, word for word:** on a word **missed
-twice**, the Vietnamese is given back — "It was ngon." — in its speakable form,
-the same one the retry uses. On a **correct answer**, a bare acknowledgement:
-"That's it.", "Exactly." — **the word is not said back**. And nothing at all if
-the question that follows asks for precisely that word: the leak guard decides
-that, not a second rule written beside it.
+**What the scripted turn says about it, word for word:** the Vietnamese is
+**always** given back, in its speakable form — the same one the retry uses. On a
+word missed twice, "It was ngon."; on a correct answer, a bare acknowledgement
+and then the word, "That's it. ngon."
+
+**Why it is said every time (0022).** Measured over 120 minutes of the real
+sequencing: a taught word was spoken aloud **twice** — at its introduction and
+never again — because scripted turns are built from the gloss and never from the
+Vietnamese name, so a question cannot state its own answer. That rule is right;
+this is what pays for it. `METHOD.md` hears "to" sixty times in eight minutes.
+
+Right or wrong is not looked at, which is rule 14's principle applied here.
+
+> **Known, and accepted on Meo's call.** The echo lands one turn before the next
+> question, so when that question asks for the same word the answer has just
+> been given. The leak guard used to suppress the give-back for exactly this
+> case; it can no longer prevent anything now that the word is said either way.
+> Meo, 2026-08-23: *"pas grave."*
 **Change:** `tutor.py` → `_lesson_note`, `_acknowledgement`, `_ACK_CORRECT`
 
 ### 19b. One letter, or one letter in common, is not enough

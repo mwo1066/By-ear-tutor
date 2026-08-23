@@ -12,6 +12,18 @@ One line per archived change, in the form:
 
 ## Archived changes
 
+`0022` — **Minh says the word back, every time** — 2026-08-23 — measured on a
+120-minute replay, counting only the runs Minh actually speaks: a taught word was
+spoken aloud **twice**, at its introduction and never again. Deliberate, and that
+is why nobody saw it — scripted turns are built from the gloss, never from the
+Vietnamese name, so a question cannot state its own answer. After every answered
+recall Minh now says the word, whatever the answer was: "That's it. tôi." A word
+goes from 2 to roughly 17 utterances in 120 minutes. It also gives a level a
+definition anyone can say in one sentence — the number of times Minh has said the
+word back — without changing the arithmetic by one. The leak it opens (the echo
+lands a turn before a question that may ask for that same word) is accepted on
+Meo's call: *"pas grave."*
+
 `0021` — **a level counts passages, not successes** — 2026-08-23 — Meo: *"je
 veux juste un ratio de rappel des mots peu importe si t'as juste ou faux."*
 `SPEC.md` rules 14 and 16 said exactly that already; the code had taken two

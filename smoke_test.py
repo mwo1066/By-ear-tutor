@@ -588,6 +588,36 @@ def check_pieces_exist(roster) -> int:
     return failed
 
 
+def check_minh_says_the_word_back() -> int:
+    """Every answered recall ends with Minh saying the word (0022).
+
+    A taught word used to be spoken aloud twice in two hours -- at its
+    introduction and never again -- because scripted turns are built from the
+    gloss, never from the Vietnamese name. This is what pays for that rule.
+
+    Checked on a CONSTRUCTION too: the target is stored as
+    "tôi tên là + [tên riêng]" and Minh cannot say "plus bracket tên riêng".
+    """
+    failed = 0
+    step = tutor.Step(kind="recall", target="tên", ask="name", instruction="")
+    cases = [
+        ("correct", "tôi", "tôi."),
+        ("correct", "tôi tên là + [tên riêng]", "tôi tên là."),
+        ("missed_twice", "tôi", "It was tôi."),
+    ]
+    for verdict, target, must_end_with in cases:
+        said = tutor._acknowledgement({"verdict": verdict, "verdict_target": target,
+                                       "phrasing": {}}, step)
+        if not said.endswith(must_end_with):
+            print(f"  !! verdict {verdict} on {target!r} said {said!r}, "
+                  f"expected it to end with {must_end_with!r}")
+            failed += 1
+        if "[" in said or "+" in said:
+            print(f"  !! the authoring form leaked into speech: {said!r}")
+            failed += 1
+    return failed
+
+
 def check_a_level_counts_passages() -> int:
     """Six recalls is level six, however they went.
 
@@ -663,6 +693,7 @@ def main(NO_INTRO=False) -> int:
             + check_spoken_targets() + check_answer_cases()
             + check_prerequisite_order()
             + check_a_level_counts_passages()
+            + check_minh_says_the_word_back()
             + check_every_plan_builds() + check_choppy_cases(vocab) + check_answer_aloud_cases(roster) + check_pieces_exist(roster) + check_speaker_cues() + check_feature_glosses_name_their_word(roster)
             + check_glosses_cite_only_taught_words(roster)):
         return 1

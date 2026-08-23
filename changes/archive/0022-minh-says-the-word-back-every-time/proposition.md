@@ -1,6 +1,6 @@
 # Minh says the word back, every time
 
-**Status:** proposed — awaiting Meo. **No code written.**
+**Status:** done.
 **Opened:** 2026-08-23
 
 ## Why
@@ -92,9 +92,11 @@ answer away. Rule 18c already anticipates it: *"and nothing at all if the
 question that follows asks for precisely that word — the leak guard decides
 that, not a second rule written beside it."*
 
-So the echo must go through the same guard, not a new condition written beside
-it. This is also rule 11's territory (`0011` — a turn never asks for what it
-just said), and that machinery is in place.
+**Meo's answer, 2026-08-23: *"pas grave."*** So the echo is unconditional, and
+the guard is gone from this path — it could no longer prevent anything once the
+word is said whatever the verdict. Recorded as a decision, not lost: when a
+question follows that asks for the word just echoed, the learner has been handed
+the answer. Rule 18c carries the same note.
 
 ## Rules this touches
 
@@ -103,9 +105,16 @@ just said), and that machinery is in place.
   contradicted in silence.
 - **14** — gains the plain-language definition of what a level counts.
 
-## First task, before code
+## What it does
 
-Check what the leak guard does when the echo lands right before a question for
-the same word. If it already suppresses it, the change is small. If it does not,
-that is the real work and it must be done first, because shipping the echo
-without it would hand the learner every answer.
+```
+correct,  tôi                        ->  "That's it. tôi."
+correct,  tôi tên là + [tên riêng]   ->  "Exactly. tôi tên là."
+missed twice, tôi                    ->  "It was tôi."
+```
+
+The construction case is the one that has bitten before: the target is stored as
+`tôi tên là + [tên riêng]` and Minh, who speaks any accented word, would recite
+"tôi tên là plus bracket tên riêng". The spoken form is taken through
+`_target_fragments`, the same path the retry line uses, and the check refuses any
+`+` or `[` reaching speech.

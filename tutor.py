@@ -1460,32 +1460,39 @@ def _pick(lesson: dict, slot: str, options: tuple[str, ...]) -> str:
 
 
 def _acknowledgement(lesson: dict, step: Step) -> str:
-    """How the scripted turn opens: what the code already decided about the
-    answer it just heard, said in a few words.
+    """How the scripted turn opens: the verdict in a few words, then Minh says
+    the word.
 
-    The code alone knows this verdict (answered_target computed it), so a
+    **Minh always says it back, whatever the answer was** (0022). Measured on a
+    120-minute replay: a taught word used to be spoken aloud TWICE -- at its
+    introduction and never again -- because scripted turns are built from the
+    gloss and never from the Vietnamese name, so that a question cannot state
+    its own answer. That rule is right; this is what pays for it. The reference
+    course in METHOD.md hears "to" sixty times in eight minutes.
+
+    Right or wrong is not looked at, which is 0021's principle applied here:
+    the verdict does not steer the machinery. Meo: "on s'en fout que ça soit
+    vrai ou faux."
+
+    The code alone knows the verdict (answered_target computed it), so a
     scripted turn is the one place it can be voiced without the model second-
     guessing the transcription -- the contradiction seen live, where a word's
     level went up while the tutor said "I didn't catch that".
     """
     verdict = lesson.get("verdict")
+    target = lesson.get("verdict_target")
+    # The SPOKEN form, same as the retry line. Fixed there first and missed
+    # here once, so "It was muốn + [động từ]." went out and Minh -- who takes
+    # any accented word -- recited "muốn động từ", which is not a phrase.
+    echo = " ".join(_target_fragments(target)) or target if target else ""
+    if verdict == "missed_twice" and echo:
+        return f"It was {echo}."
     if verdict == "correct":
-        return _pick(lesson, "ack", _ACK_CORRECT)
-    missed = lesson.get("verdict_target")
-    if verdict == "missed_twice" and missed:
-        # The SPOKEN form, same as the retry line. Fixed there first and missed
-        # here, so "It was muốn + [động từ]." went out and Minh -- who takes any
-        # accented word -- recited "muốn động từ", which is not a phrase.
-        said = f"It was {' '.join(_target_fragments(missed)) or missed}."
-        # And never when the answer to THIS turn is hiding inside it. Comparing
-        # the two names for equality was not enough: the missed item was
-        # "bạn tên là gì?" and the question coming was for "bạn", so the
-        # acknowledgement handed the answer over a sentence before it was asked.
-        # The leak guard already knows how to see that, so it is asked rather
-        # than a second rule written beside it.
-        if not _leaked_target(said, step):
-            return said
-    return ""
+        ack = _pick(lesson, "ack", _ACK_CORRECT)
+        # Its own sentence, so Minh's run ENDS it. Vietnamese landing inside an
+        # English sentence is what MAX_VOICE_SWITCHES exists to catch.
+        return f"{ack} {echo}." if echo else ack
+    return f"{echo}." if echo else ""
 
 
 def scripted_turn(lesson: dict) -> str | None:
