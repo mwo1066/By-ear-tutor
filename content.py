@@ -203,12 +203,20 @@ def check_roster(items: list[Item]) -> list[str]:
             if len(i.gloss.split()) > MAX_GLOSS_WORDS:
                 problems.append(f"{i.name}: gloss {i.gloss!r} is {len(i.gloss.split())} words — "
                                 f"too long to sit inside a spoken question")
-        # A gloss that IS an English question word collides with the frame the
-        # question is asked in: "And what — what was the word?" reads as two
-        # questions. One item hit this; the frequency import will bring who,
-        # why, how and where along behind it.
-        if i.gloss.strip().lower() in {"what", "who", "where", "when", "why", "how", "which"}:
-            problems.append(f"{i.name}: gloss {i.gloss!r} is a question word — it collides with the question asked around it")
+        # A rule refusing a gloss that IS an English question word stood here
+        # until 23 August. It was written for the sentence "And what -- what was
+        # the word?", which came from the inverted template -- and tutor.py:1412
+        # records that template being deleted, for that same reason and with
+        # that same example. The check outlived the sentence it guarded.
+        #
+        # A one-word gloss now always routes to _REPEAT_ASK_SHORT and comes out
+        # as "what was the word for when?", which reads. The forms that would
+        # break are the multi-word ones and a bare question word cannot reach
+        # them. 56 taught items already carry a one-word gloss and 51 of them
+        # were never flagged -- "name", "hello", "and", "water" take exactly the
+        # same path. The five it did refuse were taught anyway, so it prevented
+        # nothing and printed at every startup, which teaches you to read past
+        # the warnings that matter.
         if i.kind == "construction" and not i.pieces:
             problems.append(f"{i.name}: construction with no pieces listed")
         for p in i.pieces:

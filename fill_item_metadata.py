@@ -12,8 +12,9 @@ per content file, and is re-runnable -- it only ever touches items where a
 field is missing, so new lesson files added later cost one more run and nothing
 else. Review the diff, not the items one by one.
 
-    python fill_item_metadata.py            # show what would change
-    python fill_item_metadata.py --write    # apply it
+    python fill_item_metadata.py                       # show what would change
+    python fill_item_metadata.py --write               # apply it
+    python fill_item_metadata.py --write --limit=40    # forty per file, then stop
 
 Run: python fill_item_metadata.py
 """
@@ -301,14 +302,24 @@ def _report(path: Path, name: str, fields: dict) -> None:
         print(f"      {key} = {_toml_value(val)}")
 
 
-def fill_toml(path: Path, api_key: str, all_names: list[str], write: bool) -> int:
+def fill_toml(path: Path, api_key: str, all_names: list[str], write: bool,
+              limit: int | None = None) -> int:
     text = path.read_text(encoding="utf-8")
     raws = tomllib.loads(text).get("items", [])
     targets = [r for r in raws if _needs_fill(r)]
     if not targets:
         print(f"{path.name}: nothing missing")
         return 0
-    print(f"{path.name}: filling {len(targets)} item(s)")
+    # The frequency shelf is 1912 items, which is 239 batches and about two
+    # hours. Nobody should have to spend that before seeing whether the glosses
+    # are any good -- and since the run only ever fills what is still empty, it
+    # is resumable: forty now, forty later, and the ones already done are
+    # skipped by _needs_fill.
+    remaining = len(targets)
+    if limit is not None:
+        targets = targets[:limit]
+    print(f"{path.name}: filling {len(targets)} item(s)"
+          + (f" of {remaining} still missing" if limit is not None and remaining > len(targets) else ""))
     filled = _ask(api_key, targets, all_names)
     known = set(all_names)
     for raw in targets:
@@ -384,6 +395,10 @@ def repair_pieces(personal: Path, roster: list, write: bool) -> int:
 
 def main() -> int:
     write = "--write" in sys.argv
+    # --limit N stops after N items PER FILE. The shelf alone is 1912, which is
+    # about two hours, and nobody should spend that before reading a sample.
+    # Resumable, because a run only ever fills what is still empty.
+    limit = next((int(a.split("=", 1)[1]) for a in sys.argv if a.startswith("--limit=")), None)
     api_key = load_api_key()
     lesson_files = sorted(p for p in CONTENT_DIR.glob("*.toml") if p.name != "persona.toml")
     personal = CONTENT_DIR / PERSONAL_ITEMS_FILENAME
@@ -401,7 +416,7 @@ def main() -> int:
     # annotate items whose structural field is wrong.
     total = repair_pieces(personal, load_course(CONTENT_DIR), write)
 
-    total += sum(fill_toml(path, api_key, all_names, write) for path in lesson_files)
+    total += sum(fill_toml(path, api_key, all_names, write, limit) for path in lesson_files)
     if personal.exists():
         total += fill_json(personal, api_key, all_names, write)
 

@@ -1,6 +1,6 @@
 # A check outlived the sentence it was guarding against
 
-**Status:** proposed — awaiting Meo. **No code written.**
+**Status:** done.
 **Opened:** 2026-08-23
 
 ## Why
@@ -58,6 +58,19 @@ And when — what was that?       <- never produced
 
 So the check refuses glosses that are correct, and cannot catch the sentence it
 exists for, because that sentence no longer exists.
+
+## The measurement that settled it
+
+```
+taught items with a ONE-WORD gloss   56
+  refused by the check                5   (gì, đâu, ai, sao, thế nào)
+  accepted, and working all along    51   name, hello, and, water, have, ...
+```
+
+`tên` → "name" takes exactly the path `khi` → "when" would. Same routing, same
+template, same sentence shape. If a one-word gloss were dangerous the course
+would already be broken by fifty-one items. The only thing separating "and" from
+"when" is a list of seven words in `content.py`.
 
 ## What is proposed
 

@@ -12,6 +12,20 @@ One line per archived change, in the form:
 
 ## Archived changes
 
+`0026` — **a check outlived the sentence it was guarding against** — 2026-08-23 —
+`content.py` refused any gloss that was a bare English question word, written for
+the sentence "And what — what was the word?". `tutor.py:1412` records that
+sentence's template being deleted, for the same reason and with the same example;
+the check stayed. A one-word gloss now always routes to `_REPEAT_ASK_SHORT` and
+comes out as "what was the word for when?", which reads. Settled by counting: **56
+taught items carry a one-word gloss and 51 were never flagged** — "name", "hello",
+"and", "water" take exactly the same path — so the rule separated `when` from `and`
+by nothing but a list of seven words. Startup warnings went from seven to two, and
+the two left are `các`, which is the real problem. The same sample showed the
+opposite hole: `những` glossed "some / those (plural marker)" passes every check and
+speaks as "what was some or those (plural marker)?" — the parenthetical aside is a
+separate observation, not fixed here.
+
 `0025` — **the gloss filler cannot run at the size the course already is** —
 2026-08-23 — the course sits at 10% of its vocabulary, 1912 items held out for
 want of a gloss, and the tool that unblocks them had stopped working. Two
