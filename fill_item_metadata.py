@@ -131,10 +131,40 @@ INSTRUCTIONS = (
 )
 
 
+# A grammatical word is not learned by translating it, so it is not glossed.
+#
+# Forty shelf items were filled as a sample and came back "be (passive)",
+# "abstract noun marker", "ordinal (first, second, etc.)". Meo asked whether
+# that really was all the learner would hear, and it was: shelf items carry an
+# empty hook and an empty description, so the gloss is not a label beside other
+# information, it IS the information. No wording fixes that. `bị` is a marker,
+# and "what was be (passive)?" asks a beginner to translate terminology nobody
+# taught them.
+#
+# 222 of the 1912 shelf items are at least partly grammatical, against 1147
+# nouns, 760 verbs and 448 adjectives that gloss cleanly. The sample happened to
+# be drawn from the very top of a frequency list, which is 72% function words --
+# the hardest 2% of the shelf, and it would have condemned the rest with it.
+#
+# They stay on the shelf ungloassed, which is where they already are. What
+# becomes of them -- a rule, or nothing -- is content work and not this script's.
+GRAMMATICAL = frozenset({
+    "particle", "pronoun", "conjunction", "preposition",
+    "classifier", "determiner", "interjection", "prefix", "abbreviation",
+})
+
+
+def _is_grammatical(raw: dict) -> bool:
+    parts = {p.strip().lower() for p in (raw.get("category") or "").split(",")}
+    return bool(parts & GRAMMATICAL)
+
+
 def _needs_fill(raw: dict) -> bool:
     """True if anything is still missing. Constructions need more than atoms,
     but kind is what says so -- and kind itself may be what is missing, so an
     item with no kind always counts as incomplete."""
+    if _is_grammatical(raw):
+        return False
     if "kind" not in raw or not raw.get("gloss"):
         return True
     # `pieces` is deliberately not checked here: repair_pieces derives it
