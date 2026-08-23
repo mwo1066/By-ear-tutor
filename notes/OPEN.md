@@ -13,7 +13,12 @@ Every defect observed across both sessions came from a turn the **model** wrote.
 Not one came from a turn the **code** wrote. That is the finding, and it points
 at where the work is.
 
-**Three examples and no question.** The `rule` turn for `trăm nghìn` said:
+> **Two of the four below are fixed** — `0023` (the rule turn no longer invites
+> speech) and `0024` (no turn announces failure). The other two are knowingly
+> left, on Meo's call, 2026-08-23: *"le reste je m'en rappelle plus, on ne fait
+> pas — on corrigera peut-être si je repasse dessus."*
+
+**Three examples and no question. FIXED — `0023`.** The `rule` turn for `trăm nghìn` said:
 
 > The notes you actually hold are hundreds of thousands — một trăm nghìn.
 > two hundred thousand — hai trăm nghìn. five hundred thousand — năm trăm nghìn.
@@ -25,12 +30,12 @@ I have to said?"*. **Two people blocked at the same turn, one of them native.**
 
 Meo's fix, and it is right: **one at a time.**
 
-**It announces failure.** The model wrote "That's not it." and "The correct word
+**It announces failure. FIXED — `0024`.** The model wrote "That's not it." and "The correct word
 is nghìn." `METHOD.md` records that the Noble extracts contain **no negative
 corrections at all** — no "not quite", no "that's wrong", no "try again". The
 scripted turn already does the right thing: *"Listen again — nghìn. Again?"*
 
-**It gives the answer away, then asks for it.** Three times across two sessions,
+**It gives the answer away, then asks for it. LEFT, on Meo's call.** Three times across two sessions,
 each one caught by the existing diagnostic and none prevented:
 
 ```
@@ -38,7 +43,7 @@ each one caught by the existing diagnostic and none prevented:
 !! the answer was given away: this turn asked FOR 'trăm' and said it
 ```
 
-**It drops Vietnamese mid-sentence.** Twice. The persona forbids it and the
+**It drops Vietnamese mid-sentence. LEFT, on Meo's call.** Twice. The persona forbids it and the
 diagnostic counts it, and it happens anyway.
 
 ---

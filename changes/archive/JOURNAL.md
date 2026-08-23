@@ -12,6 +12,27 @@ One line per archived change, in the form:
 
 ## Archived changes
 
+`0024` — **the tutor never announces failure** — 2026-08-23 — the model wrote
+"That's not it." and "The correct word is nghìn." in a live session. Meo asked
+for the opposite before knowing it was already the method's: `METHOD.md` records
+that the extracts contain **no negative correction at all**, filed there as
+recollection rather than a count, so Meo reaching it separately from a session is
+the strongest confirmation available. The persona forbade the neighbouring
+mistake — treating a GOOD answer as failure — and said nothing about a genuine
+miss. Minh says the word and the question comes again; that is the whole
+correction. "It was nghìn." stays, because it teaches the word rather than
+judging the learner.
+
+`0023` — **a rule turn hands over without inviting speech** — 2026-08-23 — two
+people were stopped by the same turn on two evenings, one a native speaker: three
+examples and then "Your turn.", which invites an answer while naming nothing to
+say. *"bah ici on sait même pas quoi il demande."* The model was obeying its
+instruction — "end on a short line that hands over" — added earlier to stop the
+turn leaking its own answer. It now ends on the telling and invites nothing.
+Checked before writing: a rule step is followed by `recall_piece`, `rapidfire` or
+`apply` in **68 of 68** plans, all three scripted and all three asking plainly,
+so there was nothing to hand over to that was not already about to ask.
+
 `0020` — **a new word drowns in the old ones** — 2026-08-23 — Meo asked whether a
 word introduced after three hours is repeated as much as one introduced in the
 first minute. Measured: 7.9 recalls in the two hours after introduction if it

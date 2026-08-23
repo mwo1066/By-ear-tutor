@@ -960,10 +960,22 @@ def build_plan(item: Item, pieces: list[Item], recall_targets: list[Item],
             # six rewordings of "ask it in English": the turn kept ending on
             # "How would you say cơm ngon to Minh?", handing over the answer.
             # The turn that ASKS is the next one and the code writes it, so this
-            # one has nothing left to leak. End on a short hand-off -- "let's put
-            # it to work" -- and stop.
-            f"Ask NOTHING: the next turn does the asking. End on a short line that hands over, "
-            f"three or four words, and stop. "
+            # one has nothing left to leak.
+            #
+            # And it must not INVITE speech either, which the old "end on a
+            # short line that hands over" produced as "Your turn." -- an
+            # invitation naming nothing to say. Two people stopped at that same
+            # turn on two evenings, one of them a native speaker: "bah ici on
+            # sait meme pas quoi il demande", and "Which one I have to said?".
+            # Checked over the whole course: a rule step is ALWAYS followed by
+            # recall_piece, rapidfire or apply -- 68 of 68 -- and all three are
+            # scripted and ask plainly. So there is nothing for this turn to
+            # hand over to that is not already about to speak.
+            f"Ask NOTHING and INVITE nothing: the next turn does the asking, and it is written "
+            f"by the code. End on the telling itself. No \"Your turn\", no \"Now you try\", "
+            f"nothing addressed to them that asks for a voice -- they would answer into a "
+            f"question that was never put, and the real one arrives a turn later against an "
+            f"answer already given. "
             f"The sentence you pick must be one this rule can VISIBLY change: asking for \"my name "
             f"is Nam\" to demonstrate past, present and future is a question the rule cannot touch, "
             f"and the learner is left wondering what the words were for. If none of the sentences "
