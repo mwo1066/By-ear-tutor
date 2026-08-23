@@ -600,17 +600,19 @@ def check_minh_says_the_word_back() -> int:
     """
     failed = 0
     step = tutor.Step(kind="recall", target="tên", ask="name", instruction="")
+    # On a correct answer it is the word ALONE -- no "That's it." in front.
+    # Meo, 23 August: "minh dit le mot, rien d'autre." Exact equality, because
+    # endswith() would happily pass the praise this is meant to remove.
     cases = [
         ("correct", "tôi", "tôi."),
         ("correct", "tôi tên là + [tên riêng]", "tôi tên là."),
         ("missed_twice", "tôi", "It was tôi."),
     ]
-    for verdict, target, must_end_with in cases:
+    for verdict, target, expected in cases:
         said = tutor._acknowledgement({"verdict": verdict, "verdict_target": target,
                                        "phrasing": {}}, step)
-        if not said.endswith(must_end_with):
-            print(f"  !! verdict {verdict} on {target!r} said {said!r}, "
-                  f"expected it to end with {must_end_with!r}")
+        if said != expected:
+            print(f"  !! verdict {verdict} on {target!r} said {said!r}, expected {expected!r}")
             failed += 1
         if "[" in said or "+" in said:
             print(f"  !! the authoring form leaked into speech: {said!r}")

@@ -108,10 +108,21 @@ the answer. Rule 18c carries the same note.
 ## What it does
 
 ```
-correct,  tôi                        ->  "That's it. tôi."
-correct,  tôi tên là + [tên riêng]   ->  "Exactly. tôi tên là."
+correct,  tôi                        ->  "tôi."
+correct,  tôi tên là + [tên riêng]   ->  "tôi tên là."
 missed twice, tôi                    ->  "It was tôi."
 ```
+
+**The word alone, with no praise in front of it.** The first attempt shipped
+"That's it. tôi." and Meo refused it the same hour: *"j'ai dit minh dit le mot,
+rien d'autre — pourquoi 'that's it toi', juste toi."* He is right, and the
+distinction is worth keeping: "That's it." is the tutor talking ABOUT the
+answer; "tôi." is the learner hearing the language. Only the second is what this
+change exists for. The check compares for equality rather than a suffix, because
+`endswith` would have passed the very praise being removed.
+
+"It was tôi." stays on a word missed twice — it is the only place the learner is
+told it was wrong.
 
 The construction case is the one that has bitten before: the target is stored as
 `tôi tên là + [tên riêng]` and Minh, who speaks any accented word, would recite

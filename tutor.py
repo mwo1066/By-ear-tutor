@@ -1487,12 +1487,14 @@ def _acknowledgement(lesson: dict, step: Step) -> str:
     echo = " ".join(_target_fragments(target)) or target if target else ""
     if verdict == "missed_twice" and echo:
         return f"It was {echo}."
-    if verdict == "correct":
-        ack = _pick(lesson, "ack", _ACK_CORRECT)
-        # Its own sentence, so Minh's run ENDS it. Vietnamese landing inside an
-        # English sentence is what MAX_VOICE_SWITCHES exists to catch.
-        return f"{ack} {echo}." if echo else ack
-    return f"{echo}." if echo else ""
+    # Just the word. No "That's it." in front of it -- Meo, 23 August: "minh dit
+    # le mot, rien d'autre." The praise was the tutor talking about the answer;
+    # this is the learner hearing the language, which is the whole point of 0022.
+    # Its own sentence, so Minh's run ENDS it: Vietnamese landing inside an
+    # English sentence is what MAX_VOICE_SWITCHES exists to catch.
+    if echo:
+        return f"{echo}."
+    return _pick(lesson, "ack", _ACK_CORRECT) if verdict == "correct" else ""
 
 
 def scripted_turn(lesson: dict) -> str | None:

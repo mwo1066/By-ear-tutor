@@ -712,8 +712,10 @@ where the word's level went up and the tutor said "I didn't catch that" in the
 same breath.
 **What the scripted turn says about it, word for word:** the Vietnamese is
 **always** given back, in its speakable form — the same one the retry uses. On a
-word missed twice, "It was ngon."; on a correct answer, a bare acknowledgement
-and then the word, "That's it. ngon."
+correct answer it is **the word alone** — "ngon." — with no praise in front of
+it: the praise was the tutor talking about the answer, and this is the learner
+hearing the language. On a word missed twice, "It was ngon.", which stays
+because it is the only place they are told it was wrong.
 
 **Why it is said every time (0022).** Measured over 120 minutes of the real
 sequencing: a taught word was spoken aloud **twice** — at its introduction and
