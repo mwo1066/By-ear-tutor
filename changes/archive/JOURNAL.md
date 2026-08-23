@@ -12,6 +12,20 @@ One line per archived change, in the form:
 
 ## Archived changes
 
+`0025` — **the gloss filler cannot run at the size the course already is** —
+2026-08-23 — the course sits at 10% of its vocabulary, 1912 items held out for
+want of a gloss, and the tool that unblocks them had stopped working. Two
+blockers, both found by trying a 16-item sample instead of trusting it. **HTTP
+413**: every batch carried a catalogue of all 2133 course names — ~8947 tokens,
+111% of the free tier's per-minute ceiling on its own, so `BATCH_SIZE` could
+have gone to 1 and still failed. It is dead weight here: the shelf is 1912
+atoms, none with pieces. **And invalid TOML**: the shelf was imported with
+`gloss = ""` present and empty, `_insert_into_toml` only ever inserted, so all
+1912 items would have come out with two `gloss` keys and the file would not have
+parsed. A batch of 8 went from 13327 tokens to 1225. Sixteen glosses produced,
+two of them refused unaided by the checks in `content.py` (`khi` → "when",
+`nào` → "which").
+
 `0024` — **the tutor never announces failure** — 2026-08-23 — the model wrote
 "That's not it." and "The correct word is nghìn." in a live session. Meo asked
 for the opposite before knowing it was already the method's: `METHOD.md` records

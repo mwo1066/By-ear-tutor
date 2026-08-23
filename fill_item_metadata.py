@@ -168,8 +168,33 @@ def _ask(api_key: str, targets: list[dict], all_names: list[str]) -> dict[str, d
     return out
 
 
+# The catalogue of every name in the course goes in so the model can resolve a
+# CONSTRUCTION's pieces -- "a sentence pattern assembled out of OTHER items in
+# the list below". Nothing else in the job needs it.
+#
+# At 2133 names it is ~8947 tokens against a free-tier ceiling of 8000 a minute:
+# on its own, 111% of a minute's budget before one word to be glossed is added.
+# So this script stopped running the day the frequency shelf was imported --
+# silently, while the startup banner went on recommending it. BATCH_SIZE could
+# have gone to 1 and it would still have failed.
+#
+# It is sent only when a batch can use it. The shelf -- 1912 items, every one
+# kind=atom, none with pieces -- never can. Its 867 multi-word compounds are the
+# one case that might, and content.derive_pieces already derives those from the
+# name in code, which is where it belongs.
+def _needs_catalogue(targets: list[dict]) -> bool:
+    """True unless every item is already known to be a plain atom.
+
+    An item whose `kind` is missing is what this script is here to decide, so it
+    may yet turn out to be a construction: those keep the catalogue. Only an
+    item that already SAYS it is an atom can go without.
+    """
+    return not all(t.get("kind") == "atom" for t in targets)
+
+
 def _ask_batch(api_key: str, targets: list[dict], all_names: list[str]) -> dict[str, dict]:
-    catalogue = "\n".join(f"{n}. {name}" for n, name in enumerate(all_names, 1))
+    catalogue = ("\n".join(f"{n}. {name}" for n, name in enumerate(all_names, 1))
+                 if _needs_catalogue(targets) else "")
     # The senses come from Wiktionary via import_frequency_words.py, which
     # deliberately does NOT pick one -- its docstring explains they are ordered
     # by etymology, so the first is routinely the archaic reading ("là" as "fine
@@ -190,8 +215,8 @@ def _ask_batch(api_key: str, targets: list[dict], all_names: list[str]) -> dict[
             {
                 "role": "user",
                 "content": (
-                    f"The whole course, in teaching order:\n{catalogue}\n\n"
-                    f"Annotate exactly these {len(targets)} items:\n\n{described}"
+                    (f"The whole course, in teaching order:\n{catalogue}\n\n" if catalogue else "")
+                    + f"Annotate exactly these {len(targets)} items:\n\n{described}"
                 ),
             },
         ],
@@ -244,8 +269,29 @@ def _insert_into_toml(text: str, name: str, fields: dict) -> str:
     hits = [n for n, line in enumerate(lines) if line.strip() == anchor]
     if len(hits) != 1:
         raise RuntimeError(f"anchor {anchor!r}: expected exactly one line, found {len(hits)}")
-    added = "".join(f"{key} = {_toml_value(val)}\n" for key, val in fields.items())
-    lines.insert(hits[0] + 1, added)
+    at = hits[0]
+
+    # An EXISTING key is rewritten in place, not shadowed by a second one.
+    # The lesson files simply omit a field they have not got, so inserting was
+    # always enough there. The frequency shelf was imported with `gloss = ""`
+    # present and empty, and _needs_fill picks exactly those -- so every one of
+    # the 1912 shelf items would have come out with two `gloss` lines and the
+    # file would no longer parse. Found on a 16-item sample before --write ever
+    # touched the real one.
+    end = next((n for n in range(at + 1, len(lines))
+                if lines[n].strip() == "[[items]]"), len(lines))
+    eol = "\r\n" if lines[at].endswith("\r\n") else "\n"
+    pending = {}
+    for key, val in fields.items():
+        written = f"{key} = {_toml_value(val)}{eol}"
+        existing = next((n for n in range(at + 1, end)
+                         if lines[n].lstrip().startswith(f"{key} = ")), None)
+        if existing is None:
+            pending[key] = written
+        else:
+            lines[existing] = written
+    if pending:
+        lines.insert(at + 1, "".join(pending.values()))
     return "".join(lines)
 
 

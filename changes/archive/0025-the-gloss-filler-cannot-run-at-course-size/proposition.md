@@ -1,6 +1,6 @@
 # The gloss filler cannot run at the size the course already is
 
-**Status:** proposed — awaiting Meo. **No code written.**
+**Status:** done.
 **Opened:** 2026-08-23
 
 ## Why
@@ -64,13 +64,51 @@ shelf item already carries — from `import_frequency_words.py`, via Wiktionary 
 stay the source, and the instruction to **pick one of them rather than invent**
 stays as it is.
 
+## A second blocker, found by running the sample
+
+With the 413 gone, the sample wrote **invalid TOML**:
+
+```toml
+name = "đó"
+gloss = "that (over there)"     <- inserted
+hook = ""
+kind = "atom"
+gloss = ""                      <- the old one, never removed
+```
+
+`_insert_into_toml` only ever inserts. The lesson files simply omit a field they
+have not got, so inserting was always enough there. **The shelf was imported
+with `gloss = ""` present and empty** — and `_needs_fill` selects exactly those.
+So all 1912 items would have come out with two `gloss` lines and the file would
+no longer have parsed.
+
+Fixed the same way it was found: an existing key is rewritten in place, a
+missing one is still inserted. It matters that this surfaced on a 16-item
+scratch copy and not on `90_frequency_stock.toml` with `--write`.
+
+**This is why the two belong in one change.** Fixing the 413 alone is not
+useful on its own — it only lets the file be corrupted faster.
+
+## What it gave
+
+```
+  a batch of 8, before   13327 tokens   over the 8000/min ceiling
+  a batch of 8, after     1225 tokens
+  a batch of 32, after    2324 tokens
+```
+
+Sixteen shelf items glossed, and the four checks in `content.py` refused two of
+them unaided — `khi` → "when" and `nào` → "which", both bare question words.
+
 ## What must be measured, not assumed
 
 **How long the full run takes.** At `BATCH_SIZE = 8` and
-`SECONDS_BETWEEN_BATCHES = 30`, 1912 items is 239 batches — about **two hours**
-of wall clock. Whether the smaller request permits a bigger batch or a shorter
-wait is a rate-limit question with a real answer, and it should be measured on a
-sample before anyone starts a two-hour run.
+`SECONDS_BETWEEN_BATCHES = 30`, 1912 items is 239 batches — about **two hours**.
+A batch of 24 measures at ~1929 input tokens, well under the ceiling, and would
+bring it to **40 minutes**. `BATCH_SIZE` is deliberately left at 8: output
+tokens count against the same limit and have not been measured, and this
+project has been burned before by an estimate standing in for a measurement.
+Raise it after a real run says it is safe, not before.
 
 **And whether the glosses are any good.** That is the actual point, and it is
 Meo's to judge. The run should produce a sample he can read before the other
