@@ -601,6 +601,28 @@ Both are exposure. Neither is a passage.
 retired; a word simply appears less and less
 **Change:** `srs.py` → `DECAY`
 
+### 14b. Part of every draw is reserved for the words most recently met
+Three of every four recall slots are drawn from the last **12** words met; the
+rest from the whole history, by level as in 14.
+
+**Why:** one draw was doing two jobs, and only one should depend on how big the
+course has grown — drilling a word just met, which must be constant, and
+bringing back everything ever met, which must thin out. Only the second was
+represented. Measured: in the two hours after its own introduction a word got
+7.9 recalls if it arrived in hour one and 4.1 if it arrived in hour four.
+
+**What it buys**, as a brand-new word's share of the draw while the course grows:
+14.7% → 5.6% → 3.2% at hours 1, 3 and 5 before; 22.8% → 24.6% → 16.1% after. The
+first column collapses and does not stop. **The floor is the result**, and it
+holds at any course size because the reservation is a fixed number.
+
+**What it does not do:** close the hour-1/hour-4 gap (4.0 → 2.5). It cannot, and
+should not — a quarter of every draw is still the long tail rule 14 exists for,
+and an early word genuinely faces less competition. The defect was a collapse
+with no floor.
+**Where:** code — `srs.draw_recalls`
+**Change:** `srs.py` → `RECENT_WINDOW`, `RECENT_SHARE`
+
 ### 15. Spacing is counted in items met, never in days
 The course is one continuous line you interrupt and resume. Thirty items in one
 go or spread over a month give the same lesson.

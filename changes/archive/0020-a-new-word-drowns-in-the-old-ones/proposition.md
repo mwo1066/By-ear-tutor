@@ -1,6 +1,6 @@
 # A new word drowns in the old ones
 
-**Status:** proposed — awaiting Meo. **No code written.**
+**Status:** done.
 **Opened:** 2026-08-23
 
 ## Why
@@ -87,20 +87,55 @@ everything else.
 **What this preserves:** `DECAY`, the curve, and job B untouched.
 **What this fixes:** the initial drilling stops depending on course size.
 
-## What is NOT known, and must not be invented
+## The first task was done, and it failed
 
-**The two numbers** — how many slots to reserve, and how large K is. Neither
-should be picked by taste.
+Counting how often a word is *heard* rather than *asked*, to compare with
+Noble's 60-in-8-minutes, gave: **twice, in 120 minutes.** Deliberately — scripted
+turns are built from the gloss, never from the Vietnamese name. That finding was
+worth having and became `0022`, but it means **Noble's counts cannot calibrate
+K**, because the two systems do not say words in the same places at all.
 
-**And the measurement to calibrate them does not exist yet.** `METHOD.md` counts
-how many times a word is *heard* in the extracts. This project counts how many
-times a word is *asked*. 60 heard in 8 minutes and 13 asked in 120 are not
-comparable numbers, and putting them side by side would justify almost any K.
+**They are not needed.** The target here was never "repeat as often as Noble".
+It was Meo's: a word introduced late must not be drilled less than one
+introduced early. That is an internal target, and it is measured against
+ourselves.
 
-**First task, before any code:** count how many times a word leaves the tutor's
-mouth in simulated sessions — inside example sentences as well as as a target —
-so there is something to compare with Noble's counts. That is counting, not
-opinion.
+## What was chosen, and on what evidence
+
+`RECENT_WINDOW = 12`, `RECENT_SHARE = 0.75`, both swept rather than picked.
+
+**A brand-new word's share of the recall draw, as the course grows:**
+
+```
+  after      words met     today       with the reserve
+     1h            42      14.7%             22.8%
+     3h           126       5.6%             24.6%
+     5h           210       3.2%             16.1%
+```
+
+Today's column collapses and does not stop collapsing. The reserved column
+holds. **That floor is the result** — it comes from the reservation being a
+fixed number, so it holds at any course size, by construction rather than by
+simulation.
+
+## What it does NOT do, stated plainly
+
+**The hour-1 / hour-4 gap narrows; it does not close.**
+
+```
+                    h1    h2    h3    h4    gap
+  today            8.0   5.8   5.2   4.0    4.0
+  with the reserve 7.2   5.6   5.4   4.7    2.5
+```
+
+It cannot close, and should not: a quarter of every draw is still the open pool,
+whose entire job is the long tail that `METHOD.md` sources. An early word also
+genuinely faces less competition, which is not a defect. What was a defect was
+the collapse having no floor, and that is what is fixed.
+
+**And the 2000-word regime was not measured.** The course holds ~270 teachable
+items, all introduced within seven hours, so there is no late regime to simulate.
+The projection in the "Why" above stands as a projection.
 
 ## Explicitly NOT in this change
 

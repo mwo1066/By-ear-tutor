@@ -1486,7 +1486,18 @@ def _acknowledgement(lesson: dict, step: Step) -> str:
     # any accented word -- recited "muốn động từ", which is not a phrase.
     echo = " ".join(_target_fragments(target)) or target if target else ""
     if verdict == "missed_twice" and echo:
-        return f"It was {echo}."
+        said = f"It was {echo}."
+        # Guarded, unlike the correct-answer echo below. Not a contradiction of
+        # Meo's "pas grave": on a miss the retry has ALREADY had Minh say the
+        # word, so suppressing this one costs no exposure -- and what it
+        # prevents is a whole phrase handing over the next question's answer.
+        # Seen live before the guard existed: the missed item was
+        # "bạn tên là gì?" and the question coming was for "bạn". Removing it
+        # produced "It was tôi tên là. Once more — what was to be?" within the
+        # hour, caught by the smoke test rather than by a session.
+        if not _leaked_target(said, step):
+            return said
+        return ""
     # Just the word. No "That's it." in front of it -- Meo, 23 August: "minh dit
     # le mot, rien d'autre." The praise was the tutor talking about the answer;
     # this is the learner hearing the language, which is the whole point of 0022.

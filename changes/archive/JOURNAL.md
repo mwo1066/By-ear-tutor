@@ -12,6 +12,20 @@ One line per archived change, in the form:
 
 ## Archived changes
 
+`0020` — **a new word drowns in the old ones** — 2026-08-23 — Meo asked whether a
+word introduced after three hours is repeated as much as one introduced in the
+first minute. Measured: 7.9 recalls in the two hours after introduction if it
+arrives in hour one, 4.1 if it arrives in hour four. A new word always starts at
+weight 1 but the pool it competes against never stops growing. Three of every
+four recall slots are now reserved for the last 12 words met. A brand-new word's
+share of the draw went from 14.7% → 5.6% → 3.2% at hours 1/3/5 to 22.8% → 24.6%
+→ 16.1%: the first collapses without a floor, the second holds, and it holds at
+any course size because the reservation is a fixed number. The stated first
+task — calibrate K against Noble's counts — was done and **failed**: a word was
+being spoken aloud twice in 120 minutes, so the two systems are not comparable.
+That failure became `0022`. The hour-1/hour-4 gap narrows (4.0 → 2.5) and does
+not close, which is correct: a quarter of the draw is still rule 14's long tail.
+
 `0022` — **Minh says the word back, every time** — 2026-08-23 — measured on a
 120-minute replay, counting only the runs Minh actually speaks: a taught word was
 spoken aloud **twice**, at its introduction and never again. Deliberate, and that

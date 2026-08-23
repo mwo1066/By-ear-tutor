@@ -32,6 +32,37 @@ DECAY = 1.5
 # Where deprioritise puts a word: far down the odds, still not gone.
 DEPRIORITIZED_LEVEL = 12
 
+# One draw was doing two jobs, and only one of them should depend on how big the
+# course has grown: drilling a word just met, which must be intense and
+# CONSTANT, and bringing back everything ever met, which must thin out. Only the
+# second was represented -- the first was whatever fell out of it while the pool
+# happened to be small. Measured over 7 simulated hours, in the two hours after
+# its own introduction a word got 7.9 recalls if it arrived in hour one and 4.1
+# if it arrived in hour four. Halved, same window, same learner: a new word
+# always starts at weight 1, but the pool it competes against never stops
+# growing -- 50% of the draw at minute zero, 3.2% at hour five, a projected 1.7%
+# at the 2000 words this course aims at.
+#
+# So a fixed part of every draw is reserved for the words most recently met.
+# Being a fixed NUMBER, it cannot be diluted: a word met in hour four sits in
+# the window exactly as long as one met in minute four. The rest is drawn as
+# before, by level, over the whole history -- DECAY and the curve are untouched.
+# Both swept rather than chosen. What they buy, measured as a brand-new word's
+# share of the recall draw while the course grows:
+#
+#     after      words met     today       with the reserve
+#        1h            42      14.7%             22.8%
+#        3h           126       5.6%             24.6%
+#        5h           210       3.2%             16.1%
+#
+# Today's column collapses and does not stop. The reserved column holds. That
+# floor -- not the exact numbers -- is the point, and it holds by construction
+# at any course size, which is what could not be simulated: the course has ~270
+# items, all introduced inside seven hours, so the 2000-word regime is a
+# projection and stays one.
+RECENT_WINDOW = 12       # how many of the most recently met words count as "near"
+RECENT_SHARE = 0.75      # of the slots in one draw, how many are reserved for them
+
 
 @dataclass
 class ItemState:
@@ -149,6 +180,20 @@ class ProgressStore:
         pool = [s for s in self._states.values()
                 if s.name not in exclude and (only is None or s.name in only)]
         picked: list[str] = []
+
+        # The reserved half first, drawn only from the words most recently met.
+        # Insertion order IS the order they were met -- mark_introduced adds
+        # them, and dicts keep that. Weighted inside the window too, so a word
+        # met three items ago does not outrank one met thirty seconds ago.
+        recent_names = set(list(self._states)[-RECENT_WINDOW:])
+        near = [s for s in pool if s.name in recent_names]
+        reserved = min(int(count * RECENT_SHARE), len(near))
+        while near and len(picked) < reserved:
+            chosen = random.choices(near, weights=[weight(s.level) for s in near])[0]
+            picked.append(chosen.name)
+            near.remove(chosen)
+            pool.remove(chosen)
+
         while pool and len(picked) < count:
             weights = [weight(s.level) for s in pool]
             chosen = random.choices(pool, weights=weights)[0]
