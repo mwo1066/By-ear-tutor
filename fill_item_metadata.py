@@ -175,6 +175,13 @@ GRAMMATICAL = frozenset({
 #
 # Kept here, with the reason, rather than as a blanked gloss: a blank gloss is
 # indistinguishable from "not done yet" and the next run would fill it again.
+#
+# THE STANDING RULE, Meo 2026-08-23: "dès que tu as le moindre doute, étagère."
+# A shelved word costs one line here and can be recovered in a minute. A wrong
+# gloss is spoken to the learner as the whole truth about a word -- shelf items
+# carry no hook and no description, so the gloss is all there is. The two are
+# not comparable, so doubt resolves one way and only one way. Do not come back
+# and ask; shelve it and note why.
 HELD_BACK = {
     # Filed "noun, verb" because bị also means a sack. The sense that matters is
     # "particle denoting the subject is negatively affected" -- a passive marker,
@@ -203,6 +210,30 @@ HELD_BACK = {
     # Meo again, and the same shape as đưa: "to carry", "to wear", "to be
     # pregnant" are three different things, not three words for one thing.
     "mang",
+
+    # --- third batch ---
+    # The dictionary itself is wrong here, which no check can see. cuộc is an
+    # event classifier -- cuộc họp a meeting, cuộc sống a life -- and its listed
+    # senses are "to publicly demonstrate; protest", a rare homograph. The
+    # filler wrote "demonstration" and did NOT flag it, because those two senses
+    # ARE synonyms of each other. The pointer finds ambiguity; it cannot find a
+    # gloss that is simply false.
+    "cuộc",
+    # A duplicate the new check caught: hôm nay already carries "today", and
+    # nay's own third sense reads "Clipping of hôm nay".
+    "nay",
+    # Archaic and literary -- "thou". Glossed "you", which would have a beginner
+    # addressing people in a register nobody has used in a century.
+    "ngươi",
+    # Never stands alone; it lives in xảy ra. A word the learner cannot use by
+    # itself is not a word the course can ask for.
+    "xảy",
+    # Sound, voice, language, hour. "language" is one slice of four.
+    "tiếng",
+    # Grammar the category filter missed: chẳng is a negation particle and
+    # bao giờ a question adverb. Same class as khi and những.
+    "chẳng",
+    "bao giờ",
 }
 
 
