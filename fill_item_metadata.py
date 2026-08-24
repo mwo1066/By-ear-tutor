@@ -534,6 +534,38 @@ HELD_BACK = {
     "miền",
     # to hand over, to deliver, and to intersect.
     "giao",
+
+    # --- sixteenth batch, seventy-five ---
+    # 53 of 75 kept. TWELVE duplicates in one batch, which is the check
+    # becoming the main filter: the course now holds 500+ glossed words, so
+    # every newcomer has that many chances to collide. First kept each time.
+    "tìm kiếm",    # tìm has "to look for"
+    "tình trạng",  # thế has "condition"
+    "hôm",         # ngày has "day"
+    "toàn bộ",     # tất cả has "all"
+    "thời",        # thời gian has "time"
+    "Việt",        # Việt Nam has it, and Việt alone is "Yue, an ancient state"
+    "triển khai",  # phát triển has "to develop"
+    "trở nên",     # trở thành has "to become"
+    "quận",        # khu has "district" -- the fifth word in that crowd
+    "dễ dàng",     # dễ has "easy"
+    "nuôi",        # nâng has "to raise"; nuôi is to raise a child, nâng to lift
+    "tệ",          # xấu has "bad"
+    # Not English: "time point".
+    "thời điểm",
+    # Institutional or political rather than vocabulary.
+    "đoàn",        # the Youth Union
+    "sở",          # a government department; its first sense is a camellia
+    # One spelling, unrelated things.
+    "trai",        # a boy, and an oyster
+    "cầu",         # a bridge, to pray, and a shuttlecock
+    "phát",        # to distribute, to emit, and a classifier for gunshots
+    "trực tiếp",   # live, and direct
+    "thay",        # to replace, and to change -- thay đổi is taught
+    # Register: nhóc is familiar to the point of rude, and lũ is a flood but
+    # also a dismissive classifier for a group of people.
+    "nhóc",
+    "lũ",
 }
 
 
