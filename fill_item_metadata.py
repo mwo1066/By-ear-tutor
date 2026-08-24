@@ -416,6 +416,28 @@ HELD_BACK = {
     "vốn",
     # common, and also together -- chung nhau.
     "chung",
+
+    # --- twelfth batch ---
+    # Meo, on how freely to shelve: "des que t'as des doutes, erreur ou je sais
+    # pas quoi: direction placard." Half this batch went, and that is the
+    # intended rate rather than a bad run.
+    #
+    # Duplicates: chút has "a little bit", cuối has "end".
+    "một chút",
+    "kết thúc",
+    # Each of these is two or three unrelated things wearing one spelling.
+    "giải",      # a prize, to solve, to explain
+    "đá",        # a rock, and to kick
+    "mạng",      # a network, a spiderweb, and a life -- cứu mạng
+    "sinh",      # to be born, and to produce
+    "định",      # to intend; its first listed sense is a given name
+    "chiều",     # afternoon, a direction, and to indulge someone
+    "con trai",  # a boy, a son, and an oyster
+    "khoá",      # a key, to lock, and a school term
+    "vẻ",        # barely alone: it lives in vẻ đẹp, vẻ mặt
+    # Glossed "to do a favour", which is what the words mean apart and not what
+    # the phrase does: làm ơn is "please".
+    "làm ơn",
 }
 
 
