@@ -148,7 +148,11 @@ INSTRUCTIONS = (
     "rank is idea / opinion; 'vụ' is ranked 230 with the single sense 'crisis' and is really a "
     "classifier for incidents. When EVERY listed sense is a proper noun and the word is common, "
     "the dictionary has captured a homograph and missed the word -- say so by setting "
-    "had_to_choose, rather than writing the proper noun. The same goes when the sense CONTRADICTS "
+    "had_to_choose, rather than writing the proper noun. NEVER write a gloss that is a slur or an "
+    "insult, whatever the dictionary lists and however high up it lists it: 'tàu' has 'Chinese; "
+    "Chinaman; Chink' as its FIRST sense and the word a beginner needs is ship. Only one entry in "
+    "the whole shelf is labelled a slur, so the label cannot be relied on -- read what the words "
+    "actually say. The same goes when the sense CONTRADICTS "
     "the part of speech it is filed under: 'ổn' is given as an adjective with the single sense "
     "'pig', which is a noun -- the entry is for a different word, and the adjective ranked 283 "
     "means stable or fine. One sense is not a reason to trust it. Sixteen shelf items are in exactly that state, among them ngày (day), sáng (morning), "
@@ -362,6 +366,36 @@ HELD_BACK = {
     "lớp",
     # Rarely alone: it lives in diễn viên and biểu diễn.
     "diễn",
+
+    # --- tenth batch ---
+    # The dictionary's FIRST sense for tàu is "Chinese; Chinaman; Chink". The
+    # filler wrote "ship" and nothing reached the learner, but it is the closest
+    # this has come to speaking a slur aloud. Only ONE entry in the whole shelf
+    # is labelled a slur, so the label cannot be used as a filter -- the
+    # instruction now says to read what the senses actually say. tàu is shelved
+    # anyway, being both a ship and a train.
+    "tàu",
+    # Shelved before it is ever reached: its senses are "every; all" and also
+    # "barbarian; savage; a racial slur" -- the one entry the dictionary does
+    # label. It is the commonest word carrying that risk and it is not worth
+    # the twenty recalls it would earn.
+    "mọi",
+    # nhóm already carries "group", and ban's first sense is "branch of
+    # administration in the feudal court".
+    "ban",
+    # innards, and figuratively the heart. Its senses read "intestines; guts".
+    "lòng",
+    # expensive, and also to cross over -- sang đường, to cross the road.
+    "sang",
+    # excellent, from tuyệt vời, over senses reading "to cut off; to exhaust".
+    "tuyệt",
+    # A rural administrative unit. The same crowded field as huyện, already
+    # shelved a batch ago.
+    "xã",
+    # Bureaucratic: a work assignment or official mission.
+    "công tác",
+    # to look after, and to look at.
+    "trông",
 }
 
 
