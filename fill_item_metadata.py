@@ -630,6 +630,26 @@ HELD_BACK = {
     "ca",    # a song, a work shift, and a case
     "hạ",    # to lower, and summer
     "trừ",   # to subtract, and except
+
+    # --- nineteenth batch, cut short by an outage ---
+    # Ten of thirteen batches came back "openai/gpt-oss-120b unavailable after 3
+    # attempts" -- the model, not the data. Twenty-four words landed and eighty
+    # were left unglossed for the next run, which is precisely what the skip
+    # added five batches ago exists for: before it, one failure ended the pass
+    # and threw away everything that had already succeeded.
+    #
+    # Duplicates, first kept: một số has "some", hệ thống "system", mạnh
+    # "strong", đơn giản "simple".
+    "một vài", "chế độ", "mạnh mẽ", "đơn",
+    # A surname, caught by the self-name check.
+    "Nguyễn",
+    # south, and also Vietnam, and male, and a given name -- with Việt Nam
+    # already taught.
+    "Nam",
+    # Legal boilerplate: a clause or an item in a contract.
+    "khoản",
+    # Glossed "to suck"; what it actually does is smoke -- hút thuốc.
+    "hút",
 }
 
 
