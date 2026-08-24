@@ -196,6 +196,12 @@ GRAMMATICAL = frozenset({
 # Kept here, with the reason, rather than as a blanked gloss: a blank gloss is
 # indistinguishable from "not done yet" and the next run would fill it again.
 #
+# THE DUPLICATE RULE, Meo 2026-08-23: "quand t'as des doublons, on garde le
+# premier et le deuxième tu le mets de côté." The first is the one already
+# validated -- it has been read and kept, and the newcomer has not. Applies to
+# whatever the duplicate check in content.py reports, and to the near-misses it
+# cannot see, like cám ơn against cảm ơn.
+#
 # THE STANDING RULE, Meo 2026-08-23: "dès que tu as le moindre doute, étagère."
 # A shelved word costs one line here and can be recovered in a minute. A wrong
 # gloss is spoken to the learner as the whole truth about a word -- shelf items
