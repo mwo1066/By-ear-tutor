@@ -171,6 +171,20 @@ HELD_BACK = {
     # entry, and the filler took the first. Any single gloss is an arbitrary
     # slice. The word that actually means to give is tặng, rank 687.
     "đưa",
+    # A DUPLICATE, not a doubt. dùng already carries "to use", and two words
+    # answering one question means the tutor asks "what was the word for to
+    # use?" and cannot be told which it wanted. Meo: "on a déjà un mot, c'est
+    # ok." The rule generalises -- on 1640 words collisions are certain.
+    "sử dụng",
+    # Flagged as doubtful and shelved under Meo's standing rule ("dès qu'on a un
+    # doute on le met de côté, puis on verra à la fin"), not by his direct call.
+    # khỏi: senses run "not to have to do something", "to recover from", then
+    # "to avoid" third -- the filler took the third. Same shape as đưa.
+    "khỏi",
+    # đều: the senses are geometry ("equal in size", "equilateral") and the
+    # filler wrote "equal", but the word earns its rank 137 as an adverb meaning
+    # all / both -- "chúng tôi đều thích". The dictionary gave etymology, not use.
+    "đều",
 }
 
 
