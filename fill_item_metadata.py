@@ -690,6 +690,33 @@ HELD_BACK = {
     # One spelling, unrelated things.
     "khối",      # a block, a mass, and a school year group
     "gấp",       # to fold, urgent, and a multiplier -- gấp đôi
+
+    # --- twenty-third batch, the outage lifted ---
+    # Three of thirteen unavailable rather than ten. 76 words, 55 kept.
+    #
+    # TWELVE duplicates, first kept each time.
+    "vật", "chuẩn", "mắc", "hệ", "điều hành", "pháp luật", "thoả thuận",
+    "cửa hàng", "liên tục",
+    # Wrong regardless: xác is a corpse, not a body.
+    "xác",
+    # Two where ENGLISH is the ambiguous one, not Vietnamese -- the same shape
+    # as chữ against thư for "letter". Worth returning to with better glosses.
+    # nhẹ is light as in not heavy; ánh sáng is light as in illumination.
+    # thị trường is an economic market; chợ is the one with stalls in it.
+    "ánh sáng",
+    "chợ",
+    # Administrative and political register.
+    "công an",   # public security
+    "phường",    # a ward -- the sixth word in the district / area crowd
+    "tuyến",     # a route or line, in the official sense
+    # One spelling, unrelated things, or bound to a phrase.
+    "đập",       # to smash, and a dam
+    "dấu",       # a mark, and a tone mark
+    "ký",        # to sign, and a kilo
+    "hại",       # harm, but it lives in có hại
+    "kèm",       # to accompany, rarely alone
+    # A parenthetical doing the gloss's work: "to wash (yourself)".
+    "tắm",
 }
 
 
