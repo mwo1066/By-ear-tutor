@@ -154,7 +154,29 @@ GRAMMATICAL = frozenset({
 })
 
 
+# Held back by hand, because the category field could not see why. It is read
+# off Wiktionary and describes whichever homograph came first, so a grammatical
+# word wearing a noun's coat walks straight through GRAMMATICAL above.
+#
+# Kept here, with the reason, rather than as a blanked gloss: a blank gloss is
+# indistinguishable from "not done yet" and the next run would fill it again.
+HELD_BACK = {
+    # Filed "noun, verb" because bị also means a sack. The sense that matters is
+    # "particle denoting the subject is negatively affected" -- a passive marker,
+    # and the sample glossed it "be (passive)", which is terminology a beginner
+    # has never been taught. Same case as những and sự.
+    "bị",
+    # Meo, 2026-08-23: "j'ai un doute sur đưa". He is right. Its first dictionary
+    # sense is "to bring, to take, to give, to hand" -- four English verbs in one
+    # entry, and the filler took the first. Any single gloss is an arbitrary
+    # slice. The word that actually means to give is tặng, rank 687.
+    "đưa",
+}
+
+
 def _is_grammatical(raw: dict) -> bool:
+    if raw.get("name") in HELD_BACK:
+        return True
     parts = {p.strip().lower() for p in (raw.get("category") or "").split(",")}
     return bool(parts & GRAMMATICAL)
 

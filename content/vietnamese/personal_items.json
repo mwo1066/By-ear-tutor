@@ -329,6 +329,7 @@
     "pieces": [
       "bạn",
       "đi",
+      "đến",
       "không"
     ],
     "literal": "You go to [place] not?",
@@ -384,6 +385,7 @@
     "kind": "construction",
     "pieces": [
       "bạn",
+      "chơi",
       "không"
     ],
     "literal": "you play [instrument] not?",
@@ -473,7 +475,7 @@
     "kind": "construction",
     "pieces": [
       "bạn",
-      "có",
+      "có thể",
       "đặt",
       "không"
     ],
@@ -521,7 +523,9 @@
     "kind": "construction",
     "pieces": [
       "đặt",
-      "không"
+      "được",
+      "không",
+      "ạ"
     ],
     "literal": "[đặt] [món] được không ạ",
     "source": "personnel",
