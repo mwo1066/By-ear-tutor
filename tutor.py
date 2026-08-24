@@ -1375,17 +1375,22 @@ RECALL_KINDS = ("recall_piece", "rapidfire", "settle")
 # forbids it. Its instruction had said "do not say any Vietnamese" all along.
 SCRIPTED_KINDS = RECALL_KINDS + ("introduce", "scaffold", "apply")
 
-# Steps that move an item's level when they complete. RECALL_KINDS score what
-# the code asked and can check; an application only counts the exposure, since
-# it asks for a whole sentence and has nothing to compare (17b).
+# Steps whose completion counts as one PASSAGE through the item, so its level
+# rises by one (14, 16). Nothing here is scored: since 0021 the level is never
+# handed the verdict, and a recall and an application count exactly alike.
 #
-# Named here because it was written out by hand in four places -- twice in
+# It was called PASSAGE_KINDS until 23 August, under a comment explaining that
+# recalls score what the code can check while an application only counts the
+# exposure. That distinction was deleted by 0021 and the name outlived it -- and
+# reading it hours later sent me back to explaining the old model to Meo, who
+# had to say "quand on supprime des trucs il faut les supprimer". He is right: a
+# name that says scoring, when nothing scores, is a bug in the head of whoever
+# reads it next.
+#
+# Named in one place because it was written out by hand in four -- twice in
 # simulate_progress.py, once in smoke_test.py, once in the live loop -- under
 # comments claiming they matched. They did, until applications began to count.
-# simulate_progress.py is what measured "33 features out of 33 never seen
-# again": a stale copy there does not merely fail to show the fix, it reports
-# that the fix did not work.
-SCORING_KINDS = RECALL_KINDS + ("apply",)
+PASSAGE_KINDS = RECALL_KINDS + ("apply",)
 
 
 # A repeat has to SOUND like a repeat: three goes at "What's the Vietnamese word

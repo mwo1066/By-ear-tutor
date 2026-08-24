@@ -30,7 +30,7 @@ sys.stdout.reconfigure(encoding="utf-8")
 
 from content import load_course, is_teachable, load_personal_items, load_roster, pick_next_index, pieces_of
 from srs import ProgressStore
-from tutor import CONTENT_DIR, SCORING_KINDS, STATE_PATH, RECALL_KINDS, _recall_targets, build_plan
+from tutor import CONTENT_DIR, PASSAGE_KINDS, STATE_PATH, RECALL_KINDS, _recall_targets, build_plan
 
 # Measured across the real sessions logged: a scripted turn runs 3-11s of speech
 # plus 3-5s of listening, a model turn 10-28s plus the same. Most turns are
@@ -86,7 +86,7 @@ def run_until(match, seed: int = 7, on_taught=None):
         pieces = pieces_of(item, seen)
         for step in build_plan(item, pieces,
                                _recall_targets(store, item, pieces, seen), seen):
-            if step.kind in SCORING_KINDS and step.target:
+            if step.kind in PASSAGE_KINDS and step.target:
                 store.record_recall(step.target)
     return store, taught, None
 
@@ -116,7 +116,7 @@ def run_until_kind(kind: str, seed: int = 7):
         pieces = pieces_of(item, seen)
         for step in build_plan(item, pieces,
                                _recall_targets(store, item, pieces, seen), seen):
-            if step.kind in SCORING_KINDS and step.target:
+            if step.kind in PASSAGE_KINDS and step.target:
                 store.record_recall(step.target)
     return store, taught, None
 
