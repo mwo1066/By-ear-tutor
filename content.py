@@ -156,6 +156,23 @@ def check_roster(items: list[Item]) -> list[str]:
         if len(names) > 1:
             problems.append(f"{', '.join(names)}: all glossed {gloss!r} — one question, "
                             f"several right answers, and no way to say which was wanted")
+    # A slash in a gloss is fine when both sides are the same meaning in two
+    # English shapes -- "I / me", "we / us", "earth / land". It is NOT fine when
+    # the sides are different parts of speech, because then the model has
+    # written down the choice it failed to make instead of making it: "rank / to
+    # grant / acute", "worthy / to deserve". Spoken, the question becomes "what
+    # was rank or to grant or acute?", which asks three things at once.
+    #
+    # Told apart by the "to " that marks an English infinitive: a slash with a
+    # verb on one side and something else on the other is the bad case, and the
+    # good ones have never had one.
+    for i in items:
+        if i.kind != "atom" or "/" not in (i.gloss or ""):
+            continue
+        sides = [s.strip() for s in i.gloss.split("/") if s.strip()]
+        if len({s.startswith("to ") for s in sides}) > 1:
+            problems.append(f"{i.name}: gloss {i.gloss!r} puts two kinds of word on either side "
+                            f"of a slash — that is the choice not made, written down")
     # Two items with the same name is silent damage: the loader reads files in
     # filename order, so the LAST one wins -- a hand-written word with a gloss
     # was being shadowed by its own entry in the frequency stock, which has

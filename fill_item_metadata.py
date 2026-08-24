@@ -288,6 +288,22 @@ HELD_BACK = {
     # A demonstrative, so grammar -- the same class as đó, which is already
     # shelved for it. The category field said adjective and adverb.
     "kia",
+
+    # --- sixth batch ---
+    # A new shape: the ambiguity leaked INTO the gloss. Rather than choose, the
+    # filler wrote both -- "rank / to grant / acute", "worthy / to deserve" --
+    # which spoken becomes "what was rank or to grant or acute?", three
+    # questions at once. content.py now refuses a slash with different kinds of
+    # word on either side, so these two are caught automatically from now on.
+    "cấp",
+    "đáng",
+    # The same failure the check cannot see, because likelihood and ability are
+    # both nouns. Two meanings all the same.
+    "khả năng",
+    # bảo is to tell or to say, and "to inform" is a stiffer word for one corner
+    # of it; đánh is to hit, to play an instrument, to play a game.
+    "bảo",
+    "đánh",
 }
 
 
