@@ -466,6 +466,39 @@ HELD_BACK = {
     # Abstract enough that no single English word reaches it.
     "cơ sở",
     "suốt",
+
+    # --- fourteenth batch, the first of fifty ---
+    # 35 of 50 kept. The ratio improves going down the frequency list, as
+    # predicted: the top is function words and words with five senses, and
+    # below it are rivers, aeroplanes and banks.
+    #
+    # Duplicates, first kept: thế has "condition", đúng has "correct",
+    # thay đổi has "to change".
+    "điều kiện",
+    "chính xác",
+    "trở",
+    # Caught by the slash check -- "to laugh / smile", a verb against a noun.
+    "cười",
+    # Glosses that are not English: "trip / travel instance", and hề's
+    # "fool / jester; to matter; completely", which is three entries in a trench
+    # coat.
+    "chuyến",
+    "hề",
+    # Two nouns either side of a slash, which the check cannot see.
+    "lễ",
+    # A parenthetical qualifier doing the work the gloss should do.
+    "đào tạo",
+    # The real thing: Vietnamese xanh covers blue AND green, which is why the
+    # dictionary reaches for "grue". No English word is the answer.
+    "xanh",
+    # One spelling over unrelated things.
+    "đông",     # east, winter, and crowded
+    "thu",      # autumn, and to collect
+    "nổi",      # to float, and a modal "to manage to"
+    "dòng",     # a stream, and a line of text
+    "rời",      # to leave, and to detach
+    # Glossed "effort", a noun, for a verb meaning to try.
+    "cố gắng",
 }
 
 
