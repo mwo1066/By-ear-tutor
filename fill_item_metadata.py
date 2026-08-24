@@ -140,7 +140,10 @@ INSTRUCTIONS = (
     "rank is idea / opinion; 'vụ' is ranked 230 with the single sense 'crisis' and is really a "
     "classifier for incidents. When EVERY listed sense is a proper noun and the word is common, "
     "the dictionary has captured a homograph and missed the word -- say so by setting "
-    "had_to_choose, rather than writing the proper noun. Sixteen shelf items are in exactly that state, among them ngày (day), sáng (morning), "
+    "had_to_choose, rather than writing the proper noun. The same goes when the sense CONTRADICTS "
+    "the part of speech it is filed under: 'ổn' is given as an adjective with the single sense "
+    "'pig', which is a noun -- the entry is for a different word, and the adjective ranked 283 "
+    "means stable or fine. One sense is not a reason to trust it. Sixteen shelf items are in exactly that state, among them ngày (day), sáng (morning), "
     "vui (happy) and thành (to become).\n\n"
     "hook is almost always empty. Write one only when the item is a word the learner already "
     "knows in English, or a name that means something, or has an origin worth a sentence -- and only "
@@ -267,6 +270,24 @@ HELD_BACK = {
     "điểm",
     "khoảng",
     "tỉnh",
+
+    # --- fifth batch ---
+    # The fourth wrong dictionary entry, and the one that showed how to spot
+    # them: ổn is filed as an ADJECTIVE and its single sense is "pig", a noun.
+    # The category and the sense contradict each other. The real word, ranked
+    # 283, means stable or fine -- "ổn không?". One sense is not a reason to
+    # trust it, and the pointer had nothing to compare against.
+    "ổn",
+    # Its senses are "half a day" and "session, event, time, period"; the filler
+    # took the second. buổi is a part of the day -- buổi sáng, buổi tối.
+    "buổi",
+    # dark, and also the stretch from late evening into night.
+    "tối",
+    # to calculate, to be of a mind, and disposition or character.
+    "tính",
+    # A demonstrative, so grammar -- the same class as đó, which is already
+    # shelved for it. The category field said adjective and adverb.
+    "kia",
 }
 
 
