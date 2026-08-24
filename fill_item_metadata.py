@@ -674,6 +674,22 @@ HELD_BACK = {
     "địa bàn",
     # a weighing scale, to weigh, and a kilo.
     "cân",
+
+    # --- twenty-second batch, the outage easing ---
+    # Ten of thirteen unavailable rather than eleven. Twenty-four words, fifteen
+    # kept: bed, voice, street, bird, mouth, poor, box, corner, occasion,
+    # accident, document, Japan, to communicate.
+    #
+    # Duplicates, first kept: luôn has "always", loại "type", vui "happy",
+    # cắt "to cut".
+    "mãi", "dạng", "mừng", "chặt",
+    # Political or legal register rather than vocabulary a beginner needs.
+    "đồng chí",  # comrade
+    "án",        # a criminal case
+    "chỉ đạo",   # to direct, in the official sense
+    # One spelling, unrelated things.
+    "khối",      # a block, a mass, and a school year group
+    "gấp",       # to fold, urgent, and a multiplier -- gấp đôi
 }
 
 
