@@ -499,6 +499,41 @@ HELD_BACK = {
     "rời",      # to leave, and to detach
     # Glossed "effort", a noun, for a verb meaning to try.
     "cố gắng",
+
+    # --- fifteenth batch, the second of fifty ---
+    # 36 of 50 kept. áo is another dictionary override: its listed sense is
+    # "Austria" and the filler wrote "shirt".
+    #
+    # Duplicates, first kept: nhanh has "fast", dân has "people", tiếp tục has
+    # "to continue", hy vọng has "hope". niềm was never a word for hope anyway
+    # -- it is a classifier that goes in front of abstract feelings.
+    "mau",
+    "nhân dân",
+    "tiếp",
+    "niềm",
+    # Caught by the length check at eight words: "to shut; to drive; to
+    # solidify; to pack".
+    "đóng",
+    # Not vocabulary. ư is a letter of the alphabet and a final particle;
+    # "game" is an English loanword whose gloss is itself, so the recall would
+    # ask "what was the word for game?" and the answer would be game.
+    "ư",
+    "game",
+    # Semicolons doing what the slash check catches, with the same fault: a verb
+    # and a noun, or a noun and an adjective, offered together instead of one
+    # being chosen.
+    "lao động",
+    "cá nhân",
+    "câu chuyện",
+    # Glossed "victory", a noun, for a verb meaning to win -- and its first
+    # listed sense is "brake".
+    "thắng",
+    # to assume, and to think something mistakenly.
+    "tưởng",
+    # A fourth word crowding region and area, after vùng, khu and khu vực.
+    "miền",
+    # to hand over, to deliver, and to intersect.
+    "giao",
 }
 
 

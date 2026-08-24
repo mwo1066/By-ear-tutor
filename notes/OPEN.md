@@ -84,6 +84,19 @@ way it was before. **Status unknown**, recorded rather than repeated as fact.
 
 ---
 
+## A rule the vocabulary is waiting for
+
+**Vietnamese does not split blue from green.** `xanh` covers both, which is why
+the dictionary reaches for the invented word "grue". It is the first word met in
+bulk glossing that fails for a reason no gloss can fix: there is no English word
+that is the answer, so it cannot be asked for at all.
+
+It belongs with the tones and the address system — a fact the tutor states,
+rather than a word the learner recalls. `xanh` sits on the shelf until that rule
+exists.
+
+Found 2026-08-23, at word 256 of the frequency stock.
+
 ## Unfinished, but not broken
 
 - **Six pronoun rules** never written: 3 (which word places the person),
