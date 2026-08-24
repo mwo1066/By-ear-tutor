@@ -650,6 +650,15 @@ HELD_BACK = {
     "khoản",
     # Glossed "to suck"; what it actually does is smoke -- hút thuốc.
     "hút",
+
+    # --- twentieth batch, cut short by the same outage ---
+    # Eleven of thirteen batches unavailable again. Twelve words landed.
+    # Duplicates, first kept: thực phẩm has "food", chuyển "to move", rất "very".
+    "thức ăn", "di chuyển", "hết sức",
+    # A parenthetical doing the gloss's work: "work (a piece of art)".
+    "tác phẩm",
+    # An institute, and also the hospital half of bệnh viện.
+    "viện",
 }
 
 
