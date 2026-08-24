@@ -396,6 +396,26 @@ HELD_BACK = {
     "công tác",
     # to look after, and to look at.
     "trông",
+
+    # --- eleventh batch ---
+    # Three duplicates in one batch, the check's sixth, seventh and eighth
+    # catches. In each the word already validated stays and the newcomer goes:
+    # chờ has "to wait", bây giờ has "now", chọn has "to choose".
+    "đợi",
+    "hiện nay",
+    "lựa chọn",
+    # A genuine error, and the first of its shape. hơi's senses OPEN with
+    # "slightly, somewhat, a little" -- which is the word at this frequency,
+    # hơi mệt, a bit tired -- and the filler reached past it for "vapor /
+    # steam". Everything else it got wrong came from the dictionary being
+    # wrong; here the dictionary was right and was not read.
+    "hơi",
+    # degree of temperature, and also an adverb of extent.
+    "độ",
+    # capital as money, and also an adverb meaning originally.
+    "vốn",
+    # common, and also together -- chung nhau.
+    "chung",
 }
 
 
