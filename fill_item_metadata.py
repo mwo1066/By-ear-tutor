@@ -438,6 +438,28 @@ HELD_BACK = {
     # Glossed "to do a favour", which is what the words mean apart and not what
     # the phrase does: làm ơn is "please".
     "làm ơn",
+
+    # --- thirteenth batch ---
+    # Caught by the self-name check: glossed "Hoa people (ethnic Chinese in
+    # Vietnam)", which both gives its own answer away and is not the word. hoa
+    # is a flower.
+    "hoa",
+    # Four duplicates in one batch, the check's eleventh through fourteenth.
+    # The validated word stays: tốt has "good", lớn has "big", gái has "girl",
+    # thực sự has "really".
+    "giỏi",
+    "to",
+    "con gái",
+    "thật sự",
+    # One spelling, unrelated things.
+    "hiện",   # presently, and to appear
+    "bóng",   # a shadow, and a ball
+    "hội",    # a festival, and an association
+    "kiếm",   # a sword, and to earn -- kiếm tiền
+    "hình",   # a picture, and a shape
+    # Abstract enough that no single English word reaches it.
+    "cơ sở",
+    "suốt",
 }
 
 

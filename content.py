@@ -223,7 +223,9 @@ def check_roster(items: list[Item]) -> list[str]:
         # glosses failed, eight of them written that same day by someone
         # trying to be helpful. A prompt cannot hold this over 1900 items.
         if i.kind == "atom" and i.gloss:
-            if "word" in i.gloss.lower():
+            # Whole word, not a substring: "sword" contains "word", and so do
+            # "wordy" and "crossword". kiếm was refused for meaning a sword.
+            if re.search(r"words?", i.gloss.lower()):
                 problems.append(f"{i.name}: gloss {i.gloss!r} describes the word instead of translating it — "
                                 f'it would be read as "the word for {i.gloss}"')
             # Length is not the disease, it is a symptom. A gloss is dropped
