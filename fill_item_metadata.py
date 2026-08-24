@@ -725,6 +725,14 @@ HELD_BACK = {
     "nhà trường", "biện pháp",
     # Official register: to inspect, in the government sense.
     "thanh tra",
+
+    # --- twenty-fifth batch ---
+    # Twelve of thirteen unavailable again. Eight words, six kept: code, broken,
+    # in time, match, fee, serious.
+    "khác biệt",  # khác has "different"
+    # Glossed "imperial sacrifice ceremony". đàn is a musical instrument, or a
+    # flock of animals -- the dictionary reached for a rare historical sense.
+    "đàn",
 }
 
 
