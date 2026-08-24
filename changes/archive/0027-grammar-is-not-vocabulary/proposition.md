@@ -1,6 +1,6 @@
 # Grammar is not vocabulary, and the shelf imported it as if it were
 
-**Status:** proposed — awaiting Meo. **No code written.**
+**Status:** done.
 **Opened:** 2026-08-23
 
 ## Why

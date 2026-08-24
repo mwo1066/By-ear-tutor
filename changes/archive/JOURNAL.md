@@ -12,6 +12,31 @@ One line per archived change, in the form:
 
 ## Archived changes
 
+`0028` — **let the model say when it had to choose** — 2026-08-23 — Meo's rule for
+1640 shelf words is "au doute on met de côté", but he cannot read 1640 entries
+looking for doubt. Two mechanical filters were tried and both failed against the
+22 words he had just validated: "3+ alternatives" shelves `gần` ("near; nearby;
+close"), and "3+ senses" would have shelved eight of the twenty-two, `nhà`
+"house" and `giờ` "hour" among them. **Counting cannot tell synonyms from
+meanings** — that judgement is semantic, so it is asked of the model. Measured on
+eight words with known answers: it flagged all three that needed it (`đưa`,
+`mang`, `khỏi`) and three of the five that did not (`gần`, `nhà`, `tay`).
+Perfect recall, poor precision — so it **points rather than blocks**: the gloss is
+written and the flagged words head the report. Shipped weaker than proposed, and
+the proposition says so.
+
+`0027` — **grammar is not vocabulary** — 2026-08-23 — a sample of forty shelf
+glosses came back "be (passive)", "abstract noun marker", "ordinal (first,
+second, etc.)". Meo asked whether that really was all the learner hears; it was,
+because shelf items carry an empty hook and description, so the gloss is not a
+label beside other information, it IS the information. 222 of 1912 items are at
+least partly grammatical, and the sample happened to be drawn from the top of a
+frequency list — 72% function words, the hardest 2% of the shelf, which would
+have condemned the other 98% with it. Further down it is `gà`, `giường`, `phố`,
+`chim`. The filler now skips grammatical items; they stay shelved. The category
+data is noisy and the filter is not complete — `bị` is filed as a noun because
+`bị` also means a sack.
+
 `0026` — **a check outlived the sentence it was guarding against** — 2026-08-23 —
 `content.py` refused any gloss that was a bare English question word, written for
 the sentence "And what — what was the word?". `tutor.py:1412` records that

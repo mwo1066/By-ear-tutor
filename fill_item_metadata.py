@@ -56,6 +56,21 @@ FILL_TOOL = [
                                         "'to want', 'my name is ___'."
                                     ),
                                 },
+                                "had_to_choose": {
+                                    "type": "boolean",
+                                    "description": (
+                                        "TRUE when the listed senses are NOT saying the same thing, so "
+                                        "whichever gloss you write is one arbitrary slice of the word. "
+                                        "FALSE when they are simply several English words for one "
+                                        "meaning -- that is the normal case and you should just pick "
+                                        "the clearest. The difference: 'near; nearby; close' is one "
+                                        "meaning said three ways, so FALSE. 'to bring, to take, to "
+                                        "give, to hand' is four different actions, so TRUE. 'to "
+                                        "carry / to wear / to be pregnant' is TRUE. Count meanings, "
+                                        "never the number of words or the number of sense lines: a "
+                                        "word can have four dictionary entries and one meaning."
+                                    ),
+                                },
                                 # No `pieces` here: repair_pieces computes it
                                 # from the name before this pass runs, and asking
                                 # again only invites a worse answer -- seen in
@@ -185,6 +200,9 @@ HELD_BACK = {
     # filler wrote "equal", but the word earns its rank 137 as an adverb meaning
     # all / both -- "chúng tôi đều thích". The dictionary gave etymology, not use.
     "đều",
+    # Meo again, and the same shape as đưa: "to carry", "to wear", "to be
+    # pregnant" are three different things, not three words for one thing.
+    "mang",
 }
 
 
@@ -388,16 +406,35 @@ def fill_toml(path: Path, api_key: str, all_names: list[str], write: bool,
           + (f" of {remaining} still missing" if limit is not None and remaining > len(targets) else ""))
     filled = _ask(api_key, targets, all_names)
     known = set(all_names)
+    chose = []
     for raw in targets:
         entry = filled.get(raw["name"])
         if entry is None:
             print(f"  !! {raw['name']}: the model returned nothing for this one, left as is")
             continue
+        if entry.get("had_to_choose"):
+            chose.append((raw["name"], (entry.get("senses") or raw.get("senses") or [""])[0]))
         fields = {k: v for k, v in _clean(entry, known).items() if k not in raw or not raw.get(k)}
         if not fields:
             continue
         _report(path, raw["name"], fields)
         text = _insert_into_toml(text, raw["name"], fields)
+    # It POINTS, it does not block. Measured on eight words with known answers:
+    # it flagged all three that genuinely needed it -- đưa, mang, khỏi -- and
+    # three of the five that did not, gần, nhà and tay. Perfect recall, poor
+    # precision. Blocking on that would have shelved most of a good batch;
+    # pointing at 60% false alarms still saves reading the other two thirds.
+    #
+    # Asked of the model rather than counted, because counting cannot tell
+    # synonyms from meanings: "3+ alternatives" would shelve gần ("near;
+    # nearby; close") and "3+ senses" would have shelved eight of the
+    # twenty-two Meo had just validated, nhà "house" and giờ "hour" among them.
+    if chose:
+        print(f"\n  Look at these {len(chose)} first -- the model says the senses are not "
+              f"saying one thing, so its gloss is one slice of the word:")
+        for name, first in chose:
+            print(f"     {name:14} {first[:70]}")
+        print("  Glossed anyway. Shelve the ones you agree with by adding them to HELD_BACK.\n")
     if write:
         path.write_text(text, encoding="utf-8")
     return len(targets)

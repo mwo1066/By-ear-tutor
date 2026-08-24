@@ -1,6 +1,6 @@
 # Let the model say when it had to choose
 
-**Status:** proposed — awaiting Meo. **No code written.**
+**Status:** done, in a weaker form than proposed.
 **Opened:** 2026-08-23
 
 ## Why
@@ -55,18 +55,30 @@ And it fails safe: a flag set wrongly shelves a word that could have been
 glossed, which costs one entry on a list. A gloss written wrongly reaches the
 learner.
 
-## What must be checked, not assumed
+## Checked, and it over-flags — so it points instead of blocking
 
-**Whether the model actually uses it.** This project's history is a list of
-instructions that gave way — the rule turn's "ask in English" survived six
-rewordings before the fix had to move into code. The test is `đưa` and `gần`,
-which have known answers: `đưa` must be flagged and `gần` must not. Run the
-first batch over those two before trusting it on anything else.
+Run over eight words with known answers:
 
-**And whether it over-flags.** If a batch comes back with half its words
-flagged, the instruction is being read as "flag anything with more than one
-sense", which is the mechanical rule again wearing a different hat. The 22
-already validated are the control: almost none of them should be flagged.
+```
+  đưa    FLAG   caught          gần   FLAG   wrong
+  mang   FLAG   caught          nhà   FLAG   wrong
+  khỏi   FLAG   caught          tay   FLAG   wrong
+                                ngày  keep   right
+                                giờ   keep   right
+```
+
+**All three that genuinely needed flagging were flagged. Three of the five that
+did not were flagged too.** Perfect recall, poor precision — which is exactly
+the failure this section was written to watch for.
+
+So the design changes: **the flag points, it does not block.** The gloss is
+written, and the flagged words are listed first in the run's report. Blocking on
+a signal that fires on 60% of good words would have shelved most of a good
+batch; pointing at them still saves reading the other two thirds, and the three
+real cases are all in the short list.
+
+Meo shelves the ones he agrees with. That is the same judgement he was making
+anyway — the change is that he now starts from six names instead of twenty-four.
 
 ## Not in this change
 

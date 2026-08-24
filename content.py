@@ -135,6 +135,27 @@ def check_roster(items: list[Item]) -> list[str]:
     """
     known = {i.name for i in items}
     problems = []
+    # Two WORDS carrying the same gloss cannot both be asked for. The question
+    # is built from the gloss -- "what was the word for to use?" -- so a
+    # collision leaves the learner guessing which of two right answers was
+    # wanted, and answered_target accepts either, so nobody ever finds out.
+    #
+    # Found on the second batch of shelf glosses: dùng and sử dụng both came
+    # back "to use", and quá was given "very" which rất already had -- undoing a
+    # distinction the course teaches on purpose ("rất trước, lắm sau"). On 1640
+    # words still to gloss, collisions are certain rather than unlucky.
+    #
+    # Atoms only. cảm ơn and "Cảm ơn bạn" share "thank you" legitimately: one is
+    # a word, the other a phrase built on it, and they are never asked the same
+    # way.
+    by_gloss: dict[str, list[str]] = {}
+    for i in items:
+        if i.kind == "atom" and i.gloss:
+            by_gloss.setdefault(i.gloss.strip().lower(), []).append(i.name)
+    for gloss, names in by_gloss.items():
+        if len(names) > 1:
+            problems.append(f"{', '.join(names)}: all glossed {gloss!r} — one question, "
+                            f"several right answers, and no way to say which was wanted")
     # Two items with the same name is silent damage: the loader reads files in
     # filename order, so the LAST one wins -- a hand-written word with a gloss
     # was being shadowed by its own entry in the frequency stock, which has
