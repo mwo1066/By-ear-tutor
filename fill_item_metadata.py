@@ -566,6 +566,42 @@ HELD_BACK = {
     # also a dismissive classifier for a group of people.
     "nhóc",
     "lũ",
+
+    # --- seventeenth batch, one hundred ---
+    # 75 of 100 kept. Twelve duplicate groups again, first kept: viết has "to
+    # write", giúp "to help", nghĩ "to think", thực hiện "to carry out",
+    # thay đổi "to change", cuộc sống "life", quốc gia "country", cũ "old",
+    # vua "king", thư "letter", tổng thống "president", Chúa "god".
+    "ghi", "giúp đỡ", "phụ", "suy nghĩ", "tiến hành", "đổi",
+    "cuộc đời", "đất nước", "chủ tịch",
+    # Same word, different capitalisation.
+    "chúa",
+    # Worth bringing back with better glosses one day: cũ is old for THINGS and
+    # già is old for PEOPLE, which the course distinguishes elsewhere and one
+    # English word cannot. Shelved under the duplicate rule, not because the
+    # word is bad.
+    "già",
+    # chữ is a written character, thư a letter you post. English "letter" covers
+    # both, which is an English problem rather than a Vietnamese one.
+    "chữ",
+    # Glossed "king". Đức is Germany.
+    "Đức",
+    # A letter of the alphabet, like ư two batches ago.
+    "i",
+    # Plainly wrong glosses. nợ is a debt, not "to be willing". nỗi is a
+    # classifier that goes in front of a feeling -- nỗi buồn, sadness -- and was
+    # glossed "anger". the is a rare silk gauze.
+    "nợ", "nỗi", "the",
+    # Parentheticals doing the gloss's job: "time (in the past)", "subject
+    # (person)".
+    "hồi", "đối tượng",
+    # One spelling, unrelated things.
+    "khoan",  # to wait a moment, and to drill
+    "băng",   # ice, a bandage, and a tape
+    "hộ",     # a household, and doing something on someone's behalf
+    "lối",    # a way or path, crowding đường
+    "tập",    # to practise, and a volume or episode
+    "bình",   # a bottle, and peaceful
 }
 
 

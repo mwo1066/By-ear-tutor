@@ -213,7 +213,12 @@ def check_roster(items: list[Item]) -> list[str]:
         # from nothing else, so the gloss IS the guarantee that a question does
         # not state its own answer. A Vietnamese name that leaked into its own
         # English gloss would quietly undo that.
-        if i.kind != "feature" and i.gloss and i.name.lower() in i.gloss.lower():
+        # Whole word, for the same reason the "word" check above is: a
+        # substring test refused `in` for being glossed "to print", and would
+        # refuse `ba` inside "bar", `an` inside "and", `ca` inside "cat". Short
+        # Vietnamese names sit inside English words constantly.
+        if (i.kind != "feature" and i.gloss
+                and re.search(rf"(?<!\w){re.escape(i.name.lower())}(?!\w)", i.gloss.lower())):
             problems.append(f"{i.name}: its own name appears in its gloss {i.gloss!r} — the recall would give the answer away")
         # A gloss is not a definition. It is what fills the blank in "the word
         # for ___", which a scripted recall says ALOUD, so a gloss describing
