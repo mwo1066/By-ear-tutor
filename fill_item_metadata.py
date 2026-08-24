@@ -339,6 +339,29 @@ HELD_BACK = {
     "chân",
     # Barely stands alone; it lives in so sánh, to compare.
     "so",
+
+    # --- ninth batch ---
+    # The duplicate check caught two pairs at once. bọn and nhóm both came back
+    # "group": bọn is pejorative, a gang, so it goes and the neutral one stays.
+    # khu and huyện both came back "district", and khu was kept a batch earlier,
+    # so the newcomer goes -- the same call as việc against công việc.
+    "bọn",
+    "huyện",
+    # A third and fourth word crowding the same ground: khu is a district, khu
+    # vực an area, vùng a region. Four near-synonyms is more than a beginner can
+    # tell apart, so the field is thinned rather than taught whole.
+    "vùng",
+    # permission, method, and magic; its first listed sense is "custom".
+    "phép",
+    # A correlative particle -- càng ... càng ..., the more ... the more. Grammar
+    # the category filter missed again.
+    "càng",
+    # to endure, to suffer, to tolerate, to put up with, and also to agree to.
+    "chịu",
+    # a class of pupils, and a layer.
+    "lớp",
+    # Rarely alone: it lives in diễn viên and biểu diễn.
+    "diễn",
 }
 
 
