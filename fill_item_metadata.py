@@ -733,6 +733,12 @@ HELD_BACK = {
     # Glossed "imperial sacrifice ceremony". đàn is a musical instrument, or a
     # flock of animals -- the dictionary reached for a rare historical sense.
     "đàn",
+
+    # --- twenty-sixth batch ---
+    # Twelve of thirteen unavailable. Eight words, six kept: model, cheap,
+    # sometimes, to contribute, to prove, sport.
+    "tham dự",  # tham gia has "to participate"
+    "sàn",      # tầng has "floor"
 }
 
 
