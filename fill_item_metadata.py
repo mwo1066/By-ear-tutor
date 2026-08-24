@@ -659,6 +659,21 @@ HELD_BACK = {
     "tác phẩm",
     # An institute, and also the hospital half of bệnh viện.
     "viện",
+
+    # --- twenty-first batch, the outage's third run ---
+    # Eleven of thirteen unavailable again. Ten new words, four kept.
+    # Duplicates, first kept: chiến đấu has "to fight", nhà nước has "state".
+    # giành was wrong anyway -- it is to seize or to win, not to fight -- and
+    # thể does not stand alone at all: it lives in cơ thể, có thể, thể thao.
+    "giành", "thể",
+    # north, with Nam shelved for south two runs ago and Việt Nam taught.
+    "Bắc",
+    # A stroke of a written character, or a facial feature.
+    "nét",
+    # Administrative: an area of jurisdiction.
+    "địa bàn",
+    # a weighing scale, to weigh, and a kilo.
+    "cân",
 }
 
 
