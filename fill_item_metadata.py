@@ -304,6 +304,21 @@ HELD_BACK = {
     # of it; đánh is to hit, to play an instrument, to play a game.
     "bảo",
     "đánh",
+
+    # --- seventh batch ---
+    # A duplicate the check caught: việc was glossed "job" five batches ago and
+    # kept, so the newcomer goes rather than the word Meo already validated.
+    "công việc",
+    # A spelling variant of cảm ơn, which the course has taught since lesson one.
+    # The duplicate check missed it because the glosses read differently -- "to
+    # thank" against "thank you" -- so one word would have been asked two ways.
+    "cám ơn",
+    # thi already carries "exam", and kiểm tra's own senses say "compare thi".
+    "kiểm tra",
+    # to belong to, and also to know by heart.
+    "thuộc",
+    # to give back, and also to pay.
+    "trả",
 }
 
 
