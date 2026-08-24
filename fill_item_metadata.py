@@ -45,7 +45,13 @@ FILL_TOOL = [
                         "items": {
                             "type": "object",
                             "properties": {
-                                "name": {"type": "string", "description": "the item name, copied EXACTLY as given"},
+                                "name": {"type": "string", "description": (
+                                    "REQUIRED on every item, and the first thing to write: the "
+                                    "Vietnamese item name, copied EXACTLY as it was given to you. "
+                                    "Never leave it out and never put it in any other field -- a "
+                                    "batch came back on 23 August with the name in `literal` and no "
+                                    "`name` at all, and the whole request was rejected."
+                                )},
                                 "kind": {"type": "string", "enum": sorted(KINDS)},
                                 "gloss": {
                                     "type": "string",
@@ -100,7 +106,9 @@ FILL_TOOL = [
                                     "description": (
                                         "constructions only: the word-by-word English of the Vietnamese order, "
                                         "which is what lets a beginner produce a sentence they have never heard. "
-                                        "'tôi tên là + [tên riêng]' -> 'I name is [name]'. Empty otherwise."
+                                        "'tôi tên là + [tên riêng]' -> 'I name is [name]'. EMPTY STRING for an "
+                                        "atom, always. It is English, never the Vietnamese word -- that goes in "
+                                        "`name`."
                                     ),
                                 },
                             },
@@ -365,7 +373,19 @@ def _ask(api_key: str, targets: list[dict], all_names: list[str]) -> dict[str, d
         if start:
             time.sleep(SECONDS_BETWEEN_BATCHES)
         print(f"  ({start + 1}-{start + len(batch)} of {len(targets)}...)")
-        out.update(_ask_batch(api_key, batch, all_names))
+        # One bad batch must not kill the run. On 23 August a batch came back
+        # with `name` missing on all eight items -- the model had put the
+        # Vietnamese into `literal` -- and the 400 propagated all the way out,
+        # ending the pass and writing nothing. Over the 239 batches this file
+        # still needs, a single malformed answer would throw away everything
+        # before it. The items are simply left unglossed, which is a state the
+        # course already handles, and the next run picks them up.
+        try:
+            out.update(_ask_batch(api_key, batch, all_names))
+        except (RuntimeError, KeyError, ValueError) as e:
+            names = ", ".join(t["name"] for t in batch)
+            print(f"  !! this batch failed and was skipped -- {type(e).__name__}: {str(e)[:160]}")
+            print(f"     left unglossed, will be retried next run: {names}")
     return out
 
 
