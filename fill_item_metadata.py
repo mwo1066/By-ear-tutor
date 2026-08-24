@@ -327,6 +327,18 @@ HELD_BACK = {
     "thuộc",
     # to give back, and also to pay.
     "trả",
+
+    # --- eighth batch ---
+    # Its senses read "sea; ocean" and the filler wrote "sign" -- biển is a
+    # signboard too, biển báo, but the word ranked here is the sea.
+    "biển",
+    # A completion particle: it follows a verb to mean the action is done. Same
+    # class as the grammar the category filter keeps missing.
+    "xong",
+    # foot, and leg, and genuine.
+    "chân",
+    # Barely stands alone; it lives in so sánh, to compare.
+    "so",
 }
 
 

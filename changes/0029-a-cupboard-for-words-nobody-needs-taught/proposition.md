@@ -52,9 +52,23 @@ property of the item, and it buries rather than excludes. Whether the cupboard
 should reuse that machinery or sit beside it is the first question, and it
 should be answered by reading `pick_next_index` rather than guessed.
 
-**And what "if the learner asks" means concretely.** Today nothing looks a word
-up on request. If the cupboard's whole point is answering on demand, the asking
-has to exist, and it may be the larger half of this change.
+**And what "if the learner asks" means concretely.** — **checked, and it already
+works.** `learner_asked_something` catches an English question and hands the turn
+to the model, so a learner can say "how do you say wife?" today and get an
+answer.
+
+But the answer does not come from the course. The vocabulary is deliberately
+kept out of the prompt — *"everything the model does not need in order to speak
+this turn is weight it pays for on every request"* — so the model replies from
+its own Vietnamese, and **a cupboard item's gloss would never be read.**
+
+That makes this change much smaller than it looked: the asking half exists and
+needs nothing. What is left is one flag meaning *do not queue this*.
+
+It also exposes something worth knowing separately: when a learner asks for a
+word, the answer is unverified by the course. It could be a southern form, or
+carry a tone nothing here checked. That is not this change, but it is now on the
+record.
 
 ## Not in this change
 
