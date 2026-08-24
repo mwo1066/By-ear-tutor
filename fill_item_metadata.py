@@ -135,7 +135,12 @@ INSTRUCTIONS = (
     "sense a beginner actually needs. Write your own only if no listed sense is usable, and some "
     "are not: a lone sense reading 'a unisex given name', 'a surname', 'Alternative letter-case "
     "form of ...' or 'onomatopoeic' is Wiktionary describing a homograph, not the word -- override "
-    "it. Sixteen shelf items are in exactly that state, among them ngày (day), sáng (morning), "
+    "it. A COUNTRY or place name is the same trap and it caught two words on 23 August: 'ý' is "
+    "ranked 260 and its only senses read 'Italy', 'Italo-', 'Italian', but the word earning that "
+    "rank is idea / opinion; 'vụ' is ranked 230 with the single sense 'crisis' and is really a "
+    "classifier for incidents. When EVERY listed sense is a proper noun and the word is common, "
+    "the dictionary has captured a homograph and missed the word -- say so by setting "
+    "had_to_choose, rather than writing the proper noun. Sixteen shelf items are in exactly that state, among them ngày (day), sáng (morning), "
     "vui (happy) and thành (to become).\n\n"
     "hook is almost always empty. Write one only when the item is a word the learner already "
     "knows in English, or a name that means something, or has an origin worth a sentence -- and only "
@@ -234,6 +239,34 @@ HELD_BACK = {
     # bao giờ a question adverb. Same class as khi and những.
     "chẳng",
     "bao giờ",
+
+    # --- fourth batch ---
+    # The same failure as cuộc, twice more, and neither was flagged. ý is ranked
+    # 260 and its only listed senses are "Italy", "Italo-", "Italian" -- the
+    # proper noun Ý. The word that earns rank 260 is idea / opinion, ý kiến,
+    # ý nghĩa. vụ is ranked 230 with one sense, "crisis"; it is a classifier for
+    # incidents, vụ tai nạn an accident. In both the dictionary captured a
+    # homograph and missed the word entirely, so the senses are internally
+    # consistent and the pointer had nothing to notice.
+    "ý",
+    "vụ",
+    # Duplicates. người already carries "person", and kẻ is pejorative anyway;
+    # khiến already carries "to cause".
+    "kẻ",
+    "gây",
+    # Two words wearing one spelling. thưa's senses read "sparse" while the
+    # filler wrote "to say (politely)". câu is a sentence, or to fish, and came
+    # back "story". đồng is bronze, a field, and the currency.
+    "thưa",
+    "câu",
+    "đồng",
+    # Flagged by the pointer and genuinely several things: quay turns and also
+    # roasts, điểm is a point / a mark / a score, khoảng is a span and also
+    # approximately, tỉnh is a province and also to wake up.
+    "quay",
+    "điểm",
+    "khoảng",
+    "tỉnh",
 }
 
 
