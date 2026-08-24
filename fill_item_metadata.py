@@ -717,6 +717,14 @@ HELD_BACK = {
     "kèm",       # to accompany, rarely alone
     # A parenthetical doing the gloss's work: "to wash (yourself)".
     "tắm",
+
+    # --- twenty-fourth batch, the outage back ---
+    # Twelve of thirteen unavailable. Eight words, five kept: stove, sign, late,
+    # to adjust, to hand in.
+    # Duplicates, first kept: trường has "school", phương pháp has "method".
+    "nhà trường", "biện pháp",
+    # Official register: to inspect, in the government sense.
+    "thanh tra",
 }
 
 
