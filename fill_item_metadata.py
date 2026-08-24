@@ -602,6 +602,34 @@ HELD_BACK = {
     "lối",    # a way or path, crowding đường
     "tập",    # to practise, and a volume or episode
     "bình",   # a bottle, and peaceful
+
+    # --- eighteenth batch, one hundred ---
+    # 74 of 100 kept. FIFTEEN duplicate groups, first kept each time: rất has
+    # "very", học "to study", gặp "to meet", việc "job", vui "happy", tham gia
+    # "to participate", dừng "to stop", ngành "industry", khu vực "area",
+    # hướng "direction", may mắn "lucky", tình yêu "love", lượng "quantity",
+    # điều tra "to investigate", gồm "to include".
+    "vô cùng", "học tập", "họp", "việc làm", "vui vẻ", "dự", "ngừng",
+    "công nghiệp", "diện tích", "đằng", "may", "tình", "số lượng",
+    "tìm hiểu", "bao gồm",
+    # A TONE PAIR the model got wrong, which is the first of its kind here.
+    # nhắc is to remind; nhấc, one tone away, is to lift -- and "to lift" is
+    # what the gloss said. The course teaches exactly this trap in its own tone
+    # rules, and the tool writing the course fell into it.
+    "nhắc",
+    # Plainly wrong or unusable.
+    "dần",   # glossed as the third earthly branch of the zodiac; it means gradually
+    "đô",    # glossed "well-built"; it lives in đô la and thủ đô
+    "giới",  # glossed "kingdom"; it is a world, a circle, a limit
+    "liệu",  # glossed "material"; on its own it is a particle meaning whether
+    # Political, and a truncated parenthetical: "party (as in Communist Party".
+    "Đảng",
+    # One spelling, unrelated things.
+    "công",  # labour, public, merit, and a peacock
+    "trò",   # a trick or game, and a pupil -- học trò
+    "ca",    # a song, a work shift, and a case
+    "hạ",    # to lower, and summer
+    "trừ",   # to subtract, and except
 }
 
 
