@@ -900,6 +900,25 @@ HELD_BACK = {
     "trang phục",
     # Abstract, and nhận is already shelved.
     "nhận thức",
+
+    # --- thirty-third batch ---
+    # Seven of thirteen unavailable. 48 words, 33 kept. Six duplicates.
+    "tập thể", "động vật", "phạm", "chứng", "thí nghiệm", "cỡ",
+    # Caught by the slash check: "to roast / grill", a verb against a noun.
+    "nướng",
+    # Caught by the self-name check: glossed "Đông (a personal name)".
+    "Đông",
+    # Institutional, and đoàn is already shelved for the same reason.
+    "Đoàn",
+    # yêu already carries to love; "to love and cherish" is two verbs.
+    "yêu thương",
+    # Bound, or one spelling over unrelated things.
+    "xứ",         # xứ sở, đất nước
+    "chiếu",      # to shine, a sleeping mat, and to project a film
+    # Financial or narrow, with cổ phần already shelved for the same field.
+    "cổ phiếu", "tín dụng",
+    # Glossed "to terrify"; the word is terrorism.
+    "khủng bố",
 }
 
 
