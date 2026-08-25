@@ -887,6 +887,19 @@ HELD_BACK = {
     "chà",      # to brush, and an interjection
     "đậu",      # a bean, to park, and to pass an exam
     "cổ phần",  # equity, in the financial sense
+
+    # --- thirty-second batch ---
+    # Ten of thirteen unavailable. 24 words, 14 kept. Six duplicates.
+    "mệt mỏi", "sắc", "quản trị", "lộ", "tổng hợp", "nối",
+    # Bound: hưởng lives in ảnh hưởng and hưởng thụ.
+    "hưởng",
+    # Compositional -- đóng and cửa are both taught, so "close the door" is a
+    # sentence the learner can already build rather than a word to learn.
+    "đóng cửa",
+    # quần áo already carries clothes.
+    "trang phục",
+    # Abstract, and nhận is already shelved.
+    "nhận thức",
 }
 
 
