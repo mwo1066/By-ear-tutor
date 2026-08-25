@@ -739,6 +739,40 @@ HELD_BACK = {
     # sometimes, to contribute, to prove, sport.
     "tham dự",  # tham gia has "to participate"
     "sàn",      # tầng has "floor"
+
+    # --- twenty-seventh batch, the window wide open ---
+    # ZERO batches unavailable. A hundred words, 69 kept.
+    #
+    # NINETEEN duplicate groups, a record, and the reason is arithmetic: the
+    # course now holds 600-odd glossed words, so a newcomer has that many
+    # chances to land on a meaning already taken. First kept each time.
+    "tốt đẹp", "xây", "cảm nhận", "sẵn", "trang bị", "chính quyền",
+    "dĩ nhiên", "sai lầm", "ước", "tập đoàn", "trái tim", "tác động",
+    "cha mẹ", "sửa", "khí", "ném",
+    # Glossed "good". lương is a salary.
+    "lương",
+    # More of English being the vague one, not Vietnamese:
+    #   cứu is to rescue; tiết kiệm is to economise -- both "to save"
+    #   bác sĩ is a physician; tiến sĩ holds a doctorate -- both "doctor"
+    #   lĩnh vực is a field of study; bãi is a yard or a beach -- both "field"
+    "tiết kiệm", "tiến sĩ", "bãi",
+    # Semicolons offering two kinds of word instead of choosing, which the
+    # slash check does not see.
+    "liên hệ",   # "to contact; relationship"
+    "điện tử",   # "electronic; electron"
+    # Too specific to be a gloss: "traditional Vietnamese poetry".
+    "thơ",
+    # A city, and a political name.
+    "Hồ Chí Minh",
+    # Bound: they live inside other words rather than standing alone.
+    "tận",       # tận cùng, tận dụng
+    "chuyên",    # chuyên gia, chuyên nghiệp
+    # One spelling, unrelated things.
+    "bầu",       # a gourd, to elect, and pregnant
+    "phân",      # fertiliser, to divide, and a part
+    "dịch",      # to translate, an epidemic, and a fluid
+    "la",        # to shout, a mule, and the note A
+    "tướng",     # a general, and a physiognomy
 }
 
 
