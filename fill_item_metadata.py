@@ -837,6 +837,36 @@ HELD_BACK = {
     "ngu ngốc",
     # Institutional, and kế hoạch already carries plan.
     "thủ tướng", "quy hoạch",
+
+    # --- thirtieth batch, fourth full window ---
+    # A hundred words, 63 kept. Eighteen duplicate groups.
+    "chờ đợi", "bàn tay", "bớt", "mức độ", "phương", "độc đáo", "xưa",
+    "tỏ", "nghỉ ngơi", "tồi tệ", "tâm", "thôn", "đấu", "tình huống",
+    "chiến", "đỡ", "đỉnh", "xét",
+    # The slash check earned its keep three times in one batch, all verbs
+    # against non-verbs: "to skip / ignore", "to update / keep posted",
+    # "to arrange / organize".
+    "bỏ qua", "cập nhật", "sắp xếp",
+    # And two it still cannot see, both nouns on either side: "basement /
+    # cellar", "faculty / department".
+    "hầm", "khoa",
+    # Not words at all. hoá is a suffix -- the -ise of hiện đại hoá. g is a
+    # letter, caught by the self-name check. tí was glossed "Rat", the zodiac
+    # sign. sam is a horseshoe crab, which no beginner needs before a thousand
+    # other words.
+    "hoá", "g", "tí", "sam",
+    # Archaic and faintly disdainful: ả for an older woman.
+    "ả",
+    # Bound, or awkwardly glossed.
+    "nghiệm",     # kinh nghiệm, thí nghiệm
+    "phiên",      # phiên bản, phiên họp
+    "sinh hoạt",  # glossed "non-work activities"
+    # Place names, with Mỹ already carrying America and Bắc already shelved.
+    "Hoa Kỳ", "Tây", "bắc",
+    # One spelling, unrelated things.
+    "dạo",   # a stretch of time, and to stroll
+    "lạc",   # lost, and a peanut
+    "hành",  # a scallion, and to act
 }
 
 
