@@ -802,6 +802,41 @@ HELD_BACK = {
     "cung",  # a palace, a bow, and to supply
     # Nhật Bản already carries Japan.
     "Nhật",
+
+    # --- twenty-ninth batch, third full window ---
+    # A hundred words, 67 kept. Eighteen duplicate groups.
+    "luôn luôn", "thông thường", "đội ngũ", "khám phá", "nhầm", "để ý",
+    "kỹ", "ngoại", "chủ đề", "cuộc chiến", "cho nên", "tín hiệu", "trễ",
+    "nghiêm trọng", "tuyên bố",
+    # Three more where ENGLISH is the vague one. Each pair is a real
+    # distinction Vietnamese makes and English does not, and each is worth
+    # returning to when a gloss can carry it:
+    #   cơm is cooked rice, lúa is the plant growing in the field
+    #   đầy is a full container, no is full from eating
+    #   mặc is to wear clothes, đeo is to wear a watch or glasses
+    "lúa", "no", "đeo",
+    # Not vocabulary: a letter of the alphabet, and a city abroad. Both caught
+    # by the self-name check.
+    "u", "New York",
+    # Vietnamese place name, the same call as Hồ Chí Minh.
+    "Đà Nẵng",
+    # Wrong. thức is to stay awake; bảo đảm was glossed "to sponsor" and means
+    # to guarantee, which đảm bảo -- the same two syllables reversed -- already
+    # carries.
+    "thức", "bảo đảm",
+    # Bound: they live inside longer words.
+    "đại",   # đại học, đại diện
+    "châu",  # châu Á, châu Âu
+    "tạm",   # tạm thời
+    "khai",  # khai báo, khai thác
+    # One spelling, unrelated things.
+    "lợi",    # profit, and a gum in the mouth -- with lợi ích taught
+    "trống",  # a drum, and empty
+    "hạng",   # a class, and a rank
+    # ngốc already carries foolish.
+    "ngu ngốc",
+    # Institutional, and kế hoạch already carries plan.
+    "thủ tướng", "quy hoạch",
 }
 
 
