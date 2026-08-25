@@ -773,6 +773,35 @@ HELD_BACK = {
     "dịch",      # to translate, an epidemic, and a fluid
     "la",        # to shout, a mule, and the note A
     "tướng",     # a general, and a physiognomy
+
+    # --- twenty-eighth batch, the second full window ---
+    # A hundred words, 57 kept. TWENTY-SEVEN duplicate groups, up from
+    # nineteen: the course crossed 700 glossed words between the two runs, and
+    # the collision rate is following the size of what is already taught.
+    "xinh đẹp", "phương tiện", "con số", "hàng hoá", "thương", "gia",
+    "đô thị", "màu sắc", "đời sống", "tổ", "nhất định", "động", "địa điểm",
+    "nêu", "thích hợp", "giấu", "quan", "đại biểu", "ngã", "hợp",
+    "chào mừng", "vì thế", "ánh", "phức tạp", "văn bản", "đóng góp", "đua",
+    # Slashes joining two unrelated things. The slash check does NOT catch
+    # these -- it only separates a verb from a non-verb, and "temple / free",
+    # "high-class / superior", "to approach / to reach" all have the same kind
+    # of word on both sides. Named here because I said I would write a check on
+    # the next occurrence and cannot: telling "I / me" from "temple / free"
+    # needs to know what the words MEAN.
+    "chùa", "cao cấp", "tiếp cận",
+    # Caught by the length check at seven words: "to stick / to be involved in".
+    "dính",
+    # Compositional or over-specified: lái and xe are both taught, mở and cửa
+    # are both taught, and "to compete athletically" puts an adverb in a gloss.
+    "lái xe", "mở cửa", "thi đấu",
+    # Institutions of state.
+    "quốc hội", "trung ương", "uỷ ban", "bộ trưởng",
+    # One spelling, unrelated things.
+    "đề",    # an exam question, and a topic
+    "sát",   # close, and to kill -- sát hại
+    "cung",  # a palace, a bow, and to supply
+    # Nhật Bản already carries Japan.
+    "Nhật",
 }
 
 
