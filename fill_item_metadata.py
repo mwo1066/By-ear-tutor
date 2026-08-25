@@ -867,6 +867,26 @@ HELD_BACK = {
     "dạo",   # a stretch of time, and to stroll
     "lạc",   # lost, and a peanut
     "hành",  # a scallion, and to act
+
+    # --- thirty-first batch, a partial window ---
+    # Seven of thirteen unavailable. 48 words, 31 kept.
+    "tuyển", "xử", "bang", "tham quan", "thùng", "tiết",
+    # Capitalisation variant of Tết, already taught.
+    "tết",
+    # English again: báo chí is the press as in newspapers, nhấn is to press a
+    # button. ép is to press as in squeeze -- three unrelated things wearing one
+    # English word.
+    "nhấn", "ép",
+    # Bound: they live inside longer words.
+    "thủ",  # thủ đô, thủ tướng
+    "cử",   # cử tri, bầu cử
+    "tài",  # tài chính, tài liệu, tài khoản
+    # Vietnamese place names, the same call as Hồ Chí Minh and Đà Nẵng.
+    "Huế", "Sài Gòn",
+    # One spelling, unrelated things, or too narrow.
+    "chà",      # to brush, and an interjection
+    "đậu",      # a bean, to park, and to pass an exam
+    "cổ phần",  # equity, in the financial sense
 }
 
 
