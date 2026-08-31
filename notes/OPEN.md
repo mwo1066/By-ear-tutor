@@ -69,6 +69,45 @@ deleting the check for one-word glosses rather than changing the words.
 
 ---
 
+## 0. THE VOCABULARY IS RAW. Nobody who speaks Vietnamese has read it.
+
+On 2026-08-23 the course went from **221 teachable items to 1346**. 1125 glosses
+were written by a model in forty batches and kept or shelved by **me**, working
+from dictionary senses and my own Vietnamese. 540 words were shelved with a
+reason each; the rest are in the course and will be taught.
+
+**No native speaker has read a single one of them.** The one who sat a session
+that evening was not shown the list.
+
+What that is worth is bounded by what was found while doing it, and the errors
+were not rare:
+
+```
+nhắc  glossed "to lift"      it means to remind; nhấc, one tone away, is to lift
+nợ    glossed "to be willing" it is a debt
+nỗi   glossed "anger"        it is a classifier for feelings -- nỗi buồn
+Đức   glossed "king"         it is Germany
+ý     glossed "Italy"        it is an idea
+cuộc  glossed "demonstration" it is an event classifier -- cuộc họp, cuộc sống
+lương glossed "good"         it is a salary
+me    glossed "mother"       that is mẹ; me is a tamarind
+```
+
+Each of those was caught by reading. **The ones not caught are the reason this
+section exists.** A tone-pair error in particular cannot be caught by any check
+here: `_bare` strips tones by design, so `nhắc` and `nhấc` are the same string to
+every test in the repository.
+
+Six automatic checks stand between the model and the course — duplicate glosses,
+length, mixed kinds across a slash, a gloss giving its own answer away,
+metalinguistic frames, descriptions instead of translations. They catch shape.
+**Only a person catches truth.**
+
+The single highest-value thing anyone can do with this course is sit a Vietnamese
+speaker down with the glossed list.
+
+---
+
 ## 3. Not verified by anyone competent
 
 **Nobody has judged Minh's pronunciation.** The course teaches NORTHERN

@@ -1013,6 +1013,16 @@ HELD_BACK = {
     # Narrow, or one spelling over unrelated things.
     "hạt nhân",
     "trần",  # bare, and a ceiling
+
+    # --- fortieth batch, the last seventeen, and the shelf is empty ---
+    # Duplicates, first kept: lệnh has "order", cảnh "scene", khoẻ "healthy",
+    # liên lạc "to communicate", nghi ngờ "to doubt" -- which beat BOTH of its
+    # own halves, ngờ and nghi, arriving in the same batch.
+    "trật tự", "hiện trường", "lành", "giao tiếp", "ngờ", "nghi",
+    # Caught by the slash check, all three verbs against nouns.
+    "trình", "liều", "biểu hiện",
+    # Glossed "mother", which is mẹ. me is a tamarind.
+    "me",
 }
 
 
