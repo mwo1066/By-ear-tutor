@@ -954,6 +954,44 @@ HELD_BACK = {
     "lát",    # a slice, and a moment -- một lát
     "hương",  # a fragrance, incense, and a given name
     "phủ",    # to cover, and a government office
+
+    # --- thirty-eighth batch, a hundred again and still no 403 ---
+    # Thirteen batches, which is what was blocked twice earlier, and it went
+    # through. So the block was the evening's cumulative volume rather than the
+    # size of one run.
+    #
+    # Sixteen duplicates, first kept. mặt beat BOTH khuôn mặt and gương mặt for
+    # "face", the first three-way group in a while.
+    "thiệt", "trường học", "lưu", "gia tăng", "khuôn mặt", "gương mặt",
+    "phương án", "cứng", "phiếu", "sân khấu", "quyền lực", "trẻ con",
+    "tiêu thụ", "địch", "thợ", "miêu tả",
+    # This batch produced far more multi-alternative glosses than any before,
+    # and the checks took all of them -- four by the slash rule and four by
+    # length. diện came back as "to dress up / well-dressed / aspect / area /
+    # sphere", which is eleven words and five meanings.
+    "diện", "tiêu diệt", "giải phóng", "phân phối",
+    "kích thích", "hầu hết", "quyến rũ",
+    # Caught by the self-name check.
+    "web",
+    # More of the same shape the checks could not see -- same kind of word on
+    # both sides of the slash.
+    "vừa mới", "ngược", "cơ chế", "đau đớn",
+    # tin already carries news.
+    "tin tức",
+    # Three words in one field; nguyên liệu keeps it.
+    "vật chất", "vật liệu",
+    # Parenthetical doing the gloss's work, or compositional.
+    "nhiễm",    # "to contract (an illness)"
+    "ăn uống",  # ăn and uống are both taught
+    # Tây is already shelved for west.
+    "tây",
+    # Bound, or one spelling over unrelated things.
+    "văn",   # văn học, văn hoá, văn bản
+    "bi",    # a marble, and tragic
+    "lao",   # to plunge, tuberculosis, and labour
+    "mạch",  # a circuit, and a pulse
+    # Military rank, narrow.
+    "đại tá",
 }
 
 
