@@ -992,6 +992,27 @@ HELD_BACK = {
     "mạch",  # a circuit, and a pulse
     # Military rank, narrow.
     "đại tá",
+
+    # --- thirty-ninth batch, the last hundred ---
+    # Twenty duplicate groups, first kept each time.
+    "cực kỳ", "giờ đây", "mặt hàng", "Hoàng", "rắn", "Trung", "giảng dạy",
+    "quy trình", "chức", "lầu", "sốt", "tiệm", "xuất", "chứng khoán",
+    "con cái", "ra lệnh", "mọc", "bố trí", "đại uý", "thách thức",
+    # Not words a beginner can use. canh was glossed "seventh heavenly stem",
+    # from the sexagenary calendar. hi is a grin written as a syllable. ben is
+    # a dump truck, from the French benne. khúc was glossed "firewood" and is a
+    # segment or a stretch.
+    "canh", "hi", "ben", "khúc",
+    # Institutional, or bound inside longer terms.
+    "chủ nghĩa",     # chủ nghĩa xã hội
+    "công đoàn",
+    "phó chủ tịch",  # chủ tịch is already shelved
+    "mục",           # mục tiêu, mục đích
+    # A third word in the material field, where nguyên liệu keeps it.
+    "chất liệu",
+    # Narrow, or one spelling over unrelated things.
+    "hạt nhân",
+    "trần",  # bare, and a ceiling
 }
 
 
