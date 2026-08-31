@@ -919,6 +919,22 @@ HELD_BACK = {
     "cổ phiếu", "tín dụng",
     # Glossed "to terrify"; the word is terrorism.
     "khủng bố",
+
+    # --- thirty-sixth batch, twenty words after a pause ---
+    # Zero failures, after two runs where all thirteen batches returned 403.
+    # Six duplicates: phát triển has "to develop", xây dựng "to build",
+    # học sinh "student", sông "river", lực lượng "force", ngăn "to block".
+    "phát huy", "dựng", "học viên", "lực", "chặn",
+    # And thông was glossed "river", which is not what it means -- a pine tree,
+    # or to be clear through. The duplicate check caught it for the wrong
+    # reason and was right anyway.
+    "thông",
+    # Two nouns either side of a slash, which the slash check cannot see:
+    # "hair / fur / feathers".
+    "lông",
+    # One spelling, unrelated things.
+    "khớp",  # a joint in the body, and to match
+    "độc",   # poisonous, and single -- độc thân
 }
 
 
