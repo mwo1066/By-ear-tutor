@@ -935,6 +935,25 @@ HELD_BACK = {
     # One spelling, unrelated things.
     "khớp",  # a joint in the body, and to match
     "độc",   # poisonous, and single -- độc thân
+
+    # --- thirty-seventh batch, fifty words, still no 403 ---
+    # Seven batches instead of thirteen, and the block has not come back.
+    # Duplicates, first kept: ngày mai has "tomorrow", thật "real", mức
+    # "level", bí mật "secret", chữa "to repair", vay "to borrow", chở "to
+    # transport".
+    "mai", "thực", "trình độ", "kín", "sửa chữa", "mượn", "vận chuyển",
+    # Caught by the self-name check, and a brand besides.
+    "Google",
+    # A personal name, and an ethnic group -- người Kinh.
+    "Hùng", "kinh",
+    # Place names.
+    "Ấn Độ", "Á",
+    # Bound, or one spelling over unrelated things.
+    "xuyên",  # xuyên qua
+    "đáp",    # trả lời already carries to reply
+    "lát",    # a slice, and a moment -- một lát
+    "hương",  # a fragrance, incense, and a given name
+    "phủ",    # to cover, and a government office
 }
 
 
