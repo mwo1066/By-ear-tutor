@@ -19,7 +19,11 @@ gloss is wrong twice, so the words come first.
 ## THE WORDS
 
 ### 1. A Vietnamese speaker reads `GLOSSES-TO-VALIDATE.md`
-1125 glosses, none of them read by anyone who speaks the language. This is the
+**1346 items**, none of them read by anyone who speaks the language. The file is
+in two parts, and part 1 matters more: the 221 hand-written items, in teaching
+order, which a learner meets in their first hours and which the course drills
+hardest. It also holds all 46 rules and all 22 sentences -- the frequency stock
+has none of either. Part 2 is the 1125 bulk-glossed words by frequency. This is the
 one task nothing else can substitute for, and it is cheap: reading a column and
 marking what is wrong. See `OPEN.md` section 0 for what was caught while writing
 them, which is the measure of what was missed.

@@ -1,17 +1,260 @@
-# The 1125 glossed words, for a Vietnamese speaker to read
+# Every gloss in the course, for a Vietnamese speaker to read
 
-Written 2026-08-23. Every gloss here was produced by a model and kept by
-Claude; **no native speaker has read any of them**. See `OPEN.md` section 0.
+Written 2026-08-23. **1346 items.** Not one of these glosses has been
+read by anyone who speaks Vietnamese. See `OPEN.md` section 0.
 
-How to use this: read down the right-hand column and mark anything that is
-wrong, misleading, rude, or a word a beginner should not be taught. You do
-not need to fix it -- naming it is enough.
+How to use this: read the right-hand column and mark anything wrong,
+misleading, rude, or that a beginner should not be taught. Naming it is
+enough -- no need to fix it.
 
-Watch especially for **tone pairs**: a gloss can describe a different word
-one tone away. `nhắc` was glossed "to lift", which is `nhấc`. No check in
-this project can catch that.
+Watch especially for **tone pairs**: a gloss can describe a different word one
+tone away. `nhắc` was glossed "to lift", which is `nhấc`. No check in this
+project can catch that, because tones are stripped before every comparison.
 
-| rank | word | gloss |
+---
+
+## Part 1 — the 221 hand-written items, IN TEACHING ORDER
+
+**Read these first.** They are what a learner meets in their first hours and
+what the course drills hardest. They include the rules and the sentences, which
+the frequency stock has none of.
+
+A `rule` is spoken by the tutor and never said back by the learner, so its gloss
+is a statement rather than a translation. A `sentence` is assembled from words
+taught before it.
+
+| # | kind | Vietnamese | English |
+|---|---|---|---|
+| 1 | word | tôi | I or me |
+| 2 | rule | xưng hô thay đổi theo người đối diện | Vietnamese swaps the word for 'I' depending on who you are talking to — you will meet those words soon, and tôi will carry you until then, though it keeps its distance and a Vietnamese person would rarely pick it |
+| 3 | word | tên | name |
+| 4 | word | là | to be |
+| 5 | sentence | tôi tên là + [tên riêng] | My name is ___ |
+| 6 | word | anh | an older male |
+| 7 | rule | thanh điệu: nghe và bắt chước | Vietnamese changes the meaning of a word by the pitch you say it at — so when Minh speaks, copy the tune and not only the sounds. Which tunes there are comes later; for now, just listen for them |
+| 8 | word | chị | an older female |
+| 9 | word | em | a younger person |
+| 10 | rule | cách chọn từ xưng hô | which word you use depends on who is in front of you, so with Minh — the Vietnamese voice, a man older than you — you are em and he is anh, while your tutor is a woman and would never be anh. When you cannot tell someone's age, guess OLDER: anh or chị is respectful, and em would be presumptuous. But only one step, and never out of your own generation — calling a chị a cô does not flatter her, it ages her by twenty years. |
+| 11 | word | bạn | a friend your own age |
+| 12 | word | gì | what |
+| 13 | sentence | bạn tên là gì? | What is your name? |
+| 14 | word | chào | hello |
+| 15 | rule | không có giống, không có mạo từ | no genders, and no word for 'a' or 'the' |
+| 16 | rule | từ để hỏi đứng nguyên chỗ | a question word like gì stays exactly where the answer would go, so nothing moves in the sentence |
+| 17 | rule | danh từ không đổi khi nhiều | words don't change in the plural — you add a word instead |
+| 18 | rule | loại từ: số + loại từ + danh từ | counting needs a helper between the number and the thing: con for animals, cái for objects, người for people |
+| 19 | rule | được đứng sau động từ: làm được | được means you managed it, and unlike every other helper it goes AFTER the action, not before |
+| 20 | rule | ạ: một chữ làm câu lịch sự | ạ on the end of anything makes it polite — one syllable, no other change, and Vietnamese people notice it at once |
+| 21 | word | cảm ơn | thank you |
+| 22 | word | không | no / not |
+| 23 | sentence | không phải là + [danh từ] | I am not a ___ |
+| 24 | rule | xưng hô đổi theo từng cặp người nói | the word you use for 'you' changes with who you're talking to |
+| 25 | word | muốn | to want |
+| 26 | word | ăn | to eat |
+| 27 | word | uống | to drink |
+| 28 | rule | động từ không chia | verbs never change, whoever is doing the action |
+| 29 | word | đã | did, in the past |
+| 30 | word | rồi | already |
+| 31 | word | chưa | not yet |
+| 32 | sentence | muốn + [động từ] | want ___ |
+| 33 | word | cà phê | coffee |
+| 34 | rule | thanh ngang và thanh huyền: giọng đều và giọng xuống | two of the six tunes, and the two you meet most. One is flat, like the word sing in an ordinary English sentence — tên is one of those. The other falls away, like the Uhm you make when you agree with someone — chào is one. Say them one after the other and hear the drop |
+| 35 | word | nước | water |
+| 36 | word | cơm | rice |
+| 37 | rule | phủ định: không + [động từ hoặc tính từ] | không in front of the action negates it, and in front of a describing word too — one word for both, where English has to switch between don't and am not |
+| 38 | rule | sở hữu: danh từ + của + người | của puts the owner LAST — cà phê của tôi, the coffee of me, the reverse of English |
+| 39 | rule | đã: việc đã xong, đứng trước động từ | đã goes right before the action to put it in the past, and you can drop it whenever the time is already clear |
+| 40 | rule | cũng đứng trước động từ | cũng means also, and it sits right before the action — never at the end the way English puts it |
+| 41 | rule | rồi: việc đã xong | rồi on the END of a sentence says it is already done, and it is heard far more often than đã |
+| 42 | rule | chưa: chưa xong, và cũng để hỏi | chưa before the action means not yet; the same chưa on the end turns the sentence into a question |
+| 43 | rule | lược bỏ chủ ngữ khi đã rõ | when it's obvious who you mean, you just drop the word |
+| 44 | word | có | have |
+| 45 | sentence | câu hỏi có/không: có + [động từ] ... không? | do ... not? |
+| 46 | word | thích | like |
+| 47 | word | và | and |
+| 48 | word | này | this |
+| 49 | word | ngon | delicious |
+| 50 | rule | tính từ không cần 'là' | in front of a describing word, là disappears: cơm ngon, never cơm là ngon. It only stays in front of a name or a thing, the way you already say tôi tên là Nam |
+| 51 | rule | tính từ đứng sau danh từ | the describing word comes after the thing, not before |
+| 52 | rule | câu hỏi có/không | có at the front and không at the end wrap any statement into a yes-or-no question — no inversion, no extra verb |
+| 53 | rule | rất trước, lắm sau | two words for very: rất goes before the describing word, lắm goes after it |
+| 54 | rule | so sánh: tính từ + hơn | hơn after a describing word is how you compare — ngon hơn, better tasting |
+| 55 | word | hiểu | to understand |
+| 56 | word | biết | to know |
+| 57 | word | nói | to speak |
+| 58 | word | ở | at, in |
+| 59 | word | đâu | where |
+| 60 | word | bao nhiêu | how much |
+| 61 | word | được | can, okay |
+| 62 | word | ai | who |
+| 63 | word | rất | very |
+| 64 | word | nhưng | but |
+| 65 | word | cần | to need |
+| 66 | word | tiền | money |
+| 67 | word | của | belonging to |
+| 68 | word | cũng | also |
+| 69 | word | hơn | more than |
+| 70 | word | lắm | a lot, very |
+| 71 | word | cái | one, for objects |
+| 72 | word | các | the word you put in front of an address word to speak to several people |
+| 73 | word | ạ | politely |
+| 74 | word | cho | to give |
+| 75 | word | hôm nay | today |
+| 76 | word | ngày mai | tomorrow |
+| 77 | word | hôm qua | yesterday |
+| 78 | word | sáu | six |
+| 79 | word | bảy | seven |
+| 80 | word | tám | eight |
+| 81 | word | chín | nine |
+| 82 | word | dạ | yes, respectfully |
+| 83 | word | xin | please, may I |
+| 84 | word | sao | why |
+| 85 | word | thế nào | how |
+| 86 | rule | lịch sự nằm trong từ xưng hô, không phải trong giọng | politeness here is not a tone of voice — it is the person-word you pick, plus two small words |
+| 87 | word | một | one |
+| 88 | word | hai | two |
+| 89 | word | ba | three |
+| 90 | word | bốn | four |
+| 91 | word | năm | five |
+| 92 | word | mười | ten |
+| 93 | word | mươi | ten, in twenty and above |
+| 94 | word | trăm | hundred |
+| 95 | word | nghìn | thousand |
+| 96 | word | triệu | million |
+| 97 | word | mốt | one, as in twenty-one |
+| 98 | word | lăm | five, as in twenty-five |
+| 99 | word | tư | four, as in twenty-four |
+| 100 | rule | ghép số: chữ số + đơn vị | numbers here are built, not memorised — you stack words you already know, so ten digits carry you far past a hundred with nothing new to learn |
+| 101 | rule | mười một đến mười chín: mười + chữ số | for eleven up to nineteen you say mười first and then the digit, in that order and with nothing added |
+| 102 | rule | hai mươi trở lên: chữ số + mươi + chữ số | from twenty on, the order flips — the digit comes first, then mươi, then the last digit: hai mươi ba is twenty-three |
+| 103 | rule | mười thành mươi khi có số đứng trước | ten on its own is mười, but put a number in front of it and it turns into mươi — one tone mark apart, and two different words |
+| 104 | rule | nghìn: chữ số + nghìn | thousands stack exactly the same way — a digit and then nghìn, so mười nghìn is ten thousand, which is about what a coffee costs |
+| 105 | rule | nói giá: chỉ cần con số | to say a price you stop at the number — mười nghìn and nothing after it, because the name of the currency is left out and everyone still understands |
+| 106 | rule | trăm nghìn: tờ tiền hay cầm | the notes you actually hold are hundreds of thousands — một trăm nghìn, hai trăm nghìn, năm trăm nghìn |
+| 107 | rule | triệu: hàng của tiền thuê và tiền xe | above a thousand thousands comes triệu, a million — một triệu, hai triệu, mười triệu |
+| 108 | rule | năm thành lăm khi đứng cuối | năm becomes lăm at the end of a number, because năm also means year and mười năm năm would be unsayable |
+| 109 | rule | thanh sắc và thanh nặng: giọng lên nhanh và giọng nặng | two more tunes. One shoots up, like an English What??? — nước is one of those. The other is the lowest and the shortest, stopped in the throat, said with a really heavy voice — chị is one |
+| 110 | word | tuổi | years old |
+| 111 | sentence | bao nhiêu tiền? | how much does it cost? |
+| 112 | sentence | số + [đồ uống]: hai cà phê | two coffees |
+| 113 | sentence | Tôi ... tuổi | I am twenty years old |
+| 114 | word | ấy | that one |
+| 115 | word | ơi | hey, when you call someone |
+| 116 | word | phải | must, have to |
+| 117 | word | có thể | to be able to |
+| 118 | word | nên | should |
+| 119 | word | cô | a woman your parents' age |
+| 120 | word | chú | a man your parents' age |
+| 121 | word | ông | an elderly man |
+| 122 | word | bà | an elderly woman |
+| 123 | word | cháu | nephew or niece |
+| 124 | word | mình | me, softly |
+| 125 | rule | nói VỀ ai đó: xưng hô + ấy | ấy after a person-word turns speaking TO someone into speaking ABOUT them — anh, then anh ấy |
+| 126 | rule | gọi ai đó: xưng hô + ơi | ơi after a person-word calls out to them — it is how you get a waiter's attention across a room |
+| 127 | rule | phải: bắt buộc, đứng trước động từ | phải before the action means you have to, and it takes the same slot as muốn and cần |
+| 128 | word | đang | in the middle of doing |
+| 129 | rule | đang: việc đang diễn ra, đứng trước động từ | đang before the action means right now, in the middle of it — the same slot đã uses |
+| 130 | word | chúng tôi | we, not counting you |
+| 131 | word | chúng ta | we, counting you |
+| 132 | word | họ | someone you do not know |
+| 133 | rule | chúng tôi hay chúng ta: có bạn trong đó không? | there is no neutral we — chúng tôi leaves the person you are talking to out, chúng ta puts them in, and you must pick one |
+| 134 | rule | các + bất kỳ từ xưng hô nào | các in front of an address word makes it plural, and like the singular it swings three ways — các cháu is we to an elderly person, you to a group of children, and them when you speak about either |
+| 135 | word | mệt | tired |
+| 136 | word | đói | hungry |
+| 137 | word | buồn | sad |
+| 138 | word | đẹp | beautiful |
+| 139 | word | đi | to go |
+| 140 | word | về | to go home, to return |
+| 141 | word | đến | to come, to arrive |
+| 142 | word | ra | to go out |
+| 143 | word | vào | to go in |
+| 144 | word | lên | to go up |
+| 145 | word | xuống | to go down |
+| 146 | word | ngủ | to sleep |
+| 147 | word | làm | to do, to work |
+| 148 | word | học | to study |
+| 149 | word | chơi | to play, to hang out |
+| 150 | word | hỏi | to ask |
+| 151 | word | nghe | to listen |
+| 152 | word | đọc | to read |
+| 153 | word | viết | to write |
+| 154 | word | nhớ | to remember, to miss |
+| 155 | word | quên | to forget |
+| 156 | word | thấy | to see, to feel |
+| 157 | word | gặp | to meet |
+| 158 | word | giúp | to help |
+| 159 | word | chờ | to wait |
+| 160 | word | tìm | to look for |
+| 161 | word | mua | to buy |
+| 162 | word | bán | to sell |
+| 163 | word | lấy | to take |
+| 164 | rule | ghép hai từ đã biết thành từ mới | Vietnamese builds new words by putting two words you already know side by side — đi is to go and học is to study, so đi học is going to school. Use it to work out a word nobody taught you, never to invent one. |
+| 165 | word | con | one, for animals |
+| 166 | word | người | person |
+| 167 | word | quả | one, for fruit |
+| 168 | word | chiếc | one, for vehicles |
+| 169 | word | đừng | don't do it |
+| 170 | word | nhất | the most |
+| 171 | word | vì | because |
+| 172 | word | còn | and what about |
+| 173 | word | nữa | more, again |
+| 174 | word | trong | inside |
+| 175 | word | trên | on top of |
+| 176 | word | dưới | underneath |
+| 177 | word | với | with |
+| 178 | word | vâng | yes, politely |
+| 179 | word | xin lỗi | sorry |
+| 180 | word | không sao | no problem |
+| 181 | rule | trả lời: lặp lại động từ | a yes-or-no question is answered with the verb itself, not with a word for yes — muốn, or không muốn |
+| 182 | rule | nơi chốn: ở | ở marks a PLACE, and it is neither of the other two: English says is for a name, for a description and for a place alike, Vietnamese uses a different word each time |
+| 183 | word | sẽ | will |
+| 184 | rule | sẽ: việc sắp tới, đứng trước động từ | sẽ before the action puts it in the future, in the same slot as đã and đang, and it is just as optional |
+| 185 | rule | thanh hỏi và thanh ngã: hai giọng võng | the last two tunes, and the hardest. One dips down then comes back up, like an English really? said a bit faster — tuổi is one of those. The other also rises, but it breaks in the middle, as if someone punched you in the belly while you were speaking — nữa is one |
+| 186 | word | Rất vui được gặp bạn | nice to meet you |
+| 187 | word | Bạn bao nhiêu tuổi? | how old are you? |
+| 188 | word | Đến từ | come from |
+| 189 | word | Bạn đến từ đâu? | where are you from? |
+| 190 | sentence | Tôi đến từ ... | I come from ___ |
+| 191 | word | Bạn làm gì? | what do you do? |
+| 192 | word | Xin chào | hello (formal) |
+| 193 | word | Chào buổi sáng | good morning |
+| 194 | word | Chào buổi chiều | good afternoon |
+| 195 | word | Chào buổi tối | good evening |
+| 196 | word | Tạm biệt | goodbye |
+| 197 | word | Hẹn gặp lại | see you again |
+| 198 | sentence | Bạn có anh chị em không? | Do you have siblings? |
+| 199 | sentence | Tôi có anh chị em | I have siblings |
+| 200 | word | Khỏe | healthy |
+| 201 | word | Sống | to live |
+| 202 | sentence | Chào anh / Chào chị / Chào em | hello (to male/female/younger) |
+| 203 | sentence | Cảm ơn bạn | thank you |
+| 204 | sentence | Không có gì | you're welcome |
+| 205 | sentence | Tôi tên là [tên], tôi đến từ [nước] | My name is Nam and I come from France |
+| 206 | word | sân bay | airport |
+| 207 | word | khách sạn | hotel |
+| 208 | sentence | Bạn đi đến [địa điểm] không? | Where are you going? |
+| 209 | word | nhạc | music |
+| 210 | word | đàn guitar | guitar |
+| 211 | word | hát | to sing |
+| 212 | sentence | Bạn chơi [đàn ...] không? | Do you play ...? |
+| 213 | word | chúc mừng | congratulations |
+| 214 | sentence | Bạn khỏe không? | how are you? |
+| 215 | word | đặt | to order |
+| 216 | word | gọi | to ask for |
+| 217 | sentence | Tôi muốn đặt ... | I want to order ... |
+| 218 | sentence | Bạn có thể đặt ... không? | Can you order this? |
+| 219 | word | phở | pho, the noodle soup |
+| 220 | sentence | Bạn muốn [số lượng] [món] không | How many ...? |
+| 221 | sentence | đặt [món] được không ạ | Is that okay? |
+
+---
+
+## Part 2 — the 1125 words glossed in bulk, by frequency
+
+Produced by a model in forty batches on one evening and kept or shelved by
+Claude. 540 more were shelved and are not here.
+
+| rank | Vietnamese | English |
 |---|---|---|
 | 35 | lại | again |
 | 70 | thế | condition |
