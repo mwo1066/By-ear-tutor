@@ -443,8 +443,8 @@ def stream_llm_reply(api_key: str, models: list[str], messages: list[dict], tool
                                 slot["function"]["arguments"] += fn["arguments"]
                                 yield ("tool_call_partial", idx, slot["function"]["arguments"])
                         if choice.get("finish_reason"):
-                            extra = f", raisonnement={reasoning_chars} car" if reasoning_chars else ""
-                            print(f"  [diag] modele={model} finish_reason={choice['finish_reason']}{extra}")
+                            extra = f", reasoning={reasoning_chars} chars" if reasoning_chars else ""
+                            print(f"  [diag] model={model} finish_reason={choice['finish_reason']}{extra}")
                             if choice["finish_reason"] == "length" and not got_any:
                                 print("  [diag] !! budget spent WITHOUT a word said -- the model reasoned into the void")
                             elif choice["finish_reason"] == "length":
