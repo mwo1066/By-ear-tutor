@@ -45,6 +45,11 @@ from tutor import CONTENT_DIR
 
 CACHE = Path(__file__).parent / ".cache" / "vi_en_wiktionary.tsv"
 
+# The second source: Hồ Ngọc Đức's headword list, via undertheseanlp/dictionary.
+# Compiled independently of Wiktionary, and it carries no English at all -- so it
+# answers "is this a real Vietnamese word" and NOTHING about what it means.
+HEADWORDS = Path(__file__).parent / ".cache" / "vi_headwords_hongocduc.txt"
+
 # Words that carry no meaning of their own, so overlapping on one proves
 # nothing: "to be willing" and "to owe" share "to" and would look supported.
 STOP = frozenset("""
@@ -108,6 +113,19 @@ def main() -> int:
     print(f"  supported by a listed sense   {supported}")
     print(f"  NOT supported by any sense    {len(unsupported)}   <- the shortlist")
     print(f"  not in the dictionary at all  {len(missing)}\n")
+
+    # The second source. It says nothing about meaning and everything about
+    # existence: 1259 of 1278 are real headwords in a 73160-word list compiled
+    # independently of Wiktionary. The 19 absent are country names, whole
+    # greetings and recent coinages -- trang web, thương hiệu -- not errors.
+    if HEADWORDS.exists():
+        known = {w.strip().lower() for w in HEADWORDS.read_text(encoding="utf-8").splitlines() if w.strip()}
+        unknown = [i.name for i in items if i.name.strip().lower() not in known]
+        print(f"  a real word in Hồ Ngọc Đức    {len(items) - len(unknown)} of {len(items)}   "
+              f"(a source independent of Wiktionary)")
+        if unknown:
+            print(f"    absent from it ({len(unknown)}): " + ", ".join(unknown[:24]))
+        print()
 
     print("NOT SUPPORTED — the gloss shares no content word with any sense.")
     print("Read these first. Some are correct overrides of a bad entry.\n")

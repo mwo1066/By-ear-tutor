@@ -4,6 +4,9 @@
   NOT supported by any sense    83   <- the shortlist
   not in the dictionary at all  19
 
+  a real word in Hồ Ngọc Đức    1259 of 1278   (a source independent of Wiktionary)
+    absent from it (19): Việt Nam, Trung Quốc, Nhật Bản, thương hiệu, trận đấu, Hàn Quốc, trang web, Thái Lan, Rất vui được gặp bạn, Bạn bao nhiêu tuổi?, Đến từ, Bạn đến từ đâu?, Bạn làm gì?, Xin chào, Chào buổi sáng, Chào buổi chiều, Chào buổi tối, Hẹn gặp lại, đàn guitar
+
 NOT SUPPORTED — the gloss shares no content word with any sense.
 Read these first. Some are correct overrides of a bad entry.
 
