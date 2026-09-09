@@ -1,0 +1,335 @@
+1278 taught words, 39968 dictionary headwords
+
+  supported by a listed sense   1176
+  NOT supported by any sense    83   <- the shortlist
+  not in the dictionary at all  19
+
+NOT SUPPORTED — the gloss shares no content word with any sense.
+Read these first. Some are correct overrides of a bad entry.
+
+  tên
+      course: name
+      dict:   stork (large wading bird of the family Ciconiidae)
+      dict:   egret
+      dict:   (colloquial, slightly childish) penis, pee-pee
+  cái
+      course: one, for objects
+      dict:   Initialism of thành phố.
+  các
+      course: the word you put in front of an address word to speak to several people
+      dict:   Plural marker
+      dict:   (dated) cell phone's card
+      dict:   to pay the difference, to give in compensation
+  ạ
+      course: politely
+      dict:   (polite) a particle at the end of the sentence to express formal politeness, especially 
+      dict:   to use the particle ạ when speaking to someone
+  dạ
+      course: yes, respectfully
+      dict:   (Southern Vietnam) yes (answers a question)
+      dict:   An initial particle to express politeness and respect.
+      dict:   (Southern Vietnam) yes? (asks for more information with a request)
+  xin
+      course: please, may I
+      dict:   to ask for; to beg for; to request
+      dict:   (honorific, humble) to humbly ask to do something
+  mốt
+      course: one, as in twenty-one
+      dict:   fashion; trend
+      dict:   day after tomorrow
+      dict:   (only in compounds or fixed expressions) one; -one
+  tuổi
+      course: years old
+      dict:   (of lifeforms) age
+      dict:   a year of age
+      dict:   (chiefly communism) a year of tenure
+  có thể
+      course: to be able to
+      dict:   (before verbs) possibly
+  ông
+      course: an elderly man
+      dict:   John Doe (unknown or anonymous male person)
+  bà
+      course: an elderly woman
+      dict:   Jane Doe (unknown or anonymous female person)
+  đang
+      course: in the middle of doing
+      dict:   marks the continuous, imperfect aspect of an action or state
+  chúng tôi
+      course: we, not counting you
+      dict:   we/us (exclusive); compare chúng ta (including you)
+  chúng ta
+      course: we, counting you
+      dict:   we/us (inclusive); compare chúng tôi (not including you)
+      dict:   (colloquial) you guys; y'all
+  họ
+      course: someone you do not know
+      dict:   (onomastics) family name; surname
+      dict:   extended family
+      dict:   (taxonomy) family
+  đẹp
+      course: beautiful
+      dict:   pleasant to look at; good-looking
+      dict:   nice
+  thấy
+      course: to see, to feel
+      dict:   to succeed in gathering information through the senses
+      dict:   (by extension) to form a sensation, feeling or opinion based on what you've already felt
+  con
+      course: one, for animals
+      dict:   heroic
+      dict:   a hero
+  người
+      course: person
+      dict:   Hominidae
+      dict:   (Christianity) You/Thou/Thee, Jesus Christ
+      dict:   (Christianity) You/Thou/Thee, my Lord
+  quả
+      course: one, for fruit
+      dict:   a kind of Indian mulberry (of the species Morinda officinalis)
+  chiếc
+      course: one, for vehicles
+      dict:   Initialism of ti-vi.
+  vì
+      course: because
+      dict:   why
+      dict:   how
+      dict:   what; what is it; what now
+  còn
+      course: and what about
+      dict:   to remain; to be left; to still have or exist
+      dict:   (euphemistic) to be alive
+      dict:   yet; still
+  nữa
+      course: more, again
+      dict:   more, further
+      dict:   longer (as in "I cannot wait any longer")
+      dict:   encore!
+  trên
+      course: on top of
+      dict:   upper
+      dict:   higher, superior
+      dict:   on
+  dưới
+      course: underneath
+      dict:   under, below
+  với
+      course: with
+      dict:   to reach (out for something)
+      dict:   a stretch of the hand (một với)
+      dict:   (arithmetic, after cộng (“to add”) or nhân (“to multiply”)) to or by
+  vâng
+      course: yes, politely
+      dict:   to obey (other's words, commands); to listen to; to comply with
+      dict:   (Northern Vietnam, polite) yes
+  sẽ
+      course: will
+      dict:   (formal or literary) marks the future tense
+      dict:   (literary) marks a desire or a hypothetical
+  điều
+      course: thing
+      dict:   something to say or tell
+      dict:   something to think about or discuss
+      dict:   (business, law, of a contract or legislative bill) a clause
+  ngày
+      course: day
+      dict:   (dated or Overseas Vietnamese; Christianity) Alternative letter-case form of Chúa nhật
+  quá
+      course: too much
+      dict:   very, excessively
+      dict:   to exceed
+  không thể
+      course: cannot
+      dict:   (before verbs) impossibly
+      dict:   impossible
+  xe
+      course: vehicle
+      dict:   dump truck
+  gái
+      course: girl
+      dict:   (collective) girls and women
+      dict:   (collective, informal, colloquial) whores
+      dict:   (only in fixed expressions, of people) female
+  vui
+      course: happy
+      dict:   merry; joyful; gay
+  thi
+      course: exam
+      dict:   (literary) poetry
+      dict:   to compete
+      dict:   to take an examination
+  xa
+      course: far
+      dict:   dump truck
+  chút
+      course: a little bit
+      dict:   great-great-grandchild
+      dict:   a very small, tiny portion or amount
+      dict:   a moment, a instant
+  quy định
+      course: regulation
+      dict:   to stipulate
+      dict:   stipulation
+  cơ quan
+      course: agency
+      dict:   a government institution
+      dict:   a white-collar workplace
+      dict:   (biology, anatomy) an organ
+  áo
+      course: shirt
+      dict:   (clothing) a top
+      dict:   (by extension, clothing, rare) an outfit
+  tóc
+      course: hair
+      dict:   headhair
+  nghỉ
+      course: to rest
+      dict:   to take a break
+      dict:   to get to temporarily leave work (e.g., for holiday/vacation, for pregnancy, etc.)
+      dict:   (figuratively, euphemistic) to die
+  hoà
+      course: peace
+      dict:   (games, sports) tied; deadlocked; stalemated; at a draw
+      dict:   to mix, to mingle
+      dict:   to draw, to tie
+  quán
+      course: shop
+      dict:   (only in certain contexts) a place of where people can come and enjoy cheap or non-luxur
+      dict:   Sino-Vietnamese reading of 館
+      dict:   Sino-Vietnamese reading of 貫
+  dựa
+      course: to rely on
+      dict:   to lean on
+      dict:   to base on
+  thực phẩm
+      course: food
+      dict:   (formal) foodstuff
+  gỗ
+      course: wood
+      dict:   a three-legged device for raising plates on the altar
+      dict:   (botany) a tree in the genus Parashorea
+  bò
+      course: cow
+      dict:   (zoology) a Southern Yellow zebu (a bovine of the breed Feng cattle)
+      dict:   (zoology, by extension) any bovine from the subtribe Bovina
+      dict:   (informal) a unit of measurement for grain volume equivalent to the capacity of a conden
+  hạt
+      course: grain
+      dict:   Job's tears
+  thí sinh
+      course: candidate
+      dict:   (education) a student who is about to take, or is in the process of taking, an exam
+  ngăn
+      course: to block
+      dict:   to stop or prevent someone from doing something
+      dict:   a compartment, a case or a shelf
+      dict:   (anatomy, cardiology) a chamber
+  xương
+      course: bone
+      dict:   a kneecap; patella; kneepan
+  vận động
+      course: exercise
+      dict:   to do a physical activity, as opposed to staying sedentary
+      dict:   to encourage people to partake in an activity
+      dict:   (Marxism, philosophy) to be in motion
+  năng lực
+      course: ability
+      dict:   work competence or capability
+  nông dân
+      course: farmer
+      dict:   a peasant (member of the agriculture low class)
+  đợt
+      course: period
+      dict:   very cold
+      dict:   cold
+      dict:   to shiver (from cold)
+  trại
+      course: barracks
+      dict:   barrack
+  hành vi
+      course: behavior
+      dict:   (formal) an act; a deed
+  sư
+      course: monk
+      dict:   (Buddhism) title for monks
+      dict:   (in compounds only) lion or lion-like animal
+  dự kiến
+      course: to expect
+      dict:   to foresee; to foreknow
+      dict:   to prepare beforehand
+      dict:   foresight; prevision
+  gói
+      course: package
+      dict:   pack; parcel; bundle
+      dict:   to wrap around
+  vui lòng
+      course: please
+      dict:   content; pleased; glad
+  quan điểm
+      course: viewpoint
+      dict:   a stance (opinion or point of view)
+  căng thẳng
+      course: stressful
+      dict:   strained; stressed; tense
+  ra mắt
+      course: to debut
+      dict:   to present oneself (in front of others); to come into sight
+  đàn bà
+      course: women
+      dict:   a woman
+  dọn
+      course: to tidy up
+      dict:   to arrange; to put in order
+      dict:   to clear (e.g. a table)
+      dict:   to move; to relocate
+  lưu ý
+      course: to note
+      dict:   to be careful, to watch out
+  mãi mãi
+      course: forever
+      dict:   for a long time; unceasingly; always; all the time
+      dict:   until; till
+  người yêu
+      course: lover
+      dict:   a non-marital romantic partner
+  ưu tiên
+      course: priority
+      dict:   prioritised; preferred
+      dict:   to prioritise
+  đề tài
+      course: topic
+      dict:   subject, theme
+      dict:   project
+  uy tín
+      course: reputation
+      dict:   credibility; fame and trustability thanks to goodwill; prestige
+  thừa
+      course: extra
+      dict:   left over; superfluous
+      dict:   (only in fixed expressions) more than necessarily said
+      dict:   (only in fixed expressions) to take advantage of (an opportunity); to utilise; to avail 
+  xét nghiệm
+      course: to test
+      dict:   (medicine) to do tests (with the aim of diagnosis)
+  lạy
+      course: to bow
+      dict:   to kowtow
+  biên giới
+      course: border
+      dict:   a frontier (part of a country that fronts or faces another country or an unsettled regio
+  nhấn mạnh
+      course: to emphasize
+      dict:   to stress; to emphasise
+  đẩy mạnh
+      course: to boost
+      dict:   to push forward; to promote; to advance; to stimulate
+  chúc mừng
+      course: congratulations
+      dict:   to congratulate (on); to wish well
+  gọi
+      course: to ask for
+      dict:   to call or hail
+      dict:   to call, name or dub
+
+NOT IN THE DICTIONARY (19) — nothing to check against.
+  con người, đặc vụ, sống sót, năm học, khảo sát, Rất vui được gặp bạn, Bạn bao nhiêu tuổi?, Đến từ, Bạn đến từ đâu?, Bạn làm gì?, Xin chào, Chào buổi sáng, Chào buổi chiều, Chào buổi tối, Tạm biệt, Hẹn gặp lại, Khỏe, Sống, đàn guitar
