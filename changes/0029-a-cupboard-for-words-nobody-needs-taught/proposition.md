@@ -32,6 +32,17 @@ on its own. It comes out when the learner asks for it.
 Meo's word for it is the cupboard — `placard`. Distinct from the shelf, which
 holds words that are not ready; these are ready and simply not wanted yet.
 
+## It has a name now
+
+**The cupboard.** Meo chose it, 2026-08-23, and it is in `GLOSSARY.md` beside
+**mute stock**, which it must not be confused with:
+
+```
+mute stock    no gloss      the tutor does not know the word
+the cupboard  gloss, unqueued   it knows it, answers about it, never teaches it
+the course    gloss, queued     it teaches it
+```
+
 ## What goes in it
 
 Country and place names, `Việt Nam` excepted — the course is about Vietnam and
@@ -40,8 +51,37 @@ its own name earns its place.
 And Meo expects more: *"je pense qu'il y a des mots random comme ça qui sont pas
 si importants qu'on pourra mettre dans le placard."* The category is not
 "proper nouns"; it is "real vocabulary that a beginner does not need drilled".
-What else belongs there is content work, decided a batch at a time, the same way
-`HELD_BACK` grew.
+
+**A first pass over the 1125 glossed words finds about 55**, and they fall into
+five groups rather than being scattered:
+
+```
+places, proper nouns  12   Mỹ, Pháp, Nga, Nhật Bản, Hàn Quốc, Thái Lan,
+                           Hà Nội, Trung Quốc, Chúa, Phật
+                           -- Việt Nam and Tết stay: they are the course's own
+
+military               9   súng, lính, vũ khí, đạn, bom, quân đội,
+                           chiến tranh, thuyền trưởng, sĩ quan
+
+finance               10   lãi suất, thuế, quỹ, bảo hiểm, ngân sách,
+                           tài khoản, chỉ số, kế toán, đầu tư, tài chính
+
+state, administration  7   quy định, chính sách, an ninh, hội đồng,
+                           đại hội, hành chính, đặc vụ
+
+medical, technical    11   ung thư, viêm, phẫu thuật, tế bào, thần kinh,
+                           triệu chứng, thai, ma tuý, tâm lý, thống kê,
+                           dinh dưỡng
+```
+
+None of these is a bad word or a bad gloss. Each is real and frequent enough to
+have earned a place in a 2000-word list. None of them belongs in a beginner's
+first hundred hours.
+
+That list was produced by keyword matching and it is a **first pass, not a
+decision** -- the same scan caught `kho` (warehouse), `ấm` (warm) and `cảnh báo`
+(warning) as military, all three on the substring "war". It needs reading before
+it is used.
 
 ## What must be settled before code
 

@@ -74,7 +74,8 @@ No equivalent outside this project. Defined nowhere else.
 | **vary** | re-asking the same sentence addressed to a different person, so the address system shows itself. |
 | **verdict** | what the code decided about an answer — correct, missed twice, or nothing — handed to the model so it does not judge again from the raw transcription and contradict the code. |
 | **leak guard** | the check that stops a turn from speaking the Vietnamese it is asking for. A question that states its own answer reads as a perfectly good turn in a transcript, which is how it survived every session logged. |
-| **mute stock** | the 1,915 frequency-imported words with no gloss written, held out of lessons until someone writes one. |
+| **mute stock** | frequency-imported words with no gloss written, held out of lessons until someone writes one. It held 1,915 when the term was coined and **0 today** — the shelf was emptied on 2026-08-23. The state still exists and any new import lands in it; it simply has no occupants. |
+| **the cupboard** | a word the tutor KNOWS and never introduces. It carries a gloss, so the course can answer about it when the learner asks — but the sequencing never queues it, and it is never drilled. Named by Meo, 2026-08-23: *"une catégorie où on met ces mots pour que au moins l'IA les sache mais ils seront pas dans le cours."* The third state, between the **mute stock** (not known) and the course (taught). Country names, military and financial vocabulary, medical terms — real words a beginner does not need drilled. Proposed in `changes/0029`, **not built**. |
 
 ---
 
