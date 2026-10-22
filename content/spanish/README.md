@@ -1,7 +1,8 @@
 # Spanish — not started
 
-A placeholder. The engine is language-agnostic: everything language-specific
-lives in this folder, and `tutor.py` never names a language.
+A placeholder. The engine is not language-agnostic yet: `voice.py` and
+`listen.py` name Vietnamese in code, and so does `tutor.py`. The plan to
+separate them is in `content/chinese/README.md`, and it comes first.
 
 ## What has to be here before a lesson can run
 

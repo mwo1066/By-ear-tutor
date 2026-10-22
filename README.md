@@ -3,8 +3,10 @@
 A language tutor you talk to. Nothing is typed, nothing is read: it speaks,
 your microphone opens on its own, and it stops recording when you go quiet.
 
-It teaches Vietnamese today. The engine is language-agnostic — the language
-lives entirely in `content/`.
+It teaches Vietnamese today. The engine is **not** language-agnostic yet:
+Vietnamese is written into `voice.py` and `listen.py` as well as `content/`.
+Chinese is planned as a different experiment, a free conversation rather than
+a course — see [`content/chinese/README.md`](content/chinese/README.md).
 
 ```
 tutor   So — you?
@@ -168,7 +170,10 @@ judging a pedagogical change without having to talk.
 
 ## Adding a language
 
-Copy `content/vietnamese/`, replace the item files and the persona. Items are
+Not possible by copying a folder yet — the voice and the ear name Vietnamese in
+code. [`content/chinese/README.md`](content/chinese/README.md) has the plan to
+separate them. Once that is done, a COURSE in another language starts from a
+copy of `content/vietnamese/`, with the item files and the persona replaced. Items are
 listed in teaching order, and a construction should spell out the words it is
 built from — `tôi tên là + [tên riêng]` is recognised as `tôi` + `tên` + `là`,
 which is what drives both the recall chain and the ordering guarantee.
